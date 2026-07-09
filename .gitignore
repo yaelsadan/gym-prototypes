@@ -1,0 +1,9 @@
+.DS_Store
+*.zip
+
+# local-only / licensed fonts
+assets/fonts/
+*.otf
+*.ttf
+*.woff
+*.woff2
