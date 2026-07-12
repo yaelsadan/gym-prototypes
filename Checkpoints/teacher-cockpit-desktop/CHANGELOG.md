@@ -1,97 +1,150 @@
-# Teacher Cockpit — Changelog
+# Teacher Cockpit — Desktop — CHANGELOG
 
-History of the prototype from the first PRD-aligned build (v02) to the approved checkpoint source (v15). Each pass was additive on top of the previous named file; no pass rebuilt from scratch.
+From the first Teacher Cockpit build through to `teacher-cockpit-desktop-v1-checkpoint`.
 
-**Checkpoint v1 source = v15** (`teacher-cockpit-v15-scale-restore-board-stability.html`).
-
----
-
-## v15 — Scale restore + board stability (checkpoint source)
-- Restored the larger visual scale after v14's shrinkage (bigger stage; Rooms controls back to a present size).
-- Fixed the board-mode bug where the collapsed bar's **Camera** button was clipped, using constraints rather than shrinking: slightly narrower side columns (Lesson still dominant ≈410 vs right ≈300), a higher center minimum (500), and trimmed bar spacing — so all five controls fit one row at full size, at default and down to the resize floor.
-- Kept the v14 light HUD, no camera/mic tooltip, smooth ring, and Spark asset.
-
-## v14 — Rollback + stabilization
-- Rolled back the v13 Rooms-panel sizing that caused clipping (controls pushed out of the panel); restored a layout that fits one view with Close always visible.
-- Removed the native `title` tooltip on Camera/Mic (stray "Camera"/"Microphone" on hover); kept `aria-label`.
-- Made the running-timer HUD lighter: the timer circle stands alone (~86px, no dark banner) with a context caption below it.
-
-## v13 — Visual regression fix + timer polish
-- Restored visual presence (larger stage / bar / rooms controls) after earlier reductions.
-- Fixed Rooms-panel bottom dead space (panel body now fills the card).
-- Refactored the countdown to a **smooth continuous progress ring** with in-place number updates (no per-tick rebuild / flicker).
-- Introduced the **Spark** helper-message asset.
-
-## v12 — Stability + correctness
-- Added **Reset layout** inside Edit layout (layout-only reset).
-- Moved the running timer to a top-right HUD (off the teacher's face); cleaned the Done state (green check, no gray ring).
-- Fixed a manual-override bug so the selected duration actually drives the countdown (including both Dialogue rounds).
-- Switched Dialogue starters to generic **Partner A / Partner B**; confirmed no "Speaking" copy.
-- (Bug caught & fixed in-pass: an accidentally removed helper function was restored.)
-
-## v11 — Recipe timers + layout constraints
-- Made Lesson Plan dominant by default.
-- Removed the clock entrance animation that caused per-tick flicker.
-- Introduced **recipe-driven timers** (activity → default duration + recipe) with a manual-override tag.
-- Built the full **Dialogue** runner (two rounds, automatic starter switch).
-- Vertical resize reserves each below-sibling's minimum footprint (panels can't push each other off-screen).
-
-## v10 — Stability + dialogue alignment
-- Made **Option B (Collapsed) the default** on load.
-- Locked the collapsed-bar button layout so the active state changes color only (no label drop / bar jump); forced the popover to absolute positioning.
-- Constrained vertical resize to the visible workspace bottom.
-- Improved modal typography.
-- Represented Dialogue as turn-based; adopted **"Turn", not "Speaking"** language.
-
-## v09 — Hard bugfixes
-- Bulletproof camera/mic icon sizing (fixed size, explicit icon size, no inherited shrink) across states and presentation.
-- Fixed the collapsed action-bar active state to fixed-height buttons (color-only change).
-- Fixed horizontal resize so Lesson Plan can expand well beyond default (borrows from the opposite side and center down to a safe minimum; no overflow).
-- Made vertical resize reversible (viewport-based max; double-click reset).
-- Lightened Rooms timer typography.
-
-## v08 — Micro-polish + stability
-- More presence for the core center (taller stage + bar, bigger buttons).
-- Fixed camera/mic icons in presentation mode.
-- Fixed the vertical-resize "trapped height" bug; added double-click-to-reset.
-- Simplified Edit layout to direct manipulation (removed per-panel S/M/L / arrows / swap buttons).
-- Chevron collapse/expand for Chat + Participants.
-- Aligned Rooms timer controls to one pill-height row.
-
-## v07 — Hierarchy + bugfix
-- Cleaned and aligned the header status cluster (only Edit layout looks clickable; dry session timer; Rooms threshold pill).
-- Rooms panel truly one view: one-row timer controls + Broadcast/Close on one row; Close always visible.
-- Chat and Participants both collapse/expand; right column auto-rebalances.
-- Constrained the grid to prevent horizontal overflow.
-- Removed a stray decorative line under the collapsed action bar; fixed camera/mic sizing.
-
-## v06 — Scale + layout balance
-- Presentation-mode viewport scaling (clamp-based).
-- Participants collapsed = quiet metadata-first.
-- Edit-layout resize handles (width + height, min/max).
-- Rooms stats as quiet metadata (not button-like cards).
-- Header refinements: light ON AIR, dry session countdown, Rooms threshold pill.
-
-## v05 — Usability polish
-- Participants collapsed by default; width-flexible side columns.
-- Rooms: one dynamic timer button (Start / Pause / Resume / Start again) + Reset.
-- Header redistributed (icon exit, session center, live/timers/edit right); teacher name as a variable.
-- Chat send activates on typing.
-
-## v04 — Layout refinement
-- Collapsed-mode stage grows to fill the center; small calm Rooms indicator chip.
-- Rooms panel redesigned as a compact one-view with its own timer-duration controls.
-- Demo button becomes state-aware in collapsed mode.
-- Modular panel controls moved behind an **Edit layout** toggle with drag-and-drop.
-
-## v03 — Layout options
-- Introduced the two Control Panel options (A Expanded / B Collapsed with popovers) with a debug toggle.
-- Separated Lesson Plan from the Control Panel; made the side panels modular.
-- Aligned the on-stage countdown to the student-room clock.
-
-## v02 — PRD alignment (baseline)
-- Established the three states (Basic / Demonstration / Students in Rooms), the always-visible header, the Basic Control Panel (Countdown / Demonstration / Activities), Activities → rooms with confirmation, the Rooms Status & Control panel (Broadcast only here), camera/mic confirmations, Lesson Plan, Chat, and Participants.
+Every pass was **additive and surgical** on top of the previous stable file — never a rebuild.
+Each version was validated with `node --check` on all script blocks plus a headless DOM-stub harness
+before delivery, and each source file was left byte-unchanged.
 
 ---
 
-*Note:* the earliest control-model exploration (`teacher-cockpit-control-model-prototype.html`) predates v02 and is not part of this numbered line; it is kept for reference only.
+## Phase 1 — Foundation (v02 → v15)
+
+The cockpit shell, layout system and core states.
+*(Summarised — these predate this working stream and are documented in the earlier
+`teacher-cockpit-checkpoint-v1` package.)*
+
+- **v02–v10** — Cockpit frame, header, stage, modular side panels (Lesson plan / Chat / Participants),
+  the two control-panel options (Option A expanded, Option B collapsed bar), the countdown engine with
+  a smooth continuous ring, camera/mic safety popups, the debug board and Presentation mode.
+- **v11–v13** — Recipe timers, layout constraints, and restoring visual presence.
+- **v14** — Rollback + stabilisation: lighter running-timer HUD, clean green Done, Spark helper asset.
+- **v15** — *Scale restore + board stability.* Fixed the board-mode bug where the collapsed bar’s camera
+  button was clipped — solved with **constraints, not global shrinking**. This is the file that became
+  `teacher-cockpit-checkpoint-v1.html` (md5 `2b17bac7676b1dcc8876d4254021ad52`), the source of everything below.
+
+---
+
+## Phase 2 — The Activity Control System (v16)
+
+**v16 — PRD alignment.** The single biggest behavioural pass.
+
+- **Activity = prepare. Start = start.** Choosing an activity opens rooms, highlights the activity, and
+  presets its timer recipe — but the countdown does **not** begin. Added a *Prepared timer* strip so the
+  teacher could review the sequence before starting.
+- **Broadcast → recorded → TIP → manual Start**, made explicit with a flow strip.
+- **Four activities, four recipes:** Dialogue, Intensive Exercise, Operation Grandma, Carousel.
+- **Yellow became the active colour** — active turn, handoff, running timer, selected activity.
+  **Green was reserved for success and ON AIR only.** The running-timer status, the activity chip and the
+  selected activity card were all moved off green.
+- **Solo** restricted to the product rule: uneven students, or a partner leaving / turning devices off.
+  Declining consent or leaving your own room → wait in the Main room, never Solo.
+- **Helper mode created.** It did not exist in v15 — this was a first pass, not a preservation.
+
+---
+
+## Phase 3 — Carousel and the teacher-facing panel (v17 → v18)
+
+**v17 — Rooms panel cleanup + Carousel as a visual tool.**
+- Stripped the PRD paragraphs out of the Rooms panel; the solo rule moved to an info tooltip.
+- Broadcast button + state collapsed into one compact row.
+- **Start hard-gated** — disabled until the broadcast had ended and the TIP was ready.
+- **Carousel became two things:** still a Rooms activity, *and* a Main Room / Demonstration visual tool
+  on the shared stage — explicitly not a camera filter. Introduced 8 built-in placeholder characters.
+
+**v18 — Device controls, rooms panel, TIP recording.**
+- **Mic and camera left the Control panel** and became overlay controls on the teacher video
+  (neutral when on, red slash when off). The panel kept only Activities / Timer / Demo / Visuals.
+- The Rooms panel became **no-scroll** (`overflow:hidden`) — crowding was solved by *removing* content
+  from the default state, never by adding a scrollbar.
+- **Close rooms** moved to the panel header.
+- **Broadcast and TIP separated** into two controls; the timer recipe went behind a collapsed disclosure.
+
+---
+
+## Phase 4 — Hierarchy, layout and interaction (v19 → v21)
+
+**v19 — Hierarchy refinement.**
+- Control panel became **four equal-width buttons filling the row**; a global rule fixed button label
+  alignment (the old `vertical-align` / `margin-right` icon hack was replaced with flex + gap).
+- Timer duration controls made **permanently visible**; the recipe disclosure removed.
+- **Corrected instruction model:** first action = *Broadcast & record instructions* (live + recorded together);
+  only after it ends do the actions split into *Broadcast to rooms* + *Re-record TIP*.
+- Carousel gained a real room preview.
+- 🐞 **Bug caught by the harness:** the preview did not repaint on the 5s character swap, because
+  `stepTick` paints in place rather than re-rendering. Fixed with a `slideSwapped` flag.
+
+**v20 — Surgical fixes.**
+- Removed the “recipe default” chip.
+- 🐞 **“TIMER /” root cause:** `.info` was scoped to `.rp-meta` only, so the same `<i>` inside the Timer
+  label fell back to a plain *italic letter i* — which reads as a slash. Made `.info` a proper global icon.
+- **Prep countdown 3s → 5s** across all four recipes; the prep runner generalised to any N.
+- 🐞 **Carousel “full-stage white overlay” root cause:** the character card was `inline-flex` with a
+  `width:100%` child and an `aspect-ratio` — a circular sizing dependency that let it expand across the
+  stage. Rebuilt as a contained **Room mirror** with fixed pixel sizes.
+- Removed the last “Characters switch every 5s” leak — it was living in the recipe `cue`, which surfaced
+  in the HUD caption.
+
+**v21 — Visual-layer cleanup.**
+- **Popover lifecycle:** click-outside dismisses the Visual tools popover but **never** stops a running
+  Carousel layer; *Stop carousel* stops the layer *and* closes the popover.
+- **One activity HUD stack, top-right:** timer on top, room visual underneath, capped at 34% of the stage.
+  Timer trimmed 96px → 74px so the teacher stays dominant.
+- The room visual shows **only the visual** — no pills, no second countdown, no Done, no labels.
+- **Placeholders became grammar cues:** Masculine (זכר) / Feminine (נקבה) / Plural (רבים).
+  Deliberately not a roleplay character deck — the Carousel practises gender and number.
+- Timer recipe reduced to flat metadata rows.
+
+---
+
+## Phase 5 — Behaviour and polish (v22 → v25)
+
+**v22 — Running-timer controls, Grandma auto-flow, compact recipe.**
+- **The running timer is never locked.** The disabled “Counting down…” button is gone.
+  Start → **Pause** → **Resume** (from the exact remaining second, including mid-prep), with **Reset**
+  available throughout — in both the Main-room timer and the Rooms panel.
+- **Operation Grandma: one set, one Start.** The whole set now runs through automatically
+  (5s › R1/S1 › R1/S2 › 5s break › R2/S1 › R2/S2 › Done). *“Start round 2” removed.*
+  **Manual means starting the activity/set**, never stepping between internal rounds.
+- Timer recipe collapsed to **one compact horizontal metadata line**.
+- **Done** made brief and non-duplicated: HUD only, then the panel returns to ready with the next real action.
+
+**v23 — Visual hierarchy + Helper-mode cleanup.**
+- Timer recipe became a **hover-only tooltip** — not clickable, no open state, zero layout space.
+- **Header flattened:** the TEACHER chip removed; ON AIR and the Rooms clock became status (dot + label)
+  rather than buttons; a hairline separates statuses from layout actions; Reset layout demoted to a ghost.
+- Panel statuses (*TIP ready*, *Paused · Student 1*) lost their pill borders.
+- **Helper now sees the live teacher feed** — the black “you are not broadcasting” slate is gone.
+- *Switch to Teacher* became a small secondary action.
+
+**v24 — Header hierarchy + Helper layout polish.**
+- When rooms run, **Rooms 07:30 becomes the primary time** and the session clock recedes; the decorative
+  dot before it removed.
+- **Helper can Edit and Reset their own layout** (a personal workspace, not a teacher action).
+  🐞 Caught: `resetLayout()` handed the helper the *teacher’s* layout — made role-aware.
+- *Switch to Teacher* moved out of the global header into the **Helper Mode panel header**.
+- Helper mode became visibly **chat-centred** (chat column widened, lesson narrowed, info card lightened).
+
+**v25 — Alignment cleanup.** *(this checkpoint)*
+- Running statuses moved **into the Instruction title row** — they had been a separate row landing on top
+  of the section divider.
+- Header clocks lifted out of their nested wrapper into **one shared flex row**, so every status item sits
+  on the same optical centre line and the two clocks share a baseline.
+- 🐞 **HELPER label root cause:** `.tc-role.helper` (0,2,0) kept a yellow fill from an older block while a
+  newer `.tc-role` rule (0,1,0) zeroed its padding — the label was jammed inside a zero-padding holder.
+  Now a subtle holder with symmetric padding and the text exactly centred.
+
+---
+
+## Running principles across every pass
+
+- **Scope discipline.** Each pass had an explicit scope and an explicit “not covered” list.
+- **Additive, provably isolated changes.** Targeted `str_replace` edits with exact-count assertions,
+  followed by a diff proving the change was confined to the intended regions.
+- **No scrollbars as a crowding fix.** The Rooms panel’s no-scroll rule was treated as a hard constraint:
+  content was removed, collapsed or moved to a tooltip instead.
+- **Validated before delivery, every time.** `node --check` on all script blocks + a headless DOM-stub
+  harness asserting behaviour *and* CSS. Several real bugs (the preview repaint, the “TIMER /” slash, the
+  full-stage Carousel overlay, the helper reset layout) were caught this way rather than by eye.
+- **Source files never mutated.** Every pass copied the previous stable file to a new version; checksums
+  were verified before and after.
