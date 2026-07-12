@@ -1,6 +1,6 @@
-# Vitamin Sessions Prototypes
+# Gym Prototypes
 
-Private internal prototype repository for Vitamin Sessions.
+Private internal prototype repository for Gym sessions.
 
 This repository contains HTML checkpoint prototypes for product/design review.
 
