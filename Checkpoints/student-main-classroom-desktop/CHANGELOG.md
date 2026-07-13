@@ -1,34 +1,131 @@
-# Changelog — Student Main Classroom (Desktop)
+# CHANGELOG — Student Main Classroom · Desktop
 
-All passes are surgical and additive on top of the previous stable file. Two protected source/checkpoint files were never modified: `student-classroom-desktop-main-room-v1.html` (md5 d5fdb4f1…) and `student-practice-rooms-v1.html` (md5 d4d7cbdc…). Student Practice Rooms and Teacher Cockpit were never touched.
+From the earlier Main Classroom versions through to this checkpoint (**v8**).
 
-## v1 — source of truth (checkpoint)
-Baseline desktop Main Classroom: teacher large-video stage, foldable student self-view, far-right rail with a single side panel (Chat / Timeline / Participants), footer-left Ask composer, footer-right student controls, ephemeral bottom-left chat overlay, a two-step demonstration/volunteer flow, the room-consent bridge, the Short transition (matkot), and the Activity timer / Dialogue / Operation Grandma explorations. Immutable base for every pass below.
+**v3–v5** are reconstructed from the design notes carried inside the file itself. **v6–v8** were built in
+sequence, each on top of the previous stable file, with the source left byte-identical and a diff proving
+every change was confined to its intended region.
 
-## v2 — Main Room alignment
-- **Demonstration = single volunteer popup** with consent included ("Who wants to volunteer for class demonstration?" + "camera and audio will be shared… Do you agree?", "Yes, let's go!" / "Not this time", 10-second timer); **removed the second confirmation popup**. Yes → teacher + student **split view**; the chosen student sees themselves and their self-view folds. No live-locked language, no lock icons, no red/live styling; calm "No volunteers this time" placeholder for the empty case.
-- **Main Room mic** reads as teacher-controlled with a calm click popover ("your mic will open during class activities"), no lock icon; camera/mic off use a consistent red slash.
-- Popups made more readable. Light brand alignment: Spark.svg helper sparkle + yellow rule; layered Citizen name chips.
+---
 
 ## v3 — chrome polish
-- Student controls never green in the Main Room (neutral = available/on, red slash = off/unavailable).
-- **Right sheets open as floating overlays** anchored by the rail — the stage no longer pushes or reflows (previously only wired for the narrow width).
-- Participants: layered soft avatars (white front, yellow back, charcoal stroke), charcoal-stroked level dot, Teacher/Helper role badges, and Level·Semester secondary text.
-- Default teacher video contained in a rounded stage card; teacher chip "Niv · Teacher".
+
+- **Student controls are never green in the Main Room.** Neutral = available / on; a red slash = off /
+  unavailable. Green stays reserved for true on-air or success states.
+- **The right sheets became overlays.** Chat / Timeline / Participants open as floating milky-dark blurred
+  sheets anchored by the fixed right rail. The stage underneath is not pushed or resized.
+- **Participants avatars** moved to the layered Citizen avatar (white front, yellow back, charcoal stroke)
+  with a charcoal-stroked level dot. Teacher / Helper role badges preserved.
+- The teacher video sat in a large rounded stage card with Rooms-consistent corners.
 
 ## v4 — cleanup + fixes
-- Presentation mode shows large videos that use the available stage width (no small centered max-width).
-- Default teacher video made more expansive (broadcast stage) rather than a boxed card.
-- Overlay sheets got soft rounded class-facing corners; chat avatars switched to the layered Citizen style.
-- Active/demo frame is brand **yellow** (no green) and the "SPEAKING" label was removed.
-- Circular timer moved to the upper-right and made slightly larger.
-- Right rail kept available during transition screens.
-- **Removed obsolete student states:** the "No volunteers" state, the Solo fallback (screen + debug + roomconsent routing), and the Written prompt (UI + debug + notes).
 
-## v5 — layering cleanup (this checkpoint)
-- **Default teacher video full-bleed** again — edge-to-edge broadcast, no inset/card/containment (split/demo videos stay contained tiles).
-- **Removed the teacher name chip** from the full-bleed default video (name is in the header); chips stay in split/demo states.
-- **Level-dot stroke thinned** to exactly the avatar stroke (1.5px charcoal), no heavier separator ring; size/colours unchanged.
-- **Transition sheet layering fixed:** the rail and any opened Chat / Participants / Timeline sheet render above the transition overlay and are usable; milky-dark/blur kept.
-- **Removed the "You're on stage" label** from the demonstrating student video (split view + consent are enough).
-- **3→2→1 handoff blink frame is brand yellow from the start** (same as the active-turn frame); no green active/handoff/speaking frame anywhere.
+- **Presentation scale:** the videos use the available stage width. The default teacher video became an
+  expansive broadcast stage rather than a small centred card.
+- **The active / demo frame became brand yellow**, and the **“SPEAKING” label was removed** — green stays
+  for success only.
+- The circular timer moved to the upper-right of the stage.
+- The right rail stays present and clickable during transition screens.
+- **Removed:** the student-facing “no volunteers” state, the Solo fallback (Solo lives only in Practice
+  Rooms), and the written prompt.
+
+## v5 — layering cleanup
+
+- **The default teacher video went full-bleed again** — no inset, no card, no containment.
+- **No teacher chip on the full-bleed video**; the teacher's name lives in the header.
+- The Participants level-dot stroke was thinned to match the avatar outline.
+- The right rail and any opened sheet now render **above** the transition overlay and stay usable.
+- **Removed the “You're on stage” label** from the demonstrating student's video — the split view and the
+  prior consent are enough.
+- The 3-2-1 handoff frame is brand yellow from the start.
+
+---
+
+## v6 — system alignment
+
+### Demonstration became a real draw
+
+Before v6, pressing *Yes* chose you **immediately**. There was no draw.
+
+- **One popup, consent included.** Copy fixed to *“…shared with the rest of the **class**.”*, and the
+  trailing *“Do you agree?”* removed. **No second confirmation** for the chosen student.
+- **The 10s window is a class event.** *Yes* joins the pool and shows a calm *“You're in — picking a
+  volunteer…”* state; *Not this time* closes the popup but **the draw keeps running behind it**.
+- **After 10 seconds, one student is picked at random** from everyone who said yes. Debug: rig the draw,
+  and set how many other students volunteered.
+
+### Demonstration view
+
+- **The chosen student's self-view now folds.** In v5 it simply *disappeared*. It folds into the edge tab
+  (*“You · in the demonstration”*) because they are already on the split view and their camera + mic are
+  shared **for that state only**.
+- **End demonstration** returns everyone to the basic Main Room and the chosen student to muted.
+
+### Mic + visual
+
+- **The locked mic explains itself:** *“Your mic opens only during class activities or when the teacher
+  invites you.”* — on hover and in the popover. **No room-style enforcement.**
+- **Plain metadata stopped being a chip:** the Session timer became flat text. *Now* and *REC* kept their
+  chips, because they are semantic status.
+
+> A calm **no-volunteer fallback card** was added in v6 because the brief asked for one — reversing a v4
+> decision. It was flagged as an open question, and **v7 removed it again**.
+
+---
+
+## v7 — final alignment
+
+### The timer is now the Practice Rooms component
+
+- Milky face, **charcoal track**, progress that **fills forward** into brand yellow, and in the final 5
+  seconds the arc and the leading ball turn **coral `#F9746B`**. The number stays charcoal.
+- R 26.5 · **one stroke weight of 1.4** for track, progress and ball · ball fill r 4.6 painted last so the
+  arc endpoint can never be exposed · **no SVG filters**.
+- **The ball moves every animation frame** (`requestAnimationFrame`); only the number ticks once a second.
+  The phase buttons stay **static review snapshots**, deliberately not interpolated.
+- **Activity logic and timings were not changed.** The existing phase model (30s / ≤10s / ≤5s / done) maps
+  onto a remaining-seconds value on a 30s total, so the coral state falls out of the ≤5s phase that already
+  existed.
+- Spark.svg still carried a baked `#FFE300`; it was repainted to the canonical `#F9E24C`.
+
+### Done
+
+The Practice Rooms badge: a milky pill, a thin charcoal stroke, a yellow check disc, **“Done!”** optically
+centred, and **one** sparkle outside the pill. No green, no yellow backing layer. It appears wherever the
+timer completes.
+
+### The student-facing “no volunteers” state was removed
+
+An empty pool now returns the student **silently** to the normal Main Room. No popup, no card, no toast, no
+empty state. Only the teacher / Cockpit would know; in the prototype it surfaces in the **debug note only**.
+
+### Carousel arrived
+
+A Main Room **visual layer** — a character card on the shared stage, auto-switching every 5 seconds, with a
+thin loader bar. Silhouette only, no written labels, no pedagogy, no room controls. **It is not a room
+transition** and nothing routes anywhere. No Practice Rooms code was copied in.
+
+### Session timer
+
+13.5px → **16.5px / 700**. Still flat status text — no pill, no badge.
+
+### Operation Grandma
+
+Not expanded, not rebuilt. Marked **legacy / debug only**, since the real activity now lives in Practice
+Rooms.
+
+---
+
+## v8 — header title + Carousel placeholder slot (this checkpoint)
+
+- **Header title:** *“Vitamin Session”* → **“Gym”**. The subtitle stays **with Niv Rubin**.
+- **The Carousel visual became an explicit placeholder slot, not artwork.** Each cue is a standalone
+  data-URI dropped into an `<img>` with **`object-fit: contain`**, so the final image or illustration can
+  be swapped in by **replacing one string** in `CAR_SLOTS` — no markup change, no CSS change. A different
+  aspect ratio will still sit correctly inside the same slot.
+- **One token pair drives the size:** `--car-slot-w` / `--car-slot-h`. Resize in one place; the card, the
+  narrow width and presentation mode all follow.
+- **Slightly larger:** 118×137 → **160×186** (132×154 narrow, **208×242** in presentation).
+- **It reads as provisional** — a soft dashed frame around the slot, deliberately not designed as final art.
+- Behaviour unchanged: appears on Carousel, auto-switches every 5s, advances with *Next character*,
+  disappears on *End Carousel*. It stays **365px clear** of the teacher's face.
