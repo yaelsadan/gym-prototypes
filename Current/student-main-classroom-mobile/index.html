@@ -326,6 +326,95 @@ h1{font-size:20px}
    self-view (x>=282), rail (right), composer (bottom); not clipped. No label/pill/panel. */
 .act-overlay{top:176px;left:var(--s16);transform:none;justify-content:flex-start}
 .clock.seam{--d:90px}
+
+/* ===== v7 Demonstration visual states (additive · later-wins) =====
+   Still Main Room: the demo split replaces only the stage video; ALL Main Room chrome
+   (header + session timer, Now chip, rail, chat, composer, self-view/fold) stays on top.
+   Portrait split composition referenced narrowly from Practice Rooms Mobile (split / name
+   chips / safe-area thinking only). NO Practice Rooms footer / Tip / leave / report /
+   waiting / solo / enforcement / partner behaviour imported. No spoken-turn text label,
+   no separate turn badge (Desktop-approved: split + name chips + yellow turn frame suffice). */
+.d-stage{position:absolute;inset:0;z-index:4;display:flex;flex-direction:column;pointer-events:none}
+.d-half{position:relative;flex:1;overflow:hidden;background:linear-gradient(160deg,#4d4842,#2a2622);background-size:cover;background-position:center}
+/* teacher tile = realistic centre/cover crop of the teacher video (no extreme zoom) */
+.d-half.teacher{background:var(--video) center/cover no-repeat,#cdb497}
+/* student tile = warm gradient + branded placeholder (never a blank grey panel) */
+.d-half.student{background:linear-gradient(160deg,#46423d,#272320);border-top:1px solid rgba(255,255,255,.10)}
+/* yellow current-turn frame on the demonstrating student */
+.d-half.turn{box-shadow:inset 0 0 0 3px var(--brand-yellow)}
+/* branded Citizen avatar placeholder (layered white/charcoal/yellow) when there is no real video */
+.d-av{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:72px;height:72px;border-radius:50%;
+  display:grid;place-items:center;font-size:28px;font-weight:800;color:var(--brand-charcoal);
+  background:#fff;border:1.5px solid var(--brand-charcoal);box-shadow:-2px -3px 0 0 var(--brand-yellow),-2px -3px 0 1.5px var(--brand-charcoal)}
+/* branded name chips (layered chip; current-turn chip goes yellow) */
+.d-half .d-who{position:absolute;left:var(--s16);z-index:3;display:inline-flex;align-items:center;gap:6px;
+  font-size:13px;font-weight:700;color:var(--brand-charcoal);background:#fff;border:1.5px solid var(--brand-charcoal);
+  padding:5px 12px;border-radius:var(--pill);white-space:nowrap;
+  box-shadow:-3px -4px 0 0 var(--brand-yellow),-3px -4px 0 1.5px var(--brand-charcoal)}
+.d-half.teacher .d-who{top:156px}   /* clears the Now chip band (ends ~148) */
+.d-half.student .d-who{top:14px}    /* just under the split divider */
+.d-half.turn .d-who{background:var(--brand-yellow);box-shadow:-3px -4px 0 0 #fff,-3px -4px 0 1.5px var(--brand-charcoal)}
+/* folded self-view when I'm the selected demonstrator (avoids duplicate self video) */
+.d-fold{position:absolute;top:150px;right:var(--s16);z-index:41;display:inline-flex;align-items:center;gap:7px;
+  background:var(--chip-support);color:#fff;border-radius:var(--pill);padding:6px 12px 6px 10px;
+  font-size:12px;font-weight:600;pointer-events:none;box-shadow:var(--elev-f);white-space:nowrap}
+.d-fold .cd{width:8px;height:8px;border-radius:50%;background:var(--status-success)}  /* green = on-air: my camera is shared */
+
+/* ===== v7b demo/chrome/sheet polish (additive · later-wins) ===== */
+/* (3) Now chip moved up — tighter gap under the Gym title/subtitle; clears header/timer/REC */
+.now-chip{top:104px}
+/* (1) selected-demonstrator self-view folds to the EXISTING collapsed self-view visual,
+       quiet/disabled-looking, dot only, no explanatory text */
+.pip-tab.demo-folded{opacity:.5;pointer-events:none;cursor:default}
+/* rail persistence: the vertical right-side rail is raised above the sheet (see v8b block below);
+   active rail item marked yellow. (the earlier floating rail-above-the-sheet variant was removed in v8b) */
+.rail-item.active .ic{opacity:1;color:var(--brand-yellow)}
+
+/* ===== v7c demo/rail fixes (additive · later-wins) ===== */
+/* (1) demo-only timer placement: centered, lower third of the teacher tile, above the divider.
+       Default/normal Main Room keeps the approved v6b upper-left placement (no .demo-pos). */
+.act-overlay.demo-pos{top:314px;left:50%;right:auto;transform:translateX(-50%);justify-content:center}
+/* (v8b) the in-header sheet navigation was removed — navigation lives on the persistent vertical rail */
+/* (4) keep the selected-student avatar clear of passive chat/composer in demo */
+.d-half.student .d-av{top:40%}
+/* (5) soften current-turn frame 3px -> 2px (still clearly visible; no green) */
+.d-half.turn{box-shadow:inset 0 0 0 2px var(--brand-yellow)}
+
+/* ===== v8 Carousel activity visual aid (additive · later-wins) — visual only =====
+   INTENT: this is a PLACEHOLDER SLOT for future character-cue artwork. The final artwork will
+   represent practice characters / variations (e.g. masculine/feminine practice). The phone UI
+   stays strictly VISUAL-ONLY: it MUST NOT show text labels such as 'male'/'female'/'singular'/
+   'plural' or Hebrew 'זכר'/'נקבה'/'יחיד'/'רבים' inside the phone. Any such meaning is carried
+   by the artwork itself, not by copy. Reuses the approved placeholder language from Desktop:
+   subtle translucent panel (.car-cue) + provisional dashed SLOT (.car-slot, "a SLOT, not art")
+   + 5s progress bar. One cue at a time, no pedagogy, no buttons, pointer-events:none.
+   SWAP-IN: drop the final art into the SLOT as <img class="car-img"> (object-fit:contain);
+   size/position are token-driven (--car-w/--car-h/--car-x/--car-y). Do not redesign here. */
+:root{--car-w:120px;--car-h:130px;--car-x:16px;--car-y:300px}
+.car-cue{position:absolute;left:var(--car-x);top:var(--car-y);z-index:10;box-sizing:border-box;width:var(--car-w);
+  padding:12px 12px 10px;border-radius:18px;background:rgba(43,39,36,.52);
+  backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);border:1px solid rgba(255,255,255,.12);
+  box-shadow:0 10px 26px rgba(0,0,0,.30);display:flex;flex-direction:column;align-items:center;gap:10px;pointer-events:none}
+/* demo: teacher-side safe slot, above the demo timer / clear of the student split */
+.car-cue.demo{--car-w:110px;--car-h:112px;--car-y:146px}
+.car-slot{width:100%;height:var(--car-h);flex:none;box-sizing:border-box;display:grid;place-items:center;
+  border-radius:13px;border:1px dashed rgba(255,255,255,.22);background:rgba(255,255,255,.05)}
+.car-art{width:100%;height:100%;display:grid;place-items:center;padding:10px;box-sizing:border-box}
+.car-art svg{width:100%;height:100%;display:block}
+/* final artwork path (swap-in): <img class="car-img" src=...> */
+.car-slot .car-img{width:100%;height:100%;object-fit:contain;display:block;padding:8px;box-sizing:border-box}
+.car-bar{width:100%;height:4px;border-radius:3px;background:rgba(255,255,255,.16);overflow:hidden}
+.car-bar i{display:block;height:100%;width:0;background:var(--brand-yellow);border-radius:3px;animation:carbar 5s linear forwards}
+@keyframes carbar{from{width:0}to{width:100%}}
+@media (prefers-reduced-motion:reduce){ .car-bar i{animation:none;width:100%} }
+
+/* ===== v8b rail persistence (additive · later-wins) =====
+   The rail is persistent chrome: same vertical, right-side, lower-right position as default
+   Main Room, kept ABOVE the sheet + scrim so it stays visible/tappable while a sheet is open.
+   It is NOT moved into the sheet header, NOT turned horizontal, NOT duplicated. Tapping the
+   active rail item closes that sheet; tapping another switches; the X remains an extra close. */
+.rail{z-index:44}                 /* above sheet(40) + scrim(39); position unchanged */
+.room.chrome-off .rail{opacity:.4}/* unchanged dim behaviour, still tappable */
 </style>
 </head>
 <body>
@@ -354,11 +443,20 @@ h1{font-size:20px}
       <button onclick="injectClassmate()">Inject classmate message</button>
       <button onclick="injectHelper()">Inject helper message</button>
       <button onclick="clearEphemeral()">Clear ephemeral messages</button>
+      <div class="grp">Demonstration (debug)</div>
+      <button onclick="demoDefault()">Default Main Room</button>
+      <button onclick="demoMe()">Demo: I am selected</button>
+      <button onclick="demoOther()">Demo: someone else is selected</button>
+      <button onclick="demoDefault()">End demo / return to Main Room</button>
       <div class="grp">Activity (debug)</div>
       <button onclick="activityRun()">Activity timer running</button>
       <button onclick="activityFinal()">Final 5 seconds</button>
       <button onclick="activityDone()">Done</button>
       <button onclick="activityDefault()">Return to default</button>
+      <div class="grp">Carousel (debug)</div>
+      <button onclick="startCarousel()">Show Carousel</button>
+      <button onclick="nextCarousel()">Next Carousel cue</button>
+      <button onclick="hideCarousel()">Hide Carousel</button>
       <div class="grp">Mic</div>
       <button onclick="showTip()">Show mic tooltip</button>
       <div class="grp"></div>
@@ -416,10 +514,15 @@ function nowChip(){return '<div class="now-chip"><span class="dot"></span>Now<sp
 
 /* ---------- rail (no session timer here; no badge / counter / pulse) ---------- */
 function rail(){
+  var open=st.sheet;
+  function it(kind,lbl,svg,extra){
+    var act=(open===kind)?' active':'';
+    return '<button class="rail-item'+act+'" aria-label="'+lbl+'" aria-pressed="'+(open===kind)+'" onclick="railTap(\''+kind+'\')"><span class="ic">'+svg+'</span>'+(extra||'')+'</button>';
+  }
   return '<div class="rail">'
-    +'<button class="rail-item" aria-label="Timeline" onclick="openSheet(\'timeline\')"><span class="ic">'+RAIL_SVG.TIME+'</span></button>'
-    +'<button class="rail-item" aria-label="Chat" onclick="openSheet(\'chat\')"><span class="ic">'+RAIL_SVG.CHAT+'</span></button>'
-    +'<button class="rail-item" aria-label="Participants" onclick="openSheet(\'participants\')"><span class="ic">'+RAIL_SVG.PART+'</span><span class="val">89</span></button>'
+    +it('timeline','Timeline',RAIL_SVG.TIME)
+    +it('chat','Chat',RAIL_SVG.CHAT)
+    +it('participants','Participants',RAIL_SVG.PART,'<span class="val">89</span>')
     +'</div>';
 }
 
@@ -449,10 +552,10 @@ function seedFeed(){
   MSGS.slice(-3).forEach(function(m){ FEED.push({id:++FEEDID,msg:m,persistent:true,dying:false,fresh:false}); });
 }
 function overlayInner(){
-  var f=['f2','f3','f4'], live=FEED.slice(-3), ov='';
+  var f=['f2','f3','f4'], cap=(st.demo?1:3), live=FEED.slice(-cap), ov='';
   ov+='<button class="chat-hide" onclick="setChat(true)">'+I.chevD+'Hide chat</button>';
   live.forEach(function(e,i){
-    var extra=(f[i]||'f4')+(e.dying?' dying':'')+(e.fresh?' enter':'');
+    var extra=(f[i+(3-live.length)]||'f4')+(e.dying?' dying':'')+(e.fresh?' enter':'');
     ov+=renderMsg(e.msg).replace('class="mo','class="mo '+extra);
     e.fresh=false;
   });
@@ -555,23 +658,29 @@ function screenHTML(s){
   H+='<div class="room'+((!s.chrome && !isChromeBlocked(s))?' chrome-off':'')+'" id="room">';
   H+='<div class="chrome-tap" onclick="revealChrome()"></div>';
   H+='<div class="stage"><div class="video-ph"></div><div class="scrim-top"></div><div class="scrim-bottom"></div></div><div class="header-scrim"></div>';
+  H+=demoStage();
+  H+='';
   H+=header(s.rec!==false);
   H+=nowChip();
   H+=rail();
+  H+=carouselOverlay();
   H+=activityOverlay();
   if(s.chatHidden){ H+=chatRestore(); }
   else { H+=chatOverlay(); }
   H+=composer();
   if(s.sheet){ H+=sheetScrim()+sheetHTML(s.sheet); }
-  H+=(s.mode==='collapsed') ? pipTab(s) : pipOpen(s);
-  if(s.tip && s.mode!=='collapsed'){ H+=micTip(s); }
+  if(s.demo==='me'){ H+=demoFold(); }
+  else {
+    H+=(s.mode==='collapsed') ? pipTab(s) : pipOpen(s);
+    if(s.tip && s.mode!=='collapsed'){ H+=micTip(s); }
+  }
   H+='</div>';
   return H;
 }
 
 /* ---------- state / render ---------- */
 var st;
-function reset(){ st={mode:'open',side:'right',cy:300,pos:{x:SW-PW-PAD,y:HEAD},chatHidden:false,tip:false,rec:true,sheet:null,chrome:true,activity:null,actDur:20,actStart:0}; seedFeed(); render(); }
+function reset(){ stopCarTimer(); st={mode:'open',side:'right',cy:300,pos:{x:SW-PW-PAD,y:HEAD},chatHidden:false,tip:false,rec:true,sheet:null,chrome:true,activity:null,actDur:20,actStart:0,demo:null,carousel:false,carIdx:0}; seedFeed(); render(); }
 function render(){
   document.getElementById('live').innerHTML=screenHTML(st);
   var n=document.getElementById('state-note');
@@ -633,8 +742,10 @@ function dragTab(tab){
 
 /* ===== Rail sheets: Chat / Timeline / Participants (open above Main Room; close = X or backdrop) ===== */
 function openSheet(kind){ st.tip=false; st.sheet=kind; render(); }
+function railTap(kind){ st.tip=false; st.sheet=(st.sheet===kind?null:kind); render(); }
 function closeSheet(){ st.sheet=null; render(); }
 function sheetScrim(){ return '<div class="sheet-scrim" onclick="closeSheet()"></div>'; }
+/* sheet header = grab handle + title/count + X only (no in-sheet nav; rail is persistent) */
 function sheetChrome(titleHTML, bodyHTML){
   return '<div class="sheet"><div class="grab"></div>'
     +'<div class="sheet-head"><div class="sh-l">'+titleHTML+'</div>'
@@ -757,11 +868,15 @@ function doneCard(){
 function activityOverlay(){
   if(!st.activity) return '';
   var inner=(st.activity==='done') ? doneCard() : actClock(actRemaining(), st.actDur||20);
-  return '<div class="act-overlay" id="actovl">'+inner+'</div>';
+  var cls='act-overlay'+(st.demo?' demo-pos':'');
+  return '<div class="'+cls+'" id="actovl">'+inner+'</div>';
 }
 /* smooth movement — updates the clock IN PLACE, never re-renders (matches reference discipline) */
 function actRAF(){
   if(st && (st.activity==='running'||st.activity==='final')){
+    var remA=actRemaining();
+    if(remA<=0){ st.activity='done'; render(); }   /* auto-transition: timer 0 -> approved Done */
+    else {
     var host=document.getElementById('actovl');
     var box=host?host.querySelector('.clock.seam'):null;
     if(box){
@@ -773,6 +888,7 @@ function actRAF(){
       var num=box.querySelector('.num');
       if(num){ var n=Math.max(0,Math.ceil(rem)); if(num.textContent!==String(n)) num.textContent=n; num.classList.toggle('one', n<10); }
     }
+    }
   }
   if(typeof requestAnimationFrame==='function') requestAnimationFrame(actRAF);
 }
@@ -782,6 +898,44 @@ function activityRun(){ st.activity='running'; st.actDur=20; st.actStart=tcNow()
 function activityFinal(){ st.activity='final'; st.actDur=20; st.actStart=tcNow()-15000; render(); }
 function activityDone(){ st.activity='done'; render(); }
 function activityDefault(){ st.activity=null; render(); }
+/* ---------- Demonstration visual states (v7) — Main Room, not Practice Room ---------- */
+function demoStage(){
+  if(!st.demo) return '';
+  var meSel=(st.demo==='me');
+  var sName=meSel?'You':'Dana', sInit=meSel?'Y':'D';
+  var teacher='<div class="d-half teacher"></div>';
+  var student='<div class="d-half student turn"><span class="d-who">'+sName+'</span>'
+    +'<span class="d-av">'+sInit+'</span></div>';
+  return '<div class="d-stage">'+teacher+student+'</div>';
+}
+function demoFold(){
+  return '<div class="pip-tab right demo-folded" style="top:150px" aria-hidden="true"><span class="camdot"></span></div>';
+}
+function demoDefault(){ st.demo=null; render(); }
+function demoMe(){ st.demo='me'; render(); }
+function demoOther(){ st.demo='other'; render(); }
+/* ---------- Carousel activity visual aid (v8) — visual-only cue overlay ---------- */
+/* CAR_CUES = provisional visual-only placeholders (warm Citizen/Gym art), NOT final characters.
+   Replace with final character-cue artwork later; keep them purely visual (no text/labels). */
+var CAR_CUES=[
+  '<svg viewBox="0 0 100 100" fill="none"><path d="M26 40h40v18a20 20 0 0 1-20 20 20 20 0 0 1-20-20V40z" fill="#F7F6EF" stroke="#373230" stroke-width="3"/><path d="M66 44h9a8 8 0 0 1 0 16h-9" stroke="#373230" stroke-width="3"/><path d="M34 22c-3 4 0 7 0 10M46 20c-3 4 0 7 0 10M58 22c-3 4 0 7 0 10" stroke="#F9E24C" stroke-width="3" stroke-linecap="round"/></svg>',
+  '<svg viewBox="0 0 100 100" fill="none"><path d="M22 30h56a6 6 0 0 1 6 6v26a6 6 0 0 1-6 6H50l-16 14v-14h-12a6 6 0 0 1-6-6V36a6 6 0 0 1 6-6z" fill="#F7F6EF" stroke="#373230" stroke-width="3"/><circle cx="38" cy="49" r="3.5" fill="#F9E24C"/><circle cx="50" cy="49" r="3.5" fill="#F9E24C"/><circle cx="62" cy="49" r="3.5" fill="#F9E24C"/></svg>',
+  '<svg viewBox="0 0 100 100" fill="none"><circle cx="50" cy="50" r="18" fill="#F9E24C" stroke="#373230" stroke-width="3"/><path d="M50 16v10M50 74v10M16 50h10M74 50h10M26 26l7 7M67 67l7 7M74 26l-7 7M33 67l-7 7" stroke="#373230" stroke-width="3" stroke-linecap="round"/></svg>'
+];
+var carTimer=null;
+function carInner(){
+  return '<div class="car-slot"><div class="car-art">'+CAR_CUES[st.carIdx%CAR_CUES.length]+'</div></div>'
+    +'<div class="car-bar"><i></i></div>';
+}
+function carouselOverlay(){
+  if(!st.carousel || st.activity==='done') return '';   /* Done wins over Carousel */
+  return '<div class="car-cue'+(st.demo?' demo':'')+'" id="carcue" aria-hidden="true">'+carInner()+'</div>';
+}
+function renderCarousel(){ var el=document.getElementById('carcue'); if(el) el.innerHTML=carInner(); }
+function stopCarTimer(){ if(carTimer){ clearInterval(carTimer); carTimer=null; } }
+function startCarousel(){ stopCarTimer(); st.carousel=true; st.carIdx=0; carTimer=setInterval(function(){ st.carIdx=(st.carIdx+1)%CAR_CUES.length; renderCarousel(); },5000); render(); }
+function nextCarousel(){ if(!st.carousel){ startCarousel(); return; } st.carIdx=(st.carIdx+1)%CAR_CUES.length; renderCarousel(); }
+function hideCarousel(){ stopCarTimer(); st.carousel=false; render(); }
 reset();
 </script>
 </body>
