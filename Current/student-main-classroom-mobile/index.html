@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Vitamin Sessions — Main Room Mobile · Base v1</title>
+<title>Vitamin Sessions — Main Room Mobile v9b · volunteer popup flow</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -415,11 +415,67 @@ h1{font-size:20px}
    active rail item closes that sheet; tapping another switches; the X remains an extra close. */
 .rail{z-index:44}                 /* above sheet(40) + scrim(39); position unchanged */
 .room.chrome-off .rail{opacity:.4}/* unchanged dim behaviour, still tappable */
+
+/* ===== v9 Volunteer popup for Demonstration (additive · later-wins) =====
+   Compact Citizen/Gym modal: soft dim backdrop + milky card, brand yellow primary action.
+   Sits above all room chrome (scrim 50 / card 51) so chat + rail are temporarily blocked while
+   open, and returns exactly as before on close (no other state is mutated). Visible 10s countdown
+   (slim linear bar + number) — deliberately NOT the circular activity clock, so the approved
+   activity timer stays a single component. No badges, pulses, celebration or confetti. */
+.vol-scrim{position:absolute;inset:0;z-index:50;background:rgba(55,50,48,.42);
+  backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px)}
+.vol-card{position:absolute;left:var(--s16);right:var(--s16);top:50%;transform:translateY(-50%);
+  z-index:51;box-sizing:border-box;background:var(--t-milky);color:var(--brand-charcoal);
+  border:1.5px solid var(--brand-charcoal);border-radius:22px;padding:20px 18px 16px;
+  box-shadow:0 18px 44px rgba(0,0,0,.34);font-family:var(--font-ui)}
+.vol-t{font-size:21px;font-weight:800;line-height:1.15;letter-spacing:-.3px;margin-bottom:8px}
+.vol-b{font-size:14px;font-weight:500;line-height:1.45;opacity:.9}
+.vol-c{font-size:12px;font-weight:500;line-height:1.4;opacity:.72;margin:10px 0 14px;
+  padding-top:10px;border-top:1px solid rgba(55,50,48,.16)}
+.vol-count{display:flex;align-items:center;gap:9px;margin:14px 0 12px}
+.vol-num{font-size:13px;font-weight:800;font-variant-numeric:tabular-nums;min-width:16px}
+.vol-bar{flex:1;height:4px;border-radius:3px;background:rgba(55,50,48,.14);overflow:hidden}
+.vol-bar i{display:block;height:100%;width:100%;background:var(--brand-charcoal);border-radius:3px;
+  animation:volbar 10s linear forwards}
+@keyframes volbar{from{width:100%}to{width:0}}
+.vol-acts{display:flex;flex-direction:column;gap:9px}
+.vol-btn{width:100%;box-sizing:border-box;font-family:inherit;font-size:15px;font-weight:800;
+  padding:13px 16px;border-radius:var(--pill);cursor:pointer;text-align:center}
+.vol-yes{background:var(--brand-yellow);color:var(--brand-charcoal);border:1.5px solid var(--brand-charcoal)}
+.vol-no{background:transparent;color:var(--brand-charcoal);border:1.5px solid rgba(55,50,48,.28);font-weight:700}
+/* quiet volunteered / waiting-to-be-picked state — status chip, not a badge (no count, no pulse) */
+.vol-wait{position:absolute;top:140px;left:50%;transform:translateX(-50%);z-index:41;
+  display:inline-flex;align-items:center;gap:7px;max-width:200px;white-space:nowrap;
+  background:var(--chip-support);color:#fff;border-radius:var(--pill);padding:6px 13px;
+  font-size:12px;font-weight:600;pointer-events:none;box-shadow:var(--elev-f)}
+@media (prefers-reduced-motion:reduce){ .vol-bar i{animation:none;width:100%} }
+
+/* ===== v9b fixes (additive · later-wins) ===== */
+/* (2) volunteered / waiting-to-be-picked chip: left column (aligns with Now chip + timer),
+       sits in the gap between the Now chip (ends ~132) and the timer zone (starts 176).
+       Clears teacher face, self-view (x>=282), rail, composer, session timer and Carousel (y>=300). */
+.vol-wait{top:138px;left:var(--s16);transform:none;max-width:none}
+/* (3) reserved right-side rail safe zone inside sheets — the rail is persistent chrome above the
+       sheet, so sheet content (esp. own/right-aligned chat messages) must never run under it.
+       Content shifts toward centre-left; the rail itself is NOT moved and stays vertical. */
+:root{--rail-safe:64px}
+.sheet .msgs{padding-right:var(--rail-safe)}
+.sheet .composer{padding-right:var(--rail-safe)}
+.sheet .tl-scroll,.sheet .tl-nextwrap{padding-right:var(--rail-safe)}
+.sheet .pp-scroll{padding-right:var(--rail-safe)}
+
+/* ===== v9c volunteer popup copy + typography (additive · later-wins) =====
+   Copy only + type scale. No structural, behavioural, button or countdown change.
+   Body 14 -> 15px (never smaller), consent 12 -> 13px (readable, still below body),
+   title unchanged and strong. text-wrap:pretty guards against orphan last words. */
+.vol-t{text-wrap:balance}
+.vol-b{font-size:15px;line-height:1.4;text-wrap:pretty}
+.vol-c{font-size:13px;line-height:1.4;text-wrap:pretty}
 </style>
 </head>
 <body>
-  <h1>Main Room Mobile — Base v1 <span style="font-weight:400;color:var(--text-muted);font-size:14px">(default classroom base · pre-activity)</span></h1>
-  <p class="lead">One interactive phone. States: <b>default</b> · <b>chat visible / hidden</b> · <b>self-view expanded / collapsed</b> · <b>mic tooltip</b>. Drag the self-view to move it; release near a left/right edge to collapse (camera stays on). Tap the muted mic for the teacher-controlled tooltip. No activity / timer / Done / Carousel / volunteer / transitions in this pass.</p>
+  <h1>Main Room Mobile v9b — volunteer popup flow <span style="font-weight:400;color:var(--text-muted);font-size:14px">(prototype · debug controls outside the phone)</span></h1>
+  <p class="lead">One interactive phone. This prototype includes: <b>Main Room Mobile</b> · <b>persistent rail</b> · <b>chat sheets</b> (Chat / Timeline / Participants) · <b>activity timer + automatic Done</b> · <b>demo visual states</b> · <b>Carousel placeholder</b> · <b>volunteer popup flow</b>. Drag the self-view to move it; release near a left/right edge to collapse (camera stays on) and tap the collapsed tab to reopen it. Tap the muted mic for the teacher-controlled tooltip. Passive chat messages fade after a few seconds; full history stays in the Chat sheet. Not in this base: Practice Rooms routing / camera-mic enforcement / waiting / Solo / report, and final Carousel artwork.</p>
 
   <div class="demo">
     <div class="phone"><div class="screen" id="live"></div></div>
@@ -443,11 +499,15 @@ h1{font-size:20px}
       <button onclick="injectClassmate()">Inject classmate message</button>
       <button onclick="injectHelper()">Inject helper message</button>
       <button onclick="clearEphemeral()">Clear ephemeral messages</button>
-      <div class="grp">Demonstration (debug)</div>
-      <button onclick="demoDefault()">Default Main Room</button>
-      <button onclick="demoMe()">Demo: I am selected</button>
-      <button onclick="demoOther()">Demo: someone else is selected</button>
-      <button onclick="demoDefault()">End demo / return to Main Room</button>
+      <div class="grp">Volunteer / Demonstration (debug)</div>
+      <button onclick="volStart()">Start volunteer popup</button>
+      <button onclick="volYes()">I click Yes</button>
+      <button onclick="volNo()">I click Not this time</button>
+      <button onclick="volTimeoutNow()">Timeout volunteer popup</button>
+      <button onclick="volPickMe()">Pick me</button>
+      <button onclick="volPickOther()">Pick someone else</button>
+      <button onclick="volNone()">No volunteers / return to Main Room</button>
+      <button onclick="volEndDemo()">End demonstration</button>
       <div class="grp">Activity (debug)</div>
       <button onclick="activityRun()">Activity timer running</button>
       <button onclick="activityFinal()">Final 5 seconds</button>
@@ -549,7 +609,13 @@ function renderMsg(m){
 var FEED=[], FEEDID=0, LIFESPAN=6000, DYE=340, feedTimers={};
 function seedFeed(){
   FEED=[]; for(var k in feedTimers){ clearTimeout(feedTimers[k]); } feedTimers={};
-  MSGS.slice(-3).forEach(function(m){ FEED.push({id:++FEEDID,msg:m,persistent:true,dying:false,fresh:false}); });
+  /* v9b: seeded overlay messages are ephemeral too — they fade after LIFESPAN like sent/injected
+     ones. History stays intact in the full Chat sheet; hidden chat is never reopened. */
+  MSGS.slice(-3).forEach(function(m){
+    var e={id:++FEEDID,msg:m,persistent:false,dying:false,fresh:false};
+    FEED.push(e);
+    feedTimers[e.id]=setTimeout((function(id){ return function(){ startExpire(id); }; })(e.id), LIFESPAN);
+  });
 }
 function overlayInner(){
   var f=['f2','f3','f4'], cap=(st.demo?1:3), live=FEED.slice(-cap), ov='';
@@ -674,13 +740,14 @@ function screenHTML(s){
     H+=(s.mode==='collapsed') ? pipTab(s) : pipOpen(s);
     if(s.tip && s.mode!=='collapsed'){ H+=micTip(s); }
   }
+  H+=volunteerLayer();
   H+='</div>';
   return H;
 }
 
 /* ---------- state / render ---------- */
 var st;
-function reset(){ stopCarTimer(); st={mode:'open',side:'right',cy:300,pos:{x:SW-PW-PAD,y:HEAD},chatHidden:false,tip:false,rec:true,sheet:null,chrome:true,activity:null,actDur:20,actStart:0,demo:null,carousel:false,carIdx:0}; seedFeed(); render(); }
+function reset(){ stopCarTimer(); stopVolTimer(); st={mode:'open',side:'right',cy:300,pos:{x:SW-PW-PAD,y:HEAD},chatHidden:false,tip:false,rec:true,sheet:null,chrome:true,activity:null,actDur:20,actStart:0,demo:null,carousel:false,carIdx:0,vol:null,volLeft:10}; seedFeed(); render(); }
 function render(){
   document.getElementById('live').innerHTML=screenHTML(st);
   var n=document.getElementById('state-note');
@@ -734,8 +801,9 @@ function dragTab(tab){
     tab.style.top=(st.cy-TABH/2)+'px';
     tab.style.transform = inward>0 ? 'translateX('+(st.side==='right'?-Math.min(inward,46):Math.min(inward,46))+'px)' : '';
   });
-  tab.addEventListener('pointerup',function(e){ if(!s0)return; var dx=e.clientX-s0.mx, inward=st.side==='right'?-dx:dx; s0=null; tab.classList.remove('dragging'); tab.style.transform='';
-    if(inward>THRESH){ expandPip(); }
+  tab.addEventListener('pointerup',function(e){ if(!s0)return; var dx=e.clientX-s0.mx, dy=e.clientY-s0.my, inward=st.side==='right'?-dx:dx; s0=null; tab.classList.remove('dragging'); tab.style.transform='';
+    var tap=(Math.abs(dx)<6 && Math.abs(dy)<6);   /* tap-to-reopen: render() would destroy the button before click fires */
+    if(tap || inward>THRESH){ expandPip(); }
     else { render(); }
   });
 }
@@ -936,6 +1004,43 @@ function stopCarTimer(){ if(carTimer){ clearInterval(carTimer); carTimer=null; }
 function startCarousel(){ stopCarTimer(); st.carousel=true; st.carIdx=0; carTimer=setInterval(function(){ st.carIdx=(st.carIdx+1)%CAR_CUES.length; renderCarousel(); },5000); render(); }
 function nextCarousel(){ if(!st.carousel){ startCarousel(); return; } st.carIdx=(st.carIdx+1)%CAR_CUES.length; renderCarousel(); }
 function hideCarousel(){ stopCarTimer(); st.carousel=false; render(); }
+/* ---------- Volunteer popup for Demonstration (v9) ---------- */
+var volTimer=null;
+function stopVolTimer(){ if(volTimer){ clearInterval(volTimer); volTimer=null; } }
+function volunteerLayer(){
+  if(st.vol==='ask'){
+    return '<div class="vol-scrim"></div>'
+      +'<div class="vol-card" role="dialog" aria-modal="true">'
+        +'<div class="vol-t">Want to give it a go?</div>'
+        +'<div class="vol-b">Niv is looking for one volunteer.</div>'
+        +'<div class="vol-count"><span class="vol-num" id="volnum">'+st.volLeft+'</span>'
+          +'<span class="vol-bar"><i></i></span></div>'
+        +'<div class="vol-c">If you\u2019re chosen, your camera and audio will be shared with the class.</div>'
+        +'<div class="vol-acts">'
+          +'<button class="vol-btn vol-yes" onclick="volYes()">Yes, let\u2019s go!</button>'
+          +'<button class="vol-btn vol-no" onclick="volNo()">Not this time</button>'
+        +'</div>'
+      +'</div>';
+  }
+  if(st.vol==='in' && !st.demo){ return '<div class="vol-wait">You\u2019re in \u00B7 waiting to be picked</div>'; }
+  return '';
+}
+function volTick(){
+  st.volLeft--;
+  var n=document.getElementById('volnum'); if(n) n.textContent=Math.max(0,st.volLeft);
+  if(st.volLeft<=0){ volTimeoutNow(); }
+}
+function volStart(){ stopVolTimer(); st.vol='ask'; st.volLeft=10; volTimer=setInterval(volTick,1000); render(); }
+function volYes(){ stopVolTimer(); st.vol='in'; render(); }                 /* volunteered, waiting to be picked */
+function volNo(){ stopVolTimer(); st.vol=null; render(); }                  /* closes quietly */
+function volTimeoutNow(){ stopVolTimer(); st.vol=null; render(); }          /* timeout closes quietly */
+/* chosen result -> existing demo visual states (no second confirmation popup) */
+function volPickMe(){ stopVolTimer(); st.vol=null; st.demo='me'; render(); }
+function volPickOther(){ stopVolTimer(); st.vol=null; st.demo='other'; render(); }
+/* no volunteers / nobody chosen -> student side shows nothing special, plain Main Room */
+function volNone(){ stopVolTimer(); st.vol=null; st.demo=null; render(); }
+/* end demo -> normal Main Room; selected student returns to muted / non-broadcasting */
+function volEndDemo(){ stopVolTimer(); st.vol=null; st.demo=null; render(); }
 reset();
 </script>
 </body>
