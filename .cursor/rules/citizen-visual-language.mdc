@@ -1,0 +1,110 @@
+---
+description: Citizen Café / Gym visual language rules
+alwaysApply: true
+---
+
+# Citizen Café / Gym Visual Language
+
+Use these rules for all visual edits in this repository.
+
+## Brand feeling
+
+The interface should feel:
+- warm
+- human
+- editorial
+- adult
+- calm
+- Citizen Café flavored
+- not childish
+- not gamified
+- not sterile SaaS
+- not generic dashboard UI
+- not Zoom-like unless functionally necessary
+
+## Typography
+
+Use:
+- Assistant as the primary UI font.
+- Fedra / FedraSerifPro only for brand/editorial/display moments.
+
+Do not overuse Fedra.
+Do not apply Fedra to dense UI controls, technical labels, timers, or body copy unless explicitly requested.
+
+## Color principles
+
+Primary brand accent:
+- Yellow: #F9E24C
+
+Core neutrals:
+- Charcoal: #373230
+- Warm surface: #F7F6EF
+
+Use yellow for:
+- active/current state
+- CTA emphasis
+- helper/instruction accents
+- current turn
+- warm brand highlights
+
+Use coral/red only for:
+- final warnings
+- errors
+- urgent/off states
+- last countdown moments where already defined
+
+Use green only for:
+- success
+- camera/on-air states where already defined
+
+Avoid pink unless explicitly requested.
+
+## UI style
+
+Prefer:
+- soft warmth
+- subtle borders
+- editorial spacing
+- restrained motion
+- meaningful emphasis
+- clear hierarchy
+
+Avoid:
+- too many pills/chips
+- heavy SaaS dashboards
+- excessive badges
+- bright decorative gradients
+- unnecessary icons
+- changing layout just to “improve” it
+
+## Gym-specific rules
+
+The product name shown to users is Gym or Gym sessions, depending on context.
+
+Main Room:
+- Students are not broadcasting by default.
+- Chat exists only in Main Room.
+- Mic is disabled / teacher-controlled unless activity requires it.
+
+Practice Rooms:
+- No chat.
+- Camera and mic are required.
+- Room timer and activity name are central.
+- Tip means replay teacher instruction, not chat.
+
+## Editing rules for Cursor
+
+When asked for a visual pass:
+- Prefer editing CSS variables and existing classes first.
+- Do not refactor JavaScript unless explicitly asked.
+- Do not rename files unless explicitly asked.
+- Do not create new files unless explicitly asked.
+- Do not change product flow unless explicitly asked.
+- Do not touch multiple surfaces unless explicitly asked.
+
+After editing, summarize:
+- which file changed
+- whether HTML changed
+- whether CSS changed
+- whether JavaScript changed
+- whether any files were created or renamed
