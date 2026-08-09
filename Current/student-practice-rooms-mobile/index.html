@@ -648,36 +648,39 @@ var ST={
 };
 
 /* =========================================================================
-   ACTIVITY ENGINE — identical recipes to desktop v21
+   ACTIVITY ENGINE — recipe durations from functional contract v1 §2
    ========================================================================= */
 var ACTS={
-  dialogue :{label:'Dialogue',           prep:5, turn:30, trans:5, done:10},
-  intensive:{label:'Intensive Exercise', prep:5, turn:10, trans:5, nset:10, done:10},
-  grandma  :{label:'Operation Grandma',  prep:5, turn:10, brk:5, done:10},
-  carousel :{label:'Carousel',           prep:5, turn:20, trans:5, cue:5, done:10}
+  dialogue :{label:'Dialogue',           prep:10, turn:20, trans:5, done:10},
+  intensive:{label:'Intensive Exercise', prep:10, turn:10, trans:5, nset:10, done:10},
+  grandma  :{label:'Operation Grandma',  prep:10, turn:10, turn2:5, trans:5, brk:10, done:10},
+  carousel :{label:'Carousel',           prep:10, turn:20, trans:5, cue:5, done:10}
 };
 function buildScript(a){
   var c=ACTS[a]; if(!c) return [];
   var st=[];
   if(a==='grandma'){
-    /* one full set runs automatically - the teacher never starts Round 2 */
+    /* contract: prep → S1 → switch → S2 → round-2 break → S1 → switch → S2 → closing */
     st.push({t:'prep', dur:c.prep, frame:'you'});
     st.push({t:'turn', dur:c.turn, frame:'you',  round:1});
+    st.push({t:'trans',dur:c.trans,frame:'dana'});
     st.push({t:'turn', dur:c.turn, frame:'dana', round:1});
     st.push({t:'break',dur:c.brk,  frame:'you'});
-    st.push({t:'turn', dur:c.turn, frame:'you',  round:2});
-    st.push({t:'turn', dur:c.turn, frame:'dana', round:2});
+    st.push({t:'turn', dur:c.turn2,frame:'you',  round:2});
+    st.push({t:'trans',dur:c.trans,frame:'dana'});
+    st.push({t:'turn', dur:c.turn2,frame:'dana', round:2});
   } else if(a==='intensive'){
-    /* approved full recipe: two automatic sets with a 10s between-set / next-set moment */
+    /* contract: prep → S1 → switch → S2 → round-2 break → S1 → switch → S2 → closing */
     st.push({t:'prep', dur:c.prep,  frame:'you'});
     st.push({t:'turn', dur:c.turn,  frame:'you',  round:1});
     st.push({t:'trans',dur:c.trans, frame:'dana'});
     st.push({t:'turn', dur:c.turn,  frame:'dana', round:1});
-    st.push({t:'break',dur:c.nset,  frame:'you'});   /* between-set / next-set moment */
+    st.push({t:'break',dur:c.nset,  frame:'you'});   /* round-2 break */
     st.push({t:'turn', dur:c.turn,  frame:'you',  round:2});
     st.push({t:'trans',dur:c.trans, frame:'dana'});
     st.push({t:'turn', dur:c.turn,  frame:'dana', round:2});
   } else {
+    /* Dialogue / Carousel: prep → round 1 → switch → round 2 → closing */
     st.push({t:'prep', dur:c.prep,  frame:'you'});
     st.push({t:'turn', dur:c.turn,  frame:'you',  round:1});
     st.push({t:'trans',dur:c.trans, frame:'dana'});

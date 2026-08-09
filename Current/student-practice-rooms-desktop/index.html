@@ -2393,16 +2393,16 @@ function tile(name,o){
 function bcastBanner(){ return '<div class="bcast"><span class="bd"></span>'+I.bcast+'Teacher is broadcasting</div>'; }
 
 /* =========================================================================
-   ACTIVITY ENGINE (v10) \u2014 teacher-triggered, 5s prep, yellow frame from tick 1.
+   ACTIVITY ENGINE — teacher-triggered. Recipe durations from functional contract v1 §2.
    The activity NEVER starts on room entry. Selecting an activity = "prepared".
    The timer starts only on the simulated teacher "Start timer" event.
    ========================================================================= */
 var ACTS={
   generic  :{label:'Timed round',        prep:5, round:30, done:10},
-  dialogue :{label:'Dialogue',           prep:5, turn:30, trans:5, done:10},
-  intensive:{label:'Intensive Exercise', prep:5, turn:10, trans:5, nset:10, done:10},
-  grandma  :{label:'Operation Grandma',  prep:5, turn:10, brk:5, done:10},
-  carousel :{label:'Carousel',           prep:5, turn:20, trans:5, cue:5, done:10}
+  dialogue :{label:'Dialogue',           prep:10, turn:20, trans:5, done:10},
+  intensive:{label:'Intensive Exercise', prep:10, turn:10, trans:5, nset:10, done:10},
+  grandma  :{label:'Operation Grandma',  prep:10, turn:10, turn2:5, trans:5, brk:10, done:10},
+  carousel :{label:'Carousel',           prep:10, turn:20, trans:5, cue:5, done:10}
 };
 /* timer placement: tile-attached for turn-taking-on-tile activities, central otherwise */
 function actTileTimer(){ return ST.activity==='grandma'||ST.activity==='carousel'; }
@@ -2414,24 +2414,27 @@ function buildScript(a){
     st.push({t:'prep', dur:c.prep, frame:''});
     st.push({t:'round',dur:c.round,frame:''});
   } else if(a==='grandma'){
-    /* one set runs automatically: prep -> R1/You -> R1/Dana -> break -> R2/You -> R2/Dana -> done */
+    /* contract: prep → S1 → switch → S2 → round-2 break → S1 → switch → S2 → closing */
     st.push({t:'prep', dur:c.prep, frame:'you'});
     st.push({t:'turn', dur:c.turn, frame:'you',  round:1});
+    st.push({t:'trans',dur:c.trans,frame:'dana'});
     st.push({t:'turn', dur:c.turn, frame:'dana', round:1});
     st.push({t:'break',dur:c.brk,  frame:'you'});
-    st.push({t:'turn', dur:c.turn, frame:'you',  round:2});
-    st.push({t:'turn', dur:c.turn, frame:'dana', round:2});
+    st.push({t:'turn', dur:c.turn2,frame:'you',  round:2});
+    st.push({t:'trans',dur:c.trans,frame:'dana'});
+    st.push({t:'turn', dur:c.turn2,frame:'dana', round:2});
   } else if(a==='intensive'){
-    /* approved full recipe: two automatic sets with a 10s between-set / next-set moment */
+    /* contract: prep → S1 → switch → S2 → round-2 break → S1 → switch → S2 → closing */
     st.push({t:'prep', dur:c.prep,  frame:'you'});
     st.push({t:'turn', dur:c.turn,  frame:'you',  round:1});
     st.push({t:'trans',dur:c.trans, frame:'dana'});
     st.push({t:'turn', dur:c.turn,  frame:'dana', round:1});
-    st.push({t:'break',dur:c.nset,  frame:'you'});   /* between-set / next-set moment */
+    st.push({t:'break',dur:c.nset,  frame:'you'});   /* round-2 break */
     st.push({t:'turn', dur:c.turn,  frame:'you',  round:2});
     st.push({t:'trans',dur:c.trans, frame:'dana'});
     st.push({t:'turn', dur:c.turn,  frame:'dana', round:2});
   } else {
+    /* Dialogue / Carousel: prep → round 1 → switch → round 2 → closing */
     st.push({t:'prep', dur:c.prep,  frame:'you'});
     st.push({t:'turn', dur:c.turn,  frame:'you',  round:1});
     st.push({t:'trans',dur:c.trans, frame:'dana'});
@@ -2989,10 +2992,10 @@ function updateNote(){
   else {
     var recipe={
       generic  :'5s prep \u2192 30s round',
-      dialogue :'5s prep \u2192 You 30s \u2192 5s transition \u2192 Dana 30s \u2192 10s Done \u2192 return  (80s total)',
-      intensive:'5s prep \u2192 You 10s \u2192 5s transition \u2192 Dana 10s \u2192 10s next-set \u2192 You 10s \u2192 5s transition \u2192 Dana 10s \u2192 10s Done \u2192 return  (75s, two automatic sets)',
-      grandma  :'5s prep \u2192 R1 You 10s \u2192 R1 Dana 10s \u2192 5s break \u2192 R2 You 10s \u2192 R2 Dana 10s \u2192 10s Done / next-set  (60s, one automatic set)',
-      carousel :'5s prep \u2192 You 20s \u2192 5s transition \u2192 Dana 20s \u2192 10s Done \u2192 return \u00b7 cue switches every 5s  (60s)'
+      dialogue :'10s prep \u2192 Round 1 20s \u2192 5s switch \u2192 Round 2 20s \u2192 10s Done  (65s)',
+      intensive:'10s prep \u2192 S1 10s \u2192 5s switch \u2192 S2 10s \u2192 10s round-2 break \u2192 S1 10s \u2192 5s switch \u2192 S2 10s \u2192 10s Done  (80s)',
+      grandma  :'10s prep \u2192 S1 10s \u2192 5s switch \u2192 S2 10s \u2192 10s round-2 break \u2192 S1 5s \u2192 5s switch \u2192 S2 5s \u2192 10s Done  (70s)',
+      carousel :'10s prep \u2192 Round 1 20s \u2192 5s switch \u2192 Round 2 20s \u2192 10s Done \u00b7 cue switches every 5s  (65s)'
     }[ST.activity];
     var stateTxt={
       idle:'idle', prepared:'PREPARED \u2014 waiting for the teacher to start the timer',

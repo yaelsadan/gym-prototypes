@@ -1274,66 +1274,67 @@ var S={
 };
 
 var ACTS=[
- {id:'dialogue',  name:'Dialogue',          desc:'Duo rooms · 30s · 5s · 30s'},
- {id:'intensive', name:'Intensive Exercise', desc:'Duo rooms · two automatic sets · 10/5/10 · 75s'},
- {id:'grandma',   name:'Operation Grandma',  desc:'Duo rooms · 10s per participant · 5s break'},
- {id:'carousel',  name:'Carousel',           desc:'Visual · auto-advance every 5s'}
+ {id:'dialogue',  name:'Dialogue',          desc:'Duo rooms · 20s · 5s · 20s · 65s'},
+ {id:'intensive', name:'Intensive Exercise', desc:'Duo rooms · two sets · 80s'},
+ {id:'grandma',   name:'Operation Grandma',  desc:'Duo rooms · 10/5/10 · 5/5/5 · 70s'},
+ {id:'carousel',  name:'Carousel',           desc:'Visual · 20s · 5s · 20s · 65s'}
 ];
 function actName(id){for(var i=0;i<ACTS.length;i++){if(ACTS[i].id===id)return ACTS[i].name;}return '';}
 
-/* ---------- activity recipes (PRD) ----------
+/* ---------- activity recipes (functional contract v1 §2) ----------
    Selecting an activity PREPARES this sequence. It does NOT start it.
    The teacher reviews the prepared timer and presses Start manually.
-   Only 'turn' steps follow a manual duration override; transitions / breaks / slides are fixed. */
+   Predefined recipe step durations always come from RECIPES (override UI left in place). */
 var RECIPES={
  dialogue:{
-   steps:[{k:'prep',s:5,t:'5s countdown'},
-          {k:'turn',s:30,t:'Round 1',cue:'Partner A starts'},
+   steps:[{k:'prep',s:10,t:'10s countdown'},
+          {k:'turn',s:20,t:'Round 1',cue:'Partner A starts'},
           {k:'transition',s:5,t:'Transition',cue:'Switch starters'},
-          {k:'turn',s:30,t:'Round 2',cue:'Partner B starts'}],
+          {k:'turn',s:20,t:'Round 2',cue:'Partner B starts'}],
    repeat:false, again:'Start again',
-   note:'Initial 3-2-1 countdown, then a yellow active frame on the current turn.'
+   note:'10s countdown, then Round 1 / switch / Round 2 / 10s Done. Total 65s.'
  },
  intensive:{
-   /* approved full recipe: two automatic sets + a 10s between-set moment, then a 10s Done → return.
-      Runs end to end on its own; no manual repeat. */
-   steps:[{k:'prep',s:5,t:'5s countdown'},
+   /* contract: prep → S1 → switch → S2 → round-2 break → S1 → switch → S2 → Done. Total 80s. */
+   steps:[{k:'prep',s:10,t:'10s countdown'},
           {k:'turn',s:10,t:'Student 1 (Set 1)',cue:'Student 1 speaks'},
           {k:'transition',s:5,t:'Transition',cue:'Switch speakers'},
           {k:'turn',s:10,t:'Student 2 (Set 1)',cue:'Student 2 speaks'},
-          {k:'break',s:10,t:'Between sets',cue:'Next set'},
+          {k:'break',s:10,t:'Round 2 break',cue:'Next set'},
           {k:'turn',s:10,t:'Student 1 (Set 2)',cue:'Student 1 speaks'},
           {k:'transition',s:5,t:'Transition',cue:'Switch speakers'},
           {k:'turn',s:10,t:'Student 2 (Set 2)',cue:'Student 2 speaks'}],
    repeat:false, again:'Start again',
-   note:'Approved full recipe: two automatic sets with a 10s between-set moment, then a 10s Done. Runs end to end on its own.'
+   note:'Full Intensive recipe end to end. Total 80s including 10s Done.'
  },
  grandma:{
-   /* ONE set runs through on its own: countdown → R1 S1 → R1 S2 → break → R2 S1 → R2 S2 → Done.
-      Manual = starting the set (and, after Done, starting another one). Never the internal rounds. */
-   steps:[{k:'prep',s:5,t:'5s countdown'},
+   /* contract: prep → S1 → switch → S2 → round-2 break → S1 → switch → S2 → Done. Total 70s. */
+   steps:[{k:'prep',s:10,t:'10s countdown'},
           {k:'turn',s:10,t:'Round 1',cue:'Student 1'},
+          {k:'transition',s:5,t:'Transition',cue:'Switch speakers'},
           {k:'turn',s:10,t:'Round 1',cue:'Student 2'},
-          {k:'break',s:5,t:'Break'},
-          {k:'turn',s:10,t:'Round 2',cue:'Student 1'},
-          {k:'turn',s:10,t:'Round 2',cue:'Student 2'}],
+          {k:'break',s:10,t:'Round 2 break'},
+          {k:'turn',s:5,t:'Round 2',cue:'Student 1'},
+          {k:'transition',s:5,t:'Transition',cue:'Switch speakers'},
+          {k:'turn',s:5,t:'Round 2',cue:'Student 2'}],
    repeat:true, again:'Run another set',
-   compact:function(){ return this.steps[0].s+'s countdown \u00b7 Round 1 \u00b7 5s break \u00b7 Round 2 \u00b7 10s Done / next-set \u00b7 Next set manual'; },
+   compact:function(){ return '10s countdown \u00b7 S1 10s \u00b7 5s switch \u00b7 S2 10s \u00b7 10s break \u00b7 S1 5s \u00b7 5s switch \u00b7 S2 5s \u00b7 10s Done (70s)'; },
    note:'Active turn uses the yellow frame — never green.'
  },
  carousel:{
    /* the 5s character swap is PRODUCT LOGIC, not UI copy: the teacher sees it happen in the
       room mirror. No cue string here, so it can never leak into a teacher-facing label. */
-   steps:[{k:'prep',s:5,t:'5s countdown'},
+   steps:[{k:'prep',s:10,t:'10s countdown'},
           {k:'turn',s:20,t:'Student 1'},
           {k:'transition',s:5,t:'Transition',cue:'Switch students'},
           {k:'turn',s:20,t:'Student 2'}],
    repeat:false, again:'Start again', carousel:true,
-   note:'Countdown, then the framed student gets a new character every 5s. Ends with a 10s Done → return. Selection is random. Placeholder characters.'
+   note:'10s countdown, then framed student gets a new character every 5s. Total 65s including 10s Done.'
  }
 };
 function recipe(){ return RECIPES[S.activity] || null; }
-function stepDur(st){ return (st.k==='turn' && S.durOverride) ? selDur() : st.s; }
+/* Pass A: predefined recipes always use RECIPES step seconds. Duration override UI is unchanged. */
+function stepDur(st){ return st.s; }
 /* ---------- Carousel: built-in PLACEHOLDER character cards (no external assets) ----------
    Temporary stand-ins. Purpose of this pass: where the character appears, how it overlays the
    stage, how it switches every 5s, and how the teacher controls it. Real art replaces these. */
@@ -1420,7 +1421,7 @@ var timers=[];
 function clearTimers(){for(var i=0;i<timers.length;i++)clearTimeout(timers[i]);timers=[];}
 function selDur(){var c=parseInt(S.custom,10);return (S.custom!=='' && c>0)?c:S.dur;}
 var CIRC=175.9;
-function activityDefaultDur(act){ return {dialogue:30, intensive:10, grandma:10, carousel:20}[act] || 10; }
+function activityDefaultDur(act){ return {dialogue:20, intensive:10, grandma:10, carousel:20}[act] || 10; }
 function ringDenom(){ return (S.count && S.count.dur) ? S.count.dur : selDur(); }
 function hudSub(){
  if(!S.count) return '';
@@ -1528,7 +1529,7 @@ function runSeqStep(){
  var st=r.steps[S.seq.i];
  if(!st){ finishRecipe(r); return; }
  if(st.k==='prep'){
-   var P=st.s||5;                                  // PRD: activity prep countdown is 5s
+   var P=st.s||10;                                 // contract: activity start countdown is 10s
    S.count={ctx:'rooms',phase:'prep',value:P,kind:'prep',title:st.t,cue:(r.steps[S.seq.i+1]||{}).cue};
    S.roomTimer='prep'; render();
    for(var q=1;q<P;q++){
