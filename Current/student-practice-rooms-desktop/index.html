@@ -1532,6 +1532,18 @@ body.present .demo-timer.act .rt-cap.round{font-size:14px}
    compositing filter that could fight the animation */
 .t-lottie{filter:none;will-change:auto}
 .t-lottie svg{overflow:visible}
+
+/* Split view: video stage 10% smaller */
+.demo-split{
+  width:90%;
+  height:90%;
+  max-width:828px;
+  max-height:468px;
+}
+body.present .demo-split{
+  max-width:min(1332px,81vw);
+  max-height:63vh;
+}
 </style>
 </head>
 <body>
