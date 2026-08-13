@@ -138,6 +138,13 @@ body.present .mode-btn:hover{opacity:1}
 .cbtn:hover{background:rgba(55,50,48,.78)}
 .cbtn:active{transform:scale(.96)}
 .cbtn svg{width:23px;height:23px}
+.cbtn.self-toggle .self-icon{display:grid;place-items:center}
+.cbtn.self-toggle .self-icon-out{display:none}
+.cbtn.self-toggle.is-collapsed .self-icon-in{display:none}
+.cbtn.self-toggle.is-collapsed .self-icon-out{display:grid}
+.cbtn.self-toggle .tip-show{display:none}
+.cbtn.self-toggle.is-collapsed .tip-hide{display:none}
+.cbtn.self-toggle.is-collapsed .tip-show{display:block}
 .cbtn.mic{background:rgba(55,50,48,.58);color:rgba(255,255,255,.9);cursor:default}
 .cbtn.mic:hover{background:rgba(55,50,48,.58)}
 .cbtn.micopen{background:rgba(126,224,124,.92);color:#173a1d;cursor:default}
@@ -1008,7 +1015,8 @@ var I={
  cam:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 10l5-3v10l-5-3v-4zM2 6h11a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2z"/></svg>',
  mic:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0014 0M12 18v3"/></svg>',
  lock:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg>',
- collapse:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 9L4 4M4 9V4h5M15 15l5 5M20 15v5h-5"/></svg>',
+ collapseIn:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4L9 9M9 4H4v5M20 20L15 15M15 20h5v-5"/></svg>',
+ expandOut:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 9L4 4M4 9V4h5M15 15l5 5M20 15v5h-5"/></svg>',
  send:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/></svg>',
  smile:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8.5 14.5a4.5 4.5 0 007 0"/><path d="M9 9.5h.01M15 9.5h.01"/></svg>',
  search:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>',
@@ -1114,7 +1122,12 @@ function controlsBar(camOff,micOpen,reason){
   return '<div class="controls-bar">'
     +'<button class="cbtn" onclick="toggleCam()">'+I.cam+camSlash+'<span class="tip">'+(camOff?'Turn camera on':'Turn camera off')+'</span></button>'
     + micBtn
-    +'<button class="cbtn" onclick="toggleCollapse()">'+I.collapse+'<span class="tip">Hide self-view</span></button>'
+    +'<button class="cbtn self-toggle'+(ST.collapsed?' is-collapsed':'')+'" onclick="toggleCollapse()" aria-pressed="'+(ST.collapsed?'true':'false')+'" aria-label="'+(ST.collapsed?'Show self-view':'Hide self-view')+'">'
+    +'<span class="self-icon self-icon-in">'+I.collapseIn+'</span>'
+    +'<span class="self-icon self-icon-out">'+I.expandOut+'</span>'
+    +'<span class="tip tip-hide">Hide self-view</span>'
+    +'<span class="tip tip-show">Show self-view</span>'
+    +'</button>'
     +'</div>';
 }
 /* =========================================================================

@@ -575,6 +575,11 @@ h1{font-size:20px}
     center 18% / cover no-repeat url("../student-main-classroom-desktop/assets/teacher-video-still.png"),
     #2a2622;
 }
+.d-half.teacher{
+  background:
+    center 18% / cover no-repeat url("../student-main-classroom-desktop/assets/teacher-video-still.png"),
+    #2a2622;
+}
 .scrim-top{
   height:110px;
   background:linear-gradient(to bottom,rgba(55,50,48,.14),transparent);
@@ -883,6 +888,44 @@ h1{font-size:20px}
   background:var(--brand-yellow);
   color:#373230;
   cursor:pointer;
+}
+
+/* You-demonstration footer — camera / audio instead of Ask */
+.bottom.is-demo-av{justify-content:center}
+.footer-capsule.is-demo-av{
+  width:auto;
+  justify-content:center;
+  gap:10px;
+  padding:6px 8px;
+}
+.controls-bar{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.cbtn{
+  position:relative;
+  width:42px;height:42px;
+  border-radius:50%;
+  border:1px solid rgba(255,246,236,.16);
+  display:grid;place-items:center;
+  background:rgba(55,50,48,.62);
+  color:#F7F6EF;
+  cursor:pointer;
+  padding:0;
+  box-shadow:inset 1px 1px 0 rgba(255,255,255,.10),0 2px 6px rgba(18,14,12,.22);
+  transition:background .15s,transform .1s;
+}
+.cbtn:active{transform:scale(.96)}
+.cbtn svg{width:20px;height:20px}
+.cbtn .slash{
+  position:absolute;top:50%;left:50%;
+  width:28px;height:2.6px;
+  background:var(--status-live);
+  border-radius:3px;
+  transform:translate(-50%,-50%) rotate(-45deg);
+  box-shadow:0 0 0 1.5px rgba(55,50,48,.72);
+  pointer-events:none;z-index:2;
 }
 
 /* Self-view — clean tile, soft elevation (interaction unchanged) */
@@ -1430,6 +1473,18 @@ h1{font-size:20px}
   background-color:#2a2622;
 }
 .d-half.student.you-live .d-av{display:none}
+.d-half.student.you-live.cam-off{
+  background-image:none !important;
+  background:linear-gradient(160deg,#46423d,#272320);
+}
+.d-half.student.you-live.cam-off .d-av{display:grid}
+.d-half.student.you-live .d-camoff{
+  position:absolute;left:50%;top:calc(50% + 52px);
+  transform:translateX(-50%);
+  font-size:12px;font-weight:600;
+  color:rgba(247,246,239,.72);
+  letter-spacing:.1px;
+}
 
 /* Self-view — You photo + intentional mic/cam chrome */
 .pip{
@@ -1663,6 +1718,7 @@ h1{font-size:20px}
   pointer-events:auto;
   width:100%;
 }
+.room.chat-open .bottom.is-demo-av .footer-capsule{width:auto}
 .sheet-chat{
   /* leave room for the persistent default footer under the message list */
   padding-bottom:72px;
@@ -1894,6 +1950,7 @@ var I={
  chevR:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M9 6l5 6-5 6"/></svg>',
  chevD:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>',
  cam:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 10l5-3v10l-5-3v-4zM2 6h11a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2z"/></svg>',
+ mic:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0014 0M12 18v3"/></svg>',
  micMuted:'<svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><g stroke="rgba(255,255,255,.62)" stroke-width="2"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0014 0M12 18v3"/></g><path d="M4 3.2l16 16" stroke="#F9746B" stroke-width="2" opacity=".92"/></svg>',
  chat:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 01-8.5 8.5 8.5 8.5 0 01-3.8-.9L3 21l1.9-5.7A8.5 8.5 0 1121 11.5z"/></svg>',
  smiley:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3h6M19 0v6"/><path d="M21 12a9 9 0 11-7-8.8"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><path d="M9 9.5h.01M15 9.5h.01"/></svg>',
@@ -2073,6 +2130,7 @@ function chatRestore(){
   return '<button class="chat-restore" onclick="setChat(false)">'+I.chat+'Show chat</button>';
 }
 function composer(){
+  if(st.demo==='me') return demoAvFooter();
   return '<div class="bottom" onclick="revealChrome()">'
     +'<div class="footer-capsule">'
     +'<div class="ask">'
@@ -2082,6 +2140,19 @@ function composer(){
     +'</div>'
     +'</div></div>';
 }
+function demoAvFooter(){
+  var camOff=!!st.camOff, micOff=!!st.micOff;
+  var camLabel=camOff?'Turn camera on':'Turn camera off';
+  var micLabel=micOff?'Unmute microphone':'Mute microphone';
+  return '<div class="bottom is-demo-av" onclick="revealChrome()">'
+    +'<div class="footer-capsule is-demo-av">'
+    +'<div class="controls-bar">'
+    +'<button class="cbtn" type="button" onclick="event.stopPropagation();toggleCam()" aria-pressed="'+(camOff?'false':'true')+'" aria-label="'+camLabel+'">'+I.cam+(camOff?'<span class="slash"></span>':'')+'</button>'
+    +'<button class="cbtn" type="button" onclick="event.stopPropagation();toggleMic()" aria-pressed="'+(micOff?'false':'true')+'" aria-label="'+micLabel+'">'+I.mic+(micOff?'<span class="slash"></span>':'')+'</button>'
+    +'</div></div></div>';
+}
+function toggleCam(){ st.camOff=!st.camOff; render(); }
+function toggleMic(){ st.micOff=!st.micOff; render(); }
 
 /* ---------- self-view ---------- */
 function pipOpen(s){
@@ -2229,7 +2300,7 @@ function destroyLottie(){
 
 /* ---------- state / render ---------- */
 var st;
-function reset(){ stopCarTimer(); stopVolTimer(); destroyLottie(); stopWaitReturn(); clearMCConsent(); st={mode:'open',side:'right',cy:300,pos:{x:SW-PW-PAD,y:HEAD},chatHidden:false,tip:false,rec:false,sheet:null,chrome:true,activity:null,actDur:20,actStart:0,demo:null,carousel:false,carIdx:0,carWho:null,vol:null,volLeft:10,consent:false,transfer:false,waitreturn:false}; seedFeed(); render(); }
+function reset(){ stopCarTimer(); stopVolTimer(); destroyLottie(); stopWaitReturn(); clearMCConsent(); st={mode:'open',side:'right',cy:300,pos:{x:SW-PW-PAD,y:HEAD},chatHidden:false,tip:false,rec:false,sheet:null,chrome:true,activity:null,actDur:20,actStart:0,demo:null,carousel:false,carIdx:0,carWho:null,vol:null,volLeft:10,consent:false,transfer:false,waitreturn:false,camOff:false,micOff:false}; seedFeed(); render(); }
 function render(){
   document.getElementById('live').innerHTML=screenHTML(st);
   var n=document.getElementById('state-note');
@@ -2239,7 +2310,10 @@ function render(){
     ? 'Waiting-return \u00B7 full-screen with a room countdown (consent No / timeout - never Solo, never Main)'
     : ('self-view: '+(st.mode==='collapsed'?('collapsed @'+st.side+' (camera on)'):'expanded')
       +' \u00B7 chat: '+(st.chatHidden?'hidden':'visible')
-      +' \u00B7 mic: muted (teacher-controlled)'+(st.tip?' \u00B7 tooltip open':'')+(st.sheet?' \u00B7 sheet:'+st.sheet:'')
+      +(st.demo==='me'
+        ? (' \u00B7 demo You \u00B7 cam: '+(st.camOff?'off':'on')+' \u00B7 mic: '+(st.micOff?'off':'on'))
+        : (' \u00B7 mic: muted (teacher-controlled)'+(st.tip?' \u00B7 tooltip open':'')))
+      +(st.sheet?' \u00B7 sheet:'+st.sheet:'')
       +(st.consent?' \u00B7 room consent open':''));
   if(st.transfer){ stopWaitReturn(); mountLottie(); return; }   /* takeover has no pip / room chrome to wire or fade */
   if(st.waitreturn){ if(!wrInt) startWaitReturn(); mountLottie(); return; }   /* full-screen waiting-return: matkot + ticking countdown */
@@ -2469,18 +2543,21 @@ function demoStage(){
      selected participant. Without Carousel, demo stays teacher-guided (no turn). */
   var tTurn=(st.carousel && st.carWho==='teacher')?' turn':'';
   var sTurn=(st.carousel && st.carWho==='student')?' turn':'';
-  var teacher='<div class="d-half teacher'+tTurn+'"><span class="d-who">Niv</span></div>';
+  var teacher='<div class="d-half teacher'+tTurn+'"><span class="d-who">Guy \u00b7 Teacher</span></div>';
   var student=meSel
-    ? ('<div class="d-half student you-live'+sTurn+'" style="background-image:url(\''+YOU_IMG+'\')"><span class="d-who">'+sName+'</span></div>')
+    ? (st.camOff
+      ? ('<div class="d-half student you-live cam-off'+sTurn+'"><span class="d-who">'+sName+'</span><span class="d-av">'+sInit+'</span><span class="d-camoff">Camera off</span></div>')
+      : ('<div class="d-half student you-live'+sTurn+'" style="background-image:url(\''+YOU_IMG+'\')"><span class="d-who">'+sName+'</span></div>'))
     : ('<div class="d-half student'+sTurn+'"><span class="d-who">'+sName+'</span><span class="d-av">'+sInit+'</span></div>');
   return '<div class="d-stage">'+teacher+student+'</div>';
 }
 function demoFold(){
-  return '<div class="pip-tab right demo-folded" style="top:150px" aria-hidden="true"><span class="camdot"></span></div>';
+  return '<div class="pip-tab right demo-folded" style="top:150px" aria-hidden="true">'+(st.camOff?'':'<span class="camdot"></span>')+'</div>';
 }
-function demoDefault(){ st.demo=null; st.carWho=null; render(); }
-function demoMe(){ st.demo='me'; if(st.carousel) pickCarWho(); render(); }
-function demoOther(){ st.demo='other'; if(st.carousel) pickCarWho(); render(); }
+function clearDemoAv(){ st.camOff=false; st.micOff=false; }
+function demoDefault(){ st.demo=null; st.carWho=null; clearDemoAv(); render(); }
+function demoMe(){ st.demo='me'; st.camOff=false; st.micOff=false; if(st.carousel) pickCarWho(); render(); }
+function demoOther(){ st.demo='other'; clearDemoAv(); if(st.carousel) pickCarWho(); render(); }
 /* ---------- Carousel activity visual aid (v8) — visual-only cue overlay ---------- */
 /* CAR_CUES = provisional visual-only placeholders (warm Citizen/Gym art), NOT final characters.
    Replace with final character-cue artwork later; keep them purely visual (no text/labels). */
@@ -2573,12 +2650,12 @@ function volYes(){ stopVolTimer(); st.vol='in'; render(); }                 /* v
 function volNo(){ stopVolTimer(); st.vol=null; render(); }                  /* closes quietly */
 function volTimeoutNow(){ stopVolTimer(); st.vol=null; render(); }          /* timeout closes quietly */
 /* chosen result -> existing demo visual states (no second confirmation popup) */
-function volPickMe(){ stopVolTimer(); st.vol=null; st.demo='me'; if(st.carousel) pickCarWho(); render(); }
-function volPickOther(){ stopVolTimer(); st.vol=null; st.demo='other'; if(st.carousel) pickCarWho(); render(); }
+function volPickMe(){ stopVolTimer(); st.vol=null; st.demo='me'; st.camOff=false; st.micOff=false; if(st.carousel) pickCarWho(); render(); }
+function volPickOther(){ stopVolTimer(); st.vol=null; st.demo='other'; clearDemoAv(); if(st.carousel) pickCarWho(); render(); }
 /* no volunteers / nobody chosen -> student side shows nothing special, plain Main Room */
-function volNone(){ stopVolTimer(); st.vol=null; st.demo=null; st.carWho=null; render(); }
+function volNone(){ stopVolTimer(); st.vol=null; st.demo=null; st.carWho=null; clearDemoAv(); render(); }
 /* end demo -> normal Main Room; selected student returns to muted / non-broadcasting */
-function volEndDemo(){ stopVolTimer(); st.vol=null; st.demo=null; st.carWho=null; render(); }
+function volEndDemo(){ stopVolTimer(); st.vol=null; st.demo=null; st.carWho=null; clearDemoAv(); render(); }
 reset();
 </script>
 </body>

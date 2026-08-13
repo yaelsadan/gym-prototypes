@@ -497,6 +497,313 @@ h2{font-size:15px;margin:var(--s32) 0 var(--s8)}
 
 /* the reveal drops below the X, still right-aligned, still clear of the name chip */
 .hdr-reveal{top:132px;left:auto;right:12px;max-width:232px;text-align:right}
+
+/* ==========================================================
+   Visual alignment to Main Room Mobile (tokens / components only)
+   Structure, placement, routing, timing, and activity logic unchanged.
+   Duo stack, seam activity zone, footer/chrome architecture preserved.
+   ========================================================== */
+
+/* 1) Participant labels — cream pill / yellow active, no stacked outline */
+.rhalf .who{
+  font-family:var(--font-ui);
+  font-size:14px;
+  font-weight:600;
+  letter-spacing:-.1px;
+  line-height:1.2;
+  min-height:32px;
+  color:var(--brand-charcoal);
+  background:#F7F6EF;
+  border:1px solid rgba(55,50,48,.10);
+  border-radius:var(--pill);
+  padding:0 13px;
+  box-shadow:0 2px 10px rgba(55,50,48,.14);
+}
+.rhalf.turn .who{
+  background:var(--brand-yellow);
+  border-color:rgba(55,50,48,.10);
+  color:var(--brand-charcoal);
+  box-shadow:0 3px 12px rgba(55,50,48,.16);
+}
+
+/* 2) Active-turn frame — 2px inset yellow, no glow */
+.rhalf.turn,
+.screen.chrome-off .rhalf.turn{box-shadow:inset 0 0 0 2px var(--brand-yellow)}
+
+/* 3) Activity timer — Main Room ball language; stay on the seam at --seam-timer */
+.clock .ring .ball{
+  fill:var(--t-yellow);
+  stroke:none;
+  stroke-width:0;
+  filter:drop-shadow(0 3px 6px rgba(55,50,48,.40)) drop-shadow(0 1px 2px rgba(55,50,48,.24));
+}
+.clock.warn .ring .ball{
+  fill:var(--t-coral);
+  stroke:none;
+  stroke-width:0;
+}
+
+/* 4) Done — cream pill + yellow check + Fedra italic */
+.act-done{
+  gap:12px;
+  padding:12px 22px 12px 13px;
+  border:1.4px solid var(--brand-charcoal);
+  box-shadow:0 12px 30px rgba(0,0,0,.30);
+}
+.act-done .ad-ic{width:40px;height:40px;border:1.4px solid var(--brand-charcoal)}
+.act-done .ad-ic svg{width:20px;height:20px}
+.act-done .ad-tx{
+  display:flex;
+  align-items:center;
+  font-family:"FedraSerifPro",var(--font-brand),Georgia,serif;
+  font-weight:400;
+  font-style:normal;
+  font-size:26px;
+  line-height:1;
+  letter-spacing:.2px;
+  transform:translateY(2px);
+}
+.act-done .ad-spark{right:-14px;top:-18px;width:34px;height:34px}
+
+/* 5) Decision sheets — Main Room milky material, still bottom sheets */
+.sheet-scrim{
+  background:rgba(43,39,36,.38);
+  -webkit-backdrop-filter:blur(7px) saturate(.92);
+  backdrop-filter:blur(7px) saturate(.92);
+}
+.sheet.milky{
+  background:#F7F6EF;
+  background-color:rgba(247,246,239,.98);
+  color:var(--brand-charcoal);
+  border:none;
+  border-top:1px solid rgba(55,50,48,.12);
+  box-shadow:0 -12px 40px rgba(55,50,48,.18),0 2px 8px rgba(55,50,48,.06);
+  -webkit-backdrop-filter:none;
+  backdrop-filter:none;
+  padding:0 20px 28px;
+  font-family:var(--font-ui);
+}
+.sheet.milky .grab{background:rgba(55,50,48,.16)}
+.sheet.milky h4{
+  font-family:var(--font-ui);
+  font-size:21px;
+  font-weight:700;
+  letter-spacing:-.3px;
+  line-height:1.22;
+  color:var(--brand-charcoal);
+  margin:6px 0 10px;
+}
+.sheet.milky p{
+  font-family:var(--font-ui);
+  font-size:15px;
+  font-weight:400;
+  line-height:1.5;
+  color:#544f49;
+  margin-bottom:8px;
+}
+.sheet.milky p.priv{
+  font-size:13px;
+  line-height:1.5;
+  color:var(--text-muted);
+  margin-bottom:16px;
+}
+.sheet.milky .acts{gap:10px}
+.sheet.milky .btn{
+  min-height:50px;
+  font-family:var(--font-ui);
+  font-size:15px;
+  font-weight:700;
+  background:#F7F6EF;
+  color:var(--brand-charcoal);
+  border:1px solid rgba(55,50,48,.09);
+}
+.sheet.milky .btn.primary{
+  background:var(--brand-yellow);
+  color:var(--brand-charcoal);
+  border:1px solid var(--brand-yellow);
+}
+.sheet.milky .btn.danger-soft{
+  background:rgba(249,116,107,.10);
+  color:var(--brand-charcoal);
+  border:1px solid rgba(249,116,107,.40);
+}
+.sheet.milky .respline{
+  height:4px;
+  border-radius:2px;
+  background:rgba(55,50,48,.08);
+  margin-top:14px;
+}
+.sheet.milky .respline i{
+  background:rgba(55,50,48,.72);
+  border-radius:2px;
+}
+.sheet.milky .resp-cap{color:var(--text-muted)}
+
+/* 6) Warm glass — existing chrome, warmer material only */
+.header-scrim{background:linear-gradient(to bottom,rgba(55,50,48,.38),rgba(55,50,48,0))}
+.header-scrim.open{background:linear-gradient(to bottom,rgba(55,50,48,.50),rgba(55,50,48,0))}
+.footer-scrim{background:linear-gradient(to top,rgba(55,50,48,.46),rgba(55,50,48,0))}
+.rheader .icon-btn,
+.rheader.compact .icon-btn{
+  background:rgba(55,50,48,.32);
+  border:1px solid rgba(255,246,236,.16);
+  -webkit-backdrop-filter:blur(12px) saturate(1.1);
+  backdrop-filter:blur(12px) saturate(1.1);
+  box-shadow:inset 1px 1px 0 rgba(255,255,255,.10),0 2px 8px rgba(18,14,12,.18);
+}
+.rc-btn{
+  background:
+    linear-gradient(135deg,rgba(255,255,255,.08) 0%,transparent 42%,rgba(0,0,0,.05) 100%),
+    rgba(45,40,36,.48);
+  border:1px solid rgba(255,246,236,.16);
+  -webkit-backdrop-filter:blur(26px) saturate(1.14);
+  backdrop-filter:blur(26px) saturate(1.14);
+  box-shadow:inset 1px 1px 0 rgba(255,255,255,.10),0 8px 20px rgba(18,14,12,.22);
+}
+.leave-report{
+  background:
+    linear-gradient(135deg,rgba(255,255,255,.08) 0%,transparent 42%,rgba(0,0,0,.05) 100%),
+    rgba(45,40,36,.48);
+  border:1px solid rgba(255,246,236,.16);
+  color:rgba(255,246,236,.90);
+  -webkit-backdrop-filter:blur(26px) saturate(1.14);
+  backdrop-filter:blur(26px) saturate(1.14);
+  box-shadow:inset 1px 1px 0 rgba(255,255,255,.10),0 6px 16px rgba(18,14,12,.20);
+}
+.tip-card{
+  background:rgba(45,40,36,.72);
+  border:1px solid rgba(255,246,236,.16);
+  -webkit-backdrop-filter:blur(22px) saturate(1.12);
+  backdrop-filter:blur(22px) saturate(1.12);
+  box-shadow:inset 1px 1px 0 rgba(255,255,255,.08),0 14px 34px rgba(18,14,12,.28);
+}
+
+/* 8) Camera-off placeholder — cream face + yellow halo, not a generic grey circle */
+.rhalf.cam-off{background:linear-gradient(160deg,#46423d,#272320)}
+.rhalf .camoff-body .av{
+  width:64px;
+  height:64px;
+  background:#F7F6EF;
+  color:var(--brand-charcoal);
+  border:none;
+  font-family:var(--font-brand);
+  font-weight:700;
+  font-size:22px;
+  box-shadow:-3px -3px 0 0 var(--brand-yellow),0 1px 4px rgba(55,50,48,.14);
+}
+.rhalf .camoff-body .lbl{
+  font-family:var(--font-ui);
+  font-size:13px;
+  font-weight:600;
+  color:rgba(247,246,239,.78);
+  opacity:1;
+}
+
+/* ==========================================================
+   Practice Rooms Mobile polish — header / room clock / seam aid / TIP
+   Visual + placement only. Recipes, routing, TIP logic unchanged.
+   ========================================================== */
+
+/* Shared activity-aid slot: centered on the Duo seam, biased UP onto the
+   top tile (lower chest/body). Matches Main Room Mobile split aid intent.
+   Timer · Carousel · Done share this one slot (never combined). */
+:root{--aid-seam-up:34px}
+.seam-zone{
+  left:0;right:0;
+  top:50%;
+  transform:translateY(calc(-50% - var(--aid-seam-up)));
+  justify-content:center;
+  gap:0;
+  padding:0 26px;
+}
+.seam-zone::before{
+  width:280px;
+  height:180px;
+  transform:translate(-50%, calc(-50% + 10px));
+}
+
+/* Persistent room status cluster (clock primary · activity secondary) */
+.rheader.compact .room-status{
+  position:absolute;
+  top:2px;
+  right:12px;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-end;
+  gap:2px;
+  z-index:2;
+  pointer-events:none;
+}
+.rheader.compact .room-status .room-time{
+  position:static;
+  top:auto;right:auto;
+  pointer-events:none;
+  cursor:default;
+}
+.room-act{
+  font-family:var(--font-ui);
+  font-size:11px;
+  font-weight:600;
+  letter-spacing:.15px;
+  color:rgba(255,255,255,.68);
+  text-shadow:0 1px 3px rgba(55,50,48,.55);
+  max-width:168px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  text-align:right;
+  line-height:1.2;
+}
+.screen.chrome-off .room-status,
+.screen.chrome-off .room-act{opacity:1}
+
+/* Final ≤10s room clock — calm yellow attention (not red, not flashing) */
+.room-time.final{
+  color:var(--brand-charcoal);
+  background:var(--brand-yellow);
+  border-radius:var(--pill);
+  padding:5px 12px 5px 10px;
+  font-size:20px;
+  font-weight:800;
+  letter-spacing:.2px;
+  text-shadow:none;
+  box-shadow:0 2px 10px rgba(55,50,48,.20),0 1px 2px rgba(55,50,48,.10);
+  animation:none;
+}
+.room-time.final svg,
+.room-time.final .cap,
+.room-time.final .chev{
+  color:var(--brand-charcoal);
+  opacity:1;
+}
+.room-time.final .cap{opacity:.78;font-weight:700}
+.header-scrim.open{height:120px;background:linear-gradient(to bottom,rgba(55,50,48,.38),rgba(55,50,48,0))}
+
+/* TIP play/pause — one yellow circle only (no offset white disc / double ring) */
+.tip-card .tc-play{
+  width:40px;height:40px;
+  border-radius:50%;
+  border:none;
+  outline:none;
+  background:var(--brand-yellow);
+  color:var(--brand-charcoal);
+  box-shadow:0 2px 8px rgba(55,50,48,.22);
+}
+
+/* Done — exact seam center between the two videos (no upward timer bias) */
+.seam-zone.seam-done{
+  transform:translateY(-50%);
+}
+.seam-zone.seam-done::before{
+  transform:translate(-50%,-50%);
+}
+
+/* X / Leave — Main Room top-left; transient chrome layer (fades with chrome-off) */
+.rheader.compact .icon-btn{
+  top:4px;
+  left:12px;
+  right:auto;
+}
 </style>
 </head>
 <body>
@@ -619,7 +926,7 @@ var IMG_DANA="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBAUEBAY
    ========================================================================= */
 
 var TEACHER='Niv Rubin', PARTNER='Dana';
-var ROOM_TIME_TAG='button';   /* variant A: the room timer IS the tap-to-expand control */
+var ROOM_TIME_TAG='div';   /* persistent status only — no Main Room identity reveal */
 
 var I={
   x:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>',
@@ -1022,7 +1329,7 @@ function activityLabel(){ var c=ACTS[ST.activity]; return c?c.label:''; }
 /* the room timer keeps its own value node so syncRoomUI can write it in place
    without a full render (the matkot fix depends on that) */
 function roomTimeEl(extra){
-  return '<'+ROOM_TIME_TAG+' class="room-time'+(ST.roomPhase==='final'?' final':'')+'"'+(ROOM_TIME_TAG==='button'?' onclick="toggleHeader()"':'')+'>'
+  return '<'+ROOM_TIME_TAG+' class="room-time'+(ST.roomPhase==='final'?' final':'')+'">'
     + I.clock + '<span class="cap">Room</span><span class="tval">'+roomFmt(ST.roomLeft)+'</span>'
     + (extra||'') + '</'+ROOM_TIME_TAG+'>';
 }
@@ -1060,23 +1367,23 @@ function armChrome(ms){
 function revealChrome(){ armChrome(CHROME_REVEAL); }   /* a tap on the video */
 function bumpChrome(){ armChrome(CHROME_REVEAL); }     /* a tap on a control: reset, never hide */
 
-function toggleHeader(){ ST.hdrOpen=!ST.hdrOpen; render(); }
-/* VARIANT A - a minimal, collapsed header. No hover (this is mobile).
-   Collapsed: just the X and the room timer. Tapping the room timer reveals
-   the room info; tapping it again collapses it. Nothing else competes at the top. */
+function toggleHeader(){ /* retired: Practice Rooms no longer reveal a Main Room identity header */ }
+/* Minimal Practice Room header.
+   Persistent: room countdown (top-right) + quiet activity label.
+   Transient chrome: X / Leave (footer controls stay in rfooter). */
 function rheader(){
   var inRoom=(ST.scene==='duo'||ST.scene==='enforce'||ST.scene==='partnerleft'||ST.scene==='consent');
-  var t=inRoom?roomTimeEl():'';   /* v6: no chevron - the timer is pure status */
   var act=activityLabel();
-  var reveal=(inRoom&&ST.hdrOpen)
-    ? '<div class="hdr-reveal"><div class="title">Gym</div><div class="sub">with '+TEACHER+(act?(' \u00b7 '+act):'')+'</div></div>'
+  var status=inRoom
+    ? ('<div class="room-status">'+roomTimeEl()
+      +(act?'<span class="room-act">'+act+'</span>':'')
+      +'</div>')
     : '';
-  return '<div class="header-scrim'+(ST.hdrOpen?' open':'')+'"></div>'
+  return '<div class="header-scrim"></div>'
     +'<div class="rheader compact" onclick="bumpChrome()">'
-      + t                                            /* room timer: persistent status, absolutely pinned */
-      +'<button class="icon-btn">'+I.x+'</button>'   /* the X: a floating overlay action, also absolute,
-                                                        so it can never push or move the timer */
-    +'</div>'+reveal;
+      + status
+      +'<button class="icon-btn" aria-label="Leave">'+I.x+'</button>'
+    +'</div>';
 }
 
 function half(side,name,o){
@@ -1101,11 +1408,14 @@ function seamZone(){
   if(isCount){
     inner='<div class="seam-count">'+ST.actNum+'</div>';
   } else if(isTurn){
-    var cap=(ST.activity==='dialogue'||ST.activity==='intensive')
-      ? '<span class="rt-cap">Round '+ST.actRound+' of 2</span>' : '';
-    var clock='<div style="position:relative">'+turnClock(ST.actNum,ST.actDur)+cap+'</div>';
-    /* Carousel collision rule: timer + cue side by side on the seam. 112 + 22 + 116 = 250 < 378. */
-    inner = (ST.activity==='carousel') ? (clock+carouselCue()) : clock;
+    /* ONE shared visual-aid slot: Timer XOR Carousel — never both. */
+    if(ST.activity==='carousel'){
+      inner=carouselCue();
+    } else {
+      var cap=(ST.activity==='dialogue'||ST.activity==='intensive')
+        ? '<span class="rt-cap">Round '+ST.actRound+' of 2</span>' : '';
+      inner='<div style="position:relative">'+turnClock(ST.actNum,ST.actDur)+cap+'</div>';
+    }
   } else if(ST.actState==='prepared'){
     inner='<div class="prep-wait"><span class="d"></span>Waiting for your teacher to start</div>';
   } else if(ST.actStep==='done'){
@@ -1113,7 +1423,8 @@ function seamZone(){
          +'<span class="ad-spark">'+I.spark+'</span></div>';
   }
   if(!inner) return '';
-  return '<div class="seam-zone">'+inner+'</div>';
+  var seamCls='seam-zone'+(ST.actStep==='done'?' seam-done':'');
+  return '<div class="'+seamCls+'">'+inner+'</div>';
 }
 
 function duoStage(){
@@ -1129,10 +1440,10 @@ function duoStage(){
     return name;
   }
   var startOn=(isTurn && ST.actNum===ST.actDur);
-  /* collision rule: a running Carousel puts timer + cue (250px) on the seam, so the
-     bottom name chip drops clear of the band. Every other state keeps it high. */
+  /* Carousel alone still uses the shared upward-biased seam slot; keep bottom
+     chips clear if the cue footprint is large. */
   var carRun=(live && ST.activity==='carousel' && isTurn);
-  return '<div class="rstage'+(carRun?' car-run':'')+(ST.hdrOpen?' hdr-open':'')+'" onclick="revealChrome()">'
+  return '<div class="rstage'+(carRun?' car-run':'')+'" onclick="revealChrome()">'
     + half('top', PARTNER, {turn:danaF, chipLabel:chipFor('dana',PARTNER), bg:IMG_DANA, startCue:(startOn&&danaF)})
     + half('bottom','You', {turn:youF,  chipLabel:chipFor('you','You'),   bg:IMG_YOU,
                             camOff:ST.camOff, micOff:ST.micOff, startCue:(startOn&&youF)})
@@ -1267,7 +1578,7 @@ function render(){
   else if(s==='return') { inner+=transitionScene('return'); }
   else if(s==='transfer'){ inner+=transitionScene('transfer'); }   /* (v9) Practice Room transfer / loading */
   else if(s==='trans')  { inner+=transitionScene(ST.transVariant); }
-  else if(s==='solo')   { inner+=rheader()+soloScene()+rfooter(); if(ST.tipOpen) inner+=tipCard(); if(ST.leaveReport) inner+=leaveReportSheet(); }
+  else if(s==='solo')   { inner+=soloScene(); }
   else if(s==='report') { inner+=reportScene(); }
 
   el.innerHTML=inner;
