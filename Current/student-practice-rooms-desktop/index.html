@@ -1407,7 +1407,7 @@ body.present .clock.vt3.gl{--d:160px}
 /* ---------- START: a small, brief chip. Never a full-tile overlay. ---------- */
 .demo-half .tile-start{display:none!important}      /* the old giant overlay is retired */
 .demo-half .tile-startchip{
-  position:absolute;left:16px;top:56px;z-index:6;pointer-events:none;
+  position:absolute;left:18px;top:62px;z-index:6;pointer-events:none;
   display:inline-flex;align-items:center;
   background:var(--t-yellow);color:var(--t-charcoal);
   border:1.5px solid var(--t-charcoal);
@@ -1436,9 +1436,9 @@ body.present .demo-half .tile-startchip{top:62px;font-size:16px;padding:5px 14px
 
 /* one size token; only --d differs between the two modes */
 .clock.vt3.lg,
-.clock.vt3.gl{--d:144px;width:var(--d);height:var(--d)}
+.clock.vt3.gl{--d:166px;width:var(--d);height:var(--d)}
 body.present .clock.vt3.lg,
-body.present .clock.vt3.gl{--d:162px;width:var(--d);height:var(--d)}
+body.present .clock.vt3.gl{--d:186px;width:var(--d);height:var(--d)}
 
 .clock.vt3{
   position:relative;display:grid;place-items:center;border-radius:50%;
@@ -1544,11 +1544,501 @@ body.present .demo-split{
   max-width:min(1332px,81vw);
   max-height:63vh;
 }
+
+/* ==========================================================
+   Visual alignment — Desktop Main Room + Mobile Practice Rooms
+   Tokens / chrome / aids / sheets only.
+   Routing, room timing, Solo, partner-left, camera/mic-off,
+   waiting-return, and activity recipes are unchanged.
+   ========================================================== */
+
+.room.room-focus,
+.room.room-focus .stage{
+  background:#1e1b18;
+}
+.frame.vb-real .stage{
+  background:
+    radial-gradient(120% 90% at 50% 38%,#3d3732 0%,#2c2824 52%,#221e1b 100%);
+}
+.stage .scrim-top,
+.stage .scrim-bottom{display:none}
+.header-scrim{
+  height:160px;
+  background:linear-gradient(to bottom,rgba(55,50,48,.42),rgba(55,50,48,0));
+}
+
+/* 1) Full-bleed split — videos fill the warm dark shell */
+.demo-stage,
+.frame.w-narrow .demo-stage,
+body.present .demo-stage{
+  inset:0;
+  padding:14px;
+  align-items:stretch;
+  justify-content:stretch;
+}
+.demo-split,
+.frame.w-narrow .demo-split,
+body.present .demo-split{
+  width:100%;
+  height:100%;
+  max-width:none;
+  max-height:none;
+  gap:14px;
+  margin:0;
+}
+.demo-half{
+  border-radius:14px;
+  border:none;
+  outline:none;
+  box-shadow:0 0 44px 10px rgba(18,14,12,.20);
+  background:linear-gradient(160deg,#4d4842,#2a2622);
+}
+.demo-half.teacher{background:linear-gradient(160deg,#4d4842,#2a2622)}
+.demo-half.student{background:linear-gradient(160deg,#46423d,#272320)}
+.demo-half.turn,
+.demo-half.turn.pulse{
+  box-shadow:0 0 44px 10px rgba(18,14,12,.20),inset 0 0 0 2px var(--brand-yellow);
+}
+@keyframes bpulse{
+  0%,100%{box-shadow:0 0 44px 10px rgba(18,14,12,.20),inset 0 0 0 0 rgba(249,226,76,0)}
+  50%{box-shadow:0 0 44px 10px rgba(18,14,12,.20),inset 0 0 0 2px rgba(249,226,76,.95)}
+}
+
+/* Cream name pill · yellow = whose turn */
+.demo-half .who{
+  font-family:var(--font-ui);
+  font-size:15.5px;
+  font-weight:600;
+  letter-spacing:-.1px;
+  line-height:1.2;
+  min-height:36px;
+  left:18px;top:18px;
+  color:var(--brand-charcoal);
+  background:#F7F6EF;
+  border:1px solid rgba(55,50,48,.10);
+  border-radius:var(--pill);
+  padding:0 15px;
+  box-shadow:0 2px 10px rgba(55,50,48,.14);
+}
+.demo-half.turn .who{
+  background:var(--brand-yellow);
+  border-color:rgba(55,50,48,.10);
+  color:var(--brand-charcoal);
+  box-shadow:0 3px 12px rgba(55,50,48,.16);
+}
+body.present .demo-half .who{font-size:17.5px;min-height:38px;padding:0 17px}
+.demo-half .tile-startchip{left:18px;top:62px}
+body.present .demo-half .tile-startchip{top:68px}
+
+/* Camera-off — cream face + yellow halo, not a grey circle */
+.demo-half.tile-camoff{background:linear-gradient(160deg,#46423d,#272320)}
+.tile-camoff-body .av{
+  width:64px;height:64px;
+  background:#F7F6EF;
+  color:var(--brand-charcoal);
+  border:none;
+  font-family:var(--font-brand);
+  font-weight:700;
+  font-size:22px;
+  box-shadow:-3px -3px 0 0 var(--brand-yellow),0 1px 4px rgba(55,50,48,.14);
+}
+.tile-camoff-body .lbl,
+.demo-half .tile-camoff-body .lbl{
+  font-family:var(--font-ui);
+  font-size:13px;
+  font-weight:600;
+  letter-spacing:0;
+  text-transform:none;
+  color:rgba(247,246,239,.78);
+}
+
+/* 2) Header — X + room timer + quiet activity. No Gym title stack. */
+.topbar{
+  padding:16px 18px;
+  gap:12px;
+  align-items:flex-start;
+}
+.topbar .x{
+  width:36px;height:36px;
+  background:rgba(55,50,48,.32);
+  border:1px solid rgba(255,246,236,.16);
+  -webkit-backdrop-filter:blur(12px) saturate(1.1);
+  backdrop-filter:blur(12px) saturate(1.1);
+  box-shadow:inset 1px 1px 0 rgba(255,255,255,.10),0 2px 8px rgba(18,14,12,.18);
+}
+.topbar .meta,
+.topbar .ctx-group,
+.topbar .room-ctx,
+.topbar .now-chip,
+.topbar .session-timer,
+.topbar .rec{display:none}
+.topbar .room-status{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-end;
+  gap:2px;
+  flex:none;
+}
+.room-act{
+  font-family:var(--font-ui);
+  font-size:12px;
+  font-weight:600;
+  letter-spacing:.15px;
+  color:rgba(255,255,255,.68);
+  text-shadow:0 1px 3px rgba(55,50,48,.55);
+  max-width:220px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  text-align:right;
+  line-height:1.2;
+}
+.clock-chrome-fade{
+  display:block;
+  position:absolute;
+  top:0;
+  right:0;
+  left:auto;
+  width:320px;
+  height:130px;
+  z-index:9;
+  pointer-events:none;
+  background:
+    radial-gradient(ellipse 200px 95px at 94% 18%,
+      rgba(55,50,48,.72) 0%,
+      rgba(55,50,48,.38) 48%,
+      rgba(55,50,48,0) 100%),
+    radial-gradient(ellipse 320px 130px at 100% 0%,
+      rgba(55,50,48,.68) 0%,
+      rgba(55,50,48,.42) 34%,
+      rgba(55,50,48,.20) 58%,
+      rgba(55,50,48,0) 100%);
+}
+.topbar{z-index:10}
+.topbar .room-pill{
+  background:transparent;border:none;box-shadow:none;
+  padding:6px 2px;gap:5px;
+  color:#fff;font-size:22px;font-weight:700;
+  letter-spacing:.15px;text-shadow:0 1px 4px rgba(55,50,48,.55);
+}
+.topbar .room-pill svg{color:#fff;opacity:.9;width:20px;height:20px}
+.topbar .room-pill .cap{opacity:.6;font-weight:500;font-size:inherit}
+.topbar .room-pill.final,
+body.present .topbar .room-pill.final{
+  color:var(--brand-yellow);
+  background:transparent;
+  border:none;
+  border-radius:0;
+  padding:6px 2px;
+  font-size:22px;
+  font-weight:800;
+  letter-spacing:.15px;
+  text-shadow:0 0 16px rgba(249,226,76,.5);
+  box-shadow:none;
+  animation:roomcalm 1.6s ease-in-out infinite;
+}
+.topbar .room-pill.final svg,
+.topbar .room-pill.final .cap{color:var(--brand-yellow);opacity:1}
+.topbar .room-pill.final .cap{opacity:.8;font-weight:700}
+body.present .topbar .room-pill{font-size:23px}
+body.present .topbar .room-pill.final{font-size:23px}
+
+/* 3) Timer — milky face, charcoal track/number, yellow ball, coral ≤5s */
+.clock.vt3 .ring .ball{
+  fill:var(--t-yellow);
+  stroke:none;
+  stroke-width:0;
+  filter:drop-shadow(0 3px 6px rgba(55,50,48,.40)) drop-shadow(0 1px 2px rgba(55,50,48,.24));
+}
+.clock.vt3.warn .ring .ball{
+  fill:var(--t-coral);
+  stroke:none;
+  stroke-width:0;
+}
+.clock.vt3.lg,
+.clock.vt3.gl{--d:183px;width:var(--d);height:var(--d)}
+body.present .clock.vt3.lg,
+body.present .clock.vt3.gl{--d:205px;width:var(--d);height:var(--d)}
+.clock.vt3::before{
+  content:"";
+  position:absolute;
+  inset:-32%;
+  border-radius:50%;
+  z-index:-1;
+  pointer-events:none;
+  background:radial-gradient(closest-side,
+    rgba(28,24,22,.40) 0%,
+    rgba(28,24,22,.16) 58%,
+    transparent 78%);
+}
+.clock.vt3{box-shadow:0 10px 26px rgba(18,14,12,.26)}
+.demo-timer::before{display:none}
+
+/* Done — white pill + yellow check + Fedra italic · +35% cumulative */
+.act-done{
+  overflow:visible;
+  isolation:isolate;
+  gap:16px;
+  padding:16px 30px 16px 18px;
+  background-color:#FFFFFF;
+  background-image:none;
+  border:1.4px solid var(--brand-charcoal);
+  box-shadow:0 12px 30px rgba(0,0,0,.30);
+}
+.act-done::before{
+  content:"";
+  position:absolute;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  width:155%;
+  height:240%;
+  border-radius:50%;
+  z-index:-1;
+  pointer-events:none;
+  background:radial-gradient(ellipse closest-side,
+    rgba(28,24,22,.36) 0%,
+    rgba(28,24,22,.13) 58%,
+    transparent 78%);
+}
+.act-done .ad-ic{width:55px;height:55px;border:1.4px solid var(--brand-charcoal)}
+.act-done .ad-ic svg{width:28px;height:28px}
+.act-done .ad-tx{
+  display:flex;
+  align-items:center;
+  font-family:"FedraSerifPro",var(--font-brand),Georgia,serif;
+  font-weight:400;
+  font-style:italic;
+  font-size:39px;
+  line-height:1;
+  letter-spacing:.2px;
+  transform:translateY(2px);
+}
+.act-done .ad-spark{right:-20px;top:-25px;width:47px;height:47px}
+body.present .act-done{padding:20px 36px 20px 21px}
+body.present .act-done .ad-ic{width:67px;height:67px}
+body.present .act-done .ad-ic svg{width:33px;height:33px}
+body.present .act-done .ad-tx{font-size:44px;transform:translateY(2px)}
+body.present .act-done .ad-spark{right:-23px;top:-30px;width:56px;height:56px}
+
+/* Carousel — current + next only. Never with the timer. */
+.stage:has(.car-cue) .tile-timer,
+.stage:has(.car-cue) .demo-timer{display:none}
+.car-cue{
+  top:50%;
+  width:auto;
+  min-width:236px;
+  padding:14px 16px 12px;
+  gap:12px;
+  background:rgba(45,40,36,.48);
+  border:1px solid rgba(255,246,236,.14);
+  border-radius:18px;
+  -webkit-backdrop-filter:blur(16px) saturate(1.1);
+  backdrop-filter:blur(16px) saturate(1.1);
+  box-shadow:inset 1px 1px 0 rgba(255,255,255,.08),0 10px 28px rgba(18,14,12,.22);
+}
+.car-track{
+  display:flex;
+  align-items:flex-end;
+  justify-content:center;
+  gap:14px;
+  width:100%;
+}
+.car-slot{display:flex;align-items:center;justify-content:center}
+.car-slot.car-curr .car-fig{width:110px;height:127px;opacity:.96}
+.car-slot.car-next .car-fig{width:68px;height:78px;opacity:.46}
+.car-lbl{display:none}
+.frame.w-narrow .car-cue{min-width:210px;padding:12px 13px 10px}
+.frame.w-narrow .car-slot.car-curr .car-fig{width:96px;height:111px}
+.frame.w-narrow .car-slot.car-next .car-fig{width:58px;height:67px}
+body.present .car-cue{min-width:268px;padding:16px 18px 13px}
+body.present .car-slot.car-curr .car-fig{width:126px;height:145px}
+body.present .car-slot.car-next .car-fig{width:76px;height:88px}
+
+/* 4) Footer — Main Room glass capsule around TIP / Camera / Mic */
+.controls-footer.room-footer{
+  height:auto;
+  min-height:0;
+  justify-content:center;
+  align-items:flex-end;
+  padding:0 22px 18px;
+  background:none;
+  -webkit-backdrop-filter:none;
+  backdrop-filter:none;
+}
+.controls-footer.room-footer::before{display:none;content:none}
+.room-footer .footer-capsule{
+  pointer-events:auto;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:auto;
+  height:104px;
+  min-height:104px;
+  padding:17px 22px;
+  border-radius:999px;
+  border:1px solid rgba(255,246,236,.16);
+  background:
+    linear-gradient(135deg,rgba(255,255,255,.08) 0%,transparent 42%,rgba(0,0,0,.05) 100%),
+    rgba(45,40,36,.46);
+  -webkit-backdrop-filter:blur(28px) saturate(1.16);
+  backdrop-filter:blur(28px) saturate(1.16);
+  box-shadow:
+    inset 1px 1px 0 rgba(255,255,255,.10),
+    0 12px 34px rgba(18,14,12,.30);
+}
+.room-footer .rc-cluster,
+.room-footer .footer-capsule .controls-bar{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+  pointer-events:auto;
+  padding:0;
+}
+.room-footer .rc-item{display:contents}
+.room-footer .rc-item .rc-cap{display:none}
+.room-footer .rc-btn,
+.room-footer .rc-btn.tip-btn,
+.room-footer .footer-capsule .cbtn,
+.room-footer .footer-capsule .cbtn.mic,
+.room-footer .footer-capsule .cbtn.micopen{
+  width:70px;height:70px;
+  background:rgba(55,50,48,.70);
+  border:1px solid rgba(255,246,236,.16);
+  color:#F7F6EF;
+  box-shadow:none;
+  -webkit-backdrop-filter:none;
+  backdrop-filter:none;
+}
+.room-footer .rc-btn svg,
+.room-footer .footer-capsule .cbtn svg{width:28px;height:28px}
+.room-footer .rc-btn:hover,
+.room-footer .rc-btn.tip-btn:hover,
+.room-footer .footer-capsule .cbtn:hover{
+  background:rgba(55,50,48,.82);
+  color:#F7F6EF;
+}
+.room-footer .rc-btn.tip-btn svg{color:var(--brand-yellow)}
+.room-footer .rc-btn .tip,
+.room-footer .footer-capsule .cbtn .tip{bottom:80px}
+.room-footer .rc-btn .slash{width:46px}
+.controls-footer.room-footer .leave-report{
+  height:44px;
+  padding:0 18px;
+  font-size:15px;
+  gap:8px;
+  background:
+    linear-gradient(135deg,rgba(255,255,255,.08) 0%,transparent 42%,rgba(0,0,0,.05) 100%),
+    rgba(45,40,36,.48);
+  border:1px solid rgba(255,246,236,.16);
+  color:rgba(255,246,236,.90);
+  -webkit-backdrop-filter:blur(26px) saturate(1.14);
+  backdrop-filter:blur(26px) saturate(1.14);
+  box-shadow:inset 1px 1px 0 rgba(255,255,255,.10),0 6px 16px rgba(18,14,12,.20);
+}
+.controls-footer.room-footer .leave-report svg{width:18px;height:18px}
+.controls-footer.room-footer .leave-report:hover{
+  background:
+    linear-gradient(135deg,rgba(255,255,255,.10) 0%,transparent 42%,rgba(0,0,0,.04) 100%),
+    rgba(45,40,36,.62);
+  color:#fff;
+}
+
+/* 5) TIP — yellow sparkle + one yellow play circle, no white disc */
+.tip-card{
+  background:rgba(45,40,36,.72);
+  border:1px solid rgba(255,246,236,.16);
+  -webkit-backdrop-filter:blur(22px) saturate(1.12);
+  backdrop-filter:blur(22px) saturate(1.12);
+  box-shadow:inset 1px 1px 0 rgba(255,255,255,.08),0 14px 34px rgba(18,14,12,.28);
+}
+.tip-card .tc-title{
+  font-family:var(--font-ui);
+  font-weight:700;
+  font-size:16px;
+}
+.tip-card .tc-title .spark{width:18px;height:18px}
+.tip-card .tc-play{
+  width:42px;height:42px;
+  border-radius:50%;
+  border:none;
+  outline:none;
+  background:var(--brand-yellow);
+  color:var(--brand-charcoal);
+  box-shadow:0 2px 8px rgba(55,50,48,.22);
+}
+.tip-card .tc-play svg{width:16px;height:16px}
+
+/* 7) Decision surfaces — cream / milky, yellow primary, quiet secondary */
+.invite-overlay{
+  background:rgba(43,39,36,.42);
+  -webkit-backdrop-filter:blur(12px) saturate(.90);
+  backdrop-filter:blur(12px) saturate(.90);
+}
+.invite.milky{
+  background:#F7F6EF;
+  background-color:rgba(247,246,239,.98);
+  color:var(--brand-charcoal);
+  border:1px solid rgba(55,50,48,.12);
+  border-radius:18px 18px 28px 18px;
+  box-shadow:0 14px 40px rgba(55,50,48,.18),0 2px 8px rgba(55,50,48,.06);
+  -webkit-backdrop-filter:none;
+  backdrop-filter:none;
+  font-family:var(--font-ui);
+}
+.invite.milky h4{
+  font-family:var(--font-ui);
+  font-size:24px;
+  font-weight:700;
+  letter-spacing:-.35px;
+  line-height:1.22;
+  color:var(--brand-charcoal);
+}
+.invite.milky p{
+  font-family:var(--font-ui);
+  font-size:16px;
+  font-weight:400;
+  line-height:1.55;
+  color:#544f49;
+}
+.invite.milky p.priv{font-size:13.5px;color:var(--text-muted)}
+.invite.milky .btn{
+  min-height:52px;
+  font-family:var(--font-ui);
+  font-size:16px;
+  font-weight:700;
+  border-radius:999px;
+  background:#F7F6EF;
+  color:var(--brand-charcoal);
+  border:1px solid rgba(55,50,48,.12);
+}
+.invite.milky .btn.primary{
+  background:var(--brand-yellow);
+  color:var(--brand-charcoal);
+  border:1px solid var(--brand-yellow);
+}
+.invite.milky .btn.ghost-d{
+  background:#F7F6EF;
+  color:var(--brand-charcoal);
+  border:1px solid rgba(55,50,48,.14);
+}
+.invite.milky .btn.danger-soft{
+  background:rgba(249,116,107,.10);
+  color:var(--brand-charcoal);
+  border:1px solid rgba(249,116,107,.40);
+}
+.invite.milky .respline{
+  height:3px;
+  background:rgba(55,50,48,.10);
+}
+.invite.milky .respline i{background:rgba(55,50,48,.62)}
+.invite.milky .resp-cap{color:var(--text-muted)}
 </style>
 </head>
 <body>
   <button class="mode-btn" id="modeBtn" onclick="togglePresent()">Presentation mode</button>
-  <h1>Student Practice Rooms <span style="font-weight:400;color:var(--text-muted);font-size:14px">v21 · matkot transition fix</span></h1>
+  <h1>Student Practice Rooms <span style="font-weight:400;color:var(--text-muted);font-size:14px">visual alignment · Desktop Main Room + Mobile Practice Rooms</span></h1>
   <p class="lead">Surgical fix on the waiting / return transition only - <b>the v20 activity timer, the Duo Room, the turn frame and chip, camera/mic, the report flow, Solo routing and the header timer are all untouched</b>. The matkot ball asset is regenerated with a thin charcoal stroke so it no longer vanishes when it crosses the white paddles. And the &ldquo;scratched disc&rdquo; glitch is fixed at its root: <code>roomTick()</code> was calling <code>render()</code> once a second, and <code>render()</code> rebuilds <code>frame.innerHTML</code>, which destroys the Lottie node and reloads the 6-second matkot loop from frame&nbsp;0 - so the animation was being restarted six times per cycle. The room clock now writes the countdown DOM in place and never re-renders, and <code>mountLottie()</code> is idempotent and playhead-preserving.</p>
 
   <div class="controls">
@@ -2266,24 +2756,15 @@ function activityMeta(){
 }
 function topbar(){
   var room=(ST.scene==='duo'||ST.scene==='enforce'||ST.scene==='partnerleft'||ST.scene==='consent');
-  var ctx=activityMeta(), ctxHtml='';
-  if(ctx){
-    /* v4: header keeps mode \u00b7 activity pill only \u2014 instruction line removed */
-    ctxHtml='<div class="ctx-group"><div class="room-ctx">'+ctx.mode
-      +(ctx.activity?'<span class="sub">\u00b7 '+ctx.activity+'</span>':'')+'</div></div>';
-  }
+  var ctx=activityMeta();
+  var actLbl=(room&&ctx&&ctx.activity)?'<div class="room-act">'+ctx.activity+'</div>':'';
   var fcls=(ST.roomPhase==='final')?' final':'';
   var rtxt=roomFmt(ST.roomLeft);   /* same source of truth as the waiting screen */
   var roomPill=room?('<div class="room-pill'+fcls+'">'+I.clock+'<span class="cap">Room</span> '+rtxt+'</div>'):'';
-  /* hide the dry session timer in room + waiting/transition/solo contexts \u2014 show only the room timer */
-  var hideSession=room||ST.scene==='wait'||ST.scene==='report'||ST.scene==='trans'||ST.scene==='return'||ST.scene==='solo'||ST.scene==='transfer';
-  return '<div class="header-scrim"></div><div class="topbar">'
+  return '<div class="header-scrim"></div>'+(room?'<div class="clock-chrome-fade" aria-hidden="true"></div>':'')+'<div class="topbar">'
     +'<button class="x">'+I.x+'</button>'
-    +'<div class="meta"><div class="title">Gym</div><div class="with">with '+TEACHER+'</div></div>'
-    + ctxHtml
     +'<div class="spacer"></div>'
-    + roomPill
-    + (hideSession?'':'<div class="session-timer">'+I.clock+'<span class="cap">Session</span> 15:21</div>')
+    +'<div class="room-status">'+actLbl+roomPill+'</div>'
     +'</div>';
 }
 
@@ -2557,11 +3038,13 @@ var CAR_SIL={
 };
 function advanceCue(){ ST.carIdx=(ST.carIdx+1)%CAR_CUES.length; }
 function carouselCue(){
-  /* v11: the cue IS the picture. No answer word, no explanatory copy in the room UI.
-     CAR_LBL is kept for the debug state line only. */
-  var k=CAR_CUES[(ST.carIdx<0?0:ST.carIdx)%CAR_CUES.length];
-  return '<div class="car-cue">'+CAR_SIL[k]
-    +'<div class="car-bar"><i class="car-fill"></i></div></div>';
+  /* Current + next only. No answer word. CAR_LBL stays for the debug line. */
+  var i=(ST.carIdx<0?0:ST.carIdx)%CAR_CUES.length;
+  var curr=CAR_CUES[i], next=CAR_CUES[(i+1)%CAR_CUES.length];
+  return '<div class="car-cue"><div class="car-track">'
+    +'<div class="car-slot car-curr">'+CAR_SIL[curr]+'</div>'
+    +'<div class="car-slot car-next">'+CAR_SIL[next]+'</div>'
+    +'</div><div class="car-bar"><i class="car-fill"></i></div></div>';
 }
 /* the 5s cue bar is driven from state after each render (the frame is rebuilt every tick) */
 function syncCue(){
@@ -2583,7 +3066,8 @@ function duoStage(){
   var frame=live?ST.actFrame:'';
   var isTurn=live&&ST.actStep==='turn';
   var isCount=live&&(ST.actStep==='prep'||ST.actStep==='trans'||ST.actStep==='break');
-  var tileTimer=actTileTimer();
+  var showClock=isTurn&&ST.activity!=='carousel';
+  var tileTimer=showClock&&actTileTimer();
   var youFrame=(frame==='you'), danaFrame=(frame==='dana');
 
   function chipFor(who,name){
@@ -2612,8 +3096,8 @@ function duoStage(){
   /* Carousel grammar cue \u2014 switches every 5s during a turn. Behavior shown, not explained. */
   if(isTurn&&ST.activity==='carousel') s+=carouselCue();
 
-  /* central activity timer (activities whose timer is not tile-attached) */
-  if(isTurn&&!tileTimer) s+='<div class="demo-timer act">'+turnClock(ST.actNum,ST.actDur,'lg')+'<span class="rt-cap round">Round '+ST.actRound+' of 2</span></div>';
+  /* central activity timer (activities whose timer is not tile-attached). Never with Carousel. */
+  if(showClock&&!actTileTimer()) s+='<div class="demo-timer act">'+turnClock(ST.actNum,ST.actDur,'lg')+'<span class="rt-cap round">Round '+ST.actRound+' of 2</span></div>';
   /* v19: no generic caption. A timed round has no round metadata, so the area stays empty. */
   if(live&&ST.actStep==='round') s+='<div class="demo-timer act">'+turnClock(ST.actNum,ST.actDur,'lg')+'</div>';
 
@@ -2628,19 +3112,18 @@ function duoStage(){
 
 /* Footer controls — neutral when on; red slash only for off/muted */
 /* (3) Room Controls dock: Tip \u00b7 Camera \u00b7 Mic centered; Leave & report is a separated ghost safety action. */
-function duoFooter(){ return '<div class="controls-footer room-footer">'+roomControls()+leaveReportBtn()+'</div>'; }
-function rcItem(inner,cap){ return '<div class="rc-item">'+inner+'<span class="rc-cap">'+cap+'</span></div>'; }
-function rcBtn(icon,cap,off,onCap,offCap,onclick){
-  return rcItem('<button class="rc-btn" onclick="'+onclick+'">'+icon+(off?'<span class="slash"></span>':'')+'<span class="tip">'+(off?onCap:offCap)+'</span></button>',cap);
+function duoFooter(){ return '<div class="controls-footer room-footer"><div class="footer-capsule">'+roomControls()+'</div>'+leaveReportBtn()+'</div>'; }
+function rcBtn(icon,off,onCap,offCap,onclick){
+  return '<button class="rc-btn" onclick="'+onclick+'">'+icon+(off?'<span class="slash"></span>':'')+'<span class="tip">'+(off?onCap:offCap)+'</span></button>';
 }
 function roomControls(){
-  var tip=rcItem('<button class="rc-btn tip-btn" onclick="playTip()">'+I.bulb+'<span class="tip">Replay teacher instruction</span></button>','TIP');
+  var tip='<button class="rc-btn tip-btn" onclick="playTip()">'+I.bulb+'<span class="tip">Replay teacher instruction</span></button>';
   var cam=ST.camOff
-    ? rcBtn(I.cam,'Camera',true,'Turn camera on','',"deviceBackOn('camera')")
-    : rcBtn(I.cam,'Camera',false,'','Turn camera off',"deviceOff('camera')");
+    ? rcBtn(I.cam,true,'Turn camera on','',"deviceBackOn('camera')")
+    : rcBtn(I.cam,false,'','Turn camera off',"deviceOff('camera')");
   var mic=ST.micOff
-    ? rcBtn(I.mic,'Mic',true,'Turn mic on','',"deviceBackOn('mic')")
-    : rcBtn(I.mic,'Mic',false,'','Turn mic off',"deviceOff('mic')");
+    ? rcBtn(I.mic,true,'Turn mic on','',"deviceBackOn('mic')")
+    : rcBtn(I.mic,false,'','Turn mic off',"deviceOff('mic')");
   return '<div class="rc-cluster">'+tip+cam+mic+'</div>';
 }
 /* TIP = replay the teacher's instruction/example recorded in Teacher Cockpit
@@ -2808,7 +3291,7 @@ function soloActivity(){
     +'<span class="sa-load"></span>'
     +'</div></div>';
 }
-function soloFooter(){ return '<div class="controls-footer room-footer">'+soloControls()+leaveReportBtn()+'</div>'; }  /* v3: no chat input/reactions in Solo */
+function soloFooter(){ return '<div class="controls-footer room-footer"><div class="footer-capsule">'+soloControls()+'</div>'+leaveReportBtn()+'</div>'; }  /* v3: no chat input/reactions in Solo */
 function soloControls(){
   var camSlash=ST.camOff?'<span class="slash"></span>':'';
   var micBtn=ST.micOff
