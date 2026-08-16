@@ -2216,6 +2216,153 @@ h1{font-size:20px}
 .chat-overlay.is-compact .chat-stack{gap:6px}
 .chat-overlay.is-compact .mo{flex:none;max-width:100%}
 
+/* ===== v9d volunteer popup — intact hand asset (additive · later-wins) =====
+   Visual only. Same PNG twice for grip sandwich. Logic / timers unchanged. */
+.vol-card{
+  left:var(--s16);
+  right:var(--s16);
+  top:50%;
+  transform:translateY(-50%);
+  background:transparent;
+  border:none;
+  border-radius:0;
+  padding:0;
+  box-shadow:none;
+  -webkit-backdrop-filter:none;
+  backdrop-filter:none;
+  overflow:visible;
+  font-family:var(--font-ui);
+  text-align:center;
+  color:var(--brand-charcoal);
+}
+.vol-scene{
+  position:relative;
+  width:100%;
+  min-height:156px;
+  margin:0 auto;
+  overflow:visible;
+  animation:volEnter .38s cubic-bezier(.22,.82,.18,1) both;
+}
+@keyframes volEnter{
+  0%{opacity:0;transform:translateX(-36px)}
+  82%{opacity:1;transform:translateX(3px)}
+  100%{opacity:1;transform:translateX(0)}
+}
+@media (prefers-reduced-motion:reduce){
+  .vol-scene{animation:none}
+}
+.vol-hand{
+  position:absolute;
+  left:calc(50% - 208px);
+  top:50%;
+  width:138px;
+  height:auto;
+  display:block;
+  transform:translateY(-54%) scaleX(-1);
+  transform-origin:center center;
+  pointer-events:none;
+  user-select:none;
+  -webkit-user-drag:none;
+}
+/* Index + arm behind the card. Thumb cut is hidden by the card. */
+.vol-hand-back{
+  z-index:1;
+  clip-path:polygon(0 0,100% 0,100% 100%,54% 100%,54% 50%,0 50%);
+}
+/* Thumb only, in front — polygon follows the thumb, no square cut. */
+.vol-hand-front{
+  z-index:3;
+  clip-path:polygon(0% 44%,54% 44%,64% 66%,52% 88%,10% 84%,0% 56%);
+}
+.vol-choice{
+  position:relative;
+  z-index:2;
+  width:min(210px,72%);
+  margin:0 auto;
+  box-sizing:border-box;
+  background:#F7F6EF;
+  background-color:rgba(247,246,239,.96);
+  -webkit-backdrop-filter:blur(24px) saturate(1.3);
+  backdrop-filter:blur(24px) saturate(1.3);
+  border:1px solid rgba(55,50,48,.10);
+  border-radius:22px;
+  padding:18px 24px 16px 24px;
+  box-shadow:0 16px 36px rgba(55,50,48,.14),0 1px 0 rgba(255,255,255,.55) inset;
+}
+.vol-t{
+  font-size:20px;
+  font-weight:700;
+  line-height:1.2;
+  letter-spacing:-.32px;
+  margin:0 0 16px;
+  text-wrap:balance;
+  color:var(--brand-charcoal);
+}
+.vol-icons{display:none}
+.vol-acts{
+  display:flex;
+  flex-direction:row;
+  gap:8px;
+  margin-top:0;
+}
+.vol-btn{
+  display:block;
+  flex:1;
+  width:auto;
+  box-sizing:border-box;
+  font-family:var(--font-ui);
+  font-size:13px;
+  font-weight:700;
+  padding:11px 8px;
+  border-radius:var(--pill);
+  cursor:pointer;
+  text-align:center;
+}
+.vol-yes{
+  background:var(--brand-yellow);
+  color:var(--brand-charcoal);
+  border:1px solid var(--brand-yellow);
+}
+.vol-no{
+  background:rgba(255,255,255,.78);
+  color:var(--brand-charcoal);
+  border:1px solid rgba(55,50,48,.10);
+  font-weight:700;
+}
+.vol-count{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:0;
+  margin:12px 0 0;
+  max-width:none;
+}
+.vol-num{
+  position:absolute;
+  width:1px;
+  height:1px;
+  overflow:hidden;
+  clip:rect(0,0,0,0);
+}
+.vol-bar{
+  flex:1;
+  height:3px;
+  border-radius:99px;
+  background:rgba(55,50,48,.10);
+  overflow:hidden;
+}
+.vol-bar i{
+  height:100%;
+  background:var(--brand-charcoal);
+  border-radius:99px;
+  animation-delay:.38s;
+  animation-fill-mode:backwards;
+}
+@media (prefers-reduced-motion:reduce){
+  .vol-bar i{animation-delay:0s}
+}
+.vol-b,.vol-c{display:none}
+
 </style>
 </head>
 <body>
@@ -3093,19 +3240,27 @@ function nextCarousel(){ if(!st.carousel){ startCarousel(); return; } advanceCar
 function hideCarousel(){ stopCarTimer(); st.carousel=false; st.carWho=null; render(); }
 /* ---------- Volunteer popup for Demonstration (v9) ---------- */
 var volTimer=null;
-function stopVolTimer(){ if(volTimer){ clearInterval(volTimer); volTimer=null; } }
+var volEnterTimer=null;
+function stopVolTimer(){
+  if(volTimer){ clearInterval(volTimer); volTimer=null; }
+  if(volEnterTimer){ clearTimeout(volEnterTimer); volEnterTimer=null; }
+}
 function volunteerLayer(){
   if(st.vol==='ask'){
     return '<div class="vol-scrim"></div>'
-      +'<div class="vol-card" role="dialog" aria-modal="true">'
-        +'<div class="vol-t">Want to give it a go?</div>'
-        +'<div class="vol-b">Niv is looking for one volunteer.</div>'
-        +'<div class="vol-count"><span class="vol-num" id="volnum">'+st.volLeft+'s</span>'
-          +'<span class="vol-bar"><i></i></span></div>'
-        +'<div class="vol-c">If you\u2019re chosen, your camera and audio will be shared with the class.</div>'
-        +'<div class="vol-acts">'
-          +'<button class="vol-btn vol-yes" onclick="volYes()">Yes, let\u2019s go!</button>'
-          +'<button class="vol-btn vol-no" onclick="volNo()">Not this time</button>'
+      +'<div class="vol-card" role="dialog" aria-modal="true" aria-labelledby="vol-title">'
+        +'<div class="vol-scene">'
+          +'<img class="vol-hand vol-hand-back" src="assets/volunteer-hand.png" alt="" aria-hidden="true" width="138" height="74">'
+          +'<div class="vol-choice">'
+            +'<div class="vol-t" id="vol-title">Want to volunteer?</div>'
+            +'<div class="vol-acts">'
+              +'<button type="button" class="vol-btn vol-yes" onclick="volYes()">Yalla!</button>'
+              +'<button type="button" class="vol-btn vol-no" onclick="volNo()">Not today</button>'
+            +'</div>'
+            +'<div class="vol-count"><span class="vol-num" id="volnum">'+st.volLeft+'s</span>'
+              +'<span class="vol-bar"><i></i></span></div>'
+          +'</div>'
+          +'<img class="vol-hand vol-hand-front" src="assets/volunteer-hand.png" alt="" aria-hidden="true" width="138" height="74">'
         +'</div>'
       +'</div>';
   }
@@ -3117,7 +3272,18 @@ function volTick(){
   var n=document.getElementById('volnum'); if(n) n.textContent=Math.max(0,st.volLeft)+'s';
   if(st.volLeft<=0){ volTimeoutNow(); }
 }
-function volStart(){ stopVolTimer(); st.vol='ask'; st.volLeft=10; volTimer=setInterval(volTick,1000); render(); }
+function volStart(){
+  stopVolTimer();
+  st.vol='ask';
+  st.volLeft=10;
+  render();
+  var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var delay=reduce?0:380;
+  volEnterTimer=setTimeout(function(){
+    volEnterTimer=null;
+    volTimer=setInterval(volTick,1000);
+  },delay);
+}
 function volYes(){ stopVolTimer(); st.vol='in'; render(); }                 /* volunteered, waiting to be picked */
 function volNo(){ stopVolTimer(); st.vol=null; render(); }                  /* closes quietly */
 function volTimeoutNow(){ stopVolTimer(); st.vol=null; render(); }          /* timeout closes quietly */
