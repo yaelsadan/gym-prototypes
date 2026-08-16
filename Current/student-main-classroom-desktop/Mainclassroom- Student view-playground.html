@@ -2406,6 +2406,161 @@ body.present .act-timer.pos-tc{
   .ephem-dock.is-expanded .ephem-msg.has-av .eph-av{transform:none}
 }
 
+/* ===== Desktop volunteer ask — approved mobile hand+card, desktop placement =====
+   Compact card in the left / center-left of the video. Same grip sandwich
+   (index behind, thumb in front). Draw / Yes / No / 10s window unchanged.
+   Card does not scale up in presentation mode. */
+.invite-overlay.vol-ask{
+  display:block;
+  background:rgba(43,39,36,.34);
+  -webkit-backdrop-filter:blur(7px) saturate(.92);
+  backdrop-filter:blur(7px) saturate(.92);
+}
+.vol-card{
+  position:absolute;
+  left:clamp(72px, 8.5vw, 156px);
+  top:48%;
+  transform:translateY(-50%) scale(1.1);
+  transform-origin:center center;
+  z-index:1;
+  width:296px;
+  background:transparent;
+  border:none;
+  padding:0;
+  box-shadow:none;
+  overflow:visible;
+  font-family:var(--font-ui);
+  color:var(--brand-charcoal);
+  text-align:center;
+}
+.vol-scene{
+  position:relative;
+  width:296px;
+  min-height:148px;
+  overflow:visible;
+  animation:volEnter .38s cubic-bezier(.22,.82,.18,1) both;
+}
+@keyframes volEnter{
+  0%{opacity:0;transform:translateX(-40px)}
+  82%{opacity:1;transform:translateX(4px)}
+  100%{opacity:1;transform:translateX(0)}
+}
+.vol-hand{
+  position:absolute;
+  left:-114px;
+  top:50%;
+  width:176px;
+  height:auto;
+  display:block;
+  transform:translateY(-54%) scaleX(-1);
+  transform-origin:center center;
+  pointer-events:none;
+  user-select:none;
+  -webkit-user-drag:none;
+}
+.vol-hand-back{
+  z-index:1;
+  clip-path:polygon(0 0,100% 0,100% 100%,54% 100%,54% 50%,0 50%);
+}
+.vol-hand-front{
+  z-index:3;
+  clip-path:polygon(0% 44%,54% 44%,64% 66%,52% 88%,10% 84%,0% 56%);
+}
+.vol-choice{
+  position:relative;
+  z-index:2;
+  width:296px;
+  box-sizing:border-box;
+  background:#F7F6EF;
+  background-color:rgba(247,246,239,.96);
+  -webkit-backdrop-filter:blur(24px) saturate(1.3);
+  backdrop-filter:blur(24px) saturate(1.3);
+  border:1px solid rgba(55,50,48,.10);
+  border-radius:22px;
+  padding:20px 32px 16px;
+  box-shadow:0 16px 36px rgba(55,50,48,.14),0 1px 0 rgba(255,255,255,.55) inset;
+}
+.vol-t{
+  font-family:var(--font-ui);
+  font-size:20px;
+  font-weight:700;
+  line-height:1.2;
+  letter-spacing:-.32px;
+  margin:0 0 16px;
+  text-wrap:balance;
+  color:var(--brand-charcoal);
+}
+.vol-acts{
+  display:flex;
+  flex-direction:row;
+  gap:8px;
+  margin:0;
+}
+.vol-btn{
+  display:block;
+  flex:1;
+  width:auto;
+  box-sizing:border-box;
+  font-family:var(--font-ui);
+  font-size:13.5px;
+  font-weight:700;
+  padding:11px 10px;
+  border-radius:var(--pill);
+  cursor:pointer;
+  text-align:center;
+}
+.vol-yes{
+  background:var(--brand-yellow);
+  color:var(--brand-charcoal);
+  border:1px solid var(--brand-yellow);
+}
+.vol-no{
+  background:rgba(255,255,255,.78);
+  color:var(--brand-charcoal);
+  border:1px solid rgba(55,50,48,.10);
+  font-weight:700;
+}
+.vol-count{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:0;
+  margin:12px 0 0;
+}
+.vol-num{
+  position:absolute;
+  width:1px;
+  height:1px;
+  overflow:hidden;
+  clip:rect(0,0,0,0);
+}
+.vol-bar{
+  flex:1;
+  height:3px;
+  border-radius:99px;
+  background:rgba(55,50,48,.10);
+  overflow:hidden;
+}
+.vol-bar i{
+  display:block;
+  height:100%;
+  width:100%;
+  background:var(--brand-charcoal);
+  border-radius:99px;
+  animation:volbar 10s linear forwards;
+  animation-delay:.38s;
+  animation-fill-mode:backwards;
+}
+@keyframes volbar{from{width:100%}to{width:0}}
+body.present .vol-card,
+body.present .vol-scene,
+body.present .vol-choice{width:296px}
+.frame.w-narrow .vol-card{left:56px}
+@media (prefers-reduced-motion:reduce){
+  .vol-scene{animation:none}
+  .vol-bar i{animation-delay:0s}
+}
+
 </style>
 </head>
 <body>
@@ -3094,15 +3249,21 @@ function invitePopup(){
       +'<p class="resp-cap">Picking a volunteer\u2026</p>'
       +'</div></div>';
   }
-  /* Volunteer / demonstration consent \u2014 same milky decision-UI family as Room Consent (Assistant, 10s bar).
-     .wide keeps the long title on one line on desktop. */
-  return '<div class="invite-overlay"><div class="invite milky wide">'
-    +'<h4>Who wants to volunteer for class demonstration?</h4>'
-    +'<p>If you\u2019re chosen, your camera and audio will be shared with the rest of the class.</p>'
-    +'<div class="acts"><button class="btn primary" onclick="volunteerYes()">Yes, let\u2019s go!</button>'
-    +'<button class="btn ghost-d" onclick="volunteerNo()">Not this time</button></div>'
-    +'<div class="respline s10"><i></i></div>'   /* the depleting bar communicates the 10s auto-close on its own */
-    +'</div></div>';
+  /* Volunteer ask — approved mobile hand+card, compact desktop placement. */
+  return '<div class="invite-overlay vol-ask"><div class="vol-card" role="dialog" aria-modal="true" aria-labelledby="vol-title">'
+    +'<div class="vol-scene">'
+    +'<img class="vol-hand vol-hand-back" src="../student-main-classroom-mobile/assets/volunteer-hand.png" alt="" aria-hidden="true" width="176" height="94">'
+    +'<div class="vol-choice">'
+    +'<div class="vol-t" id="vol-title">Want to volunteer?</div>'
+    +'<div class="vol-acts">'
+    +'<button type="button" class="vol-btn vol-yes" onclick="volunteerYes()">Yalla!</button>'
+    +'<button type="button" class="vol-btn vol-no" onclick="volunteerNo()">Not today</button>'
+    +'</div>'
+    +'<div class="vol-count"><span class="vol-num" id="volnum">10s</span>'
+    +'<span class="vol-bar"><i></i></span></div>'
+    +'</div>'
+    +'<img class="vol-hand vol-hand-front" src="../student-main-classroom-mobile/assets/volunteer-hand.png" alt="" aria-hidden="true" width="176" height="94">'
+    +'</div></div></div>';
 }
 /* (4) There is NO student-facing "no volunteers" state. If the 10s window closes
    with an empty pool, the student is simply returned to the normal Main Room -
@@ -3110,11 +3271,24 @@ function invitePopup(){
    In this prototype it surfaces in the DEBUG note line only. */
 
 var volTimer=null;
+var volEnterTimer=null;
 var OTHERS=['Ari','Dana','Tom','Lior','Hanna'];
-function clearVol(){ if(volTimer){clearTimeout(volTimer);volTimer=null;} }
+function clearVol(){
+  if(volTimer){clearTimeout(volTimer);volTimer=null;}
+  if(volEnterTimer){clearTimeout(volEnterTimer);volEnterTimer=null;}
+}
 /* the 10s window runs to the end regardless of what THIS student pressed - the
-   draw is a class-level event, not a personal one. */
-function armVol(){ clearVol(); volTimer=setTimeout(pickVolunteer,10000); }
+   draw is a class-level event, not a personal one. Timer starts after the
+   hand+card entrance settles (380ms), matching the approved mobile cadence. */
+function armVol(){
+  clearVol();
+  var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var delay=reduce?0:380;
+  volEnterTimer=setTimeout(function(){
+    volEnterTimer=null;
+    volTimer=setTimeout(pickVolunteer,10000);
+  },delay);
+}
 function volunteerYes(){ ST.iVolunteered=true;  ST.volPhase='pending'; render(); }  /* joins the pool, timer keeps running */
 function volunteerNo(){  ST.iVolunteered=false; ST.volPhase='none';    render(); }  /* popup closes; the class draw still happens */
 
@@ -3389,7 +3563,7 @@ function updateNote(){
     'intermission':'A · INTERMISSION — calm branded card. Fedra headline, Assistant number.',
     'transition':'B · SHORT transition — vector matkot hero (no white box, enlarged), regular-hyphen headline, thin quiet loading line. No chips, no numeric countdown.',
     'demonstrate':'DEMONSTRATION - teacher + the chosen student, split view. Everyone sees it. The chosen student sees themselves in the split AND their self-view is FOLDED; their camera + mic are shared for this state only. End demonstration returns everyone to the basic Main Room, muted.',
-    'volunteer':'DEMONSTRATION volunteer — single popup with consent (Yes, let’s go! / Not this time, 10s). Yes → teacher + student split view; a 10s timeout with no volunteer returns to the normal Main Room (no student-facing no-volunteers state).',
+    'volunteer':'DEMONSTRATION volunteer — hand-held card (Want to volunteer? · Yalla! / Not today, 10s after entrance). Yes → pool + pending; a 10s timeout with no volunteer returns to the normal Main Room (no student-facing no-volunteers state).',
     'roomconsent':'ROOM CONSENT (A) - milky centered modal with a visible 10s decision timer. Yes → Practice Room Transfer (B). Not now / 10s timeout → Waiting-return (never Solo, never normal Main Room). In the integrated product students are asked for camera/mic consent only once.',
     'waitreturn':'WAITING-RETURN - calm full-screen with a room countdown. Where a student waits to rejoin the main room after declining / timing out room consent. Not Solo, not the normal Main Room.',
     'dialogue':'DIALOGUE · MVP — neutral labels, shared timer floating low in the center gutter. Open a panel to confirm it stays active over the scene.',
@@ -3706,12 +3880,15 @@ function trigBurst(){trigMsg();setTimeout(trigHelper,450);setTimeout(trigMsg,900
 
 (function(){
   var p=new URLSearchParams(location.search);
-  if(p.get('mode')==='presentation'){document.body.classList.add('present');document.getElementById('modeBtn').textContent='Exit presentation';}
+  if(p.get('mode')!=='debug'){document.body.classList.add('present');document.getElementById('modeBtn').textContent='Exit presentation';}
   var map={scene:'scene',perspective:'perspective',vb:'vb',width:'width',panel:'panel'};
   Object.keys(map).forEach(function(k){var v=p.get(k);if(v!==null)ST[map[k]]=v;});
+  if(p.get('scene')===null) ST.scene='volunteer';
   var chat=p.get('chat');
   if(chat==='hidden'||chat==='compact'||chat==='expanded') ST.chatMode=chat;
-  syncAll(); render();
+  syncAll();
+  if(ST.scene==='volunteer'){ ST.vstep=1; ST.volPhase='ask'; ST.iVolunteered=false; armVol(); }
+  render();
 })();
 </script>
 </body>
