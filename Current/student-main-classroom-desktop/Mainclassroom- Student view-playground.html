@@ -3914,7 +3914,6 @@ function trigBurst(){trigMsg();setTimeout(trigHelper,450);setTimeout(trigMsg,900
   if(p.get('mode')!=='debug'){document.body.classList.add('present');document.getElementById('modeBtn').textContent='Exit presentation';}
   var map={scene:'scene',perspective:'perspective',vb:'vb',width:'width',panel:'panel'};
   Object.keys(map).forEach(function(k){var v=p.get(k);if(v!==null)ST[map[k]]=v;});
-  if(p.get('scene')===null) ST.scene='volunteer';
   var chat=p.get('chat');
   if(chat==='hidden'||chat==='compact'||chat==='expanded') ST.chatMode=chat;
   syncAll();
