@@ -160,12 +160,13 @@ body.present .mode-btn:hover{opacity:1}
 .pip .shade{position:absolute;inset:0;background:rgba(55,50,48,.18)}
 .pip .you{position:absolute;left:8px;top:8px;font-size:11px;font-weight:700;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.5);z-index:2}
 .pip .grip{position:absolute;top:6px;right:8px;font-size:10px;color:rgba(255,255,255,.7);z-index:2}
+.pip .priv{position:absolute;left:8px;bottom:7px;z-index:2;font-family:var(--font-ui);font-size:10px;font-weight:600;letter-spacing:.01em;color:rgba(255,255,255,.78);text-shadow:0 1px 2px rgba(0,0,0,.5);white-space:nowrap;pointer-events:none}
 .pip.cam-off{background:#3a3531;display:grid;place-items:center}
-.pip.cam-off .shade,.pip.cam-off .you{display:none}
+.pip.cam-off .shade,.pip.cam-off .you,.pip.cam-off .priv{display:none}
 .pip.cam-off .av{width:46px;height:46px;border-radius:50%;background:#5c554e;display:grid;place-items:center;font-size:18px;font-weight:700;color:#fff}
 .pip.cam-off .camoff{position:absolute;bottom:8px;left:0;right:0;text-align:center;font-size:10px;font-weight:700;color:#e8e2d6;text-transform:uppercase;letter-spacing:.4px}
 .pip.collapsed{width:120px;height:34px;bottom:106px;background:#3a3531}
-.pip.collapsed .shade,.pip.collapsed .you,.pip.collapsed .grip{display:none}
+.pip.collapsed .shade,.pip.collapsed .you,.pip.collapsed .grip,.pip.collapsed .priv{display:none}
 .pip.collapsed .tab-lbl{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:7px;color:#fff;font-size:11px;font-weight:700;z-index:2}
 .pip.collapsed .camdot{width:7px;height:7px;border-radius:50%;background:var(--status-success)}
 
@@ -2486,10 +2487,34 @@ body.present .act-timer.pos-tc{
   font-weight:700;
   line-height:1.2;
   letter-spacing:-.32px;
-  margin:0 0 16px;
+  margin:0 0 10px;
   text-wrap:balance;
   color:var(--brand-charcoal);
 }
+.vol-note{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:4px;
+  margin:0 0 14px;
+  font-family:var(--font-ui);
+  font-size:12.5px;
+  font-weight:500;
+  line-height:1.25;
+  color:#6E6963;
+  white-space:nowrap;
+}
+.vol-note-ico{
+  display:inline-flex;
+  flex:none;
+  color:#6E6963;
+}
+.vol-note-ico svg{
+  width:15px;
+  height:15px;
+  display:block;
+}
+.vol-note > span:last-child{margin-left:4px}
 .vol-acts{
   display:flex;
   flex-direction:row;
@@ -3037,7 +3062,8 @@ function selfview(mode){
   if(mode==='collapsed') return '<div class="pip collapsed"><div class="tab-lbl"><span class="camdot"></span>You · camera on</div></div>';
   if(mode==='off') return '<div class="pip cam-off"><span class="av">Y</span><span class="camoff">Camera off</span></div>';
   var bg=real?(' style="'+realBg('you')+'"'):'';
-  return '<div class="pip"'+bg+'><div class="shade"></div><span class="you">You</span><span class="grip">⠿ drag</span></div>';
+  var priv=ST.scene==='demonstrate'?'':'<span class="priv">Only you can see this</span>';
+  return '<div class="pip"'+bg+'><div class="shade"></div><span class="you">You</span><span class="grip">⠿ drag</span>'+priv+'</div>';
 }
 function footer(camOff,micOpen,panelOpen,reason){
   return '<div class="controls-footer"><div class="footer-capsule">'
@@ -3250,11 +3276,16 @@ function invitePopup(){
       +'</div></div>';
   }
   /* Volunteer ask — approved mobile hand+card, compact desktop placement. */
-  return '<div class="invite-overlay vol-ask"><div class="vol-card" role="dialog" aria-modal="true" aria-labelledby="vol-title">'
+  return '<div class="invite-overlay vol-ask"><div class="vol-card" role="dialog" aria-modal="true" aria-labelledby="vol-title" aria-describedby="vol-note">'
     +'<div class="vol-scene">'
     +'<img class="vol-hand vol-hand-back" src="../student-main-classroom-mobile/assets/volunteer-hand.png" alt="" aria-hidden="true" width="176" height="94">'
     +'<div class="vol-choice">'
     +'<div class="vol-t" id="vol-title">Want to volunteer?</div>'
+    +'<div class="vol-note" id="vol-note">'
+    +'<span class="vol-note-ico" aria-hidden="true">'+I.cam+'</span>'
+    +'<span class="vol-note-ico" aria-hidden="true">'+I.mic+'</span>'
+    +'<span>Everyone will see &amp; hear you</span>'
+    +'</div>'
     +'<div class="vol-acts">'
     +'<button type="button" class="vol-btn vol-yes" onclick="volunteerYes()">Yalla!</button>'
     +'<button type="button" class="vol-btn vol-no" onclick="volunteerNo()">Not today</button>'

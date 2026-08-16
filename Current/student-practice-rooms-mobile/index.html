@@ -43,7 +43,7 @@
   /* timer palette — identical to desktop v21 */
   --t-milky:#F7F6EF; --t-charcoal:#373230; --t-yellow:#F9E24C; --t-coral:#F9746B;
   /* mobile room geometry */
-  --footer-h:158px; --seam-timer:112px;
+  --footer-h:158px; --seam-timer:135px;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:var(--font-ui);background:var(--surface-base);color:var(--text-primary);-webkit-font-smoothing:antialiased;padding:var(--s32) var(--s24) 60px}
@@ -303,14 +303,96 @@ h2{font-size:15px;margin:var(--s32) 0 var(--s8)}
 .t-muted svg{width:14px;height:14px}
 
 /* ---------- Solo + report ---------- */
-.solo-wrap{position:absolute;inset:0;z-index:12;display:flex;flex-direction:column;align-items:center;justify-content:center;
-  text-align:center;padding:0 26px;background:linear-gradient(170deg,#4a453f,#2a2622);color:#fff}
+/* Solo = the existing app flashcard, inside the Gym Practice Room shell.
+   Gym overlay (X + room clock) sits in the top row. No second app X,
+   no Duo footer / TIP / camera / chat / carousel. */
+.screen.scene-solo{background:#5C564F}
+.screen.scene-solo .statusbar{color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.35)}
+.screen.scene-solo .statusbar svg{color:currentColor}
+.solo-wrap{position:absolute;inset:0;z-index:12;display:flex;flex-direction:column;
+  padding:48px 0 0;color:#fff;font-family:var(--font-ui);
+  background:
+    linear-gradient(165deg,rgba(247,246,239,.18) 0%,rgba(247,246,239,.08) 38%,rgba(55,50,48,.10) 100%),
+    #5A544D}
+.solo-top{display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:4px 12px 2px;min-height:44px;flex:none;z-index:2}
+/* Same Gym X as Duo / Main Room — circular glass chip, white glyph */
+.solo-wrap .icon-btn{width:32px;height:32px;border-radius:var(--pill);display:grid;place-items:center;
+  border:1px solid rgba(255,246,236,.16);background:rgba(55,50,48,.32);color:#fff;flex:none;cursor:pointer;
+  -webkit-backdrop-filter:blur(12px) saturate(1.1);backdrop-filter:blur(12px) saturate(1.1);
+  box-shadow:inset 1px 1px 0 rgba(255,255,255,.10),0 2px 8px rgba(18,14,12,.18);padding:0}
+.solo-wrap .icon-btn svg{width:17px;height:17px}
+/* Room clock = Duo size; light on the medium graphite field */
+.solo-wrap .room-time{color:#fff;text-shadow:0 1px 4px rgba(55,50,48,.55);font-size:19px;font-weight:700;
+  padding:4px 2px;gap:7px;letter-spacing:.3px}
+.solo-wrap .room-time svg{color:rgba(255,255,255,.82);opacity:1;width:18px;height:18px}
+.solo-wrap .room-time .cap{opacity:.7;font-size:12.5px;font-weight:600;letter-spacing:.2px;color:#fff}
+.solo-wrap .room-time.final{color:var(--brand-charcoal);text-shadow:none;animation:none;
+  background:var(--brand-yellow);border-radius:var(--pill);padding:5px 12px 5px 10px;
+  font-size:20px;font-weight:800;letter-spacing:.2px;
+  box-shadow:0 2px 10px rgba(55,50,48,.20),0 1px 2px rgba(55,50,48,.10)}
+.solo-wrap .room-time.final svg,
+.solo-wrap .room-time.final .cap{color:var(--brand-charcoal);opacity:1}
+.solo-stage{flex:1;min-height:0;margin:14px 24px 16px;perspective:1400px}
+.solo-flip{position:relative;width:100%;height:100%;transform-style:preserve-3d;
+  transition:transform .55s cubic-bezier(.22,.7,.3,1)}
+.solo-wrap.is-flip .solo-flip{transform:rotateY(180deg)}
+.solo-face{position:absolute;inset:0;background:#fff;border-radius:22px;
+  box-shadow:0 16px 40px rgba(18,14,12,.28),0 2px 8px rgba(18,14,12,.12);
+  backface-visibility:hidden;-webkit-backface-visibility:hidden;
+  display:flex;flex-direction:column;overflow:hidden;cursor:pointer;pointer-events:none}
+.solo-wrap:not(.is-flip) .solo-face.solo-q,
+.solo-wrap.is-flip .solo-face.solo-a{pointer-events:auto}
+.solo-face.solo-a{transform:rotateY(180deg)}
+.solo-mark{position:absolute;top:12px;right:12px;width:36px;height:36px;z-index:1;
+  border:none;background:transparent;color:var(--brand-charcoal);display:grid;place-items:center;
+  cursor:pointer;padding:0}
+.solo-mark svg{width:22px;height:22px}
+.solo-mark.on svg{fill:currentColor}
+.solo-q-body{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:28px 28px 40px;text-align:center}
+.solo-a-main{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:28px 24px 36px;text-align:center}
+.solo-icon{width:128px;height:94px;object-fit:contain;display:block;margin:0 0 10px}
+.solo-ok{font-size:15px;font-weight:500;color:#9A9590;margin-bottom:10px}
+.solo-dir{font-size:14px;font-weight:500;color:#9A9590;margin-bottom:8px}
+.solo-en{font-size:28px;font-weight:700;letter-spacing:-.35px;line-height:1.2;color:var(--brand-charcoal)}
+.solo-he{font-size:32px;font-weight:700;line-height:1.3;color:var(--brand-charcoal);letter-spacing:0}
+.solo-player{display:flex;align-items:center;gap:10px;width:100%;max-width:260px;
+  margin:22px 0 0;padding:8px 10px;border:1px solid #E6E2DA;border-radius:var(--pill);flex:none}
+.solo-play{width:32px;height:32px;border-radius:50%;border:1.5px solid var(--brand-charcoal);flex:none;cursor:pointer;
+  background:transparent;color:var(--brand-charcoal);display:grid;place-items:center;padding:0}
+.solo-play svg{width:17px;height:17px;margin-left:2px}
+.solo-play.playing svg{margin-left:0;width:16px;height:16px}
+.solo-wave{flex:1;display:flex;align-items:center;gap:2.5px;height:28px}
+.solo-wave i{display:block;flex:1;max-width:3px;background:#D2CEC6;border-radius:1px;transform-origin:center}
+.solo-wave.on i{background:#B7B2AA;animation:solowave 1s ease-in-out infinite}
+.solo-wave.on i:nth-child(odd){animation-delay:.12s}
+.solo-wave.on i:nth-child(3n){animation-delay:.24s}
+@keyframes solowave{0%,100%{transform:scaleY(.72)}50%{transform:scaleY(1)}}
+.solo-speed{flex:none;width:32px;height:24px;padding:0;border:none;border-radius:var(--pill);
+  background:#F3F1EA;color:#8B8681;font-family:var(--font-ui);font-size:12px;font-weight:700;
+  display:grid;place-items:center;line-height:1;letter-spacing:0;text-align:center;cursor:default}
+.solo-nav{display:flex;align-items:center;justify-content:center;gap:10px;flex:none;
+  align-self:center;width:calc(100% - 36px);max-width:352px;
+  height:66px;margin:0 18px 20px;padding:9px 12px;border-radius:999px;box-sizing:border-box;
+  border:1px solid rgba(255,246,236,.16);
+  background:
+    linear-gradient(135deg,rgba(255,255,255,.08) 0%,transparent 42%,rgba(0,0,0,.05) 100%),
+    rgba(45,40,36,.48);
+  -webkit-backdrop-filter:blur(26px) saturate(1.14);
+  backdrop-filter:blur(26px) saturate(1.14);
+  box-shadow:inset 1px 1px 0 rgba(255,255,255,.10),0 10px 28px rgba(18,14,12,.28)}
+.solo-skip{width:46px;height:46px;border:none;background:transparent;box-shadow:none;
+  border-radius:50%;flex:none;cursor:pointer;padding:0;
+  display:grid;place-items:center;color:rgba(255,246,236,.88)}
+.solo-skip svg{width:22px;height:22px}
+.solo-cta{flex:1;min-width:0;height:48px;border-radius:var(--pill);
+  background:var(--brand-yellow);color:var(--brand-charcoal);border:1.5px solid var(--brand-charcoal);
+  font-family:var(--font-ui);font-size:16px;font-weight:700;letter-spacing:-.1px;cursor:pointer}
 .schip{display:inline-flex;align-items:center;gap:7px;font-size:11px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;
   color:rgba(255,255,255,.82);background:rgba(255,255,255,.08);border:1px solid var(--stroke-dark);padding:6px 12px;border-radius:var(--pill)}
 .schip .d{width:7px;height:7px;border-radius:50%;background:var(--brand-yellow)}
-.solo-wrap h2{font-size:24px;font-weight:700;margin:14px 0 8px}
-.solo-wrap .line{font-size:14px;font-weight:500;color:rgba(255,255,255,.76);line-height:1.5;max-width:290px}
-.solo-wrap .tbd{margin-top:16px;font-size:10.5px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;color:rgba(255,255,255,.5)}
 .report-wrap{position:absolute;inset:0;z-index:46;display:flex;flex-direction:column;justify-content:center;
   background:rgba(43,39,36,.96);color:#fff;padding:26px var(--s16) 30px}
 /* (v9g) SAFE SPACE pill sizes to its content (was stretching full-width); form is no longer pinned to the very bottom */
@@ -326,6 +408,8 @@ h2{font-size:15px;margin:var(--s32) 0 var(--s8)}
   .room-time.final{animation:none}
   .rhalf .startchip{animation:none;opacity:0}
   .act-done .ad-spark .spark{animation:none!important;opacity:1!important;transform:none!important}
+  .solo-wave.on i{animation:none}
+  .solo-flip{transition:none}
 }
 
 /* ==========================================================
@@ -804,6 +888,52 @@ h2{font-size:15px;margin:var(--s32) 0 var(--s8)}
   left:12px;
   right:auto;
 }
+
+/* Duo footer — floating Gym dock. Scoped to .rfooter / .duo-dock only. Does not touch Solo. */
+.duo-footer-scrim{
+  height:150px;
+  background:linear-gradient(to top,rgba(55,50,48,.28),rgba(55,50,48,0));
+}
+.rfooter .duo-dock{
+  pointer-events:auto;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:auto;
+  height:auto;
+  padding:9px 10px;
+  border-radius:999px;
+  box-sizing:border-box;
+  border:1px solid rgba(255,246,236,.16);
+  background:
+    linear-gradient(135deg,rgba(255,255,255,.08) 0%,transparent 42%,rgba(0,0,0,.05) 100%),
+    rgba(45,40,36,.48);
+  -webkit-backdrop-filter:blur(26px) saturate(1.14);
+  backdrop-filter:blur(26px) saturate(1.14);
+  box-shadow:inset 1px 1px 0 rgba(255,255,255,.10),0 10px 28px rgba(18,14,12,.28);
+}
+.rfooter .duo-dock .rc-row{
+  width:auto;
+  justify-content:center;
+  align-items:center;
+  gap:9px;
+}
+.rfooter .duo-dock .rc-item{gap:0;position:relative}
+.rfooter .duo-dock .rc-cap{
+  position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;
+  clip:rect(0,0,0,0);white-space:nowrap;border:0;
+}
+.rfooter .duo-dock .rc-btn{
+  width:48px;height:48px;border-radius:50%;
+  background:rgba(55,50,48,.40);
+  border:1px solid rgba(255,246,236,.10);
+  box-shadow:none;
+  color:#F7F6EF;
+  -webkit-backdrop-filter:none;backdrop-filter:none;
+}
+.rfooter .duo-dock .rc-btn svg{width:22px;height:22px;color:inherit}
+.rfooter .duo-dock .rc-btn.tip svg{color:var(--brand-yellow)}
+.rfooter .duo-dock .rc-btn .slash{width:32px;height:2.8px}
 </style>
 </head>
 <body>
@@ -938,7 +1068,10 @@ var I={
   check:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>',
   play:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13l11-6.5z"/></svg>',
   pause:'<svg viewBox="0 0 24 24" fill="currentColor"><rect x="7" y="5" width="3.6" height="14" rx="1.2"/><rect x="13.4" y="5" width="3.6" height="14" rx="1.2"/></svg>',
-  spark:'<svg class="spark" viewBox="0 0 33 33" fill="none"><path d="M16.1513 28.2524C14.6504 22.2425 9.89137 17.5435 3.87845 16.1079C9.85567 14.5552 14.556 9.85523 16.1085 3.8779C17.5439 9.89115 22.2428 14.6499 28.2529 16.1508C22.3122 17.6363 17.6371 22.3118 16.1513 28.2524Z" fill="#F9E24C" stroke="#373230"/></svg>'
+  spark:'<svg class="spark" viewBox="0 0 33 33" fill="none"><path d="M16.1513 28.2524C14.6504 22.2425 9.89137 17.5435 3.87845 16.1079C9.85567 14.5552 14.556 9.85523 16.1085 3.8779C17.5439 9.89115 22.2428 14.6499 28.2529 16.1508C22.3122 17.6363 17.6371 22.3118 16.1513 28.2524Z" fill="#F9E24C" stroke="#373230"/></svg>',
+  bookmark:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3.8h10c.7 0 1.2.5 1.2 1.2V20l-6.2-3.3L5.8 20V5c0-.7.5-1.2 1.2-1.2z"/></svg>',
+  skipPrev:'<svg viewBox="0 0 24 24" fill="currentColor"><rect x="4.2" y="5" width="2.2" height="14" rx=".6"/><path d="M19.4 5.1v13.8L7.4 12z"/></svg>',
+  skipNext:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M4.6 5.1L16.6 12 4.6 18.9V5.1z"/><rect x="17.6" y="5" width="2.2" height="14" rx=".6"/></svg>'
 };
 
 /* ---------- state ---------- */
@@ -949,6 +1082,7 @@ var ST={
   camOff:false, micOff:false, enforceTarget:'mic',
   roomLeft:ROOM_TOTAL, roomPhase:'normal', roomTimerActive:false, roomsEnded:false,
   soloReason:'partner', transVariant:'solo',
+  soloIdx:0, soloRevealed:false, soloPlaying:false, soloMarked:false,
   leaveReport:false, tipOpen:false, tipPlaying:false, tipPos:0,
   hdrOpen:false,         /* the compact header's reveal */
   chrome:true            /* auto-hide chrome: visible on entry, fades after inactivity */
@@ -1453,13 +1587,13 @@ function duoStage(){
 
 function rfooter(){
   function btn(icon,cap,off,onclick,extra){
-    return '<div class="rc-item"><button class="rc-btn'+(extra||'')+'" onclick="'+onclick+'">'+icon
+    return '<div class="rc-item"><button class="rc-btn'+(extra||'')+'" onclick="'+onclick+'" aria-label="'+cap+'">'+icon
       +(off?'<span class="slash"></span>':'')+'</button><span class="rc-cap">'+cap+'</span></div>';
   }
   var cam=ST.camOff ? btn(I.cam,'Camera',true,"deviceBackOn('camera')") : btn(I.cam,'Camera',false,"deviceOff('camera')");
   var mic=ST.micOff ? btn(I.mic,'Mic',   true,"deviceBackOn('mic')")    : btn(I.mic,'Mic',   false,"deviceOff('mic')");
-  return '<div class="footer-scrim"></div><div class="rfooter" onclick="bumpChrome()">'
-    +'<div class="rc-row">'+btn(I.bulb,'TIP',false,'playTip()',' tip')+cam+mic+'</div>'
+  return '<div class="footer-scrim duo-footer-scrim"></div><div class="rfooter" onclick="bumpChrome()">'
+    +'<div class="duo-dock"><div class="rc-row">'+btn(I.bulb,'TIP',false,'playTip()',' tip')+cam+mic+'</div></div>'
     +'<button class="leave-report" onclick="openLeaveReport()">'+I.shield+'<span>Leave &amp; report</span></button>'
     +'</div>';
 }
@@ -1543,13 +1677,114 @@ function transitionScene(variant){
     + timer
     +'<div class="t-muted">'+I.mic+'You\u2019ll be muted again in the main room</div></div>';
 }
+var SOLO_ANSWER_ICON='data:image/png;base64,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';
+var SOLO_DECK=[
+  {dir:'Translate to Hebrew', en:'Swimming pool', he:'בריכה (נ)'},
+  {dir:'Translate to Hebrew', en:'Coffee', he:'קפה'},
+  {dir:'Translate to Hebrew', en:'Thank you', he:'תודה'},
+  {dir:'Translate to Hebrew', en:'Good morning', he:'בוקר טוב'},
+  {dir:'Translate to Hebrew', en:'Friend', he:'חבר'},
+  {dir:'Translate to Hebrew', en:'Water', he:'מים'}
+];
+function soloDeckCard(){
+  var n=SOLO_DECK.length, i=((ST.soloIdx|0)%n+n)%n;
+  return SOLO_DECK[i];
+}
+function soloWave(){
+  var h=[7,11,17,23,15,9,19,25,21,13,8,15,23,19,12,7,13,21,17,10,16,9,7,12,18];
+  var out='';
+  for(var i=0;i<h.length;i++) out+='<i style="height:'+h[i]+'px"></i>';
+  return '<div class="solo-wave'+(ST.soloPlaying?' on':'')+'">'+out+'</div>';
+}
 function soloScene(){
-  var why=(ST.soloReason==='uneven')
-    ? 'There\u2019s no partner for you in this round, so you\u2019ll practice on your own.'
-    : 'Your partner isn\u2019t in the room, so you\u2019ll practice on your own.';
-  return '<div class="solo-wrap"><span class="schip"><span class="d"></span>Solo practice</span>'
-    +'<h2>Solo activity</h2><p class="line">'+why+'</p>'
-    +'<span class="tbd">Activity TBD</span></div>';
+  var card=soloDeckCard();
+  var revealed=!!ST.soloRevealed;
+  var mark='<button class="solo-mark'+(ST.soloMarked?' on':'')+'" type="button" onclick="event.stopPropagation();soloToggleMark()" aria-label="Bookmark">'+I.bookmark+'</button>';
+  var player='<div class="solo-player" onclick="event.stopPropagation()">'
+    +'<button class="solo-play'+(ST.soloPlaying?' playing':'')+'" type="button" onclick="event.stopPropagation();soloTogglePlay()" aria-label="'+(ST.soloPlaying?'Pause':'Play')+'">'
+      +(ST.soloPlaying?I.pause:I.play)
+    +'</button>'
+    +soloWave()
+    +'<span class="solo-speed">x1</span>'
+    +'</div>';
+  return '<div class="solo-wrap'+(revealed?' is-flip':'')+'">'
+    +'<div class="solo-top">'
+      +'<button class="icon-btn" type="button" aria-label="Leave">'+I.x+'</button>'
+      +roomTimeEl()
+    +'</div>'
+    +'<div class="solo-stage"><div class="solo-flip">'
+      +'<div class="solo-face solo-q" onclick="soloFlipCard()">'+mark
+        +'<div class="solo-q-body">'
+          +'<div class="solo-dir">'+card.dir+'</div>'
+          +'<div class="solo-en">'+card.en+'</div>'
+        +'</div>'
+      +'</div>'
+      +'<div class="solo-face solo-a" onclick="soloFlipCard()">'+mark
+        +'<div class="solo-a-main">'
+          +'<img class="solo-icon" src="'+SOLO_ANSWER_ICON+'" alt="">'
+          +'<div class="solo-ok">Correct Answer</div>'
+          +'<div class="solo-he" lang="he" dir="rtl">'+card.he+'</div>'
+          +player
+        +'</div>'
+      +'</div>'
+    +'</div></div>'
+    +'<div class="solo-nav">'
+      +'<button class="solo-skip" type="button" onclick="soloPrev()" aria-label="Previous">'+I.skipPrev+'</button>'
+      +'<button class="solo-cta" type="button" onclick="'+(revealed?'soloNext()':'soloShowAnswer()')+'">'+(revealed?'Next':'Show Answer')+'</button>'
+      +'<button class="solo-skip" type="button" onclick="soloNext()" aria-label="Next">'+I.skipNext+'</button>'
+    +'</div>'
+    +'</div>';
+}
+function soloHideAnswer(){
+  ST.soloRevealed=false; ST.soloPlaying=false;
+  var wrap=document.querySelector('.solo-wrap');
+  if(wrap){
+    wrap.classList.remove('is-flip');
+    var cta=document.querySelector('.solo-cta');
+    if(cta){ cta.textContent='Show Answer'; cta.setAttribute('onclick','soloShowAnswer()'); }
+    return;
+  }
+  render();
+}
+function soloFlipCard(){
+  if(ST.soloRevealed) soloHideAnswer();
+  else soloShowAnswer();
+}
+function soloShowAnswer(){
+  ST.soloRevealed=true; ST.soloPlaying=false;
+  var wrap=document.querySelector('.solo-wrap');
+  if(wrap){
+    wrap.classList.add('is-flip');
+    var cta=document.querySelector('.solo-cta');
+    if(cta){ cta.textContent='Next'; cta.setAttribute('onclick','soloNext()'); }
+    return;
+  }
+  render();
+}
+function soloNext(){
+  ST.soloIdx=(ST.soloIdx|0)+1;
+  ST.soloRevealed=false; ST.soloPlaying=false; ST.soloMarked=false;
+  render();
+}
+function soloPrev(){
+  ST.soloIdx=(ST.soloIdx|0)-1;
+  ST.soloRevealed=false; ST.soloPlaying=false; ST.soloMarked=false;
+  render();
+}
+function soloTogglePlay(){
+  ST.soloPlaying=!ST.soloPlaying;
+  var btn=document.querySelector('.solo-play');
+  var wave=document.querySelector('.solo-wave');
+  if(btn){
+    btn.classList.toggle('playing', ST.soloPlaying);
+    btn.setAttribute('aria-label', ST.soloPlaying?'Pause':'Play');
+    btn.innerHTML=ST.soloPlaying?I.pause:I.play;
+  }
+  if(wave) wave.classList.toggle('on', ST.soloPlaying);
+}
+function soloToggleMark(){
+  ST.soloMarked=!ST.soloMarked;
+  document.querySelectorAll('.solo-mark').forEach(function(el){ el.classList.toggle('on', ST.soloMarked); });
 }
 function reportScene(){
   return '<div class="report-wrap">'
@@ -1582,6 +1817,7 @@ function render(){
   else if(s==='report') { inner+=reportScene(); }
 
   el.innerHTML=inner;
+  if(el.classList) el.classList.toggle('scene-solo', s==='solo');
 
   if(s==='trans'||s==='return'||s==='wait'||s==='transfer'){ mountLottie(); }
   else { destroyLottie(); lottieFrame=0; }
@@ -1598,6 +1834,9 @@ function setScene(s){
   if(s!=='consent') clearConsent();
   var roomScene=(s==='duo'||s==='enforce'||s==='partnerleft'||s==='consent');
   if(!roomScene){ resetAct(); ST.tipOpen=false; ST.tipPlaying=false; stopTipInt(); }
+  if(s==='solo' && ST.scene!=='solo'){
+    ST.soloIdx=0; ST.soloRevealed=false; ST.soloPlaying=false; ST.soloMarked=false;
+  }
   ST.leaveReport=false; ST.scene=s;
   syncScene();
   if(s==='duo'){ armChrome(CHROME_ENTRY); }      /* room entry: 3s of chrome, then it fades */
@@ -1637,7 +1876,7 @@ function updateNote(){
     enforce:'MY CAMERA / MIC OFF. Stay in room -> device back on. Leave room or 10s timeout -> waiting / return. NEVER Solo.',
     partnerleft:'PARTNER LEFT -> Solo. The only student-side path into Solo, together with an uneven number of students.',
     wait:'WAITING / RETURN. Synchronised room countdown from ST.roomLeft; loader only when no room clock runs.',
-    solo:'SOLO ROOM ('+(ST.soloReason==='uneven'?'uneven number of students':'partner left / unavailable')+'). Activity TBD.',
+    solo:'SOLO ROOM ('+(ST.soloReason==='uneven'?'uneven number of students':'partner left / unavailable')+'). Flashcard review until the room clock ends · '+(ST.soloRevealed?'answer':'prompt')+'.',
     trans:'SOLO TRANSITION -> Solo activity.',
     transfer:'PRACTICE ROOM TRANSFER / LOADING. Full-screen matkot takeover while the room is prepared. No numeric countdown - not the 5s activity prep, not the return countdown.',
     report:'REPORT SCREEN. Submit / Skip -> waiting / return (NOT Solo).',
