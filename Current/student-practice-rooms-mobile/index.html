@@ -841,26 +841,54 @@ h2{font-size:15px;margin:var(--s32) 0 var(--s8)}
 .screen.chrome-off .room-status,
 .screen.chrome-off .room-act{opacity:1}
 
-/* Final ≤10s room clock — calm yellow attention (not red, not flashing) */
+/* Final ≤10s room clock — desktop-aligned: charcoal corner pad, yellow text, calm pulse.
+   No yellow pill. The pad is a soft radial wash in the top-right; the text itself
+   carries the attention (brand yellow, 800, gentle scale+opacity). */
+.rheader.compact:has(.room-time.final)::before{
+  content:"";
+  position:absolute;
+  top:-48px;
+  right:0;
+  width:220px;
+  height:118px;
+  z-index:0;
+  pointer-events:none;
+  background:
+    radial-gradient(ellipse 150px 72px at 94% 18%,
+      rgba(55,50,48,.74) 0%,
+      rgba(55,50,48,.40) 48%,
+      rgba(55,50,48,0) 100%),
+    radial-gradient(ellipse 220px 118px at 100% 0%,
+      rgba(55,50,48,.70) 0%,
+      rgba(55,50,48,.42) 34%,
+      rgba(55,50,48,.20) 58%,
+      rgba(55,50,48,0) 100%);
+}
 .room-time.final{
-  color:var(--brand-charcoal);
-  background:var(--brand-yellow);
-  border-radius:var(--pill);
-  padding:5px 12px 5px 10px;
-  font-size:20px;
+  color:var(--brand-yellow);
+  background:transparent;
+  border:none;
+  border-radius:0;
+  padding:4px 0;
+  font-size:19px;
   font-weight:800;
   letter-spacing:.2px;
-  text-shadow:none;
-  box-shadow:0 2px 10px rgba(55,50,48,.20),0 1px 2px rgba(55,50,48,.10);
-  animation:none;
+  text-shadow:0 0 16px rgba(249,226,76,.5);
+  box-shadow:none;
+  transform-origin:right center;
+  animation:roomfinalpulse 1.6s ease-in-out infinite;
 }
 .room-time.final svg,
 .room-time.final .cap,
 .room-time.final .chev{
-  color:var(--brand-charcoal);
+  color:var(--brand-yellow);
   opacity:1;
 }
-.room-time.final .cap{opacity:.78;font-weight:700}
+.room-time.final .cap{opacity:.8;font-weight:700}
+@keyframes roomfinalpulse{
+  0%,100%{opacity:1;transform:scale(1)}
+  50%{opacity:.88;transform:scale(1.035)}
+}
 .header-scrim.open{height:120px;background:linear-gradient(to bottom,rgba(55,50,48,.38),rgba(55,50,48,0))}
 
 /* TIP play/pause — one yellow circle only (no offset white disc / double ring) */
@@ -904,13 +932,13 @@ h2{font-size:15px;margin:var(--s32) 0 var(--s8)}
   padding:9px 10px;
   border-radius:999px;
   box-sizing:border-box;
-  border:1px solid rgba(255,246,236,.16);
+  border:1px solid rgba(255,246,236,.08);
   background:
-    linear-gradient(135deg,rgba(255,255,255,.08) 0%,transparent 42%,rgba(0,0,0,.05) 100%),
-    rgba(45,40,36,.48);
+    linear-gradient(135deg,rgba(255,255,255,.22) 0%,rgba(255,255,255,.06) 42%,transparent 100%),
+    rgba(78,72,66,.28);
   -webkit-backdrop-filter:blur(26px) saturate(1.14);
   backdrop-filter:blur(26px) saturate(1.14);
-  box-shadow:inset 1px 1px 0 rgba(255,255,255,.10),0 10px 28px rgba(18,14,12,.28);
+  box-shadow:inset 1px 1px 0 rgba(255,255,255,.12),0 10px 24px rgba(18,14,12,.18);
 }
 .rfooter .duo-dock .rc-row{
   width:auto;
