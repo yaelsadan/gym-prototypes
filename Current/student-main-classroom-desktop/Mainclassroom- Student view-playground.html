@@ -883,6 +883,7 @@ body.present .topbar .session-rec{font-size:13.5px}
   background:transparent;
   inset:0;
   align-items:stretch;
+  justify-content:stretch;
 }
 /* Split/demo: top-left corner dark fade — gradient only, no blur; fades with transient chrome */
 .stage:has(.demo-stage) .header-chrome-fade{
@@ -929,7 +930,7 @@ body.present .topbar .session-rec{font-size:13.5px}
 
 /* Split video tiles: ambient centered depth only — no edge glow / outline */
 .demo-half{
-  border-radius:18px;
+  border-radius:14px;
   border:none;
   outline:none;
   /* x/y = 0 → centered ambient lift; broad blur, low opacity, no outline ring */
@@ -1241,8 +1242,9 @@ body.present .topbar .session-rec{font-size:13.5px}
   box-shadow:0 2px 10px rgba(55,50,48,.14);
   z-index:3;
 }
-.demo-half .who{left:18px;top:18px;font-size:17.5px;min-height:38px;padding:0 17px}
+.demo-half .who{left:18px;top:18px;font-size:15.5px;font-weight:600;min-height:36px;padding:0 15px}
 .teacher-chip .who{position:static}
+body.present .demo-half .who{font-size:17.5px;min-height:38px;padding:0 17px}
 /* ACTIVE / current speaker / instructed participant — instructional yellow */
 .demo-half.speaking .who{
   background:var(--brand-yellow);
@@ -1254,6 +1256,7 @@ body.present .topbar .session-rec{font-size:13.5px}
 /* ==========================================================
    2-video immersive stage (split / demo / dialogue / grandma)
    Videos fill the canvas; footer + rail float as overlays.
+   Geometry matches Practice Rooms Desktop duo-room split.
    ========================================================== */
 .room:has(.demo-stage){
   --split-edge:22px;
@@ -1263,17 +1266,25 @@ body.present .topbar .session-rec{font-size:13.5px}
 .frame.w-narrow .room:has(.demo-stage){--split-edge:20px}
 body.present .room:has(.demo-stage){--split-edge:24px}
 
-.stage:has(.demo-stage) .demo-stage{padding:var(--split-gap)}
+.stage:has(.demo-stage) .demo-stage,
+.frame.w-narrow .stage:has(.demo-stage) .demo-stage,
+body.present .stage:has(.demo-stage) .demo-stage{
+  inset:0;
+  padding:14px;
+  align-items:stretch;
+  justify-content:stretch;
+}
 
-.demo-split{
+.demo-split,
+.frame.w-narrow .demo-split,
+body.present .demo-split{
   width:100%;
   height:100%;
   max-width:none;
   max-height:none;
-  gap:var(--split-gap);
+  gap:14px;
   margin:0;
 }
-body.present .demo-split{max-width:none;max-height:none}
 
 /* Equal 50/50 tiles — same inset on every edge; footer floats above */
 .stage:has(.demo-stage) .demo-half{
@@ -1284,10 +1295,11 @@ body.present .demo-split{max-width:none;max-height:none}
   background-position:center 38% !important;
 }
 
-/* Footer: overlay on the video stage, no layout reservation below */
+/* Footer: overlay on the video stage, no layout reservation below.
+   Capsule sits slightly inside the tiles so video shows at the sides and the bar reads as floating. */
 .stage:has(.demo-stage) .controls-footer{
   z-index:var(--split-float-z);
-  padding:0 var(--split-gap) calc(var(--split-gap) + 6px);
+  padding:0 calc(var(--split-gap) + 16px) calc(var(--split-gap) + 6px);
   background:linear-gradient(to top,rgba(43,39,36,.36) 0%,rgba(43,39,36,.10) 42%,rgba(43,39,36,0) 100%);
 }
 .stage:has(.demo-stage) .controls-footer .footer-capsule{pointer-events:auto}
