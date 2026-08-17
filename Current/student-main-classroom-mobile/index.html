@@ -1179,6 +1179,9 @@ h1{font-size:20px}
   background:rgba(255,255,255,.07);
   color:rgba(255,246,236,.55);
   margin-bottom:14px;
+  /* Search sits above the floating rail — use the same 16px inset as the left,
+     not the list’s rail-safe. Stays in the scroll so it leaves on scroll. */
+  margin-right:calc(16px - var(--rail-safe));
   box-shadow:inset 0 0 0 .5px rgba(255,246,236,.16);
 }
 .pp-search-ph{font-size:13.5px;color:rgba(255,255,255,.55)}
