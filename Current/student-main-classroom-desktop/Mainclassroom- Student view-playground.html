@@ -34,6 +34,9 @@
   --font-brand:"FedraSerifPro",Georgia,"Times New Roman",serif;
   --video:#cdb497; --elev-f:0 6px 20px rgba(55,50,48,.18);
   --r:14px; --pill:999px; --rail-w:62px; --panel-w:340px;
+  --chat-peek-visible-time:4000ms;
+  --chat-peek-entry-duration:280ms;
+  --chat-peek-handoff-duration:400ms;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:var(--font-ui);background:var(--surface-base);color:var(--text-primary);-webkit-font-smoothing:antialiased;padding:28px 32px 60px}
@@ -165,11 +168,12 @@ body.present .mode-btn:hover{opacity:1}
 .topbar .rec .rd{width:8px;height:8px;border-radius:50%;background:var(--status-live);animation:rec 1.8s infinite}
 @keyframes rec{0%{box-shadow:0 0 0 0 rgba(249,116,107,.5)}70%{box-shadow:0 0 0 6px rgba(249,116,107,0)}100%{box-shadow:0 0 0 0 rgba(249,116,107,0)}}
 
-.pip{position:absolute;right:24px;bottom:106px;z-index:8;width:172px;height:116px;border-radius:var(--r);overflow:hidden;box-shadow:0 6px 20px rgba(55,50,48,.28);border:2px solid rgba(255,255,255,.78);background:linear-gradient(160deg,#cabfa9,#8d8576)}
+.pip{position:absolute;right:24px;bottom:106px;z-index:8;width:172px;height:116px;border-radius:var(--r);overflow:hidden;box-shadow:0 6px 20px rgba(55,50,48,.28);border:2px solid rgba(255,255,255,.78);background:linear-gradient(160deg,#cabfa9,#8d8576);cursor:grab;touch-action:none;user-select:none}
+.pip.is-dragging{cursor:grabbing;z-index:20}
 .pip .shade{position:absolute;inset:0;background:rgba(55,50,48,.18)}
-.pip .you{position:absolute;left:8px;top:8px;font-size:11px;font-weight:700;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.5);z-index:2}
-.pip .grip{position:absolute;top:6px;right:8px;font-size:10px;color:rgba(255,255,255,.7);z-index:2}
-.pip .priv{position:absolute;left:8px;bottom:7px;z-index:2;font-family:var(--font-ui);font-size:10px;font-weight:600;letter-spacing:.01em;color:rgba(255,255,255,.78);text-shadow:0 1px 2px rgba(0,0,0,.5);white-space:nowrap;pointer-events:none}
+.pip .you{position:absolute;left:8px;top:8px;font-size:13.2px;font-weight:700;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.5);z-index:2}
+.pip .grip{position:absolute;top:6px;right:8px;font-size:14.4px;color:rgba(255,255,255,.7);z-index:2}
+.pip .priv{position:absolute;left:8px;bottom:7px;z-index:2;font-family:var(--font-ui);font-size:14.4px;font-weight:600;letter-spacing:.01em;color:rgba(255,255,255,.78);text-shadow:0 1px 2px rgba(0,0,0,.5);white-space:nowrap;pointer-events:none}
 .pip.cam-off{background:#3a3531;display:grid;place-items:center}
 .pip.cam-off .shade,.pip.cam-off .you,.pip.cam-off .priv{display:none}
 .pip.cam-off .av{width:46px;height:46px;border-radius:50%;background:#5c554e;display:grid;place-items:center;font-size:18px;font-weight:700;color:#fff}
@@ -689,30 +693,123 @@ body.present .clock.vt.gl{--d:132px}
 .demo-timer{filter:none}
 .demo-timer::before{display:none}
 
-/* ---------- 2. the Done badge ---------- */
-.act-done{position:relative;display:inline-flex;align-items:center;gap:12px;overflow:visible;cursor:pointer;
-  background:var(--t-milky);color:var(--brand-charcoal);border:1.4px solid var(--brand-charcoal);
-  padding:12px 24px 12px 14px;border-radius:var(--pill);box-shadow:0 12px 30px rgba(0,0,0,.3);white-space:nowrap}
-.act-done .ad-ic{width:40px;height:40px;flex:none;border-radius:50%;display:grid;place-items:center;
-  background:var(--brand-yellow);border:1.4px solid var(--brand-charcoal);color:var(--brand-charcoal)}
-.act-done .ad-ic svg{width:20px;height:20px}
-.act-done .ad-tx{display:flex;align-items:center;font-family:var(--font-brand);font-size:28px;font-weight:700;
-  line-height:1;letter-spacing:.2px;transform:translateY(2px)}          /* optically centred in the pill */
-.act-done .ad-spark{position:absolute;right:-14px;top:-18px;width:34px;height:34px;pointer-events:none}
-.act-done .ad-spark .spark{display:block;width:100%;height:100%;color:var(--brand-yellow);transform-origin:50% 50%;
-  animation:adSpin 1.9s cubic-bezier(.1,.72,.18,1) .1s both}
-@keyframes adSpin{
-  0%{opacity:0;transform:rotate(0deg) scale(.22)}
-  12%{opacity:1}
-  90%{transform:rotate(1092deg) scale(1.07)}
-  100%{opacity:1;transform:rotate(1080deg) scale(1)}
+/* ---------- 2. the Done badge — layered motion (visual design unchanged) ---------- */
+.act-done{
+  position:relative;display:inline-flex;align-items:center;gap:12px;overflow:visible;cursor:pointer;
+  padding:12px 24px 12px 14px;border:none;background:transparent;box-shadow:none;
+  white-space:nowrap;isolation:isolate;transform-origin:50% 50%;
+  /* calm dissolve exit only — no scale-down */
+  animation:adDoneFadeOut .82s ease 2.15s both;
+}
+@keyframes adDoneFadeOut{
+  0%{opacity:1}
+  100%{opacity:0}
+}
+/* Pill background layer */
+.act-done .ad-bg{
+  position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:var(--t-milky);border:1.4px solid var(--brand-charcoal);border-radius:var(--pill);
+  box-shadow:0 12px 30px rgba(0,0,0,.3);
+  transform-origin:50% 50%;
+  animation:adBgIn .42s cubic-bezier(.22,.7,.24,1) both;
+}
+@keyframes adBgIn{
+  0%{opacity:0;transform:scale(.92)}
+  100%{opacity:1;transform:scale(1)}
+}
+/* Yellow check circle + mark */
+.act-done .ad-ic{
+  position:relative;z-index:2;width:40px;height:40px;flex:none;
+  display:grid;place-items:center;
+}
+.act-done .ad-ic-disk{
+  position:absolute;inset:0;border-radius:50%;
+  background:var(--brand-yellow);border:1.4px solid var(--brand-charcoal);
+  transform-origin:50% 50%;
+  animation:adCheckPop .48s cubic-bezier(.2,.78,.22,1) .12s both;
+}
+@keyframes adCheckPop{
+  0%{opacity:0;transform:scale(.55)}
+  58%{opacity:1;transform:scale(1.12)}
+  100%{opacity:1;transform:scale(1)}
+}
+.act-done .ad-ic-mark{
+  position:relative;z-index:1;display:grid;place-items:center;
+  color:var(--brand-charcoal);width:20px;height:20px;
+  animation:adCheckMark .4s cubic-bezier(.22,.72,.24,1) .2s both;
+}
+.act-done .ad-ic-mark svg{width:20px;height:20px;display:block}
+@keyframes adCheckMark{
+  0%{opacity:0;transform:scale(.6) rotate(-12deg)}
+  100%{opacity:1;transform:scale(1) rotate(0deg)}
+}
+/* Done! lettering — sequential wave */
+.act-done .ad-tx{
+  position:relative;z-index:2;display:inline-flex;align-items:center;
+  font-family:var(--font-brand);font-size:28px;font-weight:400;font-style:italic;
+  line-height:1;letter-spacing:.15px;color:var(--brand-charcoal);
+  transform:translateY(2px);overflow:visible;
+}
+.act-done .ad-ltr{
+  display:inline-block;
+  transform-origin:50% 85%;
+  animation:adLtrWave .46s cubic-bezier(.2,.78,.22,1) calc(.3s + var(--i) * .075s) both;
+}
+@keyframes adLtrWave{
+  0%{opacity:0;transform:translateY(5px) scale(.84)}
+  62%{opacity:1;transform:translateY(-1px) scale(1.07)}
+  100%{opacity:1;transform:translateY(0) scale(1)}
+}
+/* Confetti — one burst from behind the badge into the space above it, then a slow fall.
+   Pieces fade out while still moving, and vanish before the badge's bottom edge. */
+.act-done .ad-confetti{
+  position:absolute;left:50%;top:38%;width:0;height:0;
+  pointer-events:none;overflow:visible;z-index:0;
+}
+.act-done .ad-confetti .cf{
+  position:absolute;left:0;top:0;
+  width:var(--s);height:auto;margin:0;display:block;
+  transform-origin:50% 50%;
+  will-change:transform,opacity;
+  animation:adCfPop var(--dur,1.6s) linear var(--d) both;
+}
+.act-done .ad-confetti .cf svg{display:block;width:100%;height:auto;overflow:visible}
+@keyframes adCfPop{
+  0%{
+    opacity:0;
+    transform:translate(0,0) scale(.34) rotate(var(--rot0));
+    animation-timing-function:cubic-bezier(.16,.82,.22,1);
+  }
+  8%{opacity:1}
+  28%{
+    opacity:1;
+    transform:translate(var(--dx),var(--dy)) scale(var(--sc)) rotate(var(--rot));
+    animation-timing-function:cubic-bezier(.32,.1,.5,1);
+  }
+  70%{
+    opacity:1;
+    transform:translate(var(--mx),var(--my)) scale(var(--sc)) rotate(var(--rotm));
+    animation-timing-function:linear;
+  }
+  88%{
+    opacity:0;
+    transform:translate(var(--vx),var(--vy)) scale(var(--sc)) rotate(var(--rotv));
+  }
+  100%{
+    opacity:0;
+    transform:translate(var(--vx),var(--vy)) scale(var(--sc)) rotate(var(--rotv));
+  }
 }
 .act-done.sm{gap:9px;padding:9px 18px 9px 10px}
 .act-done.sm .ad-ic{width:30px;height:30px}
-.act-done.sm .ad-ic svg{width:15px;height:15px}
+.act-done.sm .ad-ic-mark,.act-done.sm .ad-ic-mark svg{width:15px;height:15px}
 .act-done.sm .ad-tx{font-size:21px}
-.act-done.sm .ad-spark{width:26px;height:26px;right:-11px;top:-13px}
 body.present .act-done .ad-tx{font-size:32px}
+
+/* Headroom + slight inward shift so the upward fan clears the frame edge */
+.stage:has(.demo-stage) .demo-timer:has(.act-done){top:44%}
+.act-timer.pos-tc:has(.act-done){top:196px;right:52px}
+.act-timer.corner:has(.act-done){top:78px;right:40px}
 
 /* ---------- 3. the header Session timer: bigger, still flat status text ---------- */
 .topbar .session-timer{background:transparent;padding:4px 0;font-size:16.5px;font-weight:700;
@@ -746,7 +843,9 @@ body.present .car-cue .car-fig{width:148px;height:172px}
 @media (prefers-reduced-motion:reduce){
   .car-cue .car-bar i{animation:none;width:100%}
   .clock.vt.warn{animation:none}
-  .act-done .ad-spark .spark{animation:none!important;opacity:1!important;transform:none!important}
+  .act-done{animation:none!important;opacity:1}
+  .act-done .ad-bg,.act-done .ad-ic-disk,.act-done .ad-ic-mark,.act-done .ad-ltr{animation:none!important;opacity:1;transform:none}
+  .act-done .ad-confetti{display:none!important}
 }
 
 /* ==========================================================
@@ -1389,12 +1488,12 @@ body.present .act-timer .clock.vt.lg{
 .act-timer .act-done{
   gap:15px;
   padding:15px 31px 15px 18px;
-  border-width:1.5px;
 }
-.act-timer .act-done .ad-ic{width:51px;height:51px;border-width:1.5px}
-.act-timer .act-done .ad-ic svg{width:25px;height:25px}
-.act-timer .act-done .ad-tx{font-size:35px}
-.act-timer .act-done .ad-spark{width:43px;height:43px;right:-18px;top:-22px}
+.act-timer .act-done .ad-bg{border-width:1.5px}
+.act-timer .act-done .ad-ic{width:51px;height:51px}
+.act-timer .act-done .ad-ic-disk{border-width:1.5px}
+.act-timer .act-done .ad-ic-mark,.act-timer .act-done .ad-ic-mark svg{width:25px;height:25px}
+.act-timer .act-done .ad-tx{font-size:35px;font-weight:400;font-style:italic}
 body.present .act-timer .act-done .ad-tx{font-size:41px}
 
 /* Self-view PIP: +20% from base (172×116); bottom aligned with footer capsule */
@@ -2428,6 +2527,131 @@ body.present .act-timer.pos-tc{
   .ephem-dock.is-expanded .ephem-msg.has-av .eph-av{transform:none}
 }
 
+/*
+DEV HANDOFF — HIDDEN CHAT INCOMING MESSAGE PEEK
+
+Purpose:
+When Chat is Hidden, an incoming message gets a brief, low-attention preview
+so the student knows a new message arrived without reopening the chat UI.
+
+Visual intent:
+- This is NOT a system toast or notification.
+- It is the same visual language/material as an ephemeral chat message.
+- Keep it small, incidental, and visually anchored to the hidden Chat control.
+- Message body + lower-left connector should read as ONE continuous organic surface.
+- No visible seam between the bubble and connector.
+- Connector subtly narrows / softens toward the Chat icon so the message feels
+  as if it emerges from the hidden Chat control.
+- Sender is one line.
+- Message preview is one line only and truncates with ellipsis at max width.
+- Full message remains available inside Chat.
+
+Desktop max-width target: ~320px.
+Visible duration target: ~4 seconds (see --chat-peek-visible-time).
+*/
+/* Hidden-chat incoming peek — one SVG silhouette, scooped lower-left */
+.ephem-peek{
+  position:absolute;
+  left:36px;
+  bottom:90px;
+  z-index:10;
+  pointer-events:none;
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-end;
+  align-items:flex-start;
+  overflow:visible;
+  transform-origin:10px 100%;
+  transition:opacity var(--chat-peek-entry-duration) cubic-bezier(.22,1,.36,1),transform var(--chat-peek-entry-duration) cubic-bezier(.22,1,.36,1);
+}
+.ephem-peek.is-enter{
+  opacity:0;
+  transform:translateY(7px) scale(.98);
+}
+.ephem-peek.is-leaving{
+  opacity:0;
+  transform:translateY(5px) scale(.99);
+  transition-duration:.2s;
+}
+.ephem-peek .ephem-msg{
+  position:relative;
+  z-index:1;
+  pointer-events:auto;
+  cursor:pointer;
+  max-width:320px;
+  filter:drop-shadow(0 2px 8px rgba(0,0,0,.18));
+}
+.ephem-peek .ephem-msg .eph-bd{
+  position:relative;
+  z-index:3;
+  isolation:isolate;
+  max-width:320px;
+  background:rgba(43,39,36,.82);
+  background-color:rgba(43,39,36,.82);
+  box-shadow:none;
+  -webkit-backdrop-filter:none;
+  backdrop-filter:none;
+  border-bottom-left-radius:0;
+}
+.ephem-peek .ephem-msg.helper .eph-bd{
+  background:rgba(56,51,48,.86);
+  background-color:rgba(56,51,48,.86);
+}
+.ephem-peek .ephem-msg .eph-bd .en,
+.ephem-peek .ephem-msg .eph-bd{
+  opacity:1;
+  -webkit-mask-image:none;
+  mask-image:none;
+}
+.ephem-peek .ephem-msg .eph-tx{
+  display:block;
+  max-width:100%;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.ephem-peek-shape{
+  position:absolute;
+  left:0;
+  top:0;
+  z-index:0;
+  pointer-events:none;
+  overflow:visible;
+  fill:rgba(43,39,36,.82);
+  filter:none;
+  shape-rendering:geometricPrecision;
+  -webkit-mask-image:linear-gradient(to bottom,#000 0%,#000 calc(100% - 11px),rgba(0,0,0,.62) calc(100% - 6px),rgba(0,0,0,.22) calc(100% - 2px),transparent 100%);
+  mask-image:linear-gradient(to bottom,#000 0%,#000 calc(100% - 11px),rgba(0,0,0,.62) calc(100% - 6px),rgba(0,0,0,.22) calc(100% - 2px),transparent 100%);
+  -webkit-mask-size:100% 100%;
+  mask-size:100% 100%;
+  -webkit-mask-repeat:no-repeat;
+  mask-repeat:no-repeat;
+}
+.ephem-peek.is-helper .ephem-peek-shape{
+  fill:rgba(56,51,48,.86);
+}
+.ephem-msg.ephem-peek-flip{
+  position:fixed;
+  z-index:99999;
+  margin:0;
+  pointer-events:none;
+  transform-origin:top left;
+  will-change:transform;
+  opacity:1;
+}
+.ephem-feed .ephem-msg.eph-incorporating{
+  visibility:hidden !important;
+  opacity:0 !important;
+  transition:none !important;
+}
+@media (prefers-reduced-motion:reduce){
+  .ephem-peek,
+  .ephem-msg.ephem-peek-flip{
+    transition:opacity .2s ease;
+    transform:none!important;
+  }
+}
+
 /* ===== Desktop volunteer ask — approved mobile hand+card, desktop placement =====
    Compact card in the left / center-left of the video. Same grip sandwich
    (index behind, thumb in front). Draw / Yes / No / 10s window unchanged.
@@ -2607,6 +2831,26 @@ body.present .vol-choice{width:296px}
   .vol-bar i{animation-delay:0s}
 }
 
+
+/* ===== Hub-style tooltips (shared across icon-only controls) ===== */
+.hub-tip-layer{
+  position:absolute;left:0;top:0;z-index:500;
+  padding:6px 10px;border-radius:999px;
+  background:var(--brand-charcoal,#373230);color:#fff;
+  font-family:var(--font-ui),Assistant,system-ui,sans-serif;
+  font-size:12px;font-weight:600;line-height:1.25;letter-spacing:0;
+  white-space:nowrap;text-align:center;pointer-events:none;
+  opacity:0;visibility:hidden;
+  box-shadow:0 4px 14px rgba(0,0,0,.28);
+  transition:opacity .12s ease,visibility .12s ease;
+  max-width:min(280px,72%);
+  box-sizing:border-box;
+}
+.hub-tip-layer.is-on{opacity:1;visibility:visible}
+.hub-tip-layer.is-wide{white-space:normal;border-radius:12px;line-height:1.35}
+/* Legacy per-control tip spans retired — Hub layer (.hub-tip-layer) is the shared tooltip */
+.cbtn .tip,.rc-btn .tip{display:none!important}
+
 </style>
 </head>
 <body>
@@ -2726,6 +2970,8 @@ body.present .vol-choice{width:296px}
       <button class="play" onclick="trigMsg()">Trigger message</button>
       <button class="play" onclick="trigHelper()">Trigger helper reply</button>
       <button class="play" onclick="trigBurst()">Trigger burst</button>
+      <button class="play" onclick="trigIncomingHidden()">Incoming while Hidden</button>
+      <span style="font-size:11px;color:var(--text-muted)">Hidden: 4s overlay · click opens Compact</span>
     </div>
   </div>
   <div class="state-note" id="note"></div>
@@ -3049,11 +3295,11 @@ function chatPanel(){
     body+='<div class="'+cls+'"><span class="av">'+av+'</span><div class="bd"><div class="nm">'+nm+'</div>'+reply+'<div class="tx">'+m.t+'</div></div></div>';
   });
   var composer='<div class="composer">'
-    +'<button class="react-btn" onclick="toggleReactions(this)" title="Citizen reaction set (placeholder)">'+I.smile
+    +'<button class="react-btn" onclick="toggleReactions(this)"'+hubTipAttrs('Reactions')+'>'+I.smile
       +'<div class="react-pop"><div class="rx-set"><span class="rx-dot"></span><span class="rx-dot"></span><span class="rx-dot"></span><span class="rx-dot"></span></div><div class="rx-cap">Citizen set · approved reaction set to be injected later</div></div>'
     +'</button>'
     +'<input placeholder="Ask the teacher or the class…" oninput="this.closest(\'.composer\').querySelector(\'.send\').classList.toggle(\'active\',this.value.trim().length>0)">'
-    +'<button class="send" title="Send">'+I.send+'</button>'
+    +'<button class="send"'+hubTipAttrs('Send')+'>'+I.send+'</button>'
     +'</div>';
   return panelShell('Chat',body,composer);
 }
@@ -3069,22 +3315,28 @@ function participantsPanel(){
   var body='<div class="pp-search">'+I.search+'<span>Search participants…</span></div><div class="pp-group">Teaching team</div>'+row('N','Niv',null,['teacher','Teacher'],'Staff')+row('M','Maya',null,['helper','Helper'],'Staff')+'<div class="pp-group">You</div>'+row('Y','You','#DAEF81',['you','You'],'Green \u00b7 April')+'<div class="pp-group">Classmates</div>'+row('D','Dana','#F7AAF3',null,'Yellow \u00b7 April')+row('D','David','#F69700',null,'Orange \u00b7 January')+row('L','Lior','#DAEF81',null,'Green \u00b7 April')+row('T','Tom','#90C7FC',null,'Blue \u00b7 September')+row('S','Sarrah','#DAEF81',null,'Green \u00b7 April')+row('H','Hanna','#90C7FC',null,'Blue \u00b7 September')+row('N','Noa','#F7AAF3',null,'Yellow \u00b7 January')+row('A','Amit','#F69700',null,'Orange \u00b7 April')+row('R','Ron','#DAEF81',null,'Green \u00b7 September')+row('E','Eden','#90C7FC',null,'Blue \u00b7 April')+row('Y','Yael','#F7AAF3',null,'Yellow \u00b7 September')+row('I','Ido','#F69700',null,'Orange \u00b7 January');
   return panelShell('Participants',body,'');
 }
-function panelShell(title,body,footer){return '<div class="panel-head"><span class="pt">'+title+'</span><button class="pclose" onclick="setPanel(\'\')">'+I.x+'</button></div><div class="panel-body">'+body+'</div>'+footer;}
+function panelShell(title,body,footer){return '<div class="panel-head"><span class="pt">'+title+'</span><button class="pclose" onclick="setPanel(\'\')"'+hubTipAttrs('Close')+'>'+I.x+'</button></div><div class="panel-body">'+body+'</div>'+footer;}
 
 function topbar(showStudentRec){
   var rec=showStudentRec
     ? '<span class="session-rec" aria-label="Recording"><span class="rec-dot" aria-hidden="true"></span>REC</span>'
     : '';
-  return '<div class="header-chrome-fade" aria-hidden="true"></div><div class="clock-chrome-fade" aria-hidden="true"></div><div class="topbar"><div class="header-chrome-transient"><button class="x">'+I.x+'</button><div class="meta"><span class="teacher-av"><img src="assets/teacher-gai.png" alt="Guy"></span><div class="session-id"><span class="id-gym">Gym</span><span class="id-with">with Guy</span></div></div></div><div class="spacer"></div>'+rec+'<div class="session-timer">'+I.clock+'<span class="time">15:21</span></div></div>';
+  return '<div class="header-chrome-fade" aria-hidden="true"></div><div class="clock-chrome-fade" aria-hidden="true"></div><div class="topbar"><div class="header-chrome-transient"><button class="x"'+hubTipAttrs('Leave room')+'>'+I.x+'</button><div class="meta"><span class="teacher-av"><img src="assets/teacher-gai.png" alt="Guy"></span><div class="session-id"><span class="id-gym">Gym</span><span class="id-with">with Guy</span></div></div></div><div class="spacer"></div>'+rec+'<div class="session-timer">'+I.clock+'<span class="time">15:21</span></div></div>';
 }
 
 function selfview(mode){
   var real=ST.vb==='real';
-  if(mode==='collapsed') return '<div class="pip collapsed"><div class="tab-lbl"><span class="camdot"></span>You · camera on</div></div>';
-  if(mode==='off') return '<div class="pip cam-off"><span class="av">Y</span><span class="camoff">Camera off</span></div>';
-  var bg=real?(' style="'+realBg('you')+'"'):'';
-  var priv=ST.scene==='demonstrate'?'':'<span class="priv">Only you can see this</span>';
-  return '<div class="pip"'+bg+'><div class="shade"></div><span class="you">You</span><span class="grip">⠿ drag</span>'+priv+'</div>';
+  var pos=ST.pipPos
+    ? ('left:'+Math.round(ST.pipPos.left)+'px;top:'+Math.round(ST.pipPos.top)+'px;right:auto;bottom:auto;')
+    : '';
+  function wrap(cls, body, extra){
+    var s=(extra||'')+pos;
+    return '<div class="'+cls+'"'+(s?' style="'+s+'"':'')+'>'+body+'</div>';
+  }
+  if(mode==='collapsed') return wrap('pip collapsed','<div class="tab-lbl"><span class="camdot"></span>You · camera on</div>');
+  if(mode==='off') return wrap('pip cam-off','<span class="av">Y</span><span class="camoff">Camera off</span>');
+  var priv=ST.scene==='demonstrate'?'':'<span class="priv">Visible only to you</span>';
+  return wrap('pip','<div class="shade"></div><span class="you">You</span><span class="grip">⠿ drag</span>'+priv, real?realBg('you')+';':'');
 }
 function footer(camOff,micOpen,panelOpen,reason){
   return '<div class="controls-footer"><div class="footer-capsule">'
@@ -3100,32 +3352,32 @@ function askDock(panelOpen){
   if(panelOpen==='chat')
     return '<div class="ask-dock"><div class="ask-pill muted">'+I.chatm+'Ask is in the Chat panel</div></div>';
   return '<div class="ask-dock">'+ephFooterToggleHtml()+'<div class="ask-bar">'
-    +'<button class="ask-react" onclick="toggleReactions(this)" title="Citizen reaction set (placeholder)">'+I.smile
+    +'<button class="ask-react" onclick="toggleReactions(this)"'+hubTipAttrs('Reactions')+'>'+I.smile
       +'<div class="react-pop"><div class="rx-set"><span class="rx-dot"></span><span class="rx-dot"></span><span class="rx-dot"></span><span class="rx-dot"></span></div><div class="rx-cap">Citizen set · approved reaction set to be injected later</div></div>'
     +'</button>'
     +'<input placeholder="Ask the teacher or the class…" oninput="this.closest(\'.ask-bar\').querySelector(\'.ask-send\').classList.toggle(\'active\',this.value.trim().length>0)" onkeydown="if(event.key===\'Enter\'){event.preventDefault();sendAskMessage(this);}">'
-    +'<button class="ask-send" title="Send" onclick="sendAskMessage(this)">'+I.send+'</button>'
+    +'<button class="ask-send" onclick="sendAskMessage(this)"'+hubTipAttrs('Send')+'>'+I.send+'</button>'
     +'</div></div>';
 }
 var MIC_LOCKED_COPY='Your mic opens only during class activities or when the teacher invites you.';
 function controlsBar(camOff,micOpen,reason){
   var camSlash=camOff?'<span class="slash"></span>':'';
+  var camLabel=camOff?'Turn camera on':'Turn camera off';
   var openTip=(reason==='demonstration')
     ? 'Your mic is on for this demonstration'
     : 'Your mic is on for this activity';
+  var selfLabel=ST.collapsed?'Show self-view':'Hide self-view';
   /* Main Room: the mic is muted and teacher-controlled. Clicking it explains why.
      This is NOT room-style enforcement - nothing is blocked, nothing routes away. */
   var micBtn = micOpen
-    ? '<button class="cbtn micopen" aria-disabled="true">'+I.mic+'<span class="tip">'+openTip+'</span></button>'
-    : '<button class="cbtn mic mic-unavail" onclick="micInfo()">'+I.mic+'<span class="slash"></span><span class="tip">'+MIC_LOCKED_COPY+'</span></button>';
+    ? '<button class="cbtn micopen" aria-disabled="true"'+hubTipAttrs(openTip,true)+'>'+I.mic+'</button>'
+    : '<button class="cbtn mic mic-unavail" onclick="micInfo()"'+hubTipAttrs(MIC_LOCKED_COPY,true)+'>'+I.mic+'<span class="slash"></span></button>';
   return '<div class="controls-bar">'
-    +'<button class="cbtn" onclick="toggleCam()">'+I.cam+camSlash+'<span class="tip">'+(camOff?'Turn camera on':'Turn camera off')+'</span></button>'
+    +'<button class="cbtn" onclick="toggleCam()"'+hubTipAttrs(camLabel)+'>'+I.cam+camSlash+'</button>'
     + micBtn
-    +'<button class="cbtn self-toggle'+(ST.collapsed?' is-collapsed':'')+'" onclick="toggleCollapse()" aria-pressed="'+(ST.collapsed?'true':'false')+'" aria-label="'+(ST.collapsed?'Show self-view':'Hide self-view')+'">'
+    +'<button class="cbtn self-toggle'+(ST.collapsed?' is-collapsed':'')+'" onclick="toggleCollapse()" aria-pressed="'+(ST.collapsed?'true':'false')+'"'+hubTipAttrs(selfLabel)+'>'
     +'<span class="self-icon self-icon-in">'+I.collapseIn+'</span>'
     +'<span class="self-icon self-icon-out">'+I.expandOut+'</span>'
-    +'<span class="tip tip-hide">Hide self-view</span>'
-    +'<span class="tip tip-show">Show self-view</span>'
     +'</button>'
     +'</div>';
 }
@@ -3164,12 +3416,73 @@ function vtClock(sec,total,size){
       +'<circle class="ball" cx="'+bx+'" cy="'+by+'" r="5.5"/>'
     +'</svg><span class="num'+one+'">'+sec+'</span></div>';
 }
-/* the Practice Rooms Done badge: milky pill, thin charcoal stroke, yellow check
-   disc, "Done!", ONE sparkle outside the pill. No green, no yellow back layer. */
+/* the Practice Rooms Done badge — same visual design, layered for sequenced motion. */
+function doneConfetti(){
+  /* Equal mix of strokes, circles, diamonds. One burst, then a slow staggered fall. */
+  var Y='#F9E24C', W='#FFFFFF', C='#373230';
+  function ink(fill){
+    return 'fill="'+fill+'" stroke="'+C+'" stroke-width="0.5" vector-effect="non-scaling-stroke"';
+  }
+  var shapes={
+    strokeY:'<svg viewBox="0 0 16 6" aria-hidden="true"><rect x="1.2" y="1.9" width="13.6" height="2.2" rx="1.1" '+ink(Y)+'/></svg>',
+    strokeW:'<svg viewBox="0 0 16 6" aria-hidden="true"><rect x="1.2" y="1.9" width="13.6" height="2.2" rx="1.1" '+ink(W)+'/></svg>',
+    circY:  '<svg viewBox="0 0 10 10" aria-hidden="true"><circle cx="5" cy="5" r="3.55" '+ink(Y)+'/></svg>',
+    circW:  '<svg viewBox="0 0 10 10" aria-hidden="true"><circle cx="5" cy="5" r="3.55" '+ink(W)+'/></svg>',
+    diaY:   '<svg viewBox="0 0 10 10" aria-hidden="true"><path d="M5 1.2 L8.8 5 L5 8.8 L1.2 5 Z" '+ink(Y)+'/></svg>',
+    diaW:   '<svg viewBox="0 0 10 10" aria-hidden="true"><path d="M5 1.2 L8.8 5 L5 8.8 L1.2 5 Z" '+ink(W)+'/></svg>'
+  };
+  /* ey stays above the badge bottom (origin is 38% from the top). Pieces vanish
+     before that landing, so nothing sits still and nothing crosses the edge. */
+  var bits=[
+    {k:'strokeY', dx:-80,  dy:-92,  ex:-122, ey:-22, rot0:-16, rot:-38, rot2:18,  sc:1, s:22, d:0.50, dur:1.62},
+    {k:'circW',   dx:16,   dy:-124, ex:38,   ey:-86, rot0:8,   rot:26,  rot2:54,  sc:1, s:13, d:0.52, dur:1.90},
+    {k:'diaY',    dx:98,   dy:-68,  ex:132,  ey:6,   rot0:18,  rot:42,  rot2:78,  sc:1, s:14, d:0.51, dur:1.56},
+    {k:'circY',   dx:-40,  dy:-108, ex:-56,  ey:4,   rot0:-10, rot:16,  rot2:50,  sc:1, s:14, d:0.54, dur:1.98},
+    {k:'strokeW', dx:114,  dy:-30,  ex:142,  ey:2,   rot0:12,  rot:34,  rot2:14,  sc:1, s:20, d:0.53, dur:1.74},
+    {k:'diaW',    dx:-118, dy:-46,  ex:-148, ey:-8,  rot0:-22, rot:-14, rot2:28,  sc:1, s:13, d:0.55, dur:1.68},
+    {k:'circW',   dx:56,   dy:-96,  ex:82,   ey:-34, rot0:6,   rot:-22, rot2:16,  sc:1, s:12, d:0.56, dur:1.48},
+    {k:'diaY',    dx:-12,  dy:-120, ex:18,   ey:2,   rot0:14,  rot:32,  rot2:64,  sc:1, s:15, d:0.52, dur:2.06},
+    {k:'strokeY', dx:44,   dy:-36,  ex:20,   ey:4,   rot0:-8,  rot:18,  rot2:48,  sc:1, s:21, d:0.57, dur:1.70},
+    {k:'circY',   dx:-72,  dy:-80,  ex:-102, ey:2,   rot0:-14, rot:8,   rot2:42,  sc:1, s:15, d:0.58, dur:1.84},
+    {k:'strokeW', dx:8,    dy:-62,  ex:-28,  ey:0,   rot0:10,  rot:-24, rot2:22,  sc:1, s:19, d:0.54, dur:1.78},
+    {k:'diaW',    dx:78,   dy:-116, ex:104,  ey:-58, rot0:20,  rot:48,  rot2:34,  sc:1, s:13, d:0.59, dur:1.94}
+  ];
+  var html='<span class="ad-confetti" aria-hidden="true">';
+  for(var i=0;i<bits.length;i++){
+    var b=bits[i];
+    var mx=Math.round(b.dx+(b.ex-b.dx)*0.70);
+    var my=Math.round(b.dy+(b.ey-b.dy)*0.70);
+    var vx=Math.round(b.dx+(b.ex-b.dx)*0.86);
+    var vy=Math.round(b.dy+(b.ey-b.dy)*0.86);
+    var rotm=Math.round(b.rot+(b.rot2-b.rot)*0.70);
+    var rotv=Math.round(b.rot+(b.rot2-b.rot)*0.86);
+    html+='<span class="cf" style="'
+      +'--dx:'+b.dx+'px;--dy:'+b.dy+'px;--mx:'+mx+'px;--my:'+my+'px;'
+      +'--vx:'+vx+'px;--vy:'+vy+'px;'
+      +'--rot0:'+b.rot0+'deg;--rot:'+b.rot+'deg;--rotm:'+rotm+'deg;--rotv:'+rotv+'deg;'
+      +'--sc:'+b.sc+';--s:'+b.s+'px;--d:'+b.d+'s;--dur:'+b.dur+'s">'
+      +shapes[b.k]+'</span>';
+  }
+  return html+'</span>';
+}
+function doneLettering(){
+  var chars=['D','o','n','e','!'];
+  var html='<span class="ad-tx">';
+  for(var i=0;i<chars.length;i++){
+    html+='<span class="ad-ltr" style="--i:'+i+'">'+chars[i]+'</span>';
+  }
+  return html+'</span>';
+}
 function doneBadge(sm){
   return '<div class="act-done'+(sm?' sm':'')+'" onclick="runClock()" title="Run the timer again">'
-    +'<span class="ad-ic">'+I.check+'</span><span class="ad-tx">Done!</span>'
-    +'<span class="ad-spark">'+I.spark+'</span></div>';
+    +doneConfetti()
+    +'<span class="ad-bg" aria-hidden="true"></span>'
+    +'<span class="ad-ic">'
+      +'<span class="ad-ic-disk" aria-hidden="true"></span>'
+      +'<span class="ad-ic-mark">'+I.check+'</span>'
+    +'</span>'
+    +doneLettering()
+    +'</div>';
 }
 
 /* ---- the running clock (smooth) + the static phase snapshots (review) ---- */
@@ -3493,10 +3806,14 @@ function rightRegion(active){
   var panel=active==='chat'?chatPanel():active==='timeline'?timelinePanel():active==='participants'?participantsPanel():'';
   return '<div class="right'+(active?' is-open':'')+'"><div class="panel'+(panel?'':' closed')+'">'+panel+'</div></div>';
 }
-function railItem(kind,val,key,active){return '<button class="rail-item'+(active===key?' on':'')+'" onclick="togglePanel(\''+key+'\')"><span class="ic">'+RAIL[kind]+(val?'<span class="val">'+val+'</span>':'')+'</span></button>';}
+function railItem(kind,val,key,active){
+  var labels={participants:'Participants',timeline:'Timeline',chat:'Chat'};
+  return '<button class="rail-item'+(active===key?' on':'')+'" onclick="togglePanel(\''+key+'\')"'+hubTipAttrs(labels[key]||key)+'><span class="ic">'+RAIL[kind]+(val?'<span class="val">'+val+'</span>':'')+'</span></button>';
+}
 
 var ST={scene:'default',panel:'',width:'wide',camOff:false,collapsed:false,phase:'start',speaker:'none',perspective:'viewer',av:'a',gstep:'a',vb:'real',switchNum:3,vstep:1,
         chosen:'you', chosenName:'Ari',
+        pipPos:null,
         /* volunteer draw */
         volPhase:'none',        /* 'ask' | 'pending' | 'none' */
         iVolunteered:false,
@@ -3606,7 +3923,277 @@ function render(){
   armChromeDim();
   initHeaderChrome();
   restoreEph();
+  clearEphPeekTimers();
+  bindPipDrag();
   updateNote();
+}
+
+/* ===== Self-view PIP drag (scale-aware · safe bounds · exclusion snap) ===== */
+var PIP_SAFE=14;
+var PIP_SNAP_MS=180;
+var pipDrag=null;
+
+function pipUiScale(stage){
+  var sr=stage.getBoundingClientRect();
+  var w=stage.clientWidth||1;
+  return sr.width/w || 1;
+}
+function pipClientToLocal(stage, clientX, clientY){
+  var sr=stage.getBoundingClientRect();
+  var s=pipUiScale(stage);
+  return {x:(clientX-sr.left)/s, y:(clientY-sr.top)/s};
+}
+function pipLocalRect(el, stage){
+  var r=el.getBoundingClientRect();
+  var sr=stage.getBoundingClientRect();
+  var s=pipUiScale(stage);
+  return {
+    left:(r.left-sr.left)/s,
+    top:(r.top-sr.top)/s,
+    width:r.width/s,
+    height:r.height/s
+  };
+}
+function pipRectOverlap(a, b){
+  return a.left<b.left+b.width && a.left+a.width>b.left && a.top<b.top+b.height && a.top+a.height>b.top;
+}
+function pipInflate(r, pad){
+  return {left:r.left-pad, top:r.top-pad, width:r.width+pad*2, height:r.height+pad*2};
+}
+function pipApplyPos(pip, pos){
+  if(!pip || !pos) return;
+  pip.style.left=Math.round(pos.left)+'px';
+  pip.style.top=Math.round(pos.top)+'px';
+  pip.style.right='auto';
+  pip.style.bottom='auto';
+}
+function pipClearSnapTransition(pip){
+  if(!pip) return;
+  pip.style.transition='';
+}
+function pipSetSnapTransition(pip){
+  if(!pip) return;
+  pip.style.transition='left '+PIP_SNAP_MS+'ms ease, top '+PIP_SNAP_MS+'ms ease';
+  clearTimeout(pip._pipSnapT);
+  pip._pipSnapT=setTimeout(function(){ pipClearSnapTransition(pip); }, PIP_SNAP_MS+40);
+}
+function pipExclusionRects(stage){
+  var sels=[
+    '.topbar',
+    '.header-chrome-fade',
+    '.ephem-dock',
+    '.act-timer',
+    '.demo-timer',
+    '.car-cue',
+    '.switch-cine'
+  ];
+  var out=[], i, nodes, j, el, r;
+  for(i=0;i<sels.length;i++){
+    nodes=stage.querySelectorAll(sels[i]);
+    for(j=0;j<nodes.length;j++){
+      el=nodes[j];
+      if(!el || el.offsetParent===null) continue;
+      if(el.getClientRects().length===0) continue;
+      r=pipLocalRect(el, stage);
+      if(r.width<8 || r.height<8) continue;
+      out.push(pipInflate(r, PIP_SAFE));
+    }
+  }
+  return out;
+}
+function pipSafeBounds(stage, pip){
+  var pad=PIP_SAFE;
+  var sw=stage.clientWidth;
+  var sh=stage.clientHeight;
+  var footer=stage.querySelector('.controls-footer');
+  var bottom=sh-pad;
+  if(footer){
+    var fr=pipLocalRect(footer, stage);
+    bottom=Math.min(bottom, fr.top-pad);
+  }
+  var top=pad;
+  var header=stage.querySelector('.topbar') || stage.querySelector('.header-chrome-fade');
+  if(header && header.getClientRects().length){
+    var hr=pipLocalRect(header, stage);
+    top=Math.max(top, hr.top+hr.height+pad);
+  }
+  /* Session timer sits in the topbar; keep a modest ceiling even if chrome is dimmed */
+  top=Math.max(top, pad+52);
+  return {
+    left:pad,
+    top:top,
+    right:sw-pad,
+    bottom:Math.max(top+((pip&&pip.offsetHeight)||0), bottom)
+  };
+}
+function pipPushFromExclusion(x, y, pw, ph, ex, bounds){
+  var overlapL=(x+pw)-ex.left;
+  var overlapR=(ex.left+ex.width)-x;
+  var overlapT=(y+ph)-ex.top;
+  var overlapB=(ex.top+ex.height)-y;
+  if(overlapL<=0||overlapR<=0||overlapT<=0||overlapB<=0) return {left:x, top:y};
+  var min=Math.min(overlapL, overlapR, overlapT, overlapB);
+  if(min===overlapL) x=ex.left-pw;
+  else if(min===overlapR) x=ex.left+ex.width;
+  else if(min===overlapT) y=ex.top-ph;
+  else y=ex.top+ex.height;
+  x=Math.max(bounds.left, Math.min(x, bounds.right-pw));
+  y=Math.max(bounds.top, Math.min(y, bounds.bottom-ph));
+  return {left:x, top:y};
+}
+function pipResolvePos(x, y, pw, ph, bounds, exclusions){
+  x=Math.max(bounds.left, Math.min(x, Math.max(bounds.left, bounds.right-pw)));
+  y=Math.max(bounds.top, Math.min(y, Math.max(bounds.top, bounds.bottom-ph)));
+  var i, j, hit, ex, next;
+  for(i=0;i<6;i++){
+    hit=false;
+    for(j=0;j<exclusions.length;j++){
+      ex=exclusions[j];
+      if(!pipRectOverlap({left:x,top:y,width:pw,height:ph}, ex)) continue;
+      hit=true;
+      next=pipPushFromExclusion(x, y, pw, ph, ex, bounds);
+      x=next.left; y=next.top;
+    }
+    if(!hit) break;
+  }
+  return {left:x, top:y};
+}
+function pipIsValid(pos, pw, ph, bounds, exclusions){
+  if(!pos) return false;
+  if(pos.left<bounds.left-0.5 || pos.top<bounds.top-0.5) return false;
+  if(pos.left+pw>bounds.right+0.5 || pos.top+ph>bounds.bottom+0.5) return false;
+  var box={left:pos.left, top:pos.top, width:pw, height:ph};
+  for(var i=0;i<exclusions.length;i++){
+    if(pipRectOverlap(box, exclusions[i])) return false;
+  }
+  return true;
+}
+function pipDefaultPos(pw, ph, bounds){
+  return {
+    left:Math.max(bounds.left, bounds.right-pw),
+    top:Math.max(bounds.top, bounds.bottom-ph)
+  };
+}
+function pipSnapPos(x, y, pw, ph, bounds, exclusions){
+  var candidates=[];
+  var rightX=Math.max(bounds.left, bounds.right-pw);
+  var leftX=bounds.left;
+  var bottomY=Math.max(bounds.top, bounds.bottom-ph);
+  var topY=bounds.top;
+  var midY=Math.round((topY+bottomY)/2);
+  candidates.push({left:rightX, top:bottomY, prefer:0});   /* default dock */
+  candidates.push({left:rightX, top:midY, prefer:12});
+  candidates.push({left:rightX, top:topY, prefer:18});
+  candidates.push({left:leftX, top:bottomY, prefer:40});
+  candidates.push({left:leftX, top:midY, prefer:48});
+  candidates.push({left:leftX, top:topY, prefer:56});
+  /* denser right-edge samples */
+  var step=Math.max(24, Math.round(ph*0.35));
+  var ty;
+  for(ty=topY; ty<=bottomY; ty+=step){
+    candidates.push({left:rightX, top:ty, prefer:20});
+  }
+  candidates.push({left:x, top:y, prefer:8}); /* try current first-ish via score */
+
+  var best=null, bestScore=Infinity, i, c, p, dx, dy, score;
+  for(i=0;i<candidates.length;i++){
+    c=candidates[i];
+    p=pipResolvePos(c.left, c.top, pw, ph, bounds, exclusions);
+    if(!pipIsValid(p, pw, ph, bounds, exclusions)) continue;
+    dx=p.left-x; dy=p.top-y;
+    score=Math.sqrt(dx*dx+dy*dy)+(c.prefer||0);
+    /* prefer right dock */
+    if(Math.abs(p.left-rightX)<1) score-=6;
+    /* prefer bottom */
+    if(Math.abs(p.top-bottomY)<1) score-=4;
+    if(score<bestScore){ bestScore=score; best=p; }
+  }
+  return best || pipDefaultPos(pw, ph, bounds);
+}
+function pipMeasureContext(pip, stage){
+  var bounds=pipSafeBounds(stage, pip);
+  var exclusions=pipExclusionRects(stage);
+  var pw=pip.offsetWidth;
+  var ph=pip.offsetHeight;
+  return {bounds:bounds, exclusions:exclusions, pw:pw, ph:ph};
+}
+function ensurePipSafe(animate){
+  var pip=document.querySelector('#frame .stage .pip');
+  if(!pip) return;
+  var stage=pip.closest('.stage');
+  if(!stage) return;
+  var ctx=pipMeasureContext(pip, stage);
+  var cur;
+  if(ST.pipPos){
+    cur={left:ST.pipPos.left, top:ST.pipPos.top};
+  } else {
+    var lr=pipLocalRect(pip, stage);
+    cur={left:lr.left, top:lr.top};
+  }
+  if(pipIsValid(cur, ctx.pw, ctx.ph, ctx.bounds, ctx.exclusions)){
+    if(ST.pipPos){
+      pipApplyPos(pip, ST.pipPos);
+    }
+    return;
+  }
+  var next=pipSnapPos(cur.left, cur.top, ctx.pw, ctx.ph, ctx.bounds, ctx.exclusions);
+  ST.pipPos=next;
+  if(animate) pipSetSnapTransition(pip);
+  pipApplyPos(pip, next);
+}
+function bindPipDrag(){
+  var pip=document.querySelector('#frame .stage .pip');
+  if(!pip){ pipDrag=null; return; }
+  var stage=pip.closest('.stage');
+  if(!stage) return;
+
+  ensurePipSafe(false);
+
+  pip.addEventListener('pointerdown', function(e){
+    if(e.button!=null && e.button!==0) return;
+    e.preventDefault();
+    pipClearSnapTransition(pip);
+    var local=pipClientToLocal(stage, e.clientX, e.clientY);
+    var lr=pipLocalRect(pip, stage);
+    /* Lock CSS right/bottom into explicit left/top at the exact visual grab point */
+    var origin={left:lr.left, top:lr.top};
+    ST.pipPos={left:origin.left, top:origin.top};
+    pipApplyPos(pip, ST.pipPos);
+    pipDrag={
+      id:e.pointerId,
+      ox:local.x-origin.left,
+      oy:local.y-origin.top,
+      pw:lr.width,
+      ph:lr.height
+    };
+    pip.classList.add('is-dragging');
+    try{pip.setPointerCapture(e.pointerId);}catch(err){}
+  });
+
+  pip.addEventListener('pointermove', function(e){
+    if(!pipDrag || e.pointerId!==pipDrag.id) return;
+    var ctx=pipMeasureContext(pip, stage);
+    var local=pipClientToLocal(stage, e.clientX, e.clientY);
+    var rawLeft=local.x-pipDrag.ox;
+    var rawTop=local.y-pipDrag.oy;
+    var next=pipResolvePos(rawLeft, rawTop, pipDrag.pw, pipDrag.ph, ctx.bounds, ctx.exclusions);
+    ST.pipPos=next;
+    pipApplyPos(pip, next);
+  });
+
+  function endDrag(e){
+    if(!pipDrag || (e && e.pointerId!==pipDrag.id)) return;
+    var ctx=pipMeasureContext(pip, stage);
+    var cur=ST.pipPos || {left:0, top:0};
+    var snapped=pipSnapPos(cur.left, cur.top, pipDrag.pw, pipDrag.ph, ctx.bounds, ctx.exclusions);
+    pipDrag=null;
+    pip.classList.remove('is-dragging');
+    ST.pipPos=snapped;
+    pipSetSnapTransition(pip);
+    pipApplyPos(pip, snapped);
+  }
+  pip.addEventListener('pointerup', endDrag);
+  pip.addEventListener('pointercancel', endDrag);
 }
 function updateNote(){
   var sc={
@@ -3748,12 +4335,12 @@ function ephFooterToggleHtml(){
   if(!ephSceneOk()) return '';
   var hidden=chatIsHidden();
   var label=hidden?'Show Chat':'Hide Chat';
-  return '<button type="button" class="eph-footer-toggle'+(hidden?'':' is-on')+'" onclick="toggleChatVisibility()" aria-label="'+label+'" title="'+label+'" aria-pressed="'+(hidden?'false':'true')+'">'+RAIL.CHAT+'</button>';
+  return '<button type="button" class="eph-footer-toggle'+(hidden?'':' is-on')+'" onclick="toggleChatVisibility()"'+hubTipAttrs(label)+' aria-pressed="'+(hidden?'false':'true')+'">'+RAIL.CHAT+'</button>';
 }
 function ephGrowToggleHtml(){
   var expanded=chatIsExpanded();
   var label=expanded?'Collapse chat':'Expand chat';
-  return '<button type="button" class="ephem-grow" onclick="toggleChatExpand()" aria-label="'+label+'" title="'+label+'">'+ephChevIcon(expanded)+'</button>';
+  return '<button type="button" class="ephem-grow" onclick="toggleChatExpand()"'+hubTipAttrs(label)+'>'+ephChevIcon(expanded)+'</button>';
 }
 function updateEphFooterToggle(){
   var btn=document.querySelector('.eph-footer-toggle');
@@ -3762,8 +4349,9 @@ function updateEphFooterToggle(){
   var label=hidden?'Show Chat':'Hide Chat';
   btn.innerHTML=RAIL.CHAT;
   btn.classList.toggle('is-on',!hidden);
+  btn.setAttribute('data-hub-tip',label);
   btn.setAttribute('aria-label',label);
-  btn.setAttribute('title',label);
+  btn.removeAttribute('title');
   btn.setAttribute('aria-pressed',hidden?'false':'true');
 }
 function updateEphGrowToggle(){
@@ -3772,8 +4360,9 @@ function updateEphGrowToggle(){
   var expanded=chatIsExpanded();
   var label=expanded?'Collapse chat':'Expand chat';
   btn.innerHTML=ephChevIcon(expanded);
+  btn.setAttribute('data-hub-tip',label);
   btn.setAttribute('aria-label',label);
-  btn.setAttribute('title',label);
+  btn.removeAttribute('title');
 }
 function toggleChatVisibility(){
   if(chatIsHidden()){
@@ -3826,15 +4415,20 @@ function setChatMode(mode){
 function syncChatModeBtns(){
   document.querySelectorAll('.ch').forEach(function(b){b.classList.toggle('on',b.dataset.ch===ST.chatMode);});
 }
-function syncEphDockAfterChange(){
+function syncEphDockAfterChange(keepPeek){
   if(!shouldShowEphDock()){
     var d=document.querySelector('.ephem-dock');if(d)d.remove();
     return;
   }
+  if(!keepPeek) clearEphPeek(true);
   var dock=document.querySelector('.ephem-dock');
   if(!dock){
     var st=document.querySelector('.stage');
     if(st) st.insertAdjacentHTML('beforeend',buildEphDockHtml());
+    if(keepPeek){
+      var peek=ephPeekHost();
+      if(peek&&st) st.appendChild(peek);
+    }
     return;
   }
   dock.classList.toggle('is-expanded',chatIsExpanded());
@@ -3857,8 +4451,8 @@ function ephHalo(name,who){
 function ephInner(m,isLead){
   var initial=(m.name||'?').charAt(0);
   var av='<div class="eph-av" aria-hidden="true">'+ephHalo(m.name,m.who)+'<span class="av-face">'+initial+'</span></div>';
-  var name='<div class="en">'+m.name+(m.who==='helper'?(' \u00b7 helper '+I.spark):'')+'</div>';
-  return av+'<div class="eph-bd">'+name+m.text+'</div>';
+  var name='<div class="en">'+m.name+(m.who==='helper'?' \u00b7 helper':'')+'</div>';
+  return av+'<div class="eph-bd">'+name+'<span class="eph-tx">'+m.text+'</span></div>';
 }
 function ephMsgClass(who,isLead){
   return 'ephem-msg'+(who==='helper'?' helper':'')+(who==='own'?' own':'')+(isLead?' has-av':' cont');
@@ -3885,6 +4479,7 @@ function sendAskMessage(from){
   var text=(input&&input.value||'').trim();
   if(!text) return;
   if(chatIsHidden()){
+    clearEphPeek(true);
     ST.chatMode=ST.chatPrevMode||'compact';
     syncChatModeBtns();
     syncEphDockAfterChange();
@@ -3896,12 +4491,276 @@ function sendAskMessage(from){
   var send=bar.querySelector('.ask-send');
   if(send) send.classList.remove('active');
 }
+/*
+DEV HANDOFF — HIDDEN CHAT PEEK BEHAVIOR
+
+Trigger only when:
+- an incoming message arrives
+- Chat is currently Hidden
+
+Behavior:
+- Show the newest incoming message as a temporary peek.
+- Do not show a peek for the current user's own outgoing messages.
+- Keep visible for ~4 seconds, then softly dismiss.
+- If another incoming message arrives while visible:
+  replace the current peek with the newest message and restart the timer.
+- Do not stack multiple peeks.
+- Do not add a persistent unread badge, pulse, or dot.
+- Clicking the peek opens Chat in Compact state.
+*/
+var EPH_PEEK_MS=4000; /* sync with --chat-peek-visible-time */
+var EPH_PEEK_FADE_MS=200;
+var EPH_PEEK_INCORP_MS=400; /* sync with --chat-peek-handoff-duration */
+var EPH_PEEK_SCOOP=14;
+var ephPeekHideTimer=null;
+var ephPeekFadeTimer=null;
+function ephPeekHost(){return document.querySelector('.ephem-peek:not(.ephem-peek-flip)');}
+function ephPeekReduceMotion(){
+  return window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+}
+function ephStageScale(stage){
+  var sr=stage.getBoundingClientRect();
+  var w=stage.clientWidth||1;
+  return sr.width/w||1;
+}
+function ephViewportToStage(stage,vx,vy){
+  var sr=stage.getBoundingClientRect();
+  var scale=ephStageScale(stage);
+  return {x:(vx-sr.left)/scale,y:(vy-sr.top)/scale};
+}
+function ephPeekShapePath(w,h,scoop){
+  var r=13;
+  w=Math.max(w,40);
+  h=Math.max(h,28);
+  if(!scoop){
+    return 'M'+r+',0H'+(w-r)+'A'+r+','+r+' 0 0 1 '+w+','+r+'V'+(h-r)+'A'+r+','+r+' 0 0 1 '+(w-r)+','+h+'H'+r+'A'+r+','+r+' 0 0 1 0,'+(h-r)+'V'+r+'A'+r+','+r+' 0 0 1 '+r+',0Z';
+  }
+  return 'M'+r+',0H'+(w-r)+'A'+r+','+r+' 0 0 1 '+w+','+r+'V'+(h-r)+'A'+r+','+r+' 0 0 1 '+(w-r)+','+h+'H18C11.5,'+(h+.6)+' 7,'+(h+5.2)+' 3.1,'+(h+10.6)+'C1.5,'+(h+12.8)+' .35,'+(h+13.5)+' 0,'+(h+11.8)+'V'+r+'A'+r+','+r+' 0 0 1 '+r+',0Z';
+}
+function ensureEphPeekShape(msg){
+  var svg=msg.querySelector('.ephem-peek-shape');
+  if(!svg){
+    msg.insertAdjacentHTML('afterbegin','<svg class="ephem-peek-shape" aria-hidden="true" focusable="false"><path></path></svg>');
+    svg=msg.querySelector('.ephem-peek-shape');
+  }
+  return svg;
+}
+function syncEphPeekShape(host,withScoop){
+  var msg=host.querySelector('.ephem-msg');
+  var bd=host.querySelector('.eph-bd');
+  if(!msg||!bd) return;
+  var svg=ensureEphPeekShape(msg);
+  var path=svg.querySelector('path');
+  if(!path) return;
+  var w=Math.round(bd.offsetWidth);
+  var h=Math.round(bd.offsetHeight);
+  var extra=withScoop?EPH_PEEK_SCOOP:0;
+  svg.setAttribute('viewBox','0 0 '+w+' '+(h+extra));
+  svg.setAttribute('width',w);
+  svg.setAttribute('height',h+extra);
+  path.setAttribute('d',ephPeekShapePath(w,h,withScoop));
+}
+function positionEphPeek(host){
+  var btn=document.querySelector('.eph-footer-toggle');
+  var cap=document.querySelector('.footer-capsule');
+  var stage=document.querySelector('.stage');
+  if(!host||!btn||!cap||!stage) return;
+  var sr=stage.getBoundingClientRect();
+  var scale=ephStageScale(stage);
+  var br=btn.getBoundingClientRect();
+  var cr=cap.getBoundingClientRect();
+  var iconCenter=(br.left-sr.left)/scale+(br.width/scale)/2;
+  var capTop=(sr.bottom-cr.top)/scale;
+  host.style.left=Math.round(iconCenter-4)+'px';
+  /* ~8px closer to footer than the prior +10 clearance; keep tip above Chat icon */
+  host.style.bottom=Math.round(capTop+EPH_PEEK_SCOOP+2)+'px';
+}
+function clearEphPeekTimers(){
+  if(ephPeekHideTimer){clearTimeout(ephPeekHideTimer);ephPeekHideTimer=null;}
+  if(ephPeekFadeTimer){clearTimeout(ephPeekFadeTimer);ephPeekFadeTimer=null;}
+}
+function clearEphPeek(immediate){
+  clearEphPeekTimers();
+  var host=ephPeekHost();
+  if(!host) return;
+  if(immediate){host.remove();return;}
+  host.classList.add('is-leaving');
+  ephPeekFadeTimer=setTimeout(function(){
+    var h=ephPeekHost(); if(h) h.remove();
+    ephPeekFadeTimer=null;
+  },EPH_PEEK_FADE_MS);
+}
+function ephRemoveFlipClone(){
+  var flip=document.querySelector('.ephem-peek-flip');
+  if(flip) flip.remove();
+}
+/*
+DEV HANDOFF — PEEK → COMPACT CHAT MOTION
+
+Production intent:
+
+When the user clicks the temporary peek, preserve spatial continuity.
+
+The same visible message should feel as if it:
+1. releases from the connector / Chat source,
+2. travels into the newly opened Compact Chat,
+3. settles as the newest message at the bottom of the chat stream.
+
+Recommended implementation:
+- animate a fixed-position clone from the peek's source rect
+  to the destination message rect in Compact Chat
+- hide the real destination message during travel
+- reveal it as the moving clone arrives
+- connector does not travel; it releases/dissolves near the beginning
+
+Motion target:
+~350–450ms (see --chat-peek-handoff-duration / EPH_PEEK_INCORP_MS)
+smooth ease-out
+no bounce
+no overshoot
+no spring
+keep the message visible throughout most of the travel
+
+The motion should communicate continuity, not call attention to itself.
+
+Prototype note: this HTML file opens Compact on click; full FLIP handoff
+is a production implementation detail documented above.
+*/
+function openChatFromPeek(){
+  var host=ephPeekHost();
+  var peekMsg=host&&host.querySelector('.ephem-msg');
+  var peekBubble=peekMsg&&peekMsg.querySelector('.eph-bd');
+  var peekId=peekMsg&&peekMsg.getAttribute('data-id');
+  clearEphPeekTimers();
+  if(!peekMsg||!peekBubble||ephPeekReduceMotion()){
+    clearEphPeek(true);
+    ephRemoveFlipClone();
+    ST.chatMode='compact';
+    ST.chatPrevMode='compact';
+    syncChatModeBtns();
+    updateEphFooterToggle();
+    syncEphDockAfterChange();
+    restoreEph();
+    return;
+  }
+  var first=peekBubble.getBoundingClientRect();
+  var clone=peekMsg.cloneNode(true);
+  var drop=clone.querySelector('.ephem-peek-shape');
+  if(drop) drop.remove();
+  drop=clone.querySelector('.eph-av');
+  if(drop) drop.remove();
+  clone.classList.add('ephem-peek-flip');
+  clone.classList.remove('enter','leaving','has-av');
+  clone.removeAttribute('role');
+  clone.removeAttribute('aria-label');
+  clone.onclick=null;
+  clone.style.cssText=[
+    'position:fixed',
+    'left:'+first.left+'px',
+    'top:'+first.top+'px',
+    'width:'+first.width+'px',
+    'height:'+first.height+'px',
+    'margin:0',
+    'z-index:99999',
+    'pointer-events:none',
+    'opacity:1',
+    'transform:translate(0px,0px)',
+    'transform-origin:top left'
+  ].join(';');
+  document.body.appendChild(clone);
+  host.remove();
+  ST.chatMode='compact';
+  ST.chatPrevMode='compact';
+  syncChatModeBtns();
+  updateEphFooterToggle();
+  syncEphDockAfterChange();
+  restoreEph();
+  var feed=ephFeed();
+  var dest=peekId&&feed?feed.querySelector('.ephem-msg[data-id="'+peekId+'"]'):null;
+  if(!dest){
+    ephRemoveFlipClone();
+    return;
+  }
+  dest.classList.add('eph-incorporating');
+  requestAnimationFrame(function(){
+    requestAnimationFrame(function(){
+      if(!clone.parentNode||!dest.isConnected){
+        if(dest) dest.classList.remove('eph-incorporating');
+        ephRemoveFlipClone();
+        return;
+      }
+      scrollEphToLatest();
+      var destBubble=dest.querySelector('.eph-bd')||dest;
+      var last=destBubble.getBoundingClientRect();
+      var dx=last.left-first.left;
+      var dy=last.top-first.top;
+      var sx=first.width?(last.width/first.width):1;
+      var sy=first.height?(last.height/first.height):1;
+      if(Math.abs(sx-1)<.015) sx=1;
+      if(Math.abs(sy-1)<.015) sy=1;
+      console.log('[peek-flip]',{source:{x:first.left,y:first.top,w:first.width,h:first.height},dest:{x:last.left,y:last.top,w:last.width,h:last.height},deltaX:dx,deltaY:dy});
+      void clone.offsetWidth;
+      clone.style.transition='transform '+EPH_PEEK_INCORP_MS+'ms cubic-bezier(0.22, 1, 0.36, 1)';
+      clone.style.transform='translate('+dx+'px,'+dy+'px)'+(sx===1&&sy===1?'':' scale('+sx+','+sy+')');
+      ephPeekFadeTimer=setTimeout(function(){
+        dest.classList.remove('eph-incorporating');
+        clone.style.transition='opacity 50ms linear';
+        clone.style.opacity='0';
+        setTimeout(function(){
+          ephRemoveFlipClone();
+          ephPeekFadeTimer=null;
+        },50);
+      },EPH_PEEK_INCORP_MS);
+    });
+  });
+}
+function showEphPeek(m){
+  if(!m||m.who==='own') return;
+  if(!chatIsHidden()||!ephSceneOk()||leftPanelOpen()) return;
+  clearEphPeekTimers();
+  ephRemoveFlipClone();
+  var st=document.querySelector('.stage');
+  if(!st) return;
+  var host=ephPeekHost();
+  if(!host){
+    host=document.createElement('div');
+    host.className='ephem-peek is-enter';
+    st.appendChild(host);
+  } else {
+    host.classList.add('is-enter');
+    var leftover=host.querySelector('.ephem-peek-neck');
+    if(leftover) leftover.remove();
+  }
+  host.classList.toggle('is-helper',m.who==='helper');
+  host.classList.remove('is-leaving');
+  var el=host.querySelector('.ephem-msg');
+  if(!el){
+    el=document.createElement('div');
+    host.appendChild(el);
+  }
+  el.className=ephMsgClass(m.who,true);
+  el.removeAttribute('style');
+  el.setAttribute('data-id',m.id);
+  el.setAttribute('role','button');
+  el.setAttribute('aria-label','Open chat');
+  el.onclick=openChatFromPeek;
+  el.innerHTML=ephInner(m,true);
+  ensureEphPeekShape(el);
+  positionEphPeek(host);
+  void host.offsetWidth;
+  syncEphPeekShape(host,true);
+  host.classList.remove('is-enter');
+  ephPeekHideTimer=setTimeout(function(){clearEphPeek(false);},EPH_PEEK_MS);
+}
 function pushEph(who,name,text){
   var id='e'+(++ephSeq),m={id:id,who:who,name:name,text:text};
   var prev=EPH.length?EPH[EPH.length-1]:null;
   var isLead=!ephSamePerson(m,prev);
   EPH.push(m);
-  if(chatIsHidden()) return;
+  if(chatIsHidden()){
+    if(who!=='own') showEphPeek(m);
+    return;
+  }
   syncEphDockAfterChange();
   var feed=ephFeed();
   if(feed){
@@ -3928,6 +4787,15 @@ function restoreEph(){
 function trigMsg(){pushEph('student',EPH_NAMES[Math.floor(Math.random()*EPH_NAMES.length)],EPH_TXT[Math.floor(Math.random()*EPH_TXT.length)]);}
 function trigHelper(){pushEph('helper','Maya',EPH_HELP[Math.floor(Math.random()*EPH_HELP.length)]);}
 function trigBurst(){trigMsg();setTimeout(trigHelper,450);setTimeout(trigMsg,900);setTimeout(trigMsg,1350);}
+function trigIncomingHidden(){
+  if(!chatIsHidden()){
+    ST.chatPrevMode=ST.chatMode||'compact';
+    ST.chatMode='hidden';
+    syncChatModeBtns();
+    render();
+  }
+  trigMsg();
+}
 
 
 (function(){
@@ -3940,6 +4808,71 @@ function trigBurst(){trigMsg();setTimeout(trigHelper,450);setTimeout(trigMsg,900
   syncAll();
   if(ST.scene==='volunteer'){ ST.vstep=1; ST.volPhase='ask'; ST.iVolunteered=false; armVol(); }
   render();
+})();
+
+/* ===== Hub-style tooltips (shared) ===== */
+function hubTipAttrs(label, wide){
+  var safe=String(label).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
+  return ' data-hub-tip="'+safe+'" aria-label="'+safe+'"'+(wide?' data-hub-wide':'');
+}
+(function initHubTips(){
+  var layer=null, hideT=null, active=null;
+  function host(){
+    return document.querySelector('.frame') || document.querySelector('.phone') || document.body;
+  }
+  function ensure(){
+    var h=host();
+    if(layer && layer.isConnected && layer.parentNode===h) return layer;
+    if(layer && layer.parentNode) layer.parentNode.removeChild(layer);
+    layer=document.createElement('div');
+    layer.className='hub-tip-layer';
+    layer.setAttribute('aria-hidden','true');
+    h.appendChild(layer);
+    return layer;
+  }
+  function hide(){
+    active=null;
+    if(!layer) return;
+    layer.classList.remove('is-on');
+  }
+  function place(el){
+    var text=el.getAttribute('data-hub-tip');
+    if(!text) return;
+    var L=ensure();
+    var h=host();
+    var hr=h.getBoundingClientRect();
+    var r=el.getBoundingClientRect();
+    active=el;
+    L.textContent=text;
+    L.classList.toggle('is-wide', el.hasAttribute('data-hub-wide'));
+    L.style.left='0px'; L.style.top='0px'; L.classList.add('is-on');
+    var tw=L.offsetWidth, th=L.offsetHeight;
+    var left=(r.left+r.right)/2 - hr.left - tw/2;
+    var top=r.top - hr.top - th - 8;
+    left=Math.max(6, Math.min(left, hr.width - tw - 6));
+    if(top < 4) top = r.bottom - hr.top + 8;
+    L.style.left=Math.round(left)+'px';
+    L.style.top=Math.round(top)+'px';
+  }
+  function fromEvent(e){
+    return e.target && e.target.closest ? e.target.closest('[data-hub-tip]') : null;
+  }
+  document.addEventListener('pointerover', function(e){
+    var el=fromEvent(e); if(!el) return;
+    clearTimeout(hideT); place(el);
+  }, true);
+  document.addEventListener('pointerout', function(e){
+    var el=fromEvent(e); if(!el) return;
+    var rel=e.relatedTarget;
+    if(rel && el.contains(rel)) return;
+    hideT=setTimeout(function(){ if(active===el) hide(); }, 40);
+  }, true);
+  document.addEventListener('focusin', function(e){
+    var el=fromEvent(e); if(el){ clearTimeout(hideT); place(el); }
+  }, true);
+  document.addEventListener('focusout', function(e){
+    var el=fromEvent(e); if(el) hide();
+  }, true);
 })();
 </script>
 </body>

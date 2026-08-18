@@ -625,6 +625,26 @@ body.present .car-cue{left:3vw;width:calc(var(--car-slot-w) + 48px);padding:22px
    Scoped to beat the base present/narrow .car-cue left placements. */
 .car-cue.car-seam,body.present .car-cue.car-seam,.frame.w-narrow .car-cue.car-seam{left:50%;right:auto;top:462px;transform:translateX(-50%);width:150px;padding:12px 13px 10px}
 .car-cue.car-seam .car-fig,.car-cue.car-seam .car-slot,body.present .car-cue.car-seam .car-fig,.frame.w-narrow .car-cue.car-seam .car-fig{width:120px;height:120px}
+
+/* ===== Hub-style tooltips (shared across icon-only controls) ===== */
+.hub-tip-layer{
+  position:absolute;left:0;top:0;z-index:500;
+  padding:6px 10px;border-radius:999px;
+  background:var(--brand-charcoal,#373230);color:#fff;
+  font-family:var(--font-ui),Assistant,system-ui,sans-serif;
+  font-size:12px;font-weight:600;line-height:1.25;letter-spacing:0;
+  white-space:nowrap;text-align:center;pointer-events:none;
+  opacity:0;visibility:hidden;
+  box-shadow:0 4px 14px rgba(0,0,0,.28);
+  transition:opacity .12s ease,visibility .12s ease;
+  max-width:min(280px,72%);
+  box-sizing:border-box;
+}
+.hub-tip-layer.is-on{opacity:1;visibility:visible}
+.hub-tip-layer.is-wide{white-space:normal;border-radius:12px;line-height:1.35}
+/* Legacy per-control tip spans retired — Hub layer (.hub-tip-layer) is the shared tooltip */
+.cbtn .tip,.rc-btn .tip{display:none!important}
+
 </style>
 </head>
 <body>
@@ -1056,11 +1076,11 @@ function chatPanel(){
     body+='<div class="'+cls+'"><span class="av">'+m.n[0]+'</span><div class="bd"><div class="nm">'+nm+'</div>'+reply+'<div class="tx">'+m.t+'</div></div></div>';
   });
   var composer='<div class="composer">'
-    +'<button class="react-btn" onclick="toggleReactions(this)" title="Citizen reaction set (placeholder)">'+I.smile
+    +'<button class="react-btn" onclick="toggleReactions(this)"'+hubTipAttrs('Reactions')+'>'+I.smile
       +'<div class="react-pop"><div class="rx-set"><span class="rx-dot"></span><span class="rx-dot"></span><span class="rx-dot"></span><span class="rx-dot"></span></div><div class="rx-cap">Citizen set · approved reaction set to be injected later</div></div>'
     +'</button>'
     +'<input placeholder="Ask the teacher or the class…" oninput="this.closest(\'.composer\').querySelector(\'.send\').classList.toggle(\'active\',this.value.trim().length>0)">'
-    +'<button class="send" title="Send">'+I.send+'</button>'
+    +'<button class="send"'+hubTipAttrs('Send')+'>'+I.send+'</button>'
     +'</div>';
   return panelShell('Chat',body,composer);
 }
@@ -1075,9 +1095,9 @@ function participantsPanel(){
   var body='<div class="pp-search">'+I.search+'<span>Search participants…</span></div><div class="pp-group">Teaching team</div>'+row('N','Niv',null,['teacher','Teacher'],'Staff')+row('M','Maya',null,['helper','Helper'],'Staff')+'<div class="pp-group">You</div>'+row('Y','You','#7EE07D',['you','You'],'Green \u00b7 April')+'<div class="pp-group">Classmates</div>'+row('D','Dana','#FEE300',null,'Yellow \u00b7 April')+row('D','David','#F69601',null,'Orange \u00b7 January')+row('L','Lior','#7EE07D',null,'Green \u00b7 April')+row('T','Tom','#449CFD',null,'Blue \u00b7 September');
   return panelShell('Participants',body,'');
 }
-function panelShell(title,body,footer){return '<div class="panel-head"><span class="pt">'+title+'</span><button class="pclose" onclick="setPanel(\'\')">'+I.x+'</button></div><div class="panel-body">'+body+'</div>'+footer;}
+function panelShell(title,body,footer){return '<div class="panel-head"><span class="pt">'+title+'</span><button class="pclose" onclick="setPanel(\'\')"'+hubTipAttrs('Close')+'>'+I.x+'</button></div><div class="panel-body">'+body+'</div>'+footer;}
 
-function topbar(){return '<div class="header-scrim"></div><div class="topbar"><button class="x">'+I.x+'</button><div class="meta"><div class="title">Gym</div><div class="with">with Niv Rubin</div></div><div class="now-chip"><span class="dot"></span>Now<span class="lbl">· Greetings &amp; Introductions</span></div><div class="spacer"></div><div class="session-timer">'+I.clock+'<span class="cap">Session</span> 15:21</div><div class="rec"><span class="rd"></span>REC</div></div>';}
+function topbar(){return '<div class="header-scrim"></div><div class="topbar"><button class="x"'+hubTipAttrs('Leave room')+'>'+I.x+'</button><div class="meta"><div class="title">Gym</div><div class="with">with Niv Rubin</div></div><div class="now-chip"><span class="dot"></span>Now<span class="lbl">· Greetings &amp; Introductions</span></div><div class="spacer"></div><div class="session-timer">'+I.clock+'<span class="cap">Session</span> 15:21</div><div class="rec"><span class="rd"></span>REC</div></div>';}
 
 function selfview(mode){
   var real=ST.vb==='real';
@@ -1100,33 +1120,31 @@ function askDock(panelOpen){
     return '<div class="ask-dock"><button class="ask-pill" onclick="toggleAsk()">'+I.chatm+'Ask</button></div>';
   // Expanded → persistent quick-ask composer
   return '<div class="ask-dock"><div class="ask-bar">'
-    +'<button class="ask-react" onclick="toggleReactions(this)" title="Citizen reaction set (placeholder)">'+I.smile
+    +'<button class="ask-react" onclick="toggleReactions(this)"'+hubTipAttrs('Reactions')+'>'+I.smile
       +'<div class="react-pop"><div class="rx-set"><span class="rx-dot"></span><span class="rx-dot"></span><span class="rx-dot"></span><span class="rx-dot"></span></div><div class="rx-cap">Citizen set · approved reaction set to be injected later</div></div>'
     +'</button>'
     +'<input placeholder="Ask the teacher or the class…" oninput="this.closest(\'.ask-bar\').querySelector(\'.ask-send\').classList.toggle(\'active\',this.value.trim().length>0)">'
-    +'<button class="ask-send" title="Send">'+I.send+'</button>'
-    +'<button class="ask-collapse" onclick="toggleAsk()" title="Minimize">'+I.chevd+'</button>'
+    +'<button class="ask-send"'+hubTipAttrs('Send')+'>'+I.send+'</button>'
+    +'<button class="ask-collapse" onclick="toggleAsk()"'+hubTipAttrs('Minimize')+'>'+I.chevd+'</button>'
     +'</div></div>';
 }
 var MIC_LOCKED_COPY='Your mic opens only during class activities or when the teacher invites you.';
 function controlsBar(camOff,micOpen,reason){
   var camSlash=camOff?'<span class="slash"></span>':'';
+  var camLabel=camOff?'Turn camera on':'Turn camera off';
   var openTip=(reason==='demonstration')
     ? 'Your mic is on for this demonstration'
     : 'Your mic is on for this activity';
-  /* Main Room: the mic is muted and teacher-controlled. Clicking it explains why.
-     This is NOT room-style enforcement - nothing is blocked, nothing routes away. */
+  var selfLabel=ST.collapsed?'Show self-view':'Hide self-view';
   var micBtn = micOpen
-    ? '<button class="cbtn micopen" aria-disabled="true">'+I.mic+'<span class="tip">'+openTip+'</span></button>'
-    : '<button class="cbtn mic mic-unavail" onclick="micInfo()">'+I.mic+'<span class="slash"></span><span class="tip">'+MIC_LOCKED_COPY+'</span></button>';
+    ? '<button class="cbtn micopen" aria-disabled="true"'+hubTipAttrs(openTip,true)+'>'+I.mic+'</button>'
+    : '<button class="cbtn mic mic-unavail" onclick="micInfo()"'+hubTipAttrs(MIC_LOCKED_COPY,true)+'>'+I.mic+'<span class="slash"></span></button>';
   return '<div class="controls-bar">'
-    +'<button class="cbtn" onclick="toggleCam()">'+I.cam+camSlash+'<span class="tip">'+(camOff?'Turn camera on':'Turn camera off')+'</span></button>'
+    +'<button class="cbtn" onclick="toggleCam()"'+hubTipAttrs(camLabel)+'>'+I.cam+camSlash+'</button>'
     + micBtn
-    +'<button class="cbtn self-toggle'+(ST.collapsed?' is-collapsed':'')+'" onclick="toggleCollapse()" aria-pressed="'+(ST.collapsed?'true':'false')+'" aria-label="'+(ST.collapsed?'Show self-view':'Hide self-view')+'">'
+    +'<button class="cbtn self-toggle'+(ST.collapsed?' is-collapsed':'')+'" onclick="toggleCollapse()" aria-pressed="'+(ST.collapsed?'true':'false')+'"'+hubTipAttrs(selfLabel)+'>'
     +'<span class="self-icon self-icon-in">'+I.collapseIn+'</span>'
     +'<span class="self-icon self-icon-out">'+I.expandOut+'</span>'
-    +'<span class="tip tip-hide">Hide self-view</span>'
-    +'<span class="tip tip-show">Show self-view</span>'
     +'</button>'
     +'</div>';
 }
@@ -1435,7 +1453,10 @@ function rightRegion(active){
   var rail='<div class="rail">'+railItem('TIME','','timeline',active)+railItem('CHAT','100','chat',active)+railItem('PART','89','participants',active)+'</div>';
   return '<div class="right"><div class="panel'+(panel?'':' closed')+'">'+panel+'</div>'+rail+'</div>';
 }
-function railItem(kind,val,key,active){return '<button class="rail-item'+(active===key?' on':'')+'" onclick="togglePanel(\''+key+'\')"><span class="ic">'+RAIL[kind]+'</span>'+(val?'<span class="val">'+val+'</span>':'')+'</button>';}
+function railItem(kind,val,key,active){
+  var labels={participants:'Participants',timeline:'Timeline',chat:'Chat'};
+  return '<button class="rail-item'+(active===key?' on':'')+'" onclick="togglePanel(\''+key+'\')"'+hubTipAttrs(labels[key]||key)+'><span class="ic">'+RAIL[kind]+'</span>'+(val?'<span class="val">'+val+'</span>':'')+'</button>';
+}
 
 var ST={scene:'default',panel:'',width:'wide',camOff:false,collapsed:false,phase:'start',speaker:'none',perspective:'viewer',av:'a',gstep:'a',vb:'real',switchNum:3,askOpen:true,vstep:1,
         chosen:'you', chosenName:'Ari',
@@ -1686,6 +1707,71 @@ function trigBurst(){trigMsg();setTimeout(trigHelper,450);setTimeout(trigMsg,900
   var map={scene:'scene',perspective:'perspective',vb:'vb',width:'width',panel:'panel'};
   Object.keys(map).forEach(function(k){var v=p.get(k);if(v!==null)ST[map[k]]=v;});
   syncAll(); render();
+})();
+
+/* ===== Hub-style tooltips (shared) ===== */
+function hubTipAttrs(label, wide){
+  var safe=String(label).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
+  return ' data-hub-tip="'+safe+'" aria-label="'+safe+'"'+(wide?' data-hub-wide':'');
+}
+(function initHubTips(){
+  var layer=null, hideT=null, active=null;
+  function host(){
+    return document.querySelector('.frame') || document.querySelector('.phone') || document.body;
+  }
+  function ensure(){
+    var h=host();
+    if(layer && layer.isConnected && layer.parentNode===h) return layer;
+    if(layer && layer.parentNode) layer.parentNode.removeChild(layer);
+    layer=document.createElement('div');
+    layer.className='hub-tip-layer';
+    layer.setAttribute('aria-hidden','true');
+    h.appendChild(layer);
+    return layer;
+  }
+  function hide(){
+    active=null;
+    if(!layer) return;
+    layer.classList.remove('is-on');
+  }
+  function place(el){
+    var text=el.getAttribute('data-hub-tip');
+    if(!text) return;
+    var L=ensure();
+    var h=host();
+    var hr=h.getBoundingClientRect();
+    var r=el.getBoundingClientRect();
+    active=el;
+    L.textContent=text;
+    L.classList.toggle('is-wide', el.hasAttribute('data-hub-wide'));
+    L.style.left='0px'; L.style.top='0px'; L.classList.add('is-on');
+    var tw=L.offsetWidth, th=L.offsetHeight;
+    var left=(r.left+r.right)/2 - hr.left - tw/2;
+    var top=r.top - hr.top - th - 8;
+    left=Math.max(6, Math.min(left, hr.width - tw - 6));
+    if(top < 4) top = r.bottom - hr.top + 8;
+    L.style.left=Math.round(left)+'px';
+    L.style.top=Math.round(top)+'px';
+  }
+  function fromEvent(e){
+    return e.target && e.target.closest ? e.target.closest('[data-hub-tip]') : null;
+  }
+  document.addEventListener('pointerover', function(e){
+    var el=fromEvent(e); if(!el) return;
+    clearTimeout(hideT); place(el);
+  }, true);
+  document.addEventListener('pointerout', function(e){
+    var el=fromEvent(e); if(!el) return;
+    var rel=e.relatedTarget;
+    if(rel && el.contains(rel)) return;
+    hideT=setTimeout(function(){ if(active===el) hide(); }, 40);
+  }, true);
+  document.addEventListener('focusin', function(e){
+    var el=fromEvent(e); if(el){ clearTimeout(hideT); place(el); }
+  }, true);
+  document.addEventListener('focusout', function(e){
+    var el=fromEvent(e); if(el) hide();
+  }, true);
 })();
 </script>
 </body>

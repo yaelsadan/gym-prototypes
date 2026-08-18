@@ -962,6 +962,23 @@ h2{font-size:15px;margin:var(--s32) 0 var(--s8)}
 .rfooter .duo-dock .rc-btn svg{width:22px;height:22px;color:inherit}
 .rfooter .duo-dock .rc-btn.tip svg{color:var(--brand-yellow)}
 .rfooter .duo-dock .rc-btn .slash{width:32px;height:2.8px}
+
+/* ===== Hub-style tooltips (shared across icon-only controls) ===== */
+.hub-tip-layer{
+  position:absolute;left:0;top:0;z-index:500;
+  padding:6px 10px;border-radius:999px;
+  background:var(--brand-charcoal,#373230);color:#fff;
+  font-family:var(--font-ui),Assistant,system-ui,sans-serif;
+  font-size:12px;font-weight:600;line-height:1.25;letter-spacing:0;
+  white-space:nowrap;text-align:center;pointer-events:none;
+  opacity:0;visibility:hidden;
+  box-shadow:0 4px 14px rgba(0,0,0,.28);
+  transition:opacity .12s ease,visibility .12s ease;
+  max-width:min(280px,72%);
+  box-sizing:border-box;
+}
+.hub-tip-layer.is-on{opacity:1;visibility:visible}
+.hub-tip-layer.is-wide{white-space:normal;border-radius:12px;line-height:1.35}
 </style>
 </head>
 <body>
@@ -1415,7 +1432,7 @@ function tipWave(){
   return '<div class="tc-wave">'+out+'</div>';
 }
 function tipCardInner(){
-  return '<button class="tc-close" onclick="closeTip()" title="Close">'+I.x+'</button>'
+  return '<button class="tc-close" onclick="closeTip()"'+hubTipAttrs('Close')+'>'+I.x+'</button>'
     +'<div class="tc-title">'+I.spark+'Replay instruction</div>'
     +'<div class="tc-player">'
       +'<button class="tc-play" onclick="toggleTipPlay()">'+(ST.tipPlaying?I.pause:I.play)+'</button>'
@@ -1544,7 +1561,7 @@ function rheader(){
   return '<div class="header-scrim"></div>'
     +'<div class="rheader compact" onclick="bumpChrome()">'
       + status
-      +'<button class="icon-btn" aria-label="Leave">'+I.x+'</button>'
+      +'<button class="icon-btn"'+hubTipAttrs('Leave room')+'>'+I.x+'</button>'
     +'</div>';
 }
 
@@ -1614,14 +1631,18 @@ function duoStage(){
 }
 
 function rfooter(){
-  function btn(icon,cap,off,onclick,extra){
-    return '<div class="rc-item"><button class="rc-btn'+(extra||'')+'" onclick="'+onclick+'" aria-label="'+cap+'">'+icon
+  function btn(icon,cap,off,onclick,extra,aria){
+    return '<div class="rc-item"><button class="rc-btn'+(extra||'')+'" onclick="'+onclick+'" aria-label="'+(aria||cap)+'">'+icon
       +(off?'<span class="slash"></span>':'')+'</button><span class="rc-cap">'+cap+'</span></div>';
   }
-  var cam=ST.camOff ? btn(I.cam,'Camera',true,"deviceBackOn('camera')") : btn(I.cam,'Camera',false,"deviceOff('camera')");
-  var mic=ST.micOff ? btn(I.mic,'Mic',   true,"deviceBackOn('mic')")    : btn(I.mic,'Mic',   false,"deviceOff('mic')");
+  var cam=ST.camOff
+    ? btn(I.cam,'Camera',true,"deviceBackOn('camera')",'', 'Turn camera on')
+    : btn(I.cam,'Camera',false,"deviceOff('camera')",'', 'Turn camera off');
+  var mic=ST.micOff
+    ? btn(I.mic,'Mic',true,"deviceBackOn('mic')",'', 'Unmute microphone')
+    : btn(I.mic,'Mic',false,"deviceOff('mic')",'', 'Mute microphone');
   return '<div class="footer-scrim duo-footer-scrim"></div><div class="rfooter" onclick="bumpChrome()">'
-    +'<div class="duo-dock"><div class="rc-row">'+btn(I.bulb,'TIP',false,'playTip()',' tip')+cam+mic+'</div></div>'
+    +'<div class="duo-dock"><div class="rc-row">'+btn(I.bulb,'TIP',false,'playTip()',' tip','Replay teacher instruction')+cam+mic+'</div></div>'
     +'<button class="leave-report" onclick="openLeaveReport()">'+I.shield+'<span>Leave &amp; report</span></button>'
     +'</div>';
 }
@@ -1727,9 +1748,9 @@ function soloWave(){
 function soloScene(){
   var card=soloDeckCard();
   var revealed=!!ST.soloRevealed;
-  var mark='<button class="solo-mark'+(ST.soloMarked?' on':'')+'" type="button" onclick="event.stopPropagation();soloToggleMark()" aria-label="Bookmark">'+I.bookmark+'</button>';
+  var mark='<button class="solo-mark'+(ST.soloMarked?' on':'')+'" type="button" onclick="event.stopPropagation();soloToggleMark()" '+hubTipAttrs('Bookmark')+'>'+I.bookmark+'</button>';
   var player='<div class="solo-player" onclick="event.stopPropagation()">'
-    +'<button class="solo-play'+(ST.soloPlaying?' playing':'')+'" type="button" onclick="event.stopPropagation();soloTogglePlay()" aria-label="'+(ST.soloPlaying?'Pause':'Play')+'">'
+    +'<button class="solo-play'+(ST.soloPlaying?' playing':'')+'" type="button" onclick="event.stopPropagation();soloTogglePlay()"'+hubTipAttrs(ST.soloPlaying?'Pause':'Play')+'>'
       +(ST.soloPlaying?I.pause:I.play)
     +'</button>'
     +soloWave()
@@ -1737,7 +1758,7 @@ function soloScene(){
     +'</div>';
   return '<div class="solo-wrap'+(revealed?' is-flip':'')+'">'
     +'<div class="solo-top">'
-      +'<button class="icon-btn" type="button" aria-label="Leave">'+I.x+'</button>'
+      +'<button class="icon-btn" type="button"'+hubTipAttrs('Leave room')+'>'+I.x+'</button>'
       +roomTimeEl()
     +'</div>'
     +'<div class="solo-stage"><div class="solo-flip">'
@@ -1757,9 +1778,9 @@ function soloScene(){
       +'</div>'
     +'</div></div>'
     +'<div class="solo-nav">'
-      +'<button class="solo-skip" type="button" onclick="soloPrev()" aria-label="Previous">'+I.skipPrev+'</button>'
+      +'<button class="solo-skip" type="button" onclick="soloPrev()" '+hubTipAttrs('Previous')+'>'+I.skipPrev+'</button>'
       +'<button class="solo-cta" type="button" onclick="'+(revealed?'soloNext()':'soloShowAnswer()')+'">'+(revealed?'Next':'Show Answer')+'</button>'
-      +'<button class="solo-skip" type="button" onclick="soloNext()" aria-label="Next">'+I.skipNext+'</button>'
+      +'<button class="solo-skip" type="button" onclick="soloNext()" '+hubTipAttrs('Next')+'>'+I.skipNext+'</button>'
     +'</div>'
     +'</div>';
 }
@@ -1806,6 +1827,7 @@ function soloTogglePlay(){
   if(btn){
     btn.classList.toggle('playing', ST.soloPlaying);
     btn.setAttribute('aria-label', ST.soloPlaying?'Pause':'Play');
+    btn.setAttribute('data-hub-tip', ST.soloPlaying?'Pause':'Play');
     btn.innerHTML=ST.soloPlaying?I.pause:I.play;
   }
   if(wave) wave.classList.toggle('on', ST.soloPlaying);
@@ -1920,6 +1942,71 @@ function updateNote(){
 resetAct();
 render();
 
+
+/* ===== Hub-style tooltips (shared) ===== */
+function hubTipAttrs(label, wide){
+  var safe=String(label).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
+  return ' data-hub-tip="'+safe+'" aria-label="'+safe+'"'+(wide?' data-hub-wide':'');
+}
+(function initHubTips(){
+  var layer=null, hideT=null, active=null;
+  function host(){
+    return document.querySelector('.frame') || document.querySelector('.phone') || document.body;
+  }
+  function ensure(){
+    var h=host();
+    if(layer && layer.isConnected && layer.parentNode===h) return layer;
+    if(layer && layer.parentNode) layer.parentNode.removeChild(layer);
+    layer=document.createElement('div');
+    layer.className='hub-tip-layer';
+    layer.setAttribute('aria-hidden','true');
+    h.appendChild(layer);
+    return layer;
+  }
+  function hide(){
+    active=null;
+    if(!layer) return;
+    layer.classList.remove('is-on');
+  }
+  function place(el){
+    var text=el.getAttribute('data-hub-tip');
+    if(!text) return;
+    var L=ensure();
+    var h=host();
+    var hr=h.getBoundingClientRect();
+    var r=el.getBoundingClientRect();
+    active=el;
+    L.textContent=text;
+    L.classList.toggle('is-wide', el.hasAttribute('data-hub-wide'));
+    L.style.left='0px'; L.style.top='0px'; L.classList.add('is-on');
+    var tw=L.offsetWidth, th=L.offsetHeight;
+    var left=(r.left+r.right)/2 - hr.left - tw/2;
+    var top=r.top - hr.top - th - 8;
+    left=Math.max(6, Math.min(left, hr.width - tw - 6));
+    if(top < 4) top = r.bottom - hr.top + 8;
+    L.style.left=Math.round(left)+'px';
+    L.style.top=Math.round(top)+'px';
+  }
+  function fromEvent(e){
+    return e.target && e.target.closest ? e.target.closest('[data-hub-tip]') : null;
+  }
+  document.addEventListener('pointerover', function(e){
+    var el=fromEvent(e); if(!el) return;
+    clearTimeout(hideT); place(el);
+  }, true);
+  document.addEventListener('pointerout', function(e){
+    var el=fromEvent(e); if(!el) return;
+    var rel=e.relatedTarget;
+    if(rel && el.contains(rel)) return;
+    hideT=setTimeout(function(){ if(active===el) hide(); }, 40);
+  }, true);
+  document.addEventListener('focusin', function(e){
+    var el=fromEvent(e); if(el){ clearTimeout(hideT); place(el); }
+  }, true);
+  document.addEventListener('focusout', function(e){
+    var el=fromEvent(e); if(el) hide();
+  }, true);
+})();
 </script>
 </body>
 </html>

@@ -1287,6 +1287,23 @@ body.present .h-right .tc-live{font-size:clamp(13.5px,1.05vw,18px)!important}
 .rp-live-row{flex-wrap:nowrap;align-items:center}
 body.present .rp-meta{font-size:clamp(12.5px,0.95vw,15px)}
 
+
+/* ===== Hub-style tooltips (shared across icon-only controls) ===== */
+.hub-tip-layer{
+  position:absolute;left:0;top:0;z-index:500;
+  padding:6px 10px;border-radius:999px;
+  background:var(--brand-charcoal,#373230);color:#fff;
+  font-family:var(--font-ui),Assistant,system-ui,sans-serif;
+  font-size:12px;font-weight:600;line-height:1.25;letter-spacing:0;
+  white-space:nowrap;text-align:center;pointer-events:none;
+  opacity:0;visibility:hidden;
+  box-shadow:0 4px 14px rgba(0,0,0,.28);
+  transition:opacity .12s ease,visibility .12s ease;
+  max-width:min(280px,72%);
+  box-sizing:border-box;
+}
+.hub-tip-layer.is-on{opacity:1;visibility:visible}
+.hub-tip-layer.is-wide{white-space:normal;border-radius:12px;line-height:1.35}
 </style>
 </head>
 <body>
@@ -1836,7 +1853,7 @@ function header(){
  }
  return '<div class="tc-head">'
   +'<div class="h-left">'
-    +'<button class="tc-exit" data-act="exit" title="Exit session" aria-label="Exit session">'+IC.x+'</button>'
+    +'<button class="tc-exit" data-act="exit"'+hubTipAttrs('Leave room')+'>'+IC.x+'</button>'
     +'<div class="tc-brand"><span class="k">Gym</span></div>'
   +'</div>'
   +'<div class="h-center"><div class="tc-sessions">Session 2 of 6 <span class="bar">'+segs+'</span></div></div>'
@@ -1863,9 +1880,11 @@ function stageTile(img,name,role){
    +'<span class="tile-name">'+name+(role?'<span class="role">'+role+'</span>':'')+'</span></div>';
 }
 function deviceDock(){
+ var micLabel=S.mic?'Mute microphone':'Unmute microphone';
+ var camLabel=S.cam?'Turn camera off':'Turn camera on';
  return '<div class="dev-dock">'
-  +'<button class="dev'+(S.mic?'':' off')+'" data-act="mic" aria-label="Microphone">'+IC.mic+'</button>'
-  +'<button class="dev'+(S.cam?'':' off')+'" data-act="cam" aria-label="Camera">'+IC.cam+'</button>'
+  +'<button class="dev'+(S.mic?'':' off')+'" data-act="mic"'+hubTipAttrs(micLabel)+'>'+IC.mic+'</button>'
+  +'<button class="dev'+(S.cam?'':' off')+'" data-act="cam"'+hubTipAttrs(camLabel)+'>'+IC.cam+'</button>'
   +'</div>';
 }
 /* the 5s prep takeover is a full-stage moment — it is NOT part of the right-hand stack */
@@ -2329,7 +2348,7 @@ function moduleCard(mod){
  if(collapsed && mod.id==='participants') sub='<span class="sub meta">'+partSummaryLine()+'</span>';
  else if(collapsed && mod.id==='chat') sub='<span class="sub meta">'+S.chat.length+' messages</span>';
  else sub = meta[1] ? '<span class="sub">'+meta[1]+'</span>' : '';
- var toggle = collapsible ? '<button class="mod-toggle'+(collapsed?'':' open')+'" data-act="modToggle" data-val="'+mod.id+'" title="'+(collapsed?'Expand':'Collapse')+'" aria-label="'+(collapsed?'Expand':'Collapse')+'">'+IC.chevron+'</button>' : '';
+ var toggle = collapsible ? '<button class="mod-toggle'+(collapsed?'':' open')+'" data-act="modToggle" data-val="'+mod.id+'"'+hubTipAttrs(collapsed?'Expand':'Collapse')+'>'+IC.chevron+'</button>' : '';
  var actions = (toggle||ctrls) ? '<div class="hd-actions">'+toggle+ctrls+'</div>' : '';
  var hd='<div class="hd"'+(S.editLayout?' draggable="true"':'')+'><h3>'+meta[0]+'</h3>'+sub+actions+'</div>';
  var body = collapsed ? '' : (mod.id==='lesson'?lessonBody():(mod.id==='chat'?chatBody():partBody(false)));
@@ -2402,7 +2421,7 @@ function notifyView(){
  return '<div class="tc-note placed" role="status" aria-live="polite">'
    +'<span class="tc-note-ico ok">'+NOTE_CHECK+'</span>'
    +'<div class="tc-note-tx"><b>Room assignment complete</b><span>All participating students were placed successfully.</span></div>'
-   +'<button class="tc-note-x" data-act="dismissNotify" aria-label="Dismiss">'+IC.x+'</button>'
+   +'<button class="tc-note-x" data-act="dismissNotify"'+hubTipAttrs('Dismiss')+'>'+IC.x+'</button>'
    +'</div>';
 }
 var notifyT1=null,notifyT2=null;
@@ -2835,6 +2854,71 @@ document.querySelector('[data-modebtn]').addEventListener('click',function(){app
  render();
  if(S.visual==='carousel') vtick();
  if(p.get('mode')==='presentation')applyPresent(true);
+})();
+
+/* ===== Hub-style tooltips (shared) ===== */
+function hubTipAttrs(label, wide){
+  var safe=String(label).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
+  return ' data-hub-tip="'+safe+'" aria-label="'+safe+'"'+(wide?' data-hub-wide':'');
+}
+(function initHubTips(){
+  var layer=null, hideT=null, active=null;
+  function host(){
+    return document.querySelector('.frame') || document.querySelector('.phone') || document.body;
+  }
+  function ensure(){
+    var h=host();
+    if(layer && layer.isConnected && layer.parentNode===h) return layer;
+    if(layer && layer.parentNode) layer.parentNode.removeChild(layer);
+    layer=document.createElement('div');
+    layer.className='hub-tip-layer';
+    layer.setAttribute('aria-hidden','true');
+    h.appendChild(layer);
+    return layer;
+  }
+  function hide(){
+    active=null;
+    if(!layer) return;
+    layer.classList.remove('is-on');
+  }
+  function place(el){
+    var text=el.getAttribute('data-hub-tip');
+    if(!text) return;
+    var L=ensure();
+    var h=host();
+    var hr=h.getBoundingClientRect();
+    var r=el.getBoundingClientRect();
+    active=el;
+    L.textContent=text;
+    L.classList.toggle('is-wide', el.hasAttribute('data-hub-wide'));
+    L.style.left='0px'; L.style.top='0px'; L.classList.add('is-on');
+    var tw=L.offsetWidth, th=L.offsetHeight;
+    var left=(r.left+r.right)/2 - hr.left - tw/2;
+    var top=r.top - hr.top - th - 8;
+    left=Math.max(6, Math.min(left, hr.width - tw - 6));
+    if(top < 4) top = r.bottom - hr.top + 8;
+    L.style.left=Math.round(left)+'px';
+    L.style.top=Math.round(top)+'px';
+  }
+  function fromEvent(e){
+    return e.target && e.target.closest ? e.target.closest('[data-hub-tip]') : null;
+  }
+  document.addEventListener('pointerover', function(e){
+    var el=fromEvent(e); if(!el) return;
+    clearTimeout(hideT); place(el);
+  }, true);
+  document.addEventListener('pointerout', function(e){
+    var el=fromEvent(e); if(!el) return;
+    var rel=e.relatedTarget;
+    if(rel && el.contains(rel)) return;
+    hideT=setTimeout(function(){ if(active===el) hide(); }, 40);
+  }, true);
+  document.addEventListener('focusin', function(e){
+    var el=fromEvent(e); if(el){ clearTimeout(hideT); place(el); }
+  }, true);
+  document.addEventListener('focusout', function(e){
+    var el=fromEvent(e); if(el) hide();
+  }, true);
 })();
 </script>
 </body>
