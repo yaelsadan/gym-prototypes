@@ -1496,9 +1496,8 @@ body.present .act-timer .clock.vt.lg{
 .act-timer .act-done .ad-tx{font-size:35px;font-weight:400;font-style:italic}
 body.present .act-timer .act-done .ad-tx{font-size:41px}
 
-/* Self-view PIP: +20% from base (172×116); bottom aligned with footer capsule */
-.pip{bottom:20px;width:208px;height:141px}
-.pip.collapsed{bottom:20px}
+/* Self-view PIP: +20% from base (172×116); docks bottom-right above the footer */
+.pip{width:208px;height:141px}
 .frame.w-narrow .pip{width:160px;height:109px}
 .pip.collapsed.folded{width:206px}
 
@@ -2034,21 +2033,26 @@ body.present .car-cue.car-seam,
   right:18px;
   bottom:112px;
 }
-/* Self-view just above footer controls on the right */
+/* Self-view: default dock — bottom-right, slight gap above the footer / video controls */
 .pip,
 .pip.collapsed{
   right:22px;
-  bottom:112px;
+  bottom:128px;
+}
+body.present .pip,
+body.present .pip.collapsed{
+  right:22px;
+  bottom:132px;
 }
 .frame.w-narrow .pip,
 .frame.w-narrow .pip.collapsed{
   right:18px;
-  bottom:108px;
+  bottom:124px;
 }
 .stage:has(.demo-stage) .pip,
 .stage:has(.demo-stage) .pip.collapsed{
   right:calc(var(--split-edge) + 22px);
-  bottom:calc(var(--split-edge) + 108px);
+  bottom:calc(var(--split-edge) + 124px);
 }
 .room:has(.demo-stage) .right .panel,
 .room:has(.demo-stage) .right .panel:not(.closed){pointer-events:auto}
@@ -3814,6 +3818,7 @@ function railItem(kind,val,key,active){
 var ST={scene:'default',panel:'',width:'wide',camOff:false,collapsed:false,phase:'start',speaker:'none',perspective:'viewer',av:'a',gstep:'a',vb:'real',switchNum:3,vstep:1,
         chosen:'you', chosenName:'Ari',
         pipPos:null,
+        pipDragged:false,
         /* volunteer draw */
         volPhase:'none',        /* 'ask' | 'pending' | 'none' */
         iVolunteered:false,
@@ -3977,40 +3982,54 @@ function pipSetSnapTransition(pip){
   clearTimeout(pip._pipSnapT);
   pip._pipSnapT=setTimeout(function(){ pipClearSnapTransition(pip); }, PIP_SNAP_MS+40);
 }
+function pipAddExclusion(stage, el, out){
+  if(!el || el.offsetParent===null) return;
+  if(el.getClientRects().length===0) return;
+  var r=pipLocalRect(el, stage);
+  if(r.width<8 || r.height<8) return;
+  out.push(pipInflate(r, PIP_SAFE));
+}
 function pipExclusionRects(stage){
+  /* Self-view may float, but must not cover these visuals */
   var sels=[
     '.topbar',
     '.header-chrome-fade',
-    '.ephem-dock',
-    '.act-timer',
+    '.ephem-dock',          /* compact or expanded chat — left */
+    '.act-timer',           /* activity timer — right */
     '.demo-timer',
-    '.car-cue',
+    '.car-cue',             /* carousel — right (seam stays center) */
     '.switch-cine'
   ];
-  var out=[], i, nodes, j, el, r;
+  var out=[], i, nodes, j;
   for(i=0;i<sels.length;i++){
     nodes=stage.querySelectorAll(sels[i]);
-    for(j=0;j<nodes.length;j++){
-      el=nodes[j];
-      if(!el || el.offsetParent===null) continue;
-      if(el.getClientRects().length===0) continue;
-      r=pipLocalRect(el, stage);
-      if(r.width<8 || r.height<8) continue;
-      out.push(pipInflate(r, PIP_SAFE));
-    }
+    for(j=0;j<nodes.length;j++) pipAddExclusion(stage, nodes[j], out);
   }
+  /* Participants / Timeline live in .right, not inside .stage */
+  var room=stage.closest('.room') || stage;
+  nodes=room.querySelectorAll('.panel:not(.closed)');
+  for(j=0;j<nodes.length;j++) pipAddExclusion(stage, nodes[j], out);
   return out;
+}
+function pipLeftOverlayOpen(){
+  return leftInfoPanel(ST.panel) || chatIsExpanded();
 }
 function pipSafeBounds(stage, pip){
   var pad=PIP_SAFE;
   var sw=stage.clientWidth;
   var sh=stage.clientHeight;
-  var footer=stage.querySelector('.controls-footer');
+  var footer=stage.querySelector('.footer-capsule') || stage.querySelector('.controls-footer');
   var bottom=sh-pad;
-  if(footer){
+  var footerOk=false;
+  if(footer && footer.getClientRects().length){
     var fr=pipLocalRect(footer, stage);
-    bottom=Math.min(bottom, fr.top-pad);
+    if(fr.height>8){
+      bottom=Math.min(bottom, fr.top-pad);
+      footerOk=true;
+    }
   }
+  /* Presentation / first-paint: if the footer box is not ready, keep a capsule-sized gap */
+  if(!footerOk) bottom=Math.min(bottom, sh-118);
   var top=pad;
   var header=stage.querySelector('.topbar') || stage.querySelector('.header-chrome-fade');
   if(header && header.getClientRects().length){
@@ -4117,26 +4136,56 @@ function pipMeasureContext(pip, stage){
   var ph=pip.offsetHeight;
   return {bounds:bounds, exclusions:exclusions, pw:pw, ph:ph};
 }
+function pipDockDefault(animate){
+  var pip=document.querySelector('#frame .stage .pip');
+  if(!pip) return;
+  var stage=pip.closest('.stage');
+  if(!stage) return;
+  var ctx=pipMeasureContext(pip, stage);
+  var next=pipDefaultPos(ctx.pw, ctx.ph, ctx.bounds);
+  if(!pipIsValid(next, ctx.pw, ctx.ph, ctx.bounds, ctx.exclusions)){
+    next=pipSnapPos(next.left, next.top, ctx.pw, ctx.ph, ctx.bounds, ctx.exclusions);
+  }
+  ST.pipPos=next;
+  if(animate) pipSetSnapTransition(pip);
+  pipApplyPos(pip, next);
+}
+function pipScheduleDefaultDock(){
+  if(ST.pipDragged) return;
+  requestAnimationFrame(function(){
+    requestAnimationFrame(function(){
+      if(ST.pipDragged) return;
+      pipDockDefault(false);
+    });
+  });
+}
 function ensurePipSafe(animate){
   var pip=document.querySelector('#frame .stage .pip');
   if(!pip) return;
   var stage=pip.closest('.stage');
   if(!stage) return;
   var ctx=pipMeasureContext(pip, stage);
-  var cur;
-  if(ST.pipPos){
-    cur={left:ST.pipPos.left, top:ST.pipPos.top};
-  } else {
-    var lr=pipLocalRect(pip, stage);
-    cur={left:lr.left, top:lr.top};
-  }
-  if(pipIsValid(cur, ctx.pw, ctx.ph, ctx.bounds, ctx.exclusions)){
-    if(ST.pipPos){
-      pipApplyPos(pip, ST.pipPos);
-    }
+  var cur, next;
+  if(!ST.pipPos || !ST.pipDragged){
+    /* Default / presentation: dock bottom-right, just above the video controls */
+    pipDockDefault(false);
     return;
   }
-  var next=pipSnapPos(cur.left, cur.top, ctx.pw, ctx.ph, ctx.bounds, ctx.exclusions);
+  cur={left:ST.pipPos.left, top:ST.pipPos.top};
+  if(pipIsValid(cur, ctx.pw, ctx.ph, ctx.bounds, ctx.exclusions)){
+    pipApplyPos(pip, ST.pipPos);
+    return;
+  }
+  /* Left overlay (panel / expanded chat) took this spot — dock to the right edge */
+  if(pipLeftOverlayOpen()){
+    next=pipSnapPos(
+      Math.max(ctx.bounds.left, ctx.bounds.right-ctx.pw),
+      cur.top,
+      ctx.pw, ctx.ph, ctx.bounds, ctx.exclusions
+    );
+  } else {
+    next=pipSnapPos(cur.left, cur.top, ctx.pw, ctx.ph, ctx.bounds, ctx.exclusions);
+  }
   ST.pipPos=next;
   if(animate) pipSetSnapTransition(pip);
   pipApplyPos(pip, next);
@@ -4147,7 +4196,8 @@ function bindPipDrag(){
   var stage=pip.closest('.stage');
   if(!stage) return;
 
-  ensurePipSafe(false);
+  ensurePipSafe(true);
+  pipScheduleDefaultDock();
 
   pip.addEventListener('pointerdown', function(e){
     if(e.button!=null && e.button!==0) return;
@@ -4188,6 +4238,7 @@ function bindPipDrag(){
     var snapped=pipSnapPos(cur.left, cur.top, pipDrag.pw, pipDrag.ph, ctx.bounds, ctx.exclusions);
     pipDrag=null;
     pip.classList.remove('is-dragging');
+    ST.pipDragged=true;
     ST.pipPos=snapped;
     pipSetSnapTransition(pip);
     pipApplyPos(pip, snapped);
@@ -4280,7 +4331,14 @@ function syncAll(){
 function togglePresent(){
   var on=document.body.classList.toggle('present');
   document.getElementById('modeBtn').textContent=on?'Exit presentation':'Presentation mode';
+  ST.pipPos=null;
+  ST.pipDragged=false;
+  pipScheduleDefaultDock();
 }
+window.addEventListener('resize', function(){
+  if(ST.pipDragged) ensurePipSafe(false);
+  else pipScheduleDefaultDock();
+});
 document.querySelectorAll('.sc').forEach(function(b){b.onclick=function(){setScene(b.dataset.sc);};});
 document.querySelectorAll('.pn').forEach(function(b){b.onclick=function(){setPanel(b.dataset.pn);};});
 document.querySelectorAll('.wd').forEach(function(b){b.onclick=function(){ST.width=b.dataset.wd;document.querySelectorAll('.wd').forEach(function(x){x.classList.toggle('on',x===b);});render();};});
@@ -4375,6 +4433,7 @@ function toggleChatVisibility(){
   syncEphDockAfterChange();
   updateEphFooterToggle();
   if(!chatIsHidden()) restoreEph();
+  ensurePipSafe(true);
 }
 function toggleChatExpand(){
   if(chatIsHidden()) return;
@@ -4400,6 +4459,7 @@ function toggleChatExpand(){
     syncEphDockAfterChange();
     restoreEph();
   }
+  ensurePipSafe(true);
 }
 function setChatMode(mode){
   if(mode!=='hidden'&&mode!=='compact'&&mode!=='expanded') return;

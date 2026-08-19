@@ -724,9 +724,9 @@ body.present .demo-stage{padding:13vh 5vw calc(var(--footer-h) + 26px)}
    ========================================================== */
 
 /* prepared / waiting-for-teacher-start (activity selected, timer not started) */
-.prep-wait{position:absolute;left:50%;top:58%;transform:translate(-50%,-50%);z-index:12;display:inline-flex;align-items:center;gap:12px;background:rgba(43,39,36,.62);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border:1px solid var(--stroke-dark);color:#fff;padding:12px 22px;border-radius:var(--pill);font-size:16.8px;font-weight:600;box-shadow:var(--elev-f);white-space:nowrap}
-.prep-wait .d{width:11px;height:11px;border-radius:50%;background:var(--brand-yellow);animation:bcastpulse 2.2s ease-in-out infinite}
-body.present .prep-wait{font-size:19.2px;padding:14px 26px}
+.prep-wait{position:absolute;left:50%;top:58%;transform:translate(-50%,-50%);z-index:12;display:inline-flex;align-items:center;gap:14px;background:rgba(43,39,36,.62);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border:1px solid var(--stroke-dark);color:#fff;padding:14px 26px;border-radius:var(--pill);font-size:20.2px;font-weight:600;box-shadow:var(--elev-f);white-space:nowrap}
+.prep-wait .d{width:13px;height:13px;border-radius:50%;background:var(--brand-yellow);animation:bcastpulse 2.2s ease-in-out infinite}
+body.present .prep-wait{font-size:23px;padding:17px 31px}
 
 /* activity finished (neutral, no green) */
 .act-done{position:absolute;left:50%;top:58%;transform:translate(-50%,-50%);z-index:12;display:inline-flex;align-items:center;gap:9px;background:rgba(247,246,239,.96);color:var(--brand-charcoal);border:1.5px solid var(--brand-charcoal);padding:11px 20px;border-radius:var(--pill);font-size:15px;font-weight:700;box-shadow:var(--elev-f);white-space:nowrap}
@@ -1612,20 +1612,21 @@ body.present .demo-split{
 }
 /* Who starts: yellow frame breathes slowly; white word on the starter video, same family as 3-2-1 */
 .demo-half.turn.starting{
-  animation:startframepulse 2.8s ease-in-out infinite;
+  animation:startframepulse 1.45s ease-in-out infinite;
 }
 .demo-half .tile-startword{
   position:absolute;left:50%;top:72%;transform:translate(-50%,-50%);
   z-index:19;pointer-events:none;
-  font-family:var(--font-brand);font-weight:700;font-style:normal;font-size:62px;
-  letter-spacing:.02em;line-height:1;color:#fff;white-space:nowrap;
+  font-family:var(--font-ui);font-weight:800;font-style:normal;font-size:74px;
+  letter-spacing:.07em;line-height:1;color:#fff;white-space:nowrap;
+  text-transform:uppercase;
   text-shadow:0 8px 34px rgba(0,0,0,.55);
   animation:startwordpulse 2.6s ease-in-out infinite;
 }
-body.present .demo-half .tile-startword{font-size:78px}
+body.present .demo-half .tile-startword{font-size:94px}
 @keyframes startframepulse{
-  0%,100%{box-shadow:0 0 44px 10px rgba(18,14,12,.20),inset 0 0 0 2px rgba(249,226,76,.40)}
-  50%{box-shadow:0 0 44px 10px rgba(18,14,12,.20),inset 0 0 0 2.5px rgba(249,226,76,1)}
+  0%,100%{box-shadow:0 0 44px 10px rgba(18,14,12,.20),inset 0 0 0 2px var(--brand-yellow)}
+  50%{box-shadow:0 0 44px 10px rgba(18,14,12,.20),inset 0 0 0 6px var(--brand-yellow)}
 }
 @keyframes startwordpulse{
   0%,100%{opacity:.62}
@@ -3249,9 +3250,9 @@ function actTick(){
       ST.actFrame=pickCarFrame();
     }
   }
-  /* Prep keeps the tiles mounted so the start word and yellow frame can breathe
-     across seconds. Done keeps the badge mounted so confetti is not restarted. */
-  if(st && st.t==='prep'){
+  /* Countdown steps keep tiles mounted so the yellow next-turn frame can breathe.
+     Done keeps the badge mounted so confetti is not restarted. */
+  if(st && (st.t==='prep'||st.t==='trans'||st.t==='break')){
     var num=document.querySelector('.switch-num');
     if(num){
       num.textContent=ST.actNum;
@@ -3414,6 +3415,7 @@ function duoStage(){
   var frame=live?ST.actFrame:'';
   var isTurn=live&&ST.actStep==='turn';
   var isPrep=live&&ST.actStep==='prep';
+  var isHandoff=live&&(ST.actStep==='trans'||ST.actStep==='break');
   var isCount=live&&(ST.actStep==='prep'||ST.actStep==='trans'||ST.actStep==='break');
   var showClock=isTurn&&ST.activity!=='carousel';
   var tileTimer=showClock&&actTileTimer();
@@ -3435,8 +3437,8 @@ function duoStage(){
   var startOn=(isTurn && ST.actNum===ST.actDur && ST.activity!=='carousel');
 
   var s='<div class="demo-stage"><div class="demo-split">'
-    + tile('You', {side:'student',turn:youFrame, chipLabel:chipFor('you','You'),   bg:youBg, camOff:ST.camOff,micOff:ST.micOff, timer:youClock, startCue:(startOn&&youFrame), starting:isPrep&&youFrame, startLabel:(isPrep&&youFrame)?'You start':''})
-    + tile('Dana',{side:'student',turn:danaFrame,chipLabel:chipFor('dana','Dana'), bg:danaBg, timer:danaClock, startCue:(startOn&&danaFrame), starting:isPrep&&danaFrame, startLabel:(isPrep&&danaFrame)?'Dana starts':''})
+    + tile('You', {side:'student',turn:youFrame, chipLabel:chipFor('you','You'),   bg:youBg, camOff:ST.camOff,micOff:ST.micOff, timer:youClock, startCue:(startOn&&youFrame), starting:(isPrep||isHandoff)&&youFrame, startLabel:(isPrep&&youFrame)?'You start':''})
+    + tile('Dana',{side:'student',turn:danaFrame,chipLabel:chipFor('dana','Dana'), bg:danaBg, timer:danaClock, startCue:(startOn&&danaFrame), starting:(isPrep||isHandoff)&&danaFrame, startLabel:(isPrep&&danaFrame)?'Dana starts':''})
     + '</div></div>';
 
   /* 5s prep / transition / break \u2014 big cinematic count. Yellow frame is already on. */

@@ -365,8 +365,8 @@ h1{font-size:20px}
   justify-content:center;
 }
 .act-done{
-  position:relative;display:inline-flex;align-items:center;gap:12px;overflow:visible;
-  padding:12px 24px 12px 14px;border:none;background:transparent;box-shadow:none;
+  position:relative;display:inline-flex;align-items:center;gap:14.4px;overflow:visible;
+  padding:14.4px 28.8px 14.4px 16.8px;border:none;background:transparent;box-shadow:none;
   border-radius:0;white-space:nowrap;isolation:isolate;
 }
 .act-done::before{display:none}
@@ -383,10 +383,10 @@ h1{font-size:20px}
   100%{opacity:1;transform:scale(1)}
 }
 .act-done .ad-ic{
-  position:relative;z-index:2;width:40px;height:40px;flex:none;
+  position:relative;z-index:2;width:48px;height:48px;flex:none;
   display:grid;place-items:center;background:none;border:none;
 }
-.act-done .ad-ic svg{width:20px;height:20px}
+.act-done .ad-ic svg{width:24px;height:24px}
 .act-done .ad-ic-disk{
   position:absolute;inset:0;border-radius:50%;
   background:var(--brand-yellow);border:1.4px solid var(--brand-charcoal);
@@ -400,10 +400,10 @@ h1{font-size:20px}
 }
 .act-done .ad-ic-mark{
   position:relative;z-index:1;display:grid;place-items:center;
-  color:var(--brand-charcoal);width:20px;height:20px;
+  color:var(--brand-charcoal);width:24px;height:24px;
   animation:adCheckMark .4s cubic-bezier(.22,.72,.24,1) .2s both;
 }
-.act-done .ad-ic-mark svg{width:20px;height:20px;display:block}
+.act-done .ad-ic-mark svg{width:24px;height:24px;display:block}
 @keyframes adCheckMark{
   0%{opacity:0;transform:scale(.6) rotate(-12deg)}
   100%{opacity:1;transform:scale(1) rotate(0deg)}
@@ -411,9 +411,9 @@ h1{font-size:20px}
 .act-done .ad-tx{
   position:relative;z-index:2;display:inline-flex;align-items:center;
   font-family:"FedraSerifPro",var(--font-brand),Georgia,serif;
-  font-size:26px;font-weight:400;font-style:normal;
+  font-size:31.2px;font-weight:400;font-style:normal;
   line-height:1;letter-spacing:.15px;color:var(--brand-charcoal);
-  transform:translateY(2px);overflow:visible;
+  transform:translateY(2.4px);overflow:visible;
 }
 .act-done .ad-ltr{
   display:inline-block;
@@ -431,7 +431,7 @@ h1{font-size:20px}
 }
 .act-done .ad-confetti .cf{
   position:absolute;left:0;top:0;
-  width:var(--s);height:auto;margin:0;display:block;
+  width:calc(var(--s) * 1.2);height:auto;margin:0;display:block;
   transform-origin:50% 50%;
   will-change:transform,opacity;
   animation:adCfPop var(--dur,1.6s) linear var(--d) both;
@@ -1898,9 +1898,10 @@ h1{font-size:20px}
 }
 .car-bar{margin-top:8px}
 
-/* Teacher identity chip must clear the Gym header overlay so the yellow
-   active-state label is actually readable when Carousel selects Niv. */
-.d-half.teacher .d-who{top:108px}
+/* Teacher identity chip sits in the same left-corner slot as the student
+   label below (12px inset under the 48px status bar). Header chrome covers
+   that slot on tap; see demo chrome block at end of stylesheet. */
+.d-half.teacher .d-who{top:60px}
 
 /* Split / demonstration — Timer, Carousel and Done share this seam */
 .act-overlay.demo-pos{
@@ -2738,6 +2739,27 @@ Mobile max-width target: min(280px, calc(100vw - 40px)).
 }
 .hub-tip-layer.is-on{opacity:1;visibility:visible}
 .hub-tip-layer.is-wide{white-space:normal;border-radius:12px;line-height:1.35}
+
+/* ===== Demo chrome: title + Leave (X) share the fading overlay =====
+   During demonstration the teacher label occupies the top-left corner
+   (same inset language as the student label below). The transient header
+   layer above it — Gym title AND the Leave (X) control — appears on tap
+   and hides after a few seconds. The teacher label is hidden only while
+   that chrome is showing, so the two never occupy the corner together. */
+.d-half.teacher .d-who{transition:opacity .30s ease}
+.room:has(.d-stage):not(.chrome-off) .d-half.teacher .d-who{
+  opacity:0;
+  pointer-events:none;
+}
+.room:has(.d-stage).chrome-off .header-transient,
+.room:has(.d-stage).chrome-off .header .icon-btn,
+.room:has(.d-stage).chrome-off .header-chrome-fade{
+  opacity:0;
+  pointer-events:none;
+}
+@media (prefers-reduced-motion:reduce){
+  .d-half.teacher .d-who{transition:none}
+}
 </style>
 </head>
 <body>

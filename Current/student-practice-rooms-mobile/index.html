@@ -43,7 +43,7 @@
   /* timer palette — identical to desktop v21 */
   --t-milky:#F7F6EF; --t-charcoal:#373230; --t-yellow:#F9E24C; --t-coral:#F9746B;
   /* mobile room geometry */
-  --footer-h:158px; --seam-timer:135px;
+  --footer-h:158px; --seam-timer:162px;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:var(--font-ui);background:var(--surface-base);color:var(--text-primary);-webkit-font-smoothing:antialiased;padding:var(--s32) var(--s24) 60px}
@@ -148,11 +148,11 @@ h2{font-size:15px;margin:var(--s32) 0 var(--s8)}
 @keyframes seamin{0%{opacity:0;transform:scale(.72)}100%{opacity:1;transform:scale(1)}}
 
 /* prepared: the activity is selected, the teacher has not started the timer */
-.prep-wait{display:inline-flex;align-items:center;gap:9px;background:rgba(43,39,36,.68);
+.prep-wait{display:inline-flex;align-items:center;gap:11px;background:rgba(43,39,36,.68);
   -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border:1px solid var(--stroke-dark);
-  color:#fff;padding:9px 16px;border-radius:var(--pill);font-size:13px;font-weight:600;
-  box-shadow:var(--elev-f);white-space:nowrap}
-.prep-wait .d{width:8px;height:8px;border-radius:50%;background:var(--brand-yellow);animation:dotpulse 2.2s ease-in-out infinite}
+  color:#fff;padding:14px 18px;border-radius:var(--pill);font-size:16px;font-weight:600;
+  box-shadow:var(--elev-f);white-space:nowrap;max-width:calc(100% - 24px)}
+.prep-wait .d{width:11px;height:11px;border-radius:50%;background:var(--brand-yellow);animation:dotpulse 2.2s ease-in-out infinite}
 @keyframes dotpulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.8)}}
 
 /* ---------- ACTIVITY TIMER — the desktop v21 component, mobile size ----------
@@ -407,7 +407,11 @@ h2{font-size:15px;margin:var(--s32) 0 var(--s8)}
   .clock.warn{animation:none}
   .room-time.final{animation:none}
   .rhalf .startchip{animation:none;opacity:0}
+  .rhalf.turn.starting{animation:none}
+  .rhalf .tile-startword{animation:none;opacity:1}
   .act-done .ad-spark .spark{animation:none!important;opacity:1!important;transform:none!important}
+  .act-done .ad-bg,.act-done .ad-ic-disk,.act-done .ad-ic-mark,.act-done .ad-ltr{animation:none!important;opacity:1;transform:none}
+  .act-done .ad-confetti{display:none!important}
   .solo-wave.on i{animation:none}
   .solo-flip{transition:none}
 }
@@ -505,7 +509,8 @@ h2{font-size:15px;margin:var(--s32) 0 var(--s8)}
 .screen.chrome-off .seam-zone .seam-count,
 .screen.chrome-off .seam-zone .car-cue,
 .screen.chrome-off .seam-zone .prep-wait,
-.screen.chrome-off .seam-zone .act-done{opacity:1}
+.screen.chrome-off .seam-zone .act-done,
+.screen.chrome-off .rhalf .tile-startword{opacity:1}
 .screen.chrome-off .room-time{pointer-events:auto}
 .screen.chrome-off .rhalf.turn{box-shadow:inset 0 0 0 3px var(--brand-yellow)}
 /* the video is the reveal surface */
@@ -591,16 +596,16 @@ h2{font-size:15px;margin:var(--s32) 0 var(--s8)}
 /* 1) Participant labels — cream pill / yellow active, no stacked outline */
 .rhalf .who{
   font-family:var(--font-ui);
-  font-size:14px;
+  font-size:16px;
   font-weight:600;
   letter-spacing:-.1px;
   line-height:1.2;
-  min-height:32px;
+  min-height:36px;
   color:var(--brand-charcoal);
   background:#F7F6EF;
   border:1px solid rgba(55,50,48,.10);
   border-radius:var(--pill);
-  padding:0 13px;
+  padding:0 15px;
   box-shadow:0 2px 10px rgba(55,50,48,.14);
 }
 .rhalf.turn .who{
@@ -608,6 +613,32 @@ h2{font-size:15px;margin:var(--s32) 0 var(--s8)}
   border-color:rgba(55,50,48,.10);
   color:var(--brand-charcoal);
   box-shadow:0 3px 12px rgba(55,50,48,.16);
+}
+
+/* Who starts — white Assistant ExtraBold caps on the starter video */
+.rhalf.turn.starting{
+  animation:startframepulse 1.45s ease-in-out infinite;
+}
+.rhalf .tile-startword{
+  position:absolute;left:50%;top:46%;transform:translate(-50%,-50%);
+  z-index:19;pointer-events:none;
+  font-family:var(--font-ui);font-weight:800;font-style:normal;font-size:36px;
+  letter-spacing:.07em;line-height:1;color:#fff;white-space:nowrap;
+  text-transform:uppercase;
+  text-shadow:0 6px 24px rgba(0,0,0,.55);
+  animation:startwordpulse 2.6s ease-in-out infinite;
+}
+@keyframes startframepulse{
+  0%,100%{box-shadow:inset 0 0 0 2px var(--brand-yellow)}
+  50%{box-shadow:inset 0 0 0 6px var(--brand-yellow)}
+}
+@keyframes startwordpulse{
+  0%,100%{opacity:.62}
+  50%{opacity:1}
+}
+@media (prefers-reduced-motion:reduce){
+  .rhalf.turn.starting{animation:none}
+  .rhalf .tile-startword{animation:none;opacity:1}
 }
 
 /* 2) Active-turn frame — 2px inset yellow, no glow */
@@ -627,27 +658,114 @@ h2{font-size:15px;margin:var(--s32) 0 var(--s8)}
   stroke-width:0;
 }
 
-/* 4) Done — cream pill + yellow check + Fedra italic */
+/* 4) Done — same size + motion as Main Room Mobile demo */
 .act-done{
-  gap:12px;
-  padding:12px 22px 12px 13px;
-  border:1.4px solid var(--brand-charcoal);
-  box-shadow:0 12px 30px rgba(0,0,0,.30);
-}
-.act-done .ad-ic{width:40px;height:40px;border:1.4px solid var(--brand-charcoal)}
-.act-done .ad-ic svg{width:20px;height:20px}
-.act-done .ad-tx{
-  display:flex;
+  position:relative;
+  display:inline-flex;
   align-items:center;
-  font-family:"FedraSerifPro",var(--font-brand),Georgia,serif;
-  font-weight:400;
-  font-style:normal;
-  font-size:26px;
-  line-height:1;
-  letter-spacing:.2px;
-  transform:translateY(2px);
+  gap:14.4px;
+  overflow:visible;
+  isolation:isolate;
+  padding:14.4px 28.8px 14.4px 16.8px;
+  border:none;
+  background:transparent;
+  box-shadow:none;
+  border-radius:0;
+  white-space:nowrap;
 }
-.act-done .ad-spark{right:-14px;top:-18px;width:34px;height:34px}
+.act-done .ad-spark{display:none}
+.act-done .ad-bg{
+  position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:var(--t-milky,#F7F6EF);border:1.4px solid var(--brand-charcoal);border-radius:var(--pill);
+  box-shadow:0 12px 30px rgba(0,0,0,.3);
+  transform-origin:50% 50%;
+  animation:adBgIn .42s cubic-bezier(.22,.7,.24,1) both;
+}
+@keyframes adBgIn{
+  0%{opacity:0;transform:scale(.92)}
+  100%{opacity:1;transform:scale(1)}
+}
+.act-done .ad-ic{
+  position:relative;z-index:2;width:48px;height:48px;flex:none;
+  display:grid;place-items:center;background:none;border:none;
+}
+.act-done .ad-ic svg{width:24px;height:24px}
+.act-done .ad-ic-disk{
+  position:absolute;inset:0;border-radius:50%;
+  background:var(--brand-yellow);border:1.4px solid var(--brand-charcoal);
+  transform-origin:50% 50%;
+  animation:adCheckPop .48s cubic-bezier(.2,.78,.22,1) .12s both;
+}
+@keyframes adCheckPop{
+  0%{opacity:0;transform:scale(.55)}
+  58%{opacity:1;transform:scale(1.12)}
+  100%{opacity:1;transform:scale(1)}
+}
+.act-done .ad-ic-mark{
+  position:relative;z-index:1;display:grid;place-items:center;
+  color:var(--brand-charcoal);width:24px;height:24px;
+  animation:adCheckMark .4s cubic-bezier(.22,.72,.24,1) .2s both;
+}
+.act-done .ad-ic-mark svg{width:24px;height:24px;display:block}
+@keyframes adCheckMark{
+  0%{opacity:0;transform:scale(.6) rotate(-12deg)}
+  100%{opacity:1;transform:scale(1) rotate(0deg)}
+}
+.act-done .ad-tx{
+  position:relative;z-index:2;display:inline-flex;align-items:center;
+  font-family:"FedraSerifPro",var(--font-brand),Georgia,serif;
+  font-size:31.2px;font-weight:400;font-style:normal;
+  line-height:1;letter-spacing:.15px;color:var(--brand-charcoal);
+  transform:translateY(2.4px);overflow:visible;
+}
+.act-done .ad-ltr{
+  display:inline-block;
+  transform-origin:50% 85%;
+  animation:adLtrWave .46s cubic-bezier(.2,.78,.22,1) calc(.3s + var(--i) * .075s) both;
+}
+@keyframes adLtrWave{
+  0%{opacity:0;transform:translateY(5px) scale(.84)}
+  62%{opacity:1;transform:translateY(-1px) scale(1.07)}
+  100%{opacity:1;transform:translateY(0) scale(1)}
+}
+.act-done .ad-confetti{
+  position:absolute;left:50%;top:38%;width:0;height:0;
+  pointer-events:none;overflow:visible;z-index:0;
+}
+.act-done .ad-confetti .cf{
+  position:absolute;left:0;top:0;
+  width:calc(var(--s) * 1.2);height:auto;margin:0;display:block;
+  transform-origin:50% 50%;
+  will-change:transform,opacity;
+  animation:adCfPop var(--dur,1.6s) linear var(--d) both;
+}
+.act-done .ad-confetti .cf svg{display:block;width:100%;height:auto;overflow:visible}
+@keyframes adCfPop{
+  0%{
+    opacity:0;
+    transform:translate(0,0) scale(.34) rotate(var(--rot0));
+    animation-timing-function:cubic-bezier(.16,.82,.22,1);
+  }
+  8%{opacity:1}
+  28%{
+    opacity:1;
+    transform:translate(var(--dx),var(--dy)) scale(var(--sc)) rotate(var(--rot));
+    animation-timing-function:cubic-bezier(.32,.1,.5,1);
+  }
+  70%{
+    opacity:1;
+    transform:translate(var(--mx),var(--my)) scale(var(--sc)) rotate(var(--rotm));
+    animation-timing-function:linear;
+  }
+  88%{
+    opacity:0;
+    transform:translate(var(--vx),var(--vy)) scale(var(--sc)) rotate(var(--rotv));
+  }
+  100%{
+    opacity:0;
+    transform:translate(var(--vx),var(--vy)) scale(var(--sc)) rotate(var(--rotv));
+  }
+}
 
 /* 5) Decision sheets — Main Room milky material, still bottom sheets */
 .sheet-scrim{
@@ -801,8 +919,8 @@ h2{font-size:15px;margin:var(--s32) 0 var(--s8)}
   padding:0 26px;
 }
 .seam-zone::before{
-  width:280px;
-  height:180px;
+  width:336px;
+  height:216px;
   transform:translate(-50%, calc(-50% + 10px));
 }
 
@@ -902,11 +1020,13 @@ h2{font-size:15px;margin:var(--s32) 0 var(--s8)}
   box-shadow:0 2px 8px rgba(55,50,48,.22);
 }
 
-/* Done — exact seam center between the two videos (no upward timer bias) */
-.seam-zone.seam-done{
+/* Done + waiting — exact seam center between the two videos (no upward timer bias) */
+.seam-zone.seam-done,
+.seam-zone.seam-wait{
   transform:translateY(-50%);
 }
-.seam-zone.seam-done::before{
+.seam-zone.seam-done::before,
+.seam-zone.seam-wait::before{
   transform:translate(-50%,-50%);
 }
 
@@ -1214,6 +1334,15 @@ function actTick(){
     var el=st.dur-ST.actNum;
     if(el>0 && el%5===0) advanceCue();
   }
+  if(st && (st.t==='prep'||st.t==='trans'||st.t==='break')){
+    var num=document.querySelector('.seam-count');
+    if(num){
+      num.textContent=ST.actNum;
+      updateNote();
+      return;
+    }
+  }
+  if(st && st.t==='done'){ updateNote(); return; }
   render();
 }
 function actFinish(){
@@ -1565,17 +1694,83 @@ function rheader(){
     +'</div>';
 }
 
+function doneConfetti(){
+  var Y='#F9E24C', W='#FFFFFF', C='#373230';
+  function ink(fill){
+    return 'fill="'+fill+'" stroke="'+C+'" stroke-width="0.5" vector-effect="non-scaling-stroke"';
+  }
+  var shapes={
+    strokeY:'<svg viewBox="0 0 16 6" aria-hidden="true"><rect x="1.2" y="1.9" width="13.6" height="2.2" rx="1.1" '+ink(Y)+'/></svg>',
+    strokeW:'<svg viewBox="0 0 16 6" aria-hidden="true"><rect x="1.2" y="1.9" width="13.6" height="2.2" rx="1.1" '+ink(W)+'/></svg>',
+    circY:  '<svg viewBox="0 0 10 10" aria-hidden="true"><circle cx="5" cy="5" r="3.55" '+ink(Y)+'/></svg>',
+    circW:  '<svg viewBox="0 0 10 10" aria-hidden="true"><circle cx="5" cy="5" r="3.55" '+ink(W)+'/></svg>',
+    diaY:   '<svg viewBox="0 0 10 10" aria-hidden="true"><path d="M5 1.2 L8.8 5 L5 8.8 L1.2 5 Z" '+ink(Y)+'/></svg>',
+    diaW:   '<svg viewBox="0 0 10 10" aria-hidden="true"><path d="M5 1.2 L8.8 5 L5 8.8 L1.2 5 Z" '+ink(W)+'/></svg>'
+  };
+  var bits=[
+    {k:'strokeY', dx:-80,  dy:-92,  ex:-122, ey:-22, rot0:-16, rot:-38, rot2:18,  sc:1, s:22, d:0.50, dur:1.62},
+    {k:'circW',   dx:16,   dy:-124, ex:38,   ey:-86, rot0:8,   rot:26,  rot2:54,  sc:1, s:13, d:0.52, dur:1.90},
+    {k:'diaY',    dx:98,   dy:-68,  ex:132,  ey:6,   rot0:18,  rot:42,  rot2:78,  sc:1, s:14, d:0.51, dur:1.56},
+    {k:'circY',   dx:-40,  dy:-108, ex:-56,  ey:4,   rot0:-10, rot:16,  rot2:50,  sc:1, s:14, d:0.54, dur:1.98},
+    {k:'strokeW', dx:114,  dy:-30,  ex:142,  ey:2,   rot0:12,  rot:34,  rot2:14,  sc:1, s:20, d:0.53, dur:1.74},
+    {k:'diaW',    dx:-118, dy:-46,  ex:-148, ey:-8,  rot0:-22, rot:-14, rot2:28,  sc:1, s:13, d:0.55, dur:1.68},
+    {k:'circW',   dx:56,   dy:-96,  ex:82,   ey:-34, rot0:6,   rot:-22, rot2:16,  sc:1, s:12, d:0.56, dur:1.48},
+    {k:'diaY',    dx:-12,  dy:-120, ex:18,   ey:2,   rot0:14,  rot:32,  rot2:64,  sc:1, s:15, d:0.52, dur:2.06},
+    {k:'strokeY', dx:44,   dy:-36,  ex:20,   ey:4,   rot0:-8,  rot:18,  rot2:48,  sc:1, s:21, d:0.57, dur:1.70},
+    {k:'circY',   dx:-72,  dy:-80,  ex:-102, ey:2,   rot0:-14, rot:8,   rot2:42,  sc:1, s:15, d:0.58, dur:1.84},
+    {k:'strokeW', dx:8,    dy:-62,  ex:-28,  ey:0,   rot0:10,  rot:-24, rot2:22,  sc:1, s:19, d:0.54, dur:1.78},
+    {k:'diaW',    dx:78,   dy:-116, ex:104,  ey:-58, rot0:20,  rot:48,  rot2:34,  sc:1, s:13, d:0.59, dur:1.94}
+  ];
+  var html='<span class="ad-confetti" aria-hidden="true">';
+  for(var i=0;i<bits.length;i++){
+    var b=bits[i];
+    var mx=Math.round(b.dx+(b.ex-b.dx)*0.70);
+    var my=Math.round(b.dy+(b.ey-b.dy)*0.70);
+    var vx=Math.round(b.dx+(b.ex-b.dx)*0.86);
+    var vy=Math.round(b.dy+(b.ey-b.dy)*0.86);
+    var rotm=Math.round(b.rot+(b.rot2-b.rot)*0.70);
+    var rotv=Math.round(b.rot+(b.rot2-b.rot)*0.86);
+    html+='<span class="cf" style="'
+      +'--dx:'+b.dx+'px;--dy:'+b.dy+'px;--mx:'+mx+'px;--my:'+my+'px;'
+      +'--vx:'+vx+'px;--vy:'+vy+'px;'
+      +'--rot0:'+b.rot0+'deg;--rot:'+b.rot+'deg;--rotm:'+rotm+'deg;--rotv:'+rotv+'deg;'
+      +'--sc:'+b.sc+';--s:'+b.s+'px;--d:'+b.d+'s;--dur:'+b.dur+'s">'
+      +shapes[b.k]+'</span>';
+  }
+  return html+'</span>';
+}
+function doneLettering(){
+  var chars=['D','o','n','e','!'];
+  var html='<span class="ad-tx">';
+  for(var i=0;i<chars.length;i++){
+    html+='<span class="ad-ltr" style="--i:'+i+'">'+chars[i]+'</span>';
+  }
+  return html+'</span>';
+}
+function doneBadge(){
+  return '<div class="act-done">'
+    +doneConfetti()
+    +'<span class="ad-bg" aria-hidden="true"></span>'
+    +'<span class="ad-ic">'
+      +'<span class="ad-ic-disk" aria-hidden="true"></span>'
+      +'<span class="ad-ic-mark">'+I.check+'</span>'
+    +'</span>'
+    +doneLettering()
+    +'</div>';
+}
+
 function half(side,name,o){
   o=o||{};
-  var cls='rhalf '+side+(o.turn?' turn':'')+(o.camOff?' cam-off':'');
+  var cls='rhalf '+side+(o.turn?' turn':'')+(o.starting?' starting':'')+(o.camOff?' cam-off':'');
   var bg=o.camOff?'':(' style="background-image:url(\''+o.bg+'\')"');
   var chip='<span class="who">'+(o.chipLabel||name)+'</span>';
   var start=o.startCue?'<span class="startchip">Start</span>':'';
+  var word=o.startLabel?'<div class="tile-startword">'+o.startLabel+'</div>':'';
   var flag=o.micOff?'<div class="flag"><span class="ic">'+I.mic+'<span class="sl"></span></span>Mic off</div>':'';
   var body=o.camOff
     ? '<div class="camoff-body"><span class="av">'+name[0]+'</span><span class="lbl">Camera off</span></div>'
     : '';
-  return '<div class="'+cls+'"'+bg+'>'+body+chip+start+flag+'</div>';
+  return '<div class="'+cls+'"'+bg+'>'+body+chip+start+word+flag+'</div>';
 }
 
 /* the seam is the activity zone - between the two faces, never over them */
@@ -1598,11 +1793,10 @@ function seamZone(){
   } else if(ST.actState==='prepared'){
     inner='<div class="prep-wait"><span class="d"></span>Waiting for your teacher to start</div>';
   } else if(ST.actStep==='done'){
-    inner='<div class="act-done"><span class="ad-ic">'+I.check+'</span><span class="ad-tx">Done!</span>'
-         +'<span class="ad-spark">'+I.spark+'</span></div>';
+    inner=doneBadge();
   }
   if(!inner) return '';
-  var seamCls='seam-zone'+(ST.actStep==='done'?' seam-done':'');
+  var seamCls='seam-zone'+(ST.actStep==='done'?' seam-done':(ST.actState==='prepared'?' seam-wait':''));
   return '<div class="'+seamCls+'">'+inner+'</div>';
 }
 
@@ -1619,13 +1813,15 @@ function duoStage(){
     return name;
   }
   var startOn=(isTurn && ST.actNum===ST.actDur);
+  var isPrep=live&&ST.actStep==='prep';
+  var isHandoff=live&&(ST.actStep==='trans'||ST.actStep==='break');
   /* Carousel alone still uses the shared upward-biased seam slot; keep bottom
      chips clear if the cue footprint is large. */
   var carRun=(live && ST.activity==='carousel' && isTurn);
   return '<div class="rstage'+(carRun?' car-run':'')+'" onclick="revealChrome()">'
-    + half('top', PARTNER, {turn:danaF, chipLabel:chipFor('dana',PARTNER), bg:IMG_DANA, startCue:(startOn&&danaF)})
+    + half('top', PARTNER, {turn:danaF, chipLabel:chipFor('dana',PARTNER), bg:IMG_DANA, startCue:(startOn&&danaF), starting:(isPrep||isHandoff)&&danaF, startLabel:(isPrep&&danaF)?(PARTNER+' starts'):''})
     + half('bottom','You', {turn:youF,  chipLabel:chipFor('you','You'),   bg:IMG_YOU,
-                            camOff:ST.camOff, micOff:ST.micOff, startCue:(startOn&&youF)})
+                            camOff:ST.camOff, micOff:ST.micOff, startCue:(startOn&&youF), starting:(isPrep||isHandoff)&&youF, startLabel:(isPrep&&youF)?'You start':''})
     + '</div>'
     + seamZone();
 }
