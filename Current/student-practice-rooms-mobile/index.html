@@ -255,12 +255,12 @@ h2{font-size:15px;margin:var(--s32) 0 var(--s8)}
 .sheet-scrim{position:absolute;inset:0;z-index:48;background:rgba(43,39,36,.5);-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px)}
 .sheet{position:absolute;left:0;right:0;bottom:0;z-index:50;border-radius:24px 24px 0 0;
   background:var(--sheet-dark);-webkit-backdrop-filter:blur(22px);backdrop-filter:blur(22px);
-  color:#fff;border-top:1px solid rgba(255,255,255,.14);padding:0 var(--s16) 26px;
+  color:#fff;border-top:1px solid rgba(255,255,255,.14);padding:14px var(--s16) 28px;
   box-shadow:0 -8px 30px rgba(0,0,0,.4);animation:sheetup .28s cubic-bezier(.2,.9,.25,1) both}
 @keyframes sheetup{0%{transform:translateY(100%)}100%{transform:translateY(0)}}
-.sheet .grab{width:40px;height:4px;border-radius:99px;margin:10px auto 12px;background:rgba(255,255,255,.3)}
-.sheet h4{font-size:19px;font-weight:700;line-height:1.2;margin-bottom:8px}
-.sheet p{font-size:14px;line-height:1.5;color:rgba(255,255,255,.78);margin-bottom:16px}
+.sheet .grab{width:40px;height:4px;border-radius:99px;margin:4px auto 16px;background:rgba(255,255,255,.3)}
+.sheet h4{font-size:19px;font-weight:700;line-height:1.2;margin:0 0 10px}
+.sheet p{font-size:14px;line-height:1.5;color:rgba(255,255,255,.78);margin-bottom:20px}
 .sheet .acts{display:flex;flex-direction:column;gap:9px}
 .btn{width:100%;min-height:50px;border-radius:var(--pill);border:1px solid var(--stroke-dark);
   background:rgba(255,255,255,.08);color:#fff;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer}
@@ -270,11 +270,10 @@ h2{font-size:15px;margin:var(--s32) 0 var(--s8)}
 .respline i{display:block;height:100%;background:var(--brand-yellow);width:100%;border-radius:2px;animation:resp 10s linear forwards}
 @keyframes resp{0%{width:100%}100%{width:0}}
 /* ===== Room Consent — milky / Citizen bottom sheet (consent only; enforce/partner/report sheets stay dark) ===== */
-.sheet.milky{background:rgba(250,249,244,.7);-webkit-backdrop-filter:blur(38px) saturate(1.4);backdrop-filter:blur(38px) saturate(1.4);color:var(--brand-charcoal);border-top:1px solid rgba(255,255,255,.55);box-shadow:0 -12px 40px rgba(55,50,48,.28);padding:0 22px 32px}
-.sheet.milky .grab{background:rgba(55,50,48,.18)}
-.sheet.milky h4{font-family:var(--font-ui);font-size:21px;font-weight:800;letter-spacing:-.2px;line-height:1.24;color:var(--brand-charcoal);margin:6px 0 10px;text-wrap:balance}
-.sheet.milky p{font-size:15px;line-height:1.55;color:#5b564f;margin-bottom:6px}
-.sheet.milky p.priv{font-size:12.5px;line-height:1.5;color:var(--text-muted);margin-bottom:20px}
+.sheet.milky{background:rgba(250,249,244,.7);-webkit-backdrop-filter:blur(38px) saturate(1.4);backdrop-filter:blur(38px) saturate(1.4);color:var(--brand-charcoal);border-top:1px solid rgba(255,255,255,.55);box-shadow:0 -12px 40px rgba(55,50,48,.28);padding:14px 22px 32px}
+.sheet.milky .grab{background:rgba(55,50,48,.18);margin:4px auto 16px}
+.sheet.milky h4{font-family:var(--font-ui);font-size:21px;font-weight:800;letter-spacing:-.2px;line-height:1.24;color:var(--brand-charcoal);margin:0 0 10px;text-wrap:balance}
+.sheet.milky p{font-size:15px;line-height:1.55;color:#5b564f;margin-bottom:20px}
 .sheet.milky .acts{gap:11px}
 .sheet.milky .btn{min-height:54px;font-size:16px;background:transparent;color:var(--brand-charcoal);border:1.5px solid rgba(55,50,48,.28)}
 .sheet.milky .btn.primary{background:var(--brand-yellow);color:var(--brand-charcoal);border:1.5px solid var(--brand-charcoal)}
@@ -780,10 +779,10 @@ h2{font-size:15px;margin:var(--s32) 0 var(--s8)}
   box-shadow:0 -12px 40px rgba(55,50,48,.18),0 2px 8px rgba(55,50,48,.06);
   -webkit-backdrop-filter:none;
   backdrop-filter:none;
-  padding:0 20px 28px;
+  padding:14px 20px 28px;
   font-family:var(--font-ui);
 }
-.sheet.milky .grab{background:rgba(55,50,48,.16)}
+.sheet.milky .grab{background:rgba(55,50,48,.16);margin:4px auto 16px}
 .sheet.milky h4{
   font-family:var(--font-ui);
   font-size:21px;
@@ -791,7 +790,7 @@ h2{font-size:15px;margin:var(--s32) 0 var(--s8)}
   letter-spacing:-.3px;
   line-height:1.22;
   color:var(--brand-charcoal);
-  margin:6px 0 10px;
+  margin:0 0 10px;
 }
 .sheet.milky p{
   font-family:var(--font-ui);
@@ -799,13 +798,7 @@ h2{font-size:15px;margin:var(--s32) 0 var(--s8)}
   font-weight:400;
   line-height:1.5;
   color:#544f49;
-  margin-bottom:8px;
-}
-.sheet.milky p.priv{
-  font-size:13px;
-  line-height:1.5;
-  color:var(--text-muted);
-  margin-bottom:16px;
+  margin-bottom:20px;
 }
 .sheet.milky .acts{gap:10px}
 .sheet.milky .btn{
@@ -1895,7 +1888,6 @@ function consentSheet(){
   return '<div class="sheet-scrim"></div><div class="sheet milky" role="dialog" aria-modal="true"><div class="grab"></div>'
     +'<h4>You\u2019re being sent to a practice room</h4>'
     +'<p>Your camera and mic need to be on so you can speak with a classmate.</p>'
-    +'<p class="priv">They\u2019re shared only inside the practice room.</p>'
     +'<div class="acts">'
     +'<button class="btn primary" onclick="consentYes()">Yes, turn on &amp; join</button>'
     +'<button class="btn" onclick="consentNo()">Not now</button>'
