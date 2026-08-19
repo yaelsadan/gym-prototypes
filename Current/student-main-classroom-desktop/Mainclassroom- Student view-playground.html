@@ -1438,25 +1438,30 @@ body.present .demo-split{
   z-index:11;
 }
 
-/* Demo split timer: +32% from base (146px → 193px) */
+/* Demo split timer: +20% from 193px → 232px */
 .demo-timer .clock.vt.lg{
-  --d:193px;
-  width:193px;
-  height:193px;
+  --d:232px;
+  width:232px;
+  height:232px;
 }
 body.present .demo-timer .clock.vt.lg{
-  --d:201px;
-  width:201px;
-  height:201px;
+  --d:241px;
+  width:241px;
+  height:241px;
 }
 .demo-timer .clock.lg{
-  width:193px;
-  height:193px;
-  font-size:76px;
+  width:232px;
+  height:232px;
+  font-size:91px;
 }
 .demo-timer .clock.lg .num svg{
-  width:79px;
-  height:79px;
+  width:95px;
+  height:95px;
+}
+
+/* Demo Done badge + confetti as one unit: 1.3 × 1.3 × 0.85 */
+.demo-timer .act-done{
+  scale: calc(1.3 * 1.3 * 0.85);
 }
 
 /* Main Room activity timer: +52% from base (132px → 201px); center-anchored, slightly lower */
@@ -1488,6 +1493,7 @@ body.present .act-timer .clock.vt.lg{
 .act-timer .act-done{
   gap:15px;
   padding:15px 31px 15px 18px;
+  scale:1.15;
 }
 .act-timer .act-done .ad-bg{border-width:1.5px}
 .act-timer .act-done .ad-ic{width:51px;height:51px}
@@ -1938,7 +1944,7 @@ body.present .car-cue.car-seam,
 .ephem-msg.enter{opacity:0;transform:translateY(10px)}
 .ephem-msg.leaving{opacity:0!important;transform:translateY(-10px)}
 @media (prefers-reduced-motion:reduce){
-  .ephem-feed{-webkit-mask-image:none;mask-image:none}
+  .ephem-dock.is-compact .ephem-feed{-webkit-mask-image:none;mask-image:none}
 }
 
 /* ==========================================================
@@ -2157,11 +2163,10 @@ body.present .pip.collapsed{
 .ephem-dock.is-expanded .ephem-feed{
   pointer-events:auto;
   max-height:min(42vh,344px);
+  justify-content:flex-start;
   overflow-x:hidden;
   overflow-y:auto;
   overscroll-behavior:contain;
-  -webkit-mask-image:none;
-  mask-image:none;
   padding-right:4px;
 }
 .ephem-dock.is-expanded .ephem-feed::-webkit-scrollbar{width:6px}
@@ -2409,17 +2414,38 @@ body.present .act-timer.pos-tc{
   flex:1 1 auto;
   min-height:0;
   max-height:430px;
+  justify-content:flex-start;
   overflow-x:hidden;
   overflow-y:auto;
   overscroll-behavior:contain;
   pointer-events:auto;
   background:transparent;
-  -webkit-mask-image:none;
-  mask-image:none;
   padding:8px 10px 10px 38px;
   margin-left:-38px;
   scrollbar-width:thin;
   scrollbar-color:rgba(255,255,255,.28) transparent;
+  -webkit-mask-repeat:no-repeat;
+  mask-repeat:no-repeat;
+  -webkit-mask-size:100% 100%;
+  mask-size:100% 100%;
+  -webkit-mask-origin:padding-box;
+  mask-origin:padding-box;
+  -webkit-mask-clip:padding-box;
+  mask-clip:padding-box;
+  -webkit-mask-image:linear-gradient(to bottom,transparent 0,rgba(0,0,0,.28) 12px,#000 40px,#000 calc(100% - 40px),rgba(0,0,0,.28) calc(100% - 12px),transparent 100%);
+  mask-image:linear-gradient(to bottom,transparent 0,rgba(0,0,0,.28) 12px,#000 40px,#000 calc(100% - 40px),rgba(0,0,0,.28) calc(100% - 12px),transparent 100%);
+}
+.ephem-dock.is-expanded .ephem-feed.fade-top{
+  -webkit-mask-image:linear-gradient(to bottom,transparent 0,rgba(0,0,0,.28) 12px,#000 40px,#000 100%);
+  mask-image:linear-gradient(to bottom,transparent 0,rgba(0,0,0,.28) 12px,#000 40px,#000 100%);
+}
+.ephem-dock.is-expanded .ephem-feed.fade-bottom{
+  -webkit-mask-image:linear-gradient(to bottom,#000 0,#000 calc(100% - 40px),rgba(0,0,0,.28) calc(100% - 12px),transparent 100%);
+  mask-image:linear-gradient(to bottom,#000 0,#000 calc(100% - 40px),rgba(0,0,0,.28) calc(100% - 12px),transparent 100%);
+}
+.ephem-dock.is-expanded .ephem-feed.fade-top.fade-bottom{
+  -webkit-mask-image:linear-gradient(to bottom,transparent 0,rgba(0,0,0,.28) 12px,#000 40px,#000 calc(100% - 40px),rgba(0,0,0,.28) calc(100% - 12px),transparent 100%);
+  mask-image:linear-gradient(to bottom,transparent 0,rgba(0,0,0,.28) 12px,#000 40px,#000 calc(100% - 40px),rgba(0,0,0,.28) calc(100% - 12px),transparent 100%);
 }
 .ephem-dock.is-expanded .ephem-feed::-webkit-scrollbar{width:6px}
 .ephem-dock.is-expanded .ephem-feed::-webkit-scrollbar-thumb{
@@ -3113,7 +3139,7 @@ body.present .vol-choice{width:296px}
       <ul>
         <li><b>Controls colour:</b> student camera/mic controls are never green in the Main Room — neutral = available/on, red slash = off/unavailable. Green stays reserved for true on-air only. The teacher-controlled mic still opens the calm popover “Your mic will open during class activities.” and routes nowhere.</li>
         <li><b>Right sheets = overlays:</b> Chat / Participants / Timeline now open as floating milky-dark, blurred overlay sheets anchored by the fixed right rail. The video/stage underneath does not move, shrink, or reflow. Subtle border + shadow so the sheet reads as a layer above the class (previously the overlay behaviour was only wired for the narrow width).</li>
-        <li><b>Participants avatars:</b> layered soft Citizen avatar (white front, yellow back, charcoal stroke) with a charcoal-stroked level dot; role badges (Teacher / Helper) preserved; students show <em>Level · Semester</em> secondary text (e.g. “Green · April”). Yellow stays an accent, not the whole row.</li>
+        <li><b>Participants avatars:</b> layered soft Citizen avatar (white front, yellow back, charcoal stroke) with a charcoal-stroked level dot; role badges (Teacher / Helper) preserved; students show <em>Level · Country</em> secondary text (e.g. “Green · France”). Yellow stays an accent, not the whole row.</li>
         <li><b>Teacher video containment:</b> the default teacher video sits in a large rounded stage card with breathing room, subtle border/shadow, and Rooms-consistent corners — still dominant, no longer edge-to-edge.</li>
         <li><b>Teacher chip:</b> “Niv · Teacher” in the layered Citizen chip on both the default card and split-view teacher tile.</li>
         <li><b>Unchanged:</b> Demonstration volunteer flow, single popup, 10-second timer, no second confirmation, split-view + self-view fold, sidebar/rail existence and content, Ask composer, session-timer neutral styling, transition screens. Practice Rooms and Teacher Cockpit untouched.</li>
@@ -3316,7 +3342,7 @@ function timelinePanel(){
 }
 function participantsPanel(){
   function row(i,n,lvlc,chip,sub){var av='<div class="pp-av">'+(lvlc?'<span class="pp-lvl" style="background:'+lvlc+'" aria-hidden="true"></span>':'')+'<span class="av-face">'+i+'</span></div>';var line='<span class="pp-name">'+n+'</span>'+(chip?'<span class="pp-chip '+chip[0]+'">'+chip[1]+'</span>':'');return '<div class="pp-row">'+av+'<div><div class="pp-line">'+line+'</div>'+(sub?'<div class="pp-sub">'+sub+'</div>':'')+'</div></div>';}
-  var body='<div class="pp-search">'+I.search+'<span>Search participants…</span></div><div class="pp-group">Teaching team</div>'+row('N','Niv',null,['teacher','Teacher'],'Staff')+row('M','Maya',null,['helper','Helper'],'Staff')+'<div class="pp-group">You</div>'+row('Y','You','#DAEF81',['you','You'],'Green \u00b7 April')+'<div class="pp-group">Classmates</div>'+row('D','Dana','#F7AAF3',null,'Yellow \u00b7 April')+row('D','David','#F69700',null,'Orange \u00b7 January')+row('L','Lior','#DAEF81',null,'Green \u00b7 April')+row('T','Tom','#90C7FC',null,'Blue \u00b7 September')+row('S','Sarrah','#DAEF81',null,'Green \u00b7 April')+row('H','Hanna','#90C7FC',null,'Blue \u00b7 September')+row('N','Noa','#F7AAF3',null,'Yellow \u00b7 January')+row('A','Amit','#F69700',null,'Orange \u00b7 April')+row('R','Ron','#DAEF81',null,'Green \u00b7 September')+row('E','Eden','#90C7FC',null,'Blue \u00b7 April')+row('Y','Yael','#F7AAF3',null,'Yellow \u00b7 September')+row('I','Ido','#F69700',null,'Orange \u00b7 January');
+  var body='<div class="pp-search">'+I.search+'<span>Search participants…</span></div><div class="pp-group">Teaching team</div>'+row('N','Niv Berger',null,['teacher','Teacher'],'Staff')+row('M','Maya Haddad',null,['helper','Helper'],'Staff')+'<div class="pp-group">You</div>'+row('Y','You','#DAEF81',['you','You'],'Green \u00b7 France')+'<div class="pp-group">Classmates</div>'+row('D','Dana Levine','#F7AAF3',null,'Yellow \u00b7 Portugal')+row('D','David Cohen','#F69700',null,'Orange \u00b7 Brazil')+row('L','Lior Sharabi','#DAEF81',null,'Green \u00b7 Spain')+row('T','Tom Adler','#90C7FC',null,'Blue \u00b7 Germany')+row('S','Sarrah Mansour','#DAEF81',null,'Green \u00b7 France')+row('H','Hanna Weiss','#90C7FC',null,'Blue \u00b7 Poland')+row('N','Noa Ben-David','#F7AAF3',null,'Yellow \u00b7 Italy')+row('A','Amit Kaplan','#F69700',null,'Orange \u00b7 Mexico')+row('R','Ron Mizrahi','#DAEF81',null,'Green \u00b7 Canada')+row('E','Eden Azulay','#90C7FC',null,'Blue \u00b7 Argentina')+row('Y','Yael Rosenberg','#F7AAF3',null,'Yellow \u00b7 Netherlands')+row('I','Ido Barak','#F69700',null,'Orange \u00b7 Sweden');
   return panelShell('Participants',body,'');
 }
 function panelShell(title,body,footer){return '<div class="panel-head"><span class="pt">'+title+'</span><button class="pclose" onclick="setPanel(\'\')"'+hubTipAttrs('Close')+'>'+I.x+'</button></div><div class="panel-body">'+body+'</div>'+footer;}
@@ -4455,6 +4481,7 @@ function toggleChatExpand(){
     dock.classList.toggle('is-compact',!chatIsExpanded());
     updateEphGrowToggle();
     if(chatIsExpanded()) scrollEphToLatest();
+    else syncEphEdgeFade();
   } else {
     syncEphDockAfterChange();
     restoreEph();
@@ -4494,6 +4521,7 @@ function syncEphDockAfterChange(keepPeek){
   dock.classList.toggle('is-expanded',chatIsExpanded());
   dock.classList.toggle('is-compact',!chatIsExpanded());
   updateEphGrowToggle();
+  wireEphScroll();
 }
 function ephFeed(){return document.querySelector('.ephem-feed');}
 function ephSamePerson(a,b){
@@ -4521,13 +4549,36 @@ function ephFeedNearBottom(feed){
   if(!feed) return true;
   return (feed.scrollHeight-feed.scrollTop-feed.clientHeight)<56;
 }
+function syncEphEdgeFade(){
+  var feed=ephFeed();
+  if(!feed) return;
+  var top=false, bot=false;
+  if(chatIsExpanded()){
+    var slop=2;
+    top=feed.scrollTop>slop;
+    bot=(feed.scrollHeight-feed.clientHeight-feed.scrollTop)>slop;
+  }
+  feed.classList.toggle('fade-top',top);
+  feed.classList.toggle('fade-bottom',bot);
+}
+function wireEphScroll(){
+  var feed=ephFeed();
+  if(!feed) return;
+  if(!feed._wired){
+    feed._wired=true;
+    feed.addEventListener('scroll',function(){ syncEphEdgeFade(); });
+  }
+  requestAnimationFrame(syncEphEdgeFade);
+}
 function scrollEphToLatest(){
   var feed=ephFeed(); if(!feed) return;
   feed.scrollTop=feed.scrollHeight;
+  syncEphEdgeFade();
 }
 function maybeScrollEphToLatest(feed,wasNearBottom){
   if(!feed) return;
   if(!chatIsExpanded()||wasNearBottom) feed.scrollTop=feed.scrollHeight;
+  syncEphEdgeFade();
 }
 function escapeAsk(s){
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
@@ -4830,6 +4881,7 @@ function pushEph(who,name,text){
     el.setAttribute('data-id',id); el.innerHTML=ephInner(m,isLead);
     feed.appendChild(el); void el.offsetWidth; el.classList.remove('enter');
     maybeScrollEphToLatest(feed,pin);
+    wireEphScroll();
   }
 }
 function restoreEph(){
@@ -4842,6 +4894,7 @@ function restoreEph(){
     el.setAttribute('data-id',m.id); el.innerHTML=ephInner(m,isLead);
     feed.appendChild(el);
   });
+  wireEphScroll();
   scrollEphToLatest();
 }
 function trigMsg(){pushEph('student',EPH_NAMES[Math.floor(Math.random()*EPH_NAMES.length)],EPH_TXT[Math.floor(Math.random()*EPH_TXT.length)]);}

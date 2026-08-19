@@ -98,7 +98,7 @@ h2{font-size:15px;margin:var(--s32) 0 var(--s8)}
 .rhalf{position:relative;flex:1;overflow:hidden;background:linear-gradient(160deg,#4d4842,#2a2622);background-size:cover;background-position:center}
 .rhalf.bottom{border-top:1px solid rgba(255,255,255,.10)}
 /* yellow = current/active TURN. Never speech detection, never green. */
-.rhalf.turn{box-shadow:inset 0 0 0 3px var(--brand-yellow)}
+.rhalf.turn{box-shadow:inset 0 0 0 6px var(--brand-yellow)}
 .rhalf .who{position:absolute;left:14px;z-index:8;display:inline-flex;align-items:center;gap:6px;
   font-size:13px;font-weight:700;color:var(--brand-charcoal);background:#fff;
   border:1.5px solid var(--brand-charcoal);padding:5px 12px;border-radius:var(--pill);
@@ -454,11 +454,9 @@ h2{font-size:15px;margin:var(--s32) 0 var(--s8)}
 .rhalf.top .who{top:104px}                     /* just under the collapsed header */
 .rstage.hdr-open .rhalf.top .who{top:156px}    /* pushed down while the reveal is showing */
 .rhalf.bottom .who{top:12px}                   /* the tile's own top edge - raised from 68px */
-.rstage.car-run .rhalf.bottom .who{top:76px}   /* Carousel: clear of the 250px seam row */
 .rhalf.top .startchip{top:142px}
 .rstage.hdr-open .rhalf.top .startchip{top:194px}
 .rhalf.bottom .startchip{top:50px}
-.rstage.car-run .rhalf.bottom .startchip{top:114px}
 
 /* ---------- the 5-4-3-2-1 countdown: much larger, still in the face-free band ---------- */
 .seam-count{font-size:144px;letter-spacing:-4px;text-shadow:0 10px 44px rgba(0,0,0,.6)}
@@ -512,7 +510,7 @@ h2{font-size:15px;margin:var(--s32) 0 var(--s8)}
 .screen.chrome-off .seam-zone .act-done,
 .screen.chrome-off .rhalf .tile-startword{opacity:1}
 .screen.chrome-off .room-time{pointer-events:auto}
-.screen.chrome-off .rhalf.turn{box-shadow:inset 0 0 0 3px var(--brand-yellow)}
+.screen.chrome-off .rhalf.turn{box-shadow:inset 0 0 0 6px var(--brand-yellow)}
 /* the video is the reveal surface */
 .rstage{cursor:pointer}
 
@@ -641,9 +639,9 @@ h2{font-size:15px;margin:var(--s32) 0 var(--s8)}
   .rhalf .tile-startword{animation:none;opacity:1}
 }
 
-/* 2) Active-turn frame — 2px inset yellow, no glow */
+/* 2) Active-turn frame — 6px inset yellow, no glow. Blink keyframes unchanged. */
 .rhalf.turn,
-.screen.chrome-off .rhalf.turn{box-shadow:inset 0 0 0 2px var(--brand-yellow)}
+.screen.chrome-off .rhalf.turn{box-shadow:inset 0 0 0 6px var(--brand-yellow)}
 
 /* 3) Activity timer — Main Room ball language; stay on the seam at --seam-timer */
 .clock .ring .ball{
@@ -1010,6 +1008,17 @@ h2{font-size:15px;margin:var(--s32) 0 var(--s8)}
 .header-scrim.open{height:120px;background:linear-gradient(to bottom,rgba(55,50,48,.38),rgba(55,50,48,0))}
 
 /* TIP play/pause — one yellow circle only (no offset white disc / double ring) */
+.tip-card .tc-title .spark{display:none}
+.tip-card .tc-wave{
+  gap:0;
+  height:28px;
+  justify-content:space-between;
+}
+.tip-card .tc-wave i{
+  flex:none;
+  width:1.5px;
+  border-radius:1px;
+}
 .tip-card .tc-play{
   width:40px;height:40px;
   border-radius:50%;
@@ -1260,7 +1269,7 @@ var ACTS={
   dialogue :{label:'Dialogue',           prep:10, turn:20, trans:5, done:10},
   intensive:{label:'Intensive Exercise', prep:10, turn:10, trans:5, nset:10, done:10},
   grandma  :{label:'Operation Grandma',  prep:10, turn:10, turn2:5, trans:5, brk:10, done:10},
-  carousel :{label:'Carousel',           prep:10, turn:20, trans:5, cue:5, done:10}
+  carousel :{label:'Carousel',           prep:10, turn:45, cue:5, done:10}
 };
 function buildScript(a){
   var c=ACTS[a]; if(!c) return [];
@@ -1285,8 +1294,13 @@ function buildScript(a){
     st.push({t:'turn', dur:c.turn,  frame:'you',  round:2});
     st.push({t:'trans',dur:c.trans, frame:'dana'});
     st.push({t:'turn', dur:c.turn,  frame:'dana', round:2});
+  } else if(a==='carousel'){
+    /* Who starts is shown in prep; then one continuous practice with no switch
+       pause. Frame hops at random during the round (same student may repeat). */
+    st.push({t:'prep', dur:c.prep, frame:'you'});
+    st.push({t:'turn', dur:c.turn, frame:'you'});
   } else {
-    /* Dialogue / Carousel: prep → round 1 → switch → round 2 → closing */
+    /* Dialogue: prep → round 1 → switch → round 2 → closing */
     st.push({t:'prep', dur:c.prep,  frame:'you'});
     st.push({t:'turn', dur:c.turn,  frame:'you',  round:1});
     st.push({t:'trans',dur:c.trans, frame:'dana'});
@@ -1314,15 +1328,27 @@ function teacherStart(){
   actNext();
   actInt=setInterval(actTick,1000);
 }
+function pickCarFrame(){
+  return Math.random()<0.5?'you':'dana';
+}
 function actNext(){
   actIdx++;
   var st=actScript[actIdx];
   /* 'done' is now a real timed step (10s Done / return moment) that runs down like any other. */
   if(!st){ actFinish(); return; }
-  ST.actStep=st.t; ST.actFrame=st.frame||''; ST.actDur=st.dur||0; ST.actNum=st.dur||0;
+  ST.actStep=st.t; ST.actDur=st.dur||0; ST.actNum=st.dur||0;
   if(st.round) ST.actRound=st.round;
+  if(!(ST.activity==='carousel'&&st.t==='turn'&&(ST.actFrame==='you'||ST.actFrame==='dana'))){
+    ST.actFrame=st.frame||'';
+  }
   actStepStart=tcNow();
-  if(ST.activity==='carousel'&&st.t==='turn') advanceCue();
+  if(ST.activity==='carousel'&&st.t==='prep'){
+    ST.actFrame=pickCarFrame();
+  }
+  if(ST.activity==='carousel'&&st.t==='turn'){
+    if(!ST.actFrame) ST.actFrame=pickCarFrame();
+    advanceCue();
+  }
   render();
 }
 function actTick(){
@@ -1332,7 +1358,10 @@ function actTick(){
   var st=actScript[actIdx];
   if(ST.activity==='carousel'&&st&&st.t==='turn'){
     var el=st.dur-ST.actNum;
-    if(el>0 && el%5===0) advanceCue();
+    if(el>0 && el%5===0){
+      advanceCue();
+      ST.actFrame=pickCarFrame();
+    }
   }
   if(st && (st.t==='prep'||st.t==='trans'||st.t==='break')){
     var num=document.querySelector('.seam-count');
@@ -1367,15 +1396,19 @@ function actJump(kind){
     if(kind==='prep' && st.t==='prep'){idx=i;break;}
     if(kind==='trans'&& (st.t==='trans'||st.t==='break')){idx=i;break;}
     if(kind==='done' && st.t==='done'){idx=i;break;}
-    if(kind==='you'  && st.t==='turn'&&st.frame==='you'){idx=i;break;}
-    if(kind==='dana' && st.t==='turn'&&st.frame==='dana'){idx=i;break;}
+    if(kind==='you'  && st.t==='turn'&&(st.frame==='you'||ST.activity==='carousel')){idx=i;break;}
+    if(kind==='dana' && st.t==='turn'&&(st.frame==='dana'||ST.activity==='carousel')){idx=i;break;}
   }
   if(idx<0){ resetAct(); render(); return; }
   actIdx=idx; st=actScript[idx]; actStepStart=0;
   ST.actState=(st.t==='done')?'done':'running';
   ST.actStep=st.t; ST.actFrame=st.frame||''; ST.actDur=st.dur||0; ST.actNum=st.dur||0;
   ST.actRound=st.round||1;
-  if(ST.activity==='carousel'&&st.t==='turn') ST.carIdx=(st.frame==='dana')?1:0;
+  if(ST.activity==='carousel'&&st.t==='prep') ST.actFrame=pickCarFrame();
+  if(ST.activity==='carousel'&&st.t==='turn'){
+    if(kind==='you'||kind==='dana') ST.actFrame=(kind==='you')?'you':'dana';
+    ST.carIdx=(ST.actFrame==='dana')?1:0;
+  }
   render();
 }
 
@@ -1562,7 +1595,7 @@ function tipWave(){
 }
 function tipCardInner(){
   return '<button class="tc-close" onclick="closeTip()"'+hubTipAttrs('Close')+'>'+I.x+'</button>'
-    +'<div class="tc-title">'+I.spark+'Replay instruction</div>'
+    +'<div class="tc-title">Replay instruction</div>'
     +'<div class="tc-player">'
       +'<button class="tc-play" onclick="toggleTipPlay()">'+(ST.tipPlaying?I.pause:I.play)+'</button>'
       + tipWave()
@@ -1695,31 +1728,30 @@ function rheader(){
 }
 
 function doneConfetti(){
-  var Y='#F9E24C', W='#FFFFFF', C='#373230';
+  var C='#373230';
+  var colors=['#F7AAF3','#F9746B','#F69700','#FFE300','#90C7FC','#449CFC','#DAEF81','#7EE07C','#6D8C58','#6BBFC4','#8B90FF','#CEB1FF'];
   function ink(fill){
     return 'fill="'+fill+'" stroke="'+C+'" stroke-width="0.5" vector-effect="non-scaling-stroke"';
   }
-  var shapes={
-    strokeY:'<svg viewBox="0 0 16 6" aria-hidden="true"><rect x="1.2" y="1.9" width="13.6" height="2.2" rx="1.1" '+ink(Y)+'/></svg>',
-    strokeW:'<svg viewBox="0 0 16 6" aria-hidden="true"><rect x="1.2" y="1.9" width="13.6" height="2.2" rx="1.1" '+ink(W)+'/></svg>',
-    circY:  '<svg viewBox="0 0 10 10" aria-hidden="true"><circle cx="5" cy="5" r="3.55" '+ink(Y)+'/></svg>',
-    circW:  '<svg viewBox="0 0 10 10" aria-hidden="true"><circle cx="5" cy="5" r="3.55" '+ink(W)+'/></svg>',
-    diaY:   '<svg viewBox="0 0 10 10" aria-hidden="true"><path d="M5 1.2 L8.8 5 L5 8.8 L1.2 5 Z" '+ink(Y)+'/></svg>',
-    diaW:   '<svg viewBox="0 0 10 10" aria-hidden="true"><path d="M5 1.2 L8.8 5 L5 8.8 L1.2 5 Z" '+ink(W)+'/></svg>'
-  };
+  function shape(kind, fill){
+    var a=ink(fill);
+    if(kind==='stroke') return '<svg viewBox="0 0 16 6" aria-hidden="true"><rect x="1.2" y="1.9" width="13.6" height="2.2" rx="1.1" '+a+'/></svg>';
+    if(kind==='circ') return '<svg viewBox="0 0 10 10" aria-hidden="true"><circle cx="5" cy="5" r="3.55" '+a+'/></svg>';
+    return '<svg viewBox="0 0 10 10" aria-hidden="true"><path d="M5 1.2 L8.8 5 L5 8.8 L1.2 5 Z" '+a+'/></svg>';
+  }
   var bits=[
-    {k:'strokeY', dx:-80,  dy:-92,  ex:-122, ey:-22, rot0:-16, rot:-38, rot2:18,  sc:1, s:22, d:0.50, dur:1.62},
-    {k:'circW',   dx:16,   dy:-124, ex:38,   ey:-86, rot0:8,   rot:26,  rot2:54,  sc:1, s:13, d:0.52, dur:1.90},
-    {k:'diaY',    dx:98,   dy:-68,  ex:132,  ey:6,   rot0:18,  rot:42,  rot2:78,  sc:1, s:14, d:0.51, dur:1.56},
-    {k:'circY',   dx:-40,  dy:-108, ex:-56,  ey:4,   rot0:-10, rot:16,  rot2:50,  sc:1, s:14, d:0.54, dur:1.98},
-    {k:'strokeW', dx:114,  dy:-30,  ex:142,  ey:2,   rot0:12,  rot:34,  rot2:14,  sc:1, s:20, d:0.53, dur:1.74},
-    {k:'diaW',    dx:-118, dy:-46,  ex:-148, ey:-8,  rot0:-22, rot:-14, rot2:28,  sc:1, s:13, d:0.55, dur:1.68},
-    {k:'circW',   dx:56,   dy:-96,  ex:82,   ey:-34, rot0:6,   rot:-22, rot2:16,  sc:1, s:12, d:0.56, dur:1.48},
-    {k:'diaY',    dx:-12,  dy:-120, ex:18,   ey:2,   rot0:14,  rot:32,  rot2:64,  sc:1, s:15, d:0.52, dur:2.06},
-    {k:'strokeY', dx:44,   dy:-36,  ex:20,   ey:4,   rot0:-8,  rot:18,  rot2:48,  sc:1, s:21, d:0.57, dur:1.70},
-    {k:'circY',   dx:-72,  dy:-80,  ex:-102, ey:2,   rot0:-14, rot:8,   rot2:42,  sc:1, s:15, d:0.58, dur:1.84},
-    {k:'strokeW', dx:8,    dy:-62,  ex:-28,  ey:0,   rot0:10,  rot:-24, rot2:22,  sc:1, s:19, d:0.54, dur:1.78},
-    {k:'diaW',    dx:78,   dy:-116, ex:104,  ey:-58, rot0:20,  rot:48,  rot2:34,  sc:1, s:13, d:0.59, dur:1.94}
+    {k:'stroke', dx:-80,  dy:-92,  ex:-122, ey:-22, rot0:-16, rot:-38, rot2:18,  sc:1, s:22, d:0.50, dur:1.62},
+    {k:'circ',   dx:16,   dy:-124, ex:38,   ey:-86, rot0:8,   rot:26,  rot2:54,  sc:1, s:13, d:0.52, dur:1.90},
+    {k:'dia',    dx:98,   dy:-68,  ex:132,  ey:6,   rot0:18,  rot:42,  rot2:78,  sc:1, s:14, d:0.51, dur:1.56},
+    {k:'circ',   dx:-40,  dy:-108, ex:-56,  ey:4,   rot0:-10, rot:16,  rot2:50,  sc:1, s:14, d:0.54, dur:1.98},
+    {k:'stroke', dx:114,  dy:-30,  ex:142,  ey:2,   rot0:12,  rot:34,  rot2:14,  sc:1, s:20, d:0.53, dur:1.74},
+    {k:'dia',    dx:-118, dy:-46,  ex:-148, ey:-8,  rot0:-22, rot:-14, rot2:28,  sc:1, s:13, d:0.55, dur:1.68},
+    {k:'circ',   dx:56,   dy:-96,  ex:82,   ey:-34, rot0:6,   rot:-22, rot2:16,  sc:1, s:12, d:0.56, dur:1.48},
+    {k:'dia',    dx:-12,  dy:-120, ex:18,   ey:2,   rot0:14,  rot:32,  rot2:64,  sc:1, s:15, d:0.52, dur:2.06},
+    {k:'stroke', dx:44,   dy:-36,  ex:20,   ey:4,   rot0:-8,  rot:18,  rot2:48,  sc:1, s:21, d:0.57, dur:1.70},
+    {k:'circ',   dx:-72,  dy:-80,  ex:-102, ey:2,   rot0:-14, rot:8,   rot2:42,  sc:1, s:15, d:0.58, dur:1.84},
+    {k:'stroke', dx:8,    dy:-62,  ex:-28,  ey:0,   rot0:10,  rot:-24, rot2:22,  sc:1, s:19, d:0.54, dur:1.78},
+    {k:'dia',    dx:78,   dy:-116, ex:104,  ey:-58, rot0:20,  rot:48,  rot2:34,  sc:1, s:13, d:0.59, dur:1.94}
   ];
   var html='<span class="ad-confetti" aria-hidden="true">';
   for(var i=0;i<bits.length;i++){
@@ -1735,7 +1767,7 @@ function doneConfetti(){
       +'--vx:'+vx+'px;--vy:'+vy+'px;'
       +'--rot0:'+b.rot0+'deg;--rot:'+b.rot+'deg;--rotm:'+rotm+'deg;--rotv:'+rotv+'deg;'
       +'--sc:'+b.sc+';--s:'+b.s+'px;--d:'+b.d+'s;--dur:'+b.dur+'s">'
-      +shapes[b.k]+'</span>';
+      +shape(b.k, colors[i])+'</span>';
   }
   return html+'</span>';
 }
@@ -1812,11 +1844,9 @@ function duoStage(){
     if(ST.actStep==='trans'||ST.actStep==='break') return (who==='you')?'You\u2019re next':(PARTNER+' is next');
     return name;
   }
-  var startOn=(isTurn && ST.actNum===ST.actDur);
+  var startOn=(isTurn && ST.actNum===ST.actDur && ST.activity!=='carousel');
   var isPrep=live&&ST.actStep==='prep';
   var isHandoff=live&&(ST.actStep==='trans'||ST.actStep==='break');
-  /* Carousel alone still uses the shared upward-biased seam slot; keep bottom
-     chips clear if the cue footprint is large. */
   var carRun=(live && ST.activity==='carousel' && isTurn);
   return '<div class="rstage'+(carRun?' car-run':'')+'" onclick="revealChrome()">'
     + half('top', PARTNER, {turn:danaF, chipLabel:chipFor('dana',PARTNER), bg:IMG_DANA, startCue:(startOn&&danaF), starting:(isPrep||isHandoff)&&danaF, startLabel:(isPrep&&danaF)?(PARTNER+' starts'):''})

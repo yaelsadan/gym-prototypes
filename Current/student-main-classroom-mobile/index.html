@@ -482,7 +482,7 @@ h1{font-size:20px}
 /* student tile = warm gradient + branded placeholder (never a blank grey panel) */
 .d-half.student{background:linear-gradient(160deg,#46423d,#272320);border-top:1px solid rgba(255,255,255,.10)}
 /* yellow current-turn frame on the demonstrating student */
-.d-half.turn{box-shadow:inset 0 0 0 3px var(--brand-yellow)}
+.d-half.turn{box-shadow:inset 0 0 0 6px var(--brand-yellow)}
 /* branded Citizen avatar placeholder (layered white/charcoal/yellow) when there is no real video */
 .d-av{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:72px;height:72px;border-radius:50%;
   display:grid;place-items:center;font-size:28px;font-weight:800;color:var(--brand-charcoal);
@@ -519,7 +519,7 @@ h1{font-size:20px}
 /* (4) keep the selected-student avatar clear of passive chat/composer in demo */
 .d-half.student .d-av{top:40%}
 /* (5) soften current-turn frame 3px -> 2px (still clearly visible; no green) */
-.d-half.turn{box-shadow:inset 0 0 0 2px var(--brand-yellow)}
+.d-half.turn{box-shadow:inset 0 0 0 6px var(--brand-yellow)}
 
 /* ===== v8 Carousel activity visual aid (additive · later-wins) — visual only =====
    INTENT: this is a PLACEHOLDER SLOT for future character-cue artwork. The final artwork will
@@ -2075,8 +2075,8 @@ h1{font-size:20px}
 /* Chat overlay — one continuous surface, shared bottom anchor */
 :root{
   --chat-bottom:calc(98px + env(safe-area-inset-bottom,0px));
-  --chat-expanded-max:clamp(300px,48vh,400px);
-  --chat-expanded-demo:min(280px,34vh);
+  --chat-expanded-max:clamp(345px,55vh,460px);
+  --chat-expanded-demo:min(322px,39vh);
   --chat-rail-inset:82px; /* rail 12+58, plus 12px breathing gap */
   --chat-peek-visible-time:4000ms;
   --chat-peek-entry-duration:280ms;
@@ -2169,12 +2169,30 @@ h1{font-size:20px}
   flex:1 1 auto;
   min-height:0;
   max-height:calc(var(--chat-expanded-max) - 40px);
-  overflow-x:visible;
+  overflow-x:hidden;
   overflow-y:auto;
   overscroll-behavior:contain;
-  padding:2px 8px 4px 0;
+  padding:4px 8px 6px 0;
   scrollbar-width:thin;
   scrollbar-color:rgba(255,255,255,.28) transparent;
+  -webkit-mask-repeat:no-repeat;
+  mask-repeat:no-repeat;
+  -webkit-mask-size:100% 100%;
+  mask-size:100% 100%;
+  -webkit-mask-image:linear-gradient(#000,#000);
+  mask-image:linear-gradient(#000,#000);
+}
+.chat-overlay.is-expanded .chat-history.fade-top{
+  -webkit-mask-image:linear-gradient(to bottom,transparent 0,rgba(0,0,0,.28) 12px,#000 40px,#000 100%);
+  mask-image:linear-gradient(to bottom,transparent 0,rgba(0,0,0,.28) 12px,#000 40px,#000 100%);
+}
+.chat-overlay.is-expanded .chat-history.fade-bottom{
+  -webkit-mask-image:linear-gradient(to bottom,#000 0,#000 calc(100% - 40px),rgba(0,0,0,.28) calc(100% - 12px),transparent 100%);
+  mask-image:linear-gradient(to bottom,#000 0,#000 calc(100% - 40px),rgba(0,0,0,.28) calc(100% - 12px),transparent 100%);
+}
+.chat-overlay.is-expanded .chat-history.fade-top.fade-bottom{
+  -webkit-mask-image:linear-gradient(to bottom,transparent 0,rgba(0,0,0,.28) 12px,#000 40px,#000 calc(100% - 40px),rgba(0,0,0,.28) calc(100% - 12px),transparent 100%);
+  mask-image:linear-gradient(to bottom,transparent 0,rgba(0,0,0,.28) 12px,#000 40px,#000 calc(100% - 40px),rgba(0,0,0,.28) calc(100% - 12px),transparent 100%);
 }
 .chat-overlay.is-expanded .chat-history::-webkit-scrollbar{width:5px}
 .chat-overlay.is-expanded .chat-history::-webkit-scrollbar-thumb{
@@ -2981,8 +2999,21 @@ function feedNearBottom(feed){
 }
 function scrollFeedBottom(force){
   var feed=chatScrollEl();
-  if(!feed||!chatIsExpanded()) return;
+  if(!feed||!chatIsExpanded()){ syncChatEdgeFade(); return; }
   if(force||feedNearBottom(feed)) feed.scrollTop=feed.scrollHeight;
+  syncChatEdgeFade();
+}
+function syncChatEdgeFade(){
+  var feed=document.getElementById('chatHistory');
+  if(!feed) return;
+  var top=false, bot=false;
+  if(chatIsExpanded()){
+    var slop=2;
+    top=feed.scrollTop>slop;
+    bot=(feed.scrollHeight-feed.clientHeight-feed.scrollTop)>slop;
+  }
+  feed.classList.toggle('fade-top',top);
+  feed.classList.toggle('fade-bottom',bot);
 }
 function renderOverlay(){
   if(!chatShouldShow()) return;
@@ -3007,9 +3038,10 @@ function renderOverlay(){
     grow.removeAttribute('title');
   }
   if(stack){
-    var pin=feedNearBottom(stack);
+    var pin=feedNearBottom(document.getElementById('chatHistory')||stack);
     stack.innerHTML=chatIsExpanded()?expandedHtml():stackHtml();
     if(chatIsExpanded()) scrollFeedBottom(pin);
+    else syncChatEdgeFade();
   } else {
     el.innerHTML=overlayInner();
     wireChatScroll();
@@ -3018,9 +3050,15 @@ function renderOverlay(){
 }
 function wireChatScroll(){
   var feed=chatScrollEl();
-  if(!feed||feed._wired) return;
-  feed._wired=true;
-  feed.addEventListener('scroll',function(){ feed._userScrolled=!feedNearBottom(feed); });
+  if(!feed) return;
+  if(!feed._wired){
+    feed._wired=true;
+    feed.addEventListener('scroll',function(){
+      feed._userScrolled=!feedNearBottom(feed);
+      syncChatEdgeFade();
+    });
+  }
+  requestAnimationFrame(syncChatEdgeFade);
 }
 function pushMessage(m){
   MSGS.push(m);
