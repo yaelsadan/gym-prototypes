@@ -344,9 +344,9 @@ h1{font-size:20px;line-height:1.25}
   letter-spacing:-.2px;
 }
 .av-card{
-  width:100%;
+  width:calc(100% + 8px);
   flex:none;
-  padding:10px 10px 48px;
+  padding:3px 3px 48px;
   border:1px solid rgba(247,246,239,.28);
   border-radius:var(--r-lg);
   background:rgba(247,246,239,.1);
@@ -526,6 +526,114 @@ h1{font-size:20px;line-height:1.25}
 }
 .av-foot .primary-cta{width:154px;min-height:50px}
 
+/* Canonical mobile Waiting Room: countdown first, optional practice second. */
+.waiting-panel{
+  position:absolute;
+  z-index:2;
+  top:108px;
+  right:var(--s16);
+  bottom:max(18px,env(safe-area-inset-bottom,0px));
+  left:var(--s16);
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  border:1px solid rgba(247,246,239,.3);
+  border-radius:var(--r-lg);
+  background:rgba(247,246,239,.12);
+  box-shadow:inset 0 1px 0 rgba(247,246,239,.16);
+  color:#fff;
+  -webkit-backdrop-filter:blur(34px) saturate(1.16);
+  backdrop-filter:blur(34px) saturate(1.16);
+}
+.waiting-content{
+  width:100%;
+  min-height:0;
+  flex:1;
+  padding:58px var(--s24) 116px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  text-align:center;
+}
+.waiting-content h2{
+  margin:0;
+  font-family:var(--font-brand);
+  font-size:32px;
+  font-weight:400;
+  font-synthesis:none;
+  line-height:1.14;
+  letter-spacing:-.2px;
+  text-wrap:balance;
+}
+.waiting-countdown{
+  margin:14px 0 48px;
+  font-size:68px;
+  font-weight:800;
+  font-variant-numeric:tabular-nums;
+  letter-spacing:-2.4px;
+  line-height:.95;
+}
+.waiting-prompt{
+  margin:0 0 16px;
+  color:rgba(247,246,239,.8);
+  font-size:15px;
+  font-weight:500;
+  line-height:1.4;
+}
+.waiting-content .primary-cta{
+  width:196px;
+  min-height:50px;
+  font-size:15px;
+}
+.waiting-self{
+  position:absolute;
+  right:14px;
+  bottom:14px;
+  width:132px;
+  aspect-ratio:16 / 9;
+  overflow:hidden;
+  border:1.5px solid rgba(255,255,255,.72);
+  border-radius:12px;
+  background:linear-gradient(160deg,#5b5650,#332f2b);
+  box-shadow:0 8px 22px rgba(18,14,12,.2);
+}
+.waiting-self .vid{
+  position:absolute;
+  inset:0;
+  background-position:center;
+  background-size:cover;
+}
+.waiting-self.cam-off{display:grid;place-items:center;background:#3a3531}
+.waiting-self .av-face{
+  width:34px;
+  height:34px;
+  display:grid;
+  place-items:center;
+  border-radius:50%;
+  background:#5c554e;
+  font-size:14px;
+  font-weight:700;
+}
+.waiting-self .camoff-cap{
+  position:absolute;
+  right:0;
+  bottom:7px;
+  left:0;
+  color:#e8e2d6;
+  font-size:8px;
+  font-weight:700;
+  letter-spacing:.35px;
+  text-transform:uppercase;
+}
+.waiting-self.is-blur .vid{filter:blur(8px);transform:scale(1.12)}
+.waiting-self.is-blur .vid-subject{
+  filter:none;
+  transform:none;
+  -webkit-mask-image:radial-gradient(ellipse 48% 74% at 50% 44%,#000 40%,transparent 76%);
+  mask-image:radial-gradient(ellipse 48% 74% at 50% 44%,#000 40%,transparent 76%);
+}
+
 @media (max-width:720px){
   body{padding:var(--s16)}
   .phone{width:min(390px,calc(100vw - 32px))}
@@ -545,6 +653,8 @@ h1{font-size:20px;line-height:1.25}
   .welcome-content h2{font-size:39px;margin-bottom:10px}
   .welcome-content .sub{font-size:17px;margin-bottom:7px}
   .welcome-content .explain{font-size:14px;margin-bottom:18px}
+  .waiting-content{padding-top:34px}
+  .waiting-countdown{margin-bottom:34px;font-size:62px}
 }
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{scroll-behavior:auto!important}
@@ -553,7 +663,7 @@ h1{font-size:20px;line-height:1.25}
 </head>
 <body>
 <h1>Student Transition Screens — Mobile</h1>
-<p class="lead">Canonical Mobile Welcome and A/V Check. Prototype controls remain outside the simulated phone.</p>
+<p class="lead">Canonical Mobile Welcome, A/V Check, and Waiting Room. Prototype controls remain outside the simulated phone.</p>
 
 <div class="demo">
   <div class="phone" aria-label="Mobile transition screen prototype">
@@ -566,18 +676,19 @@ h1{font-size:20px;line-height:1.25}
     <div class="grp">Implemented state</div>
     <button class="on" type="button" data-scene="welcome">Welcome</button>
     <button type="button" data-scene="av-check">A/V Check</button>
+    <button type="button" data-scene="waiting">Waiting Room</button>
     <div class="state" id="state-note"></div>
   </aside>
 </div>
 
 <script>
 /* Shared state catalogue mirrors the desktop transition routing.
-   This pass implements only Welcome and the canonical mobile A/V Check. */
+   This pass implements Welcome, A/V Check, and the canonical default Waiting Room. */
 var SCREENS = {
   welcome:{label:"Welcome",implemented:true},
   "welcome-late":{label:"Welcome Late",implemented:false},
   "av-check":{label:"A/V Check",implemented:true},
-  waiting:{label:"Waiting",implemented:false},
+  waiting:{label:"Waiting",implemented:true},
   "waiting-t20":{label:"Waiting · T−20",implemented:false},
   "waiting-t10":{label:"Waiting · T−10",implemented:false},
   flashcards:{label:"Flashcards while waiting",implemented:false},
@@ -605,6 +716,8 @@ var STATE = {
     welcomeLead:8*60+42
   },
   route:{path:"on-time",entering:false},
+  left:0,
+  clockOn:false,
   camOff:false,
   micOff:false,
   blurOn:false,
@@ -689,13 +802,42 @@ var Renderers = {
         +'</footer>'
       +'</main>'
     );
+  },
+  waiting:function(){
+    var previewInner=STATE.camOff
+      ? '<span class="av-face">Y</span><span class="camoff-cap">Camera off</span>'
+      : '<div class="vid" style="background-image:url(\''+IMG_YOU+'\')"></div>'
+        +(STATE.blurOn?'<div class="vid vid-subject" style="background-image:url(\''+IMG_YOU+'\')"></div>':'');
+    return Components.shell(
+      '<main class="waiting-panel">'
+        +Components.progress()
+        +'<div class="waiting-content">'
+          +'<h2>We\u2019re about to start</h2>'
+          +'<div class="waiting-countdown" id="waiting-countdown" role="timer" aria-live="off">'+formatTime(STATE.left)+'</div>'
+          +'<p class="waiting-prompt">Want to warm up while you wait?</p>'
+          +'<button class="primary-cta" type="button" data-action="flashcards-placeholder">Practice flashcards</button>'
+        +'</div>'
+        +'<div class="waiting-self'+(STATE.camOff?' cam-off':'')+(!STATE.camOff&&STATE.blurOn?' is-blur':'')+'" aria-label="Your self-view">'+previewInner+'</div>'
+      +'</main>'
+    );
   }
 };
 
 function setScene(scene){
   if(!SCREENS[scene]||!SCREENS[scene].implemented) return;
   STATE.scene=scene;
+  if(scene==="waiting"){
+    STATE.left=STATE.timing.waiting;
+    STATE.clockOn=true;
+  }else{
+    STATE.clockOn=false;
+  }
   render();
+}
+
+function formatTime(seconds){
+  var safe=Math.max(0,Math.floor(seconds));
+  return String(Math.floor(safe/60)).padStart(2,"0")+":"+String(safe%60).padStart(2,"0");
 }
 
 function render(){
@@ -706,7 +848,9 @@ function render(){
   });
   document.getElementById("state-note").textContent=STATE.scene==="av-check"
     ? "Canonical mobile A/V Check. Camera, microphone, blur and voice feedback are interactive."
-    : "Canonical Mobile Welcome. Continue opens the mobile A/V Check.";
+    : STATE.scene==="waiting"
+      ? "Canonical Mobile Waiting Room. Countdown updates in place; Flashcards remains a placeholder in this pass."
+      : "Canonical Mobile Welcome. Continue opens the mobile A/V Check.";
   syncAvMicMeter();
 }
 
@@ -721,6 +865,12 @@ document.getElementById("app").addEventListener("click",function(event){
   if(name==="toggle-camera"){ STATE.camOff=!STATE.camOff; render(); return; }
   if(name==="toggle-mic"){ STATE.micOff=!STATE.micOff; render(); return; }
   if(name==="toggle-blur"){ STATE.blurOn=!STATE.blurOn; render(); return; }
+  if(name==="flashcards-placeholder"){
+    action.textContent="Flashcards coming next";
+    action.setAttribute("aria-label","Flashcards mobile experience is not implemented in this pass");
+    document.getElementById("state-note").textContent="Flashcards-open is intentionally not implemented in this pass.";
+    return;
+  }
   if(name==="ready") finishAv();
 });
 
@@ -731,9 +881,21 @@ function finishAv(){
   else if(STATE.route.path==="last-minute"||STATE.timing.waiting<60) target="starting";
   else target="waiting";
   STATE.route.entering=target==="arrive";
+  if(SCREENS[target].implemented){
+    setScene(target);
+    return;
+  }
   document.getElementById("state-note").textContent=
     "I\u2019m ready routes to "+SCREENS[target].label+". That mobile state remains intentionally unimplemented.";
 }
+
+/* Waiting countdown updates only its text node; later states own their transitions. */
+setInterval(function(){
+  if(STATE.scene!=="waiting"||!STATE.clockOn||STATE.left<=0) return;
+  STATE.left--;
+  var clock=document.getElementById("waiting-countdown");
+  if(clock) clock.textContent=formatTime(STATE.left);
+},1000);
 
 /* A/V Check only — real microphone level where supported, approved ripple fallback otherwise. */
 var AV_MIC={stream:null,ctx:null,analyser:null,data:null,raf:0,live:false,lastEcho:0};

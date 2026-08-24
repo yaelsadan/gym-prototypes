@@ -389,15 +389,8 @@ body.present .mode-btn:hover{opacity:1}
 .invite.milky .respline{height:2px;border-radius:1px;background:rgba(55,50,48,.10);margin-top:24px;overflow:hidden}
 .invite.milky .respline i{height:100%;background:rgba(55,50,48,.55);border-radius:1px}
 .invite.milky .resp-cap{font-family:var(--font-ui);color:var(--text-muted);margin-top:9px}
-/* milky room-consent inherits the decision-modal surface; widen only enough for the body line */
-.invite.milky.room-consent{
-  width:fit-content;
-  min-width:560px;
-  border-radius:15px;
-}
-.invite.milky.room-consent > p:first-of-type{
-  white-space:nowrap;
-}
+/* milky room-consent inherits the decision-modal surface; keep width with the family */
+.invite.milky.room-consent{width:560px}
 /* ===== Waiting-return — calm full-screen with a room countdown (consent No / timeout) ===== */
 .waitreturn{position:absolute;inset:0;z-index:14;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:rgba(43,39,36,.97);color:#fff;padding:40px}
 .waitreturn .wr-hero{margin-bottom:4px}
@@ -405,7 +398,7 @@ body.present .mode-btn:hover{opacity:1}
 .matkot-fallback{width:100%;height:100%;display:block}
 .waitreturn .wr-chip{display:inline-flex;align-items:center;gap:7px;font-size:11px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;color:rgba(255,255,255,.72);background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);padding:6px 13px;border-radius:999px;margin-bottom:16px}
 .waitreturn .wr-chip .d{width:7px;height:7px;border-radius:50%;background:var(--brand-yellow)}
-.waitreturn h2{font-family:"FedraSerifPro",var(--font-brand),Georgia,serif;font-size:36px;font-weight:400;font-style:normal;font-synthesis:none;line-height:1.18;margin:0 0 14px;max-width:540px}
+.waitreturn h2{font-family:var(--font-brand);font-size:36px;line-height:1.18;margin:0 0 14px;max-width:540px}
 .waitreturn .wr-sub{font-family:var(--font-ui);font-size:20px;font-weight:500;line-height:1.5;max-width:540px;opacity:.9;margin:0}
 .waitreturn .wr-num{font-variant-numeric:tabular-nums;font-weight:800;font-size:50px;letter-spacing:1px;margin-top:26px}
 .waitreturn .wr-note{margin-top:20px;font-size:15px;font-weight:600;color:rgba(255,255,255,.72)}
@@ -767,8 +760,7 @@ body.present .clock.vt.gl{--d:132px}
   62%{opacity:1;transform:translateY(-1px) scale(1.07)}
   100%{opacity:1;transform:translateY(0) scale(1)}
 }
-/* Confetti — one burst from behind the badge into the space above it, then a slow fall.
-   Pieces fade out while still moving, and vanish before the badge's bottom edge. */
+/* Confetti — one burst from behind the badge into the space above it, then a slow fall */
 .act-done .ad-confetti{
   position:absolute;left:50%;top:38%;width:0;height:0;
   pointer-events:none;overflow:visible;z-index:0;
@@ -791,20 +783,15 @@ body.present .clock.vt.gl{--d:132px}
   28%{
     opacity:1;
     transform:translate(var(--dx),var(--dy)) scale(var(--sc)) rotate(var(--rot));
-    animation-timing-function:cubic-bezier(.32,.1,.5,1);
+    animation-timing-function:cubic-bezier(.28,.08,.42,1);
   }
-  70%{
+  62%{
     opacity:1;
-    transform:translate(var(--mx),var(--my)) scale(var(--sc)) rotate(var(--rotm));
-    animation-timing-function:linear;
-  }
-  88%{
-    opacity:0;
-    transform:translate(var(--vx),var(--vy)) scale(var(--sc)) rotate(var(--rotv));
+    transform:translate(var(--ex),var(--ey)) scale(var(--sc)) rotate(var(--rot2));
   }
   100%{
     opacity:0;
-    transform:translate(var(--vx),var(--vy)) scale(var(--sc)) rotate(var(--rotv));
+    transform:translate(var(--ex),var(--ey)) scale(var(--sc)) rotate(var(--rot2));
   }
 }
 .act-done.sm{gap:9px;padding:9px 18px 9px 10px}
@@ -1323,10 +1310,6 @@ body.present .topbar .session-rec{font-size:13.5px}
   text-align:center;
   padding:1px 0 0;
 }
-.pp-row:has(.pp-chip.teacher) .pp-lvl,
-.pp-row:has(.pp-chip.helper) .pp-lvl{display:none}
-.pp-row:has(.pp-chip.teacher) .av-face,
-.pp-row:has(.pp-chip.helper) .av-face{background:#FFE300}
 /* Role badges stay secondary — not part of avatar construction */
 .pp-chip{font-size:9.5px;font-weight:700;letter-spacing:.35px;text-transform:uppercase;padding:2px 7px;border-radius:var(--pill)}
 .pp-chip.teacher{background:rgba(247,246,239,.10);color:rgba(255,255,255,.62);border:1px solid rgba(255,255,255,.14)}
@@ -1449,30 +1432,25 @@ body.present .demo-split{
   z-index:11;
 }
 
-/* Demo split timer: +20% from 193px → 232px */
+/* Demo split timer: +32% from base (146px → 193px) */
 .demo-timer .clock.vt.lg{
-  --d:232px;
-  width:232px;
-  height:232px;
+  --d:193px;
+  width:193px;
+  height:193px;
 }
 body.present .demo-timer .clock.vt.lg{
-  --d:241px;
-  width:241px;
-  height:241px;
+  --d:201px;
+  width:201px;
+  height:201px;
 }
 .demo-timer .clock.lg{
-  width:232px;
-  height:232px;
-  font-size:91px;
+  width:193px;
+  height:193px;
+  font-size:76px;
 }
 .demo-timer .clock.lg .num svg{
-  width:95px;
-  height:95px;
-}
-
-/* Demo Done badge + confetti as one unit: 1.3 × 1.3 × 0.85 */
-.demo-timer .act-done{
-  scale: calc(1.3 * 1.3 * 0.85);
+  width:79px;
+  height:79px;
 }
 
 /* Main Room activity timer: +52% from base (132px → 201px); center-anchored, slightly lower */
@@ -1504,7 +1482,6 @@ body.present .act-timer .clock.vt.lg{
 .act-timer .act-done{
   gap:15px;
   padding:15px 31px 15px 18px;
-  scale:1.15;
 }
 .act-timer .act-done .ad-bg{border-width:1.5px}
 .act-timer .act-done .ad-ic{width:51px;height:51px}
@@ -1513,8 +1490,9 @@ body.present .act-timer .clock.vt.lg{
 .act-timer .act-done .ad-tx{font-size:35px;font-weight:400;font-style:italic}
 body.present .act-timer .act-done .ad-tx{font-size:41px}
 
-/* Self-view PIP: +20% from base (172×116); docks bottom-right above the footer */
-.pip{width:208px;height:141px}
+/* Self-view PIP: +20% from base (172×116); bottom aligned with footer capsule */
+.pip{bottom:20px;width:208px;height:141px}
+.pip.collapsed{bottom:20px}
 .frame.w-narrow .pip{width:160px;height:109px}
 .pip.collapsed.folded{width:206px}
 
@@ -1955,7 +1933,7 @@ body.present .car-cue.car-seam,
 .ephem-msg.enter{opacity:0;transform:translateY(10px)}
 .ephem-msg.leaving{opacity:0!important;transform:translateY(-10px)}
 @media (prefers-reduced-motion:reduce){
-  .ephem-dock.is-compact .ephem-feed{-webkit-mask-image:none;mask-image:none}
+  .ephem-feed{-webkit-mask-image:none;mask-image:none}
 }
 
 /* ==========================================================
@@ -2050,26 +2028,21 @@ body.present .car-cue.car-seam,
   right:18px;
   bottom:112px;
 }
-/* Self-view: default dock — bottom-right, slight gap above the footer / video controls */
+/* Self-view just above footer controls on the right */
 .pip,
 .pip.collapsed{
   right:22px;
-  bottom:128px;
-}
-body.present .pip,
-body.present .pip.collapsed{
-  right:22px;
-  bottom:132px;
+  bottom:112px;
 }
 .frame.w-narrow .pip,
 .frame.w-narrow .pip.collapsed{
   right:18px;
-  bottom:124px;
+  bottom:108px;
 }
 .stage:has(.demo-stage) .pip,
 .stage:has(.demo-stage) .pip.collapsed{
   right:calc(var(--split-edge) + 22px);
-  bottom:calc(var(--split-edge) + 124px);
+  bottom:calc(var(--split-edge) + 108px);
 }
 .room:has(.demo-stage) .right .panel,
 .room:has(.demo-stage) .right .panel:not(.closed){pointer-events:auto}
@@ -2174,10 +2147,11 @@ body.present .pip.collapsed{
 .ephem-dock.is-expanded .ephem-feed{
   pointer-events:auto;
   max-height:min(42vh,344px);
-  justify-content:flex-start;
   overflow-x:hidden;
   overflow-y:auto;
   overscroll-behavior:contain;
+  -webkit-mask-image:none;
+  mask-image:none;
   padding-right:4px;
 }
 .ephem-dock.is-expanded .ephem-feed::-webkit-scrollbar{width:6px}
@@ -2425,38 +2399,17 @@ body.present .act-timer.pos-tc{
   flex:1 1 auto;
   min-height:0;
   max-height:430px;
-  justify-content:flex-start;
   overflow-x:hidden;
   overflow-y:auto;
   overscroll-behavior:contain;
   pointer-events:auto;
   background:transparent;
+  -webkit-mask-image:none;
+  mask-image:none;
   padding:8px 10px 10px 38px;
   margin-left:-38px;
   scrollbar-width:thin;
   scrollbar-color:rgba(255,255,255,.28) transparent;
-  -webkit-mask-repeat:no-repeat;
-  mask-repeat:no-repeat;
-  -webkit-mask-size:100% 100%;
-  mask-size:100% 100%;
-  -webkit-mask-origin:padding-box;
-  mask-origin:padding-box;
-  -webkit-mask-clip:padding-box;
-  mask-clip:padding-box;
-  -webkit-mask-image:linear-gradient(to bottom,transparent 0,rgba(0,0,0,.28) 12px,#000 40px,#000 calc(100% - 40px),rgba(0,0,0,.28) calc(100% - 12px),transparent 100%);
-  mask-image:linear-gradient(to bottom,transparent 0,rgba(0,0,0,.28) 12px,#000 40px,#000 calc(100% - 40px),rgba(0,0,0,.28) calc(100% - 12px),transparent 100%);
-}
-.ephem-dock.is-expanded .ephem-feed.fade-top{
-  -webkit-mask-image:linear-gradient(to bottom,transparent 0,rgba(0,0,0,.28) 12px,#000 40px,#000 100%);
-  mask-image:linear-gradient(to bottom,transparent 0,rgba(0,0,0,.28) 12px,#000 40px,#000 100%);
-}
-.ephem-dock.is-expanded .ephem-feed.fade-bottom{
-  -webkit-mask-image:linear-gradient(to bottom,#000 0,#000 calc(100% - 40px),rgba(0,0,0,.28) calc(100% - 12px),transparent 100%);
-  mask-image:linear-gradient(to bottom,#000 0,#000 calc(100% - 40px),rgba(0,0,0,.28) calc(100% - 12px),transparent 100%);
-}
-.ephem-dock.is-expanded .ephem-feed.fade-top.fade-bottom{
-  -webkit-mask-image:linear-gradient(to bottom,transparent 0,rgba(0,0,0,.28) 12px,#000 40px,#000 calc(100% - 40px),rgba(0,0,0,.28) calc(100% - 12px),transparent 100%);
-  mask-image:linear-gradient(to bottom,transparent 0,rgba(0,0,0,.28) 12px,#000 40px,#000 calc(100% - 40px),rgba(0,0,0,.28) calc(100% - 12px),transparent 100%);
 }
 .ephem-dock.is-expanded .ephem-feed::-webkit-scrollbar{width:6px}
 .ephem-dock.is-expanded .ephem-feed::-webkit-scrollbar-thumb{
@@ -2521,8 +2474,6 @@ body.present .act-timer.pos-tc{
   justify-content:center;
   box-shadow:0 1px 3px rgba(55,50,48,.18);
 }
-.ephem-msg.helper .eph-halo{display:none}
-.ephem-msg.helper .eph-av .av-face{background:#FFE300}
 .ephem-msg .eph-bd{
   width:fit-content;
   max-width:280px;
@@ -2786,20 +2737,20 @@ Visible duration target: ~4 seconds (see --chat-peek-visible-time).
   gap:4px;
   margin:0 0 14px;
   font-family:var(--font-ui);
-  font-size:14px;
-  font-weight:600;
+  font-size:12.5px;
+  font-weight:500;
   line-height:1.25;
-  color:var(--brand-charcoal);
+  color:#6E6963;
   white-space:nowrap;
 }
 .vol-note-ico{
   display:inline-flex;
   flex:none;
-  color:var(--brand-charcoal);
+  color:#6E6963;
 }
 .vol-note-ico svg{
-  width:16px;
-  height:16px;
+  width:15px;
+  height:15px;
   display:block;
 }
 .vol-note > span:last-child{margin-left:4px}
@@ -2913,16 +2864,18 @@ body.present .vol-choice{width:296px}
       <span class="grp-lbl">Scene</span>
       <button class="sc on" data-sc="default">Default</button>
       <button class="sc" data-sc="activity">Activity timer</button>
+      <button class="sc" data-sc="intermission">Intermission (A)</button>
+      <button class="sc" data-sc="transition">Practice Room transfer</button>
       <button class="sc" data-sc="volunteer">Volunteer popup</button>
       <button class="sc" data-sc="roomconsent">Room consent (→rooms)</button>
       <button class="sc" data-sc="waitreturn">Waiting / return</button>
-      <button class="sc" data-sc="transition">Practice Room transfer</button>
+      <button class="sc" data-sc="dialogue">Dialogue · MVP</button>
+      <button class="sc" data-sc="grandma">Operation Grandma</button>
     </div>
     <div class="row">
       <span class="grp-lbl">Demonstration draw (10s window)</span>
       <button class="play" onclick="setScene('volunteer')">&#9654; Teacher starts Demonstration</button>
       <button class="play" onclick="endDemonstration()">End demonstration</button>
-      <button class="sc" data-sc="demonstrate">Demonstration split</button>
       <span class="sep"></span>
       <span class="grp-lbl">Rig the draw</span>
       <button class="rg on" data-rg="random" onclick="setRig('random')">Random</button>
@@ -2931,11 +2884,24 @@ body.present .vol-choice{width:296px}
       <button class="rg" data-rg="none" onclick="setRig('none')">Nobody volunteered (silent)</button>
     </div>
     <div class="row">
+      <span class="grp-lbl">Other students who said yes</span>
+      <button class="op" data-op="0" onclick="setPool(0)">0</button>
+      <button class="op on" data-op="3" onclick="setPool(3)">3</button>
+      <button class="op" data-op="8" onclick="setPool(8)">8</button>
+      <span class="sep"></span>
+      <span class="grp-lbl">Jump to a result</span>
+      <button class="sc" data-sc="demonstrate">Demonstration split</button>
+    </div>
+    <div class="row">
       <span class="grp-lbl">Panel</span>
       <button class="pn on" data-pn="">None</button>
       <button class="pn" data-pn="chat">Chat</button>
       <button class="pn" data-pn="timeline">Timeline</button>
       <button class="pn" data-pn="participants">Participants</button>
+      <span class="sep"></span>
+      <span class="grp-lbl">Perspective</span>
+      <button class="ps on" data-ps="viewer">Viewer</button>
+      <button class="ps" data-ps="selected">Selected student</button>
     </div>
     <div class="row">
       <span class="grp-lbl">Activity timer</span>
@@ -2952,9 +2918,27 @@ body.present .vol-choice{width:296px}
       <button class="sp" data-sp="student">Student</button>
     </div>
     <div class="row">
+      <span class="grp-lbl">Activity timer</span>
+      <button class="av on" data-av="a">A · Top-center</button>
+      <button class="av" data-av="b">B · Corner-attached</button>
+      <span class="sep"></span>
+      <span class="grp-lbl">Grandma</span>
+      <button class="play" onclick="playGrandma()">▶ Play sequence</button>
+      <span style="font-size:11px;color:var(--text-muted)">debug steps:</span>
+      <button class="gs on" data-gs="a">A active</button>
+      <button class="gs" data-gs="done">Timer done</button>
+      <button class="gs" data-gs="switch">Switching</button>
+      <button class="gs" data-gs="b">B active</button>
+    </div>
+    <div class="row">
+      <span class="grp-lbl">Video bg</span>
+      <button class="vb" data-vb="flat">Flat</button>
+      <button class="vb on" data-vb="real">Realistic</button>
+      <span class="sep"></span>
       <span class="grp-lbl">Width</span>
       <button class="wd on" data-wd="wide">Wide</button>
       <button class="wd" data-wd="laptop">Laptop</button>
+      <button class="wd" data-wd="narrow">Narrow</button>
     </div>
     <div class="row">
       <span class="grp-lbl">Carousel visuals (Main Room layer)</span>
@@ -2965,8 +2949,10 @@ body.present .vol-choice{width:296px}
     </div>
     <div class="row">
       <span class="grp-lbl">Demo split activity aids (neutral · teacher-guided)</span>
+      <button class="play" onclick="demoSplitOnly()">Demonstration split only</button>
       <button onclick="demoSplitCarousel()">+ Carousel</button>
       <button onclick="demoSplitTimer()">+ Timer</button>
+      <button onclick="demoSplitBoth()">+ Carousel + Timer</button>
       <span style="font-size:11px;color:var(--text-muted)">centered gutter stack · no turn frames</span>
     </div>
     <div class="row">
@@ -3117,7 +3103,7 @@ body.present .vol-choice{width:296px}
       <ul>
         <li><b>Controls colour:</b> student camera/mic controls are never green in the Main Room — neutral = available/on, red slash = off/unavailable. Green stays reserved for true on-air only. The teacher-controlled mic still opens the calm popover “Your mic will open during class activities.” and routes nowhere.</li>
         <li><b>Right sheets = overlays:</b> Chat / Participants / Timeline now open as floating milky-dark, blurred overlay sheets anchored by the fixed right rail. The video/stage underneath does not move, shrink, or reflow. Subtle border + shadow so the sheet reads as a layer above the class (previously the overlay behaviour was only wired for the narrow width).</li>
-        <li><b>Participants avatars:</b> layered soft Citizen avatar (white front, yellow back, charcoal stroke) with a charcoal-stroked level dot; role badges (Teacher / Helper) preserved; students show <em>Level · Country</em> secondary text (e.g. “Green · France”). Yellow stays an accent, not the whole row.</li>
+        <li><b>Participants avatars:</b> layered soft Citizen avatar (white front, yellow back, charcoal stroke) with a charcoal-stroked level dot; role badges (Teacher / Helper) preserved; students show <em>Level · Semester</em> secondary text (e.g. “Green · April”). Yellow stays an accent, not the whole row.</li>
         <li><b>Teacher video containment:</b> the default teacher video sits in a large rounded stage card with breathing room, subtle border/shadow, and Rooms-consistent corners — still dominant, no longer edge-to-edge.</li>
         <li><b>Teacher chip:</b> “Niv · Teacher” in the layered Citizen chip on both the default card and split-view teacher tile.</li>
         <li><b>Unchanged:</b> Demonstration volunteer flow, single popup, 10-second timer, no second confirmation, split-view + self-view fold, sidebar/rail existence and content, Ask composer, session-timer neutral styling, transition screens. Practice Rooms and Teacher Cockpit untouched.</li>
@@ -3320,7 +3306,7 @@ function timelinePanel(){
 }
 function participantsPanel(){
   function row(i,n,lvlc,chip,sub){var av='<div class="pp-av">'+(lvlc?'<span class="pp-lvl" style="background:'+lvlc+'" aria-hidden="true"></span>':'')+'<span class="av-face">'+i+'</span></div>';var line='<span class="pp-name">'+n+'</span>'+(chip?'<span class="pp-chip '+chip[0]+'">'+chip[1]+'</span>':'');return '<div class="pp-row">'+av+'<div><div class="pp-line">'+line+'</div>'+(sub?'<div class="pp-sub">'+sub+'</div>':'')+'</div></div>';}
-  var body='<div class="pp-search">'+I.search+'<span>Search participants…</span></div><div class="pp-group">Teaching team</div>'+row('N','Niv Berger',null,['teacher','Teacher'],'Staff')+row('M','Maya Haddad',null,['helper','Helper'],'Staff')+'<div class="pp-group">You</div>'+row('Y','You','#DAEF81',['you','You'],'Green \u00b7 France')+'<div class="pp-group">Classmates</div>'+row('D','Dana Levine','#F7AAF3',null,'Yellow \u00b7 Portugal')+row('D','David Cohen','#F69700',null,'Orange \u00b7 Brazil')+row('L','Lior Sharabi','#DAEF81',null,'Green \u00b7 Spain')+row('T','Tom Adler','#90C7FC',null,'Blue \u00b7 Germany')+row('S','Sarrah Mansour','#DAEF81',null,'Green \u00b7 France')+row('H','Hanna Weiss','#90C7FC',null,'Blue \u00b7 Poland')+row('N','Noa Ben-David','#F7AAF3',null,'Yellow \u00b7 Italy')+row('A','Amit Kaplan','#F69700',null,'Orange \u00b7 Mexico')+row('R','Ron Mizrahi','#DAEF81',null,'Green \u00b7 Canada')+row('E','Eden Azulay','#90C7FC',null,'Blue \u00b7 Argentina')+row('Y','Yael Rosenberg','#F7AAF3',null,'Yellow \u00b7 Netherlands')+row('I','Ido Barak','#F69700',null,'Orange \u00b7 Sweden');
+  var body='<div class="pp-search">'+I.search+'<span>Search participants…</span></div><div class="pp-group">Teaching team</div>'+row('N','Niv',null,['teacher','Teacher'],'Staff')+row('M','Maya',null,['helper','Helper'],'Staff')+'<div class="pp-group">You</div>'+row('Y','You','#DAEF81',['you','You'],'Green \u00b7 April')+'<div class="pp-group">Classmates</div>'+row('D','Dana','#F7AAF3',null,'Yellow \u00b7 April')+row('D','David','#F69700',null,'Orange \u00b7 January')+row('L','Lior','#DAEF81',null,'Green \u00b7 April')+row('T','Tom','#90C7FC',null,'Blue \u00b7 September')+row('S','Sarrah','#DAEF81',null,'Green \u00b7 April')+row('H','Hanna','#90C7FC',null,'Blue \u00b7 September')+row('N','Noa','#F7AAF3',null,'Yellow \u00b7 January')+row('A','Amit','#F69700',null,'Orange \u00b7 April')+row('R','Ron','#DAEF81',null,'Green \u00b7 September')+row('E','Eden','#90C7FC',null,'Blue \u00b7 April')+row('Y','Yael','#F7AAF3',null,'Yellow \u00b7 September')+row('I','Ido','#F69700',null,'Orange \u00b7 January');
   return panelShell('Participants',body,'');
 }
 function panelShell(title,body,footer){return '<div class="panel-head"><span class="pt">'+title+'</span><button class="pclose" onclick="setPanel(\'\')"'+hubTipAttrs('Close')+'>'+I.x+'</button></div><div class="panel-body">'+body+'</div>'+footer;}
@@ -3439,35 +3425,26 @@ function doneConfetti(){
     diaY:   '<svg viewBox="0 0 10 10" aria-hidden="true"><path d="M5 1.2 L8.8 5 L5 8.8 L1.2 5 Z" '+ink(Y)+'/></svg>',
     diaW:   '<svg viewBox="0 0 10 10" aria-hidden="true"><path d="M5 1.2 L8.8 5 L5 8.8 L1.2 5 Z" '+ink(W)+'/></svg>'
   };
-  /* ey stays above the badge bottom (origin is 38% from the top). Pieces vanish
-     before that landing, so nothing sits still and nothing crosses the edge. */
   var bits=[
-    {k:'strokeY', dx:-80,  dy:-92,  ex:-122, ey:-22, rot0:-16, rot:-38, rot2:18,  sc:1, s:22, d:0.50, dur:1.62},
+    {k:'strokeY', dx:-80,  dy:-92,  ex:-122, ey:-22, rot0:-16, rot:-38, rot2:12,  sc:1, s:22, d:0.50, dur:1.62},
     {k:'circW',   dx:16,   dy:-124, ex:38,   ey:-86, rot0:8,   rot:26,  rot2:54,  sc:1, s:13, d:0.52, dur:1.90},
-    {k:'diaY',    dx:98,   dy:-68,  ex:132,  ey:6,   rot0:18,  rot:42,  rot2:78,  sc:1, s:14, d:0.51, dur:1.56},
-    {k:'circY',   dx:-40,  dy:-108, ex:-56,  ey:4,   rot0:-10, rot:16,  rot2:50,  sc:1, s:14, d:0.54, dur:1.98},
-    {k:'strokeW', dx:114,  dy:-30,  ex:142,  ey:2,   rot0:12,  rot:34,  rot2:14,  sc:1, s:20, d:0.53, dur:1.74},
-    {k:'diaW',    dx:-118, dy:-46,  ex:-148, ey:-8,  rot0:-22, rot:-14, rot2:28,  sc:1, s:13, d:0.55, dur:1.68},
-    {k:'circW',   dx:56,   dy:-96,  ex:82,   ey:-34, rot0:6,   rot:-22, rot2:16,  sc:1, s:12, d:0.56, dur:1.48},
-    {k:'diaY',    dx:-12,  dy:-120, ex:18,   ey:2,   rot0:14,  rot:32,  rot2:64,  sc:1, s:15, d:0.52, dur:2.06},
-    {k:'strokeY', dx:44,   dy:-36,  ex:20,   ey:4,   rot0:-8,  rot:18,  rot2:48,  sc:1, s:21, d:0.57, dur:1.70},
-    {k:'circY',   dx:-72,  dy:-80,  ex:-102, ey:2,   rot0:-14, rot:8,   rot2:42,  sc:1, s:15, d:0.58, dur:1.84},
-    {k:'strokeW', dx:8,    dy:-62,  ex:-28,  ey:0,   rot0:10,  rot:-24, rot2:22,  sc:1, s:19, d:0.54, dur:1.78},
-    {k:'diaW',    dx:78,   dy:-116, ex:104,  ey:-58, rot0:20,  rot:48,  rot2:34,  sc:1, s:13, d:0.59, dur:1.94}
+    {k:'diaY',    dx:98,   dy:-68,  ex:132,  ey:12,  rot0:18,  rot:42,  rot2:70,  sc:1, s:14, d:0.51, dur:1.56},
+    {k:'circY',   dx:-40,  dy:-108, ex:-56,  ey:26,  rot0:-10, rot:16,  rot2:44,  sc:1, s:14, d:0.54, dur:1.98},
+    {k:'strokeW', dx:114,  dy:-30,  ex:142,  ey:52,  rot0:12,  rot:34,  rot2:6,   sc:1, s:20, d:0.53, dur:1.74},
+    {k:'diaW',    dx:-118, dy:-46,  ex:-148, ey:-4,  rot0:-22, rot:-14, rot2:22,  sc:1, s:13, d:0.55, dur:1.68},
+    {k:'circW',   dx:56,   dy:-96,  ex:82,   ey:-34, rot0:6,   rot:-22, rot2:10,  sc:1, s:12, d:0.56, dur:1.48},
+    {k:'diaY',    dx:-12,  dy:-120, ex:18,   ey:40,  rot0:14,  rot:32,  rot2:58,  sc:1, s:15, d:0.52, dur:2.06},
+    {k:'strokeY', dx:44,   dy:-36,  ex:20,   ey:68,  rot0:-8,  rot:18,  rot2:42,  sc:1, s:21, d:0.57, dur:1.70},
+    {k:'circY',   dx:-72,  dy:-80,  ex:-102, ey:46,  rot0:-14, rot:8,   rot2:36,  sc:1, s:15, d:0.58, dur:1.84},
+    {k:'strokeW', dx:8,    dy:-62,  ex:-28,  ey:16,  rot0:10,  rot:-24, rot2:16,  sc:1, s:19, d:0.54, dur:1.78},
+    {k:'diaW',    dx:78,   dy:-116, ex:104,  ey:-58, rot0:20,  rot:48,  rot2:28,  sc:1, s:13, d:0.59, dur:1.94}
   ];
   var html='<span class="ad-confetti" aria-hidden="true">';
   for(var i=0;i<bits.length;i++){
     var b=bits[i];
-    var mx=Math.round(b.dx+(b.ex-b.dx)*0.70);
-    var my=Math.round(b.dy+(b.ey-b.dy)*0.70);
-    var vx=Math.round(b.dx+(b.ex-b.dx)*0.86);
-    var vy=Math.round(b.dy+(b.ey-b.dy)*0.86);
-    var rotm=Math.round(b.rot+(b.rot2-b.rot)*0.70);
-    var rotv=Math.round(b.rot+(b.rot2-b.rot)*0.86);
     html+='<span class="cf" style="'
-      +'--dx:'+b.dx+'px;--dy:'+b.dy+'px;--mx:'+mx+'px;--my:'+my+'px;'
-      +'--vx:'+vx+'px;--vy:'+vy+'px;'
-      +'--rot0:'+b.rot0+'deg;--rot:'+b.rot+'deg;--rotm:'+rotm+'deg;--rotv:'+rotv+'deg;'
+      +'--dx:'+b.dx+'px;--dy:'+b.dy+'px;--ex:'+b.ex+'px;--ey:'+b.ey+'px;'
+      +'--rot0:'+b.rot0+'deg;--rot:'+b.rot+'deg;--rot2:'+b.rot2+'deg;'
       +'--sc:'+b.sc+';--s:'+b.s+'px;--d:'+b.d+'s;--dur:'+b.dur+'s">'
       +shapes[b.k]+'</span>';
   }
@@ -3673,7 +3650,7 @@ function pickVolunteer(){
   for(var i=0;i<ST.othersPool;i++) pool.push(OTHERS[i%OTHERS.length]);
   /* debug rig so every branch can be reviewed deterministically */
   if(ST.rig==='you')   pool=['you'];
-  if(ST.rig==='other') pool=['Dana'];
+  if(ST.rig==='other') { pool=pool.filter(function(x){return x!=='you';}); if(!pool.length) pool=[OTHERS[0]]; }
   if(ST.rig==='none')  pool=[];
 
   if(!pool.length){
@@ -3704,25 +3681,7 @@ function endDemonstration(){
   syncAll();
   setScene('default');
 }
-function setRig(v){
-  ST.rig=v;
-  if(v==='you'){
-    ST.chosen='you';
-    ST.chosenName='You';
-    ST.perspective='selected';
-    ST.collapsed=true;
-    ST.camOff=false;
-  } else if(v==='other'){
-    ST.chosen='other';
-    ST.chosenName='Dana';
-    ST.perspective='viewer';
-    ST.collapsed=false;
-  }
-  document.querySelectorAll('.rg').forEach(function(b){b.classList.toggle('on',b.dataset.rg===v);});
-  setPerspectiveButtons();
-  render();
-  updateNote();
-}
+function setRig(v){ ST.rig=v; document.querySelectorAll('.rg').forEach(function(b){b.classList.toggle('on',b.dataset.rg===v);}); updateNote(); }
 function setPool(n){ ST.othersPool=n; document.querySelectorAll('.op').forEach(function(b){b.classList.toggle('on',+b.dataset.op===n);}); updateNote(); }
 
 var micPopT=null;
@@ -3732,7 +3691,7 @@ function micInfo(){ var f=document.getElementById('frame'); if(!f)return; var ol
    Yes -> Practice Room Transfer (B). No / 10s timeout -> waiting-return (never Solo, never normal Main Room). */
 function roomConsentPopup(){
   return '<div class="invite-overlay"><div class="invite milky room-consent" role="dialog" aria-modal="true">'
-    +'<h4>Yalla, practice rooms!</h4>'
+    +'<h4>You\u2019re being sent to a practice room</h4>'
     +'<p>Your camera and mic need to be on so you can speak with a classmate.</p>'
     +'<p class="priv">They\u2019re shared only inside the practice room.</p>'
     +'<div class="acts"><button class="btn primary" onclick="roomConsentYes()">Yes, turn on &amp; join</button>'
@@ -3766,6 +3725,7 @@ var MATKOT_SVG='<svg class="matkot-fallback" viewBox="0 0 300 170" fill="none" x
 function waitReturnScreen(){
   return '<div class="waitreturn">'
     +'<div class="t-hero wr-hero"><div id="matkot-lottie" class="t-lottie">'+MATKOT_SVG+'</div></div>'
+    +'<span class="wr-chip"><span class="d"></span>Waiting</span>'
     +'<h2>You\u2019ll rejoin the main room shortly</h2>'
     +'<p class="wr-sub">Camera and mic are needed for room practice. You\u2019ll wait here until the class regroups.</p>'
     +'<div class="wr-num" id="wrNum">'+wrFmt(wrLeft)+'</div>'
@@ -3836,10 +3796,9 @@ function railItem(kind,val,key,active){
   return '<button class="rail-item'+(active===key?' on':'')+'" onclick="togglePanel(\''+key+'\')"'+hubTipAttrs(labels[key]||key)+'><span class="ic">'+RAIL[kind]+(val?'<span class="val">'+val+'</span>':'')+'</span></button>';
 }
 
-var ST={scene:'default',panel:'',width:'wide',camOff:false,collapsed:false,phase:'start',speaker:'none',perspective:'viewer',av:'b',gstep:'a',vb:'real',switchNum:3,vstep:1,
+var ST={scene:'default',panel:'',width:'wide',camOff:false,collapsed:false,phase:'start',speaker:'none',perspective:'viewer',av:'a',gstep:'a',vb:'real',switchNum:3,vstep:1,
         chosen:'you', chosenName:'Ari',
         pipPos:null,
-        pipDragged:false,
         /* volunteer draw */
         volPhase:'none',        /* 'ask' | 'pending' | 'none' */
         iVolunteered:false,
@@ -4003,54 +3962,40 @@ function pipSetSnapTransition(pip){
   clearTimeout(pip._pipSnapT);
   pip._pipSnapT=setTimeout(function(){ pipClearSnapTransition(pip); }, PIP_SNAP_MS+40);
 }
-function pipAddExclusion(stage, el, out){
-  if(!el || el.offsetParent===null) return;
-  if(el.getClientRects().length===0) return;
-  var r=pipLocalRect(el, stage);
-  if(r.width<8 || r.height<8) return;
-  out.push(pipInflate(r, PIP_SAFE));
-}
 function pipExclusionRects(stage){
-  /* Self-view may float, but must not cover these visuals */
   var sels=[
     '.topbar',
     '.header-chrome-fade',
-    '.ephem-dock',          /* compact or expanded chat — left */
-    '.act-timer',           /* activity timer — right */
+    '.ephem-dock',
+    '.act-timer',
     '.demo-timer',
-    '.car-cue',             /* carousel — right (seam stays center) */
+    '.car-cue',
     '.switch-cine'
   ];
-  var out=[], i, nodes, j;
+  var out=[], i, nodes, j, el, r;
   for(i=0;i<sels.length;i++){
     nodes=stage.querySelectorAll(sels[i]);
-    for(j=0;j<nodes.length;j++) pipAddExclusion(stage, nodes[j], out);
+    for(j=0;j<nodes.length;j++){
+      el=nodes[j];
+      if(!el || el.offsetParent===null) continue;
+      if(el.getClientRects().length===0) continue;
+      r=pipLocalRect(el, stage);
+      if(r.width<8 || r.height<8) continue;
+      out.push(pipInflate(r, PIP_SAFE));
+    }
   }
-  /* Participants / Timeline live in .right, not inside .stage */
-  var room=stage.closest('.room') || stage;
-  nodes=room.querySelectorAll('.panel:not(.closed)');
-  for(j=0;j<nodes.length;j++) pipAddExclusion(stage, nodes[j], out);
   return out;
-}
-function pipLeftOverlayOpen(){
-  return leftInfoPanel(ST.panel) || chatIsExpanded();
 }
 function pipSafeBounds(stage, pip){
   var pad=PIP_SAFE;
   var sw=stage.clientWidth;
   var sh=stage.clientHeight;
-  var footer=stage.querySelector('.footer-capsule') || stage.querySelector('.controls-footer');
+  var footer=stage.querySelector('.controls-footer');
   var bottom=sh-pad;
-  var footerOk=false;
-  if(footer && footer.getClientRects().length){
+  if(footer){
     var fr=pipLocalRect(footer, stage);
-    if(fr.height>8){
-      bottom=Math.min(bottom, fr.top-pad);
-      footerOk=true;
-    }
+    bottom=Math.min(bottom, fr.top-pad);
   }
-  /* Presentation / first-paint: if the footer box is not ready, keep a capsule-sized gap */
-  if(!footerOk) bottom=Math.min(bottom, sh-118);
   var top=pad;
   var header=stage.querySelector('.topbar') || stage.querySelector('.header-chrome-fade');
   if(header && header.getClientRects().length){
@@ -4157,56 +4102,26 @@ function pipMeasureContext(pip, stage){
   var ph=pip.offsetHeight;
   return {bounds:bounds, exclusions:exclusions, pw:pw, ph:ph};
 }
-function pipDockDefault(animate){
-  var pip=document.querySelector('#frame .stage .pip');
-  if(!pip) return;
-  var stage=pip.closest('.stage');
-  if(!stage) return;
-  var ctx=pipMeasureContext(pip, stage);
-  var next=pipDefaultPos(ctx.pw, ctx.ph, ctx.bounds);
-  if(!pipIsValid(next, ctx.pw, ctx.ph, ctx.bounds, ctx.exclusions)){
-    next=pipSnapPos(next.left, next.top, ctx.pw, ctx.ph, ctx.bounds, ctx.exclusions);
-  }
-  ST.pipPos=next;
-  if(animate) pipSetSnapTransition(pip);
-  pipApplyPos(pip, next);
-}
-function pipScheduleDefaultDock(){
-  if(ST.pipDragged) return;
-  requestAnimationFrame(function(){
-    requestAnimationFrame(function(){
-      if(ST.pipDragged) return;
-      pipDockDefault(false);
-    });
-  });
-}
 function ensurePipSafe(animate){
   var pip=document.querySelector('#frame .stage .pip');
   if(!pip) return;
   var stage=pip.closest('.stage');
   if(!stage) return;
   var ctx=pipMeasureContext(pip, stage);
-  var cur, next;
-  if(!ST.pipPos || !ST.pipDragged){
-    /* Default / presentation: dock bottom-right, just above the video controls */
-    pipDockDefault(false);
-    return;
-  }
-  cur={left:ST.pipPos.left, top:ST.pipPos.top};
-  if(pipIsValid(cur, ctx.pw, ctx.ph, ctx.bounds, ctx.exclusions)){
-    pipApplyPos(pip, ST.pipPos);
-    return;
-  }
-  /* Left overlay (panel / expanded chat) took this spot — dock to the right edge */
-  if(pipLeftOverlayOpen()){
-    next=pipSnapPos(
-      Math.max(ctx.bounds.left, ctx.bounds.right-ctx.pw),
-      cur.top,
-      ctx.pw, ctx.ph, ctx.bounds, ctx.exclusions
-    );
+  var cur;
+  if(ST.pipPos){
+    cur={left:ST.pipPos.left, top:ST.pipPos.top};
   } else {
-    next=pipSnapPos(cur.left, cur.top, ctx.pw, ctx.ph, ctx.bounds, ctx.exclusions);
+    var lr=pipLocalRect(pip, stage);
+    cur={left:lr.left, top:lr.top};
   }
+  if(pipIsValid(cur, ctx.pw, ctx.ph, ctx.bounds, ctx.exclusions)){
+    if(ST.pipPos){
+      pipApplyPos(pip, ST.pipPos);
+    }
+    return;
+  }
+  var next=pipSnapPos(cur.left, cur.top, ctx.pw, ctx.ph, ctx.bounds, ctx.exclusions);
   ST.pipPos=next;
   if(animate) pipSetSnapTransition(pip);
   pipApplyPos(pip, next);
@@ -4217,8 +4132,7 @@ function bindPipDrag(){
   var stage=pip.closest('.stage');
   if(!stage) return;
 
-  ensurePipSafe(true);
-  pipScheduleDefaultDock();
+  ensurePipSafe(false);
 
   pip.addEventListener('pointerdown', function(e){
     if(e.button!=null && e.button!==0) return;
@@ -4259,7 +4173,6 @@ function bindPipDrag(){
     var snapped=pipSnapPos(cur.left, cur.top, pipDrag.pw, pipDrag.ph, ctx.bounds, ctx.exclusions);
     pipDrag=null;
     pip.classList.remove('is-dragging');
-    ST.pipDragged=true;
     ST.pipPos=snapped;
     pipSetSnapTransition(pip);
     pipApplyPos(pip, snapped);
@@ -4352,14 +4265,7 @@ function syncAll(){
 function togglePresent(){
   var on=document.body.classList.toggle('present');
   document.getElementById('modeBtn').textContent=on?'Exit presentation':'Presentation mode';
-  ST.pipPos=null;
-  ST.pipDragged=false;
-  pipScheduleDefaultDock();
 }
-window.addEventListener('resize', function(){
-  if(ST.pipDragged) ensurePipSafe(false);
-  else pipScheduleDefaultDock();
-});
 document.querySelectorAll('.sc').forEach(function(b){b.onclick=function(){setScene(b.dataset.sc);};});
 document.querySelectorAll('.pn').forEach(function(b){b.onclick=function(){setPanel(b.dataset.pn);};});
 document.querySelectorAll('.wd').forEach(function(b){b.onclick=function(){ST.width=b.dataset.wd;document.querySelectorAll('.wd').forEach(function(x){x.classList.toggle('on',x===b);});render();};});
@@ -4454,7 +4360,6 @@ function toggleChatVisibility(){
   syncEphDockAfterChange();
   updateEphFooterToggle();
   if(!chatIsHidden()) restoreEph();
-  ensurePipSafe(true);
 }
 function toggleChatExpand(){
   if(chatIsHidden()) return;
@@ -4476,12 +4381,10 @@ function toggleChatExpand(){
     dock.classList.toggle('is-compact',!chatIsExpanded());
     updateEphGrowToggle();
     if(chatIsExpanded()) scrollEphToLatest();
-    else syncEphEdgeFade();
   } else {
     syncEphDockAfterChange();
     restoreEph();
   }
-  ensurePipSafe(true);
 }
 function setChatMode(mode){
   if(mode!=='hidden'&&mode!=='compact'&&mode!=='expanded') return;
@@ -4516,7 +4419,6 @@ function syncEphDockAfterChange(keepPeek){
   dock.classList.toggle('is-expanded',chatIsExpanded());
   dock.classList.toggle('is-compact',!chatIsExpanded());
   updateEphGrowToggle();
-  wireEphScroll();
 }
 function ephFeed(){return document.querySelector('.ephem-feed');}
 function ephSamePerson(a,b){
@@ -4526,7 +4428,7 @@ function ephIsLead(i){
   return i===0||!ephSamePerson(EPH[i],EPH[i-1]);
 }
 function ephHalo(name,who){
-  if(who==='helper') return '';
+  if(who==='helper') return '<span class="eph-halo" style="background:var(--brand-yellow)" aria-hidden="true"></span>';
   var map={Sarrah:'#DAEF81',Hanna:'#90C7FC',David:'#F69700',Lior:'#DAEF81',Tom:'#90C7FC',You:'#DAEF81'};
   var c=map[name];
   return c?'<span class="eph-halo" style="background:'+c+'" aria-hidden="true"></span>':'';
@@ -4544,36 +4446,13 @@ function ephFeedNearBottom(feed){
   if(!feed) return true;
   return (feed.scrollHeight-feed.scrollTop-feed.clientHeight)<56;
 }
-function syncEphEdgeFade(){
-  var feed=ephFeed();
-  if(!feed) return;
-  var top=false, bot=false;
-  if(chatIsExpanded()){
-    var slop=2;
-    top=feed.scrollTop>slop;
-    bot=(feed.scrollHeight-feed.clientHeight-feed.scrollTop)>slop;
-  }
-  feed.classList.toggle('fade-top',top);
-  feed.classList.toggle('fade-bottom',bot);
-}
-function wireEphScroll(){
-  var feed=ephFeed();
-  if(!feed) return;
-  if(!feed._wired){
-    feed._wired=true;
-    feed.addEventListener('scroll',function(){ syncEphEdgeFade(); });
-  }
-  requestAnimationFrame(syncEphEdgeFade);
-}
 function scrollEphToLatest(){
   var feed=ephFeed(); if(!feed) return;
   feed.scrollTop=feed.scrollHeight;
-  syncEphEdgeFade();
 }
 function maybeScrollEphToLatest(feed,wasNearBottom){
   if(!feed) return;
   if(!chatIsExpanded()||wasNearBottom) feed.scrollTop=feed.scrollHeight;
-  syncEphEdgeFade();
 }
 function escapeAsk(s){
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
@@ -4876,7 +4755,6 @@ function pushEph(who,name,text){
     el.setAttribute('data-id',id); el.innerHTML=ephInner(m,isLead);
     feed.appendChild(el); void el.offsetWidth; el.classList.remove('enter');
     maybeScrollEphToLatest(feed,pin);
-    wireEphScroll();
   }
 }
 function restoreEph(){
@@ -4889,7 +4767,6 @@ function restoreEph(){
     el.setAttribute('data-id',m.id); el.innerHTML=ephInner(m,isLead);
     feed.appendChild(el);
   });
-  wireEphScroll();
   scrollEphToLatest();
 }
 function trigMsg(){pushEph('student',EPH_NAMES[Math.floor(Math.random()*EPH_NAMES.length)],EPH_TXT[Math.floor(Math.random()*EPH_TXT.length)]);}
