@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Student Transition Screens · Mobile</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+@font-face{
+  font-family:"FedraSerifPro";
+  src:url("../FedraSerifPRO_HL-Book.otf") format("opentype");
+  font-weight:400;
+  font-style:normal;
+  font-display:swap;
+}
+@font-face{
+  font-family:"FedraSerifPro";
+  src:url("../FedraSerifPRO_HL-Bold.otf") format("opentype");
+  font-weight:700;
+  font-style:normal;
+  font-display:swap;
+}
+@font-face{
+  font-family:"Fedra";
+  src:url("../FedraSerifPRO_HL-Bold.otf") format("opentype");
+  font-weight:700;
+  font-style:normal;
+  font-display:swap;
+}
+@font-face{
+  font-family:"FedraSerifProItalic";
+  src:url("../FedraSerifPRO_HL-DemiItalic.otf") format("opentype");
+  font-weight:400;
+  font-style:normal;
+  font-display:swap;
+}
+
+:root{
+  --brand-yellow:#F9E24C;
+  --brand-charcoal:#373230;
+  --surface-base:#F2F1EC;
+  --neutral-100:#F7F6EF;
+  --text-primary:#373230;
+  --text-muted:#716C66;
+  --line-subtle:#D2CEC6;
+  --font-ui:"Assistant",system-ui,-apple-system,sans-serif;
+  --font-brand:"FedraSerifPro",Georgia,"Times New Roman",serif;
+  --s4:4px;
+  --s8:8px;
+  --s12:12px;
+  --s16:16px;
+  --s24:24px;
+  --s32:32px;
+  --r-lg:18px;
+  --r-md:14px;
+  --pill:999px;
+  --elev-f:0 6px 20px rgba(55,50,48,.18);
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{min-height:100%}
+body{
+  font-family:var(--font-ui);
+  background:var(--surface-base);
+  color:var(--text-primary);
+  -webkit-font-smoothing:antialiased;
+  padding:var(--s32) var(--s24) 60px;
+}
+button{font:inherit}
+h1{font-size:20px;line-height:1.25}
+.lead{
+  max-width:760px;
+  margin:5px 0 var(--s24);
+  color:var(--text-muted);
+  font-size:13px;
+  line-height:1.5;
+}
+.demo{display:flex;align-items:flex-start;gap:var(--s32);flex-wrap:wrap}
+
+/* Prototype tooling stays outside the simulated product viewport. */
+.controls{display:flex;flex-direction:column;gap:7px;width:252px}
+.controls .grp{
+  margin-top:2px;
+  color:var(--text-muted);
+  font-size:11px;
+  font-weight:700;
+  letter-spacing:.5px;
+  text-transform:uppercase;
+}
+.controls button{
+  min-height:38px;
+  padding:8px 12px;
+  border:1px solid var(--line-subtle);
+  border-radius:10px;
+  background:#fff;
+  color:var(--text-primary);
+  cursor:pointer;
+  font-size:13px;
+  font-weight:600;
+  text-align:left;
+}
+.controls button.on{
+  border-color:var(--brand-charcoal);
+  background:var(--brand-charcoal);
+  color:#fff;
+}
+.controls .state{
+  padding:9px 10px;
+  border:1px dashed var(--line-subtle);
+  border-radius:8px;
+  background:#fff;
+  color:var(--text-muted);
+  font-size:12px;
+  line-height:1.45;
+}
+
+/* Canonical Gym mobile device shell: 390 × 844, with a 6px bezel inset. */
+.phone{
+  position:relative;
+  flex:none;
+  width:min(390px,calc(100vw - 48px));
+  aspect-ratio:390 / 844;
+  overflow:hidden;
+  border-radius:44px;
+  background:#000;
+  box-shadow:var(--elev-f);
+}
+.screen{
+  position:absolute;
+  inset:6px;
+  overflow:hidden;
+  border-radius:38px;
+  background:#373230;
+  color:var(--neutral-100);
+}
+.statusbar{
+  position:absolute;
+  z-index:20;
+  top:0;
+  right:0;
+  left:0;
+  height:max(48px,env(safe-area-inset-top,0px));
+  padding:0 var(--s24);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  color:#fff;
+  font-size:14px;
+  font-weight:600;
+  text-shadow:0 1px 2px rgba(0,0,0,.35);
+  pointer-events:none;
+}
+.statusbar .glyphs{display:flex;gap:6px}
+.statusbar svg{width:16px;height:16px}
+.state-root{position:absolute;inset:0}
+
+/* Shared transition shell for Welcome and future mobile states. */
+.transition-shell{
+  position:absolute;
+  inset:0;
+  overflow:hidden;
+  background:
+    radial-gradient(ellipse 112% 74% at 72% 23%,rgba(169,165,143,.9) 0%,rgba(126,122,106,.74) 37%,transparent 69%),
+    radial-gradient(ellipse 105% 84% at 35% 100%,#2A2623 0%,#373230 68%);
+}
+.transition-shell::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(180deg,rgba(55,50,48,.08),rgba(55,50,48,.2));
+  pointer-events:none;
+}
+
+/* Mobile Main Room identity lockup, without room controls on arrival. */
+.session-lockup{
+  position:absolute;
+  z-index:4;
+  top:max(54px,calc(env(safe-area-inset-top,0px) + 12px));
+  left:var(--s16);
+  display:flex;
+  align-items:center;
+  gap:var(--s8);
+  min-width:0;
+  color:#fff;
+  text-shadow:0 1px 3px rgba(55,50,48,.5);
+}
+.teacher-avatar{
+  width:40px;
+  height:40px;
+  flex:none;
+  overflow:hidden;
+  border:1.5px solid rgba(255,246,236,.78);
+  border-radius:50%;
+  background:#EDE8DC;
+  box-shadow:0 1px 4px rgba(55,50,48,.28);
+}
+.teacher-avatar img{
+  width:100%;
+  height:100%;
+  display:block;
+  object-fit:cover;
+  object-position:center 18%;
+}
+.session-id{
+  display:flex;
+  align-items:baseline;
+  gap:.28em;
+  min-width:0;
+  overflow:hidden;
+  color:#fff;
+  line-height:1.1;
+  white-space:nowrap;
+}
+.id-gym{
+  font-family:"Fedra",var(--font-brand);
+  font-size:20px;
+  font-weight:700;
+  font-synthesis:none;
+  letter-spacing:-.2px;
+}
+.id-with{
+  font-family:"FedraSerifProItalic",var(--font-brand);
+  font-size:18px;
+  font-weight:400;
+  font-synthesis:none;
+  opacity:.9;
+}
+
+.welcome-panel{
+  position:absolute;
+  z-index:2;
+  top:108px;
+  right:var(--s16);
+  bottom:max(18px,env(safe-area-inset-bottom,0px));
+  left:var(--s16);
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  border:1px solid rgba(247,246,239,.3);
+  border-radius:var(--r-lg);
+  background:rgba(247,246,239,.12);
+  box-shadow:inset 0 1px 0 rgba(247,246,239,.16);
+  -webkit-backdrop-filter:blur(34px) saturate(1.16);
+  backdrop-filter:blur(34px) saturate(1.16);
+}
+.session-progress{
+  flex:none;
+  padding-top:var(--s24);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:10px;
+}
+.progress-label{
+  color:rgba(247,246,239,.72);
+  font-size:14px;
+  font-weight:500;
+  letter-spacing:.1px;
+}
+.progress-dots{display:flex;align-items:center;gap:8px}
+.progress-dots i{
+  width:9px;
+  height:9px;
+  display:block;
+  border:1px solid rgba(247,246,239,.55);
+  border-radius:50%;
+}
+.progress-dots i.done{border-color:transparent;background:var(--neutral-100)}
+.progress-dots i.now{border-color:transparent;background:var(--brand-yellow)}
+
+.welcome-content{
+  width:100%;
+  min-height:0;
+  flex:1;
+  padding:22px var(--s24) 30px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  transform:translateY(-20px);
+}
+.welcome-content h2{
+  margin:0 0 14px;
+  color:#fff;
+  font-family:var(--font-brand);
+  font-size:43px;
+  font-style:normal;
+  font-synthesis:none;
+  line-height:1.08;
+  letter-spacing:-.3px;
+  text-wrap:balance;
+}
+.welcome-content h2 .welcome-to{display:block;font-weight:400;white-space:nowrap}
+.welcome-content h2 .gym{display:block;font-weight:700}
+.welcome-content .sub{
+  max-width:290px;
+  margin:0 0 10px;
+  color:rgba(247,246,239,.92);
+  font-size:18px;
+  font-weight:500;
+  line-height:1.38;
+  text-wrap:pretty;
+}
+.welcome-content .explain{
+  max-width:286px;
+  min-height:2.8em;
+  margin:0 0 26px;
+  color:rgba(247,246,239,.62);
+  font-size:15px;
+  font-weight:400;
+  line-height:1.42;
+  text-wrap:pretty;
+}
+.primary-cta{
+  width:210px;
+  max-width:100%;
+  min-height:54px;
+  padding:12px 22px;
+  border:1.5px solid var(--brand-charcoal);
+  border-radius:var(--pill);
+  background:var(--brand-yellow);
+  color:var(--brand-charcoal);
+  cursor:pointer;
+  font-size:16px;
+  font-weight:700;
+  letter-spacing:-.1px;
+}
+.primary-cta:focus-visible{outline:3px solid #fff;outline-offset:3px}
+
+/* Canonical mobile A/V Check: a focused task, without the Welcome panel. */
+.av-canon{
+  position:absolute;
+  z-index:2;
+  top:168px;
+  right:var(--s16);
+  bottom:max(18px,env(safe-area-inset-bottom,0px));
+  left:var(--s16);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  color:#fff;
+  text-align:center;
+}
+.av-head{flex:none;margin-bottom:40px}
+.av-head h2{
+  font-family:var(--font-brand);
+  font-size:30px;
+  font-weight:400;
+  font-synthesis:none;
+  line-height:1.14;
+  letter-spacing:-.2px;
+}
+.av-card{
+  width:100%;
+  flex:none;
+  padding:10px 10px 48px;
+  border:1px solid rgba(247,246,239,.28);
+  border-radius:var(--r-lg);
+  background:rgba(247,246,239,.1);
+  box-shadow:inset 0 1px 0 rgba(247,246,239,.14),0 10px 28px rgba(18,14,12,.16);
+  -webkit-backdrop-filter:blur(36px) saturate(1.16);
+  backdrop-filter:blur(36px) saturate(1.16);
+}
+.av-stage{position:relative;width:100%;overflow:visible}
+.av-preview{
+  position:relative;
+  width:100%;
+  aspect-ratio:16 / 9;
+  overflow:hidden;
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:var(--r-md);
+  background:linear-gradient(160deg,#5b5650,#332f2b);
+}
+.av-preview .vid{
+  position:absolute;
+  inset:0;
+  background-position:center;
+  background-size:cover;
+}
+.av-preview.cam-off{display:grid;place-items:center;background:#3a3531}
+.av-preview .av-face{
+  width:66px;
+  height:66px;
+  display:grid;
+  place-items:center;
+  border-radius:50%;
+  background:#5c554e;
+  color:#fff;
+  font-size:24px;
+  font-weight:700;
+}
+.av-preview .camoff-cap{
+  position:absolute;
+  right:0;
+  bottom:54px;
+  left:0;
+  color:#e8e2d6;
+  font-size:11px;
+  font-weight:700;
+  letter-spacing:.4px;
+  text-transform:uppercase;
+}
+.av-preview.is-blur .vid{filter:blur(14px);transform:scale(1.12)}
+.av-preview.is-blur .vid-subject{
+  filter:none;
+  transform:none;
+  -webkit-mask-image:radial-gradient(ellipse 48% 74% at 50% 44%,#000 40%,transparent 76%);
+  mask-image:radial-gradient(ellipse 48% 74% at 50% 44%,#000 40%,transparent 76%);
+}
+.av-tools{
+  position:absolute;
+  z-index:3;
+  bottom:-42px;
+  left:50%;
+  display:flex;
+  align-items:flex-start;
+  gap:19px;
+  transform:translateX(-50%);
+}
+.av-tool{
+  position:relative;
+  width:54px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:5px;
+}
+.av-control{
+  position:relative;
+  z-index:1;
+  width:52px;
+  height:52px;
+  padding:0;
+  display:grid;
+  place-items:center;
+  border:1px solid rgba(255,246,236,.24);
+  border-radius:50%;
+  background:
+    linear-gradient(135deg,rgba(255,255,255,.14) 0%,transparent 46%,rgba(0,0,0,.05) 100%),
+    rgba(45,40,36,.64);
+  box-shadow:inset 1px 1px 0 rgba(255,255,255,.16),0 8px 18px rgba(18,14,12,.22);
+  color:#fff;
+  cursor:pointer;
+  -webkit-backdrop-filter:blur(56px) saturate(1.22);
+  backdrop-filter:blur(56px) saturate(1.22);
+}
+.av-control:active{transform:scale(.96)}
+.av-control:focus-visible{outline:3px solid #fff;outline-offset:2px}
+.av-control svg{width:22px;height:22px}
+.av-control .slash{
+  position:absolute;
+  top:50%;
+  left:50%;
+  width:36px;
+  height:3.5px;
+  border-radius:3px;
+  background:#F9746B;
+  box-shadow:0 0 0 1.5px rgba(45,40,36,.48);
+  transform:translate(-50%,-50%) rotate(-45deg);
+  pointer-events:none;
+}
+.av-control.blur-on{
+  border-color:rgba(247,246,239,.4);
+  background:
+    linear-gradient(135deg,rgba(255,255,255,.18) 0%,transparent 42%,rgba(0,0,0,.03) 100%),
+    rgba(247,246,239,.25);
+  box-shadow:inset 1px 1px 0 rgba(255,255,255,.2),0 8px 18px rgba(18,14,12,.22);
+}
+.av-tool-label{
+  position:relative;
+  z-index:2;
+  color:rgba(247,246,239,.86);
+  font-size:12px;
+  font-weight:600;
+  line-height:1;
+}
+.av-mic-echo{
+  position:absolute;
+  z-index:0;
+  top:26px;
+  left:50%;
+  width:0;
+  height:0;
+  pointer-events:none;
+}
+.av-echo-ring{
+  position:absolute;
+  top:0;
+  left:0;
+  width:52px;
+  height:52px;
+  border:1.5px solid rgba(255,227,0,.45);
+  border-radius:50%;
+  box-shadow:0 0 12px rgba(255,227,0,.12);
+  transform:translate(-50%,-50%) scale(1);
+  animation:av-echo 860ms cubic-bezier(.18,.62,.22,1) forwards;
+  pointer-events:none;
+}
+@keyframes av-echo{
+  0%{opacity:var(--echo-op,.48);transform:translate(-50%,-50%) scale(1)}
+  100%{opacity:0;transform:translate(-50%,-50%) scale(var(--echo-scale,2.15))}
+}
+.av-foot{
+  width:100%;
+  min-height:0;
+  flex:1;
+  padding-top:28px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:flex-start;
+}
+.av-privacy{
+  max-width:330px;
+  margin:0 0 50px;
+  color:rgba(247,246,239,.84);
+  font-size:15px;
+  font-weight:500;
+  line-height:1.42;
+  text-wrap:pretty;
+}
+.av-error{
+  width:100%;
+  margin:0 0 10px;
+  padding:8px 10px;
+  border:1px solid rgba(249,116,107,.45);
+  border-radius:10px;
+  background:rgba(249,116,107,.12);
+  color:#fff;
+  font-size:12px;
+  line-height:1.3;
+  text-align:left;
+}
+.av-foot .primary-cta{width:154px;min-height:50px}
+
+@media (max-width:720px){
+  body{padding:var(--s16)}
+  .phone{width:min(390px,calc(100vw - 32px))}
+  .controls{width:min(390px,calc(100vw - 32px))}
+}
+@media (max-width:360px){
+  .welcome-content{padding-right:18px;padding-left:18px}
+  .welcome-content h2{font-size:39px}
+  .welcome-content .sub{font-size:17px}
+  .av-canon{right:12px;left:12px}
+  .av-head h2{font-size:28px}
+  .av-tools{gap:14px}
+  .av-privacy{font-size:14px}
+}
+@media (max-height:740px){
+  .welcome-content{padding-top:14px;padding-bottom:20px}
+  .welcome-content h2{font-size:39px;margin-bottom:10px}
+  .welcome-content .sub{font-size:17px;margin-bottom:7px}
+  .welcome-content .explain{font-size:14px;margin-bottom:18px}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{scroll-behavior:auto!important}
+}
+</style>
+</head>
+<body>
+<h1>Student Transition Screens — Mobile</h1>
+<p class="lead">Canonical Mobile Welcome and A/V Check. Prototype controls remain outside the simulated phone.</p>
+
+<div class="demo">
+  <div class="phone" aria-label="Mobile transition screen prototype">
+    <div class="screen">
+      <div id="app" class="state-root"></div>
+    </div>
+  </div>
+
+  <aside class="controls" aria-label="Prototype controls">
+    <div class="grp">Implemented state</div>
+    <button class="on" type="button" data-scene="welcome">Welcome</button>
+    <button type="button" data-scene="av-check">A/V Check</button>
+    <div class="state" id="state-note"></div>
+  </aside>
+</div>
+
+<script>
+/* Shared state catalogue mirrors the desktop transition routing.
+   This pass implements only Welcome and the canonical mobile A/V Check. */
+var SCREENS = {
+  welcome:{label:"Welcome",implemented:true},
+  "welcome-late":{label:"Welcome Late",implemented:false},
+  "av-check":{label:"A/V Check",implemented:true},
+  waiting:{label:"Waiting",implemented:false},
+  "waiting-t20":{label:"Waiting · T−20",implemented:false},
+  "waiting-t10":{label:"Waiting · T−10",implemented:false},
+  flashcards:{label:"Flashcards while waiting",implemented:false},
+  starting:{label:"Starting / T−10",implemented:false},
+  "blocked-next":{label:"Blocked entry · next session",implemented:false},
+  "blocked-none":{label:"Blocked entry · no later session",implemented:false},
+  "ending-1":{label:"Ending · one session",implemented:false},
+  "ending-2":{label:"Ending · two sessions",implemented:false},
+  "ending-3":{label:"Ending · three sessions",implemented:false},
+  "ending-more":{label:"Ending · one more available",implemented:false},
+  arrive:{label:"Entering Main Room",implemented:false}
+};
+
+var STATE = {
+  scene:"welcome",
+  teacher:{name:"Guy",avatar:"../student-main-classroom-desktop/assets/teacher-gai.png"},
+  session:{current:2,total:3},
+  timing:{
+    waiting:180,
+    lastMinute:45,
+    t20:20,
+    t10:10,
+    starting:12,
+    blockedNext:180,
+    welcomeLead:8*60+42
+  },
+  route:{path:"on-time",entering:false},
+  camOff:false,
+  micOff:false,
+  blurOn:false,
+  permError:false
+};
+
+var ICONS = {
+  signal:'<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M2 16h3v4H2zM7 12h3v8H7zM12 8h3v12h-3zM17 4h3v16h-3z"/></svg>',
+  wifi:'<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 18a2 2 0 110 4 2 2 0 010-4zM5 11a10 10 0 0114 0l-2 2a7 7 0 00-10 0z"/></svg>',
+  battery:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="2" y="7" width="18" height="10" rx="2.5"/><rect x="4" y="9" width="12" height="6" rx="1" fill="currentColor"/></svg>',
+  cam:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 10l5-3v10l-5-3v-4zM2 6h11a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2z"/></svg>',
+  mic:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0014 0M12 18v3"/></svg>',
+  blur:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8.5" r="3"/><path d="M6.2 19c1.1-2.8 3.1-4.2 5.8-4.2s4.7 1.4 5.8 4.2"/><path d="M19.2 4.2l.4 1.2 1.2.4-1.2.4-.4 1.2-.4-1.2-1.2-.4 1.2-.4z"/></svg>'
+};
+
+var IMG_YOU="../student-main-classroom-desktop/assets/pip-you.png";
+
+var Components = {
+  statusbar:function(){
+    return '<div class="statusbar"><span>9:41</span><span class="glyphs">'
+      +ICONS.signal+ICONS.wifi+ICONS.battery+'</span></div>';
+  },
+  lockup:function(){
+    return '<div class="session-lockup">'
+      +'<span class="teacher-avatar"><img src="'+STATE.teacher.avatar+'" alt="'+STATE.teacher.name+'"></span>'
+      +'<div class="session-id"><span class="id-gym">Gym</span><span class="id-with">with '+STATE.teacher.name+'</span></div>'
+      +'</div>';
+  },
+  progress:function(){
+    var dots="";
+    for(var i=1;i<=STATE.session.total;i++){
+      var cls=i<STATE.session.current?"done":(i===STATE.session.current?"now":"");
+      dots+='<i'+(cls?' class="'+cls+'"':'')+'></i>';
+    }
+    var label="Session "+STATE.session.current+" of "+STATE.session.total;
+    return '<div class="session-progress"><div class="progress-label">'+label+'</div>'
+      +'<div class="progress-dots" role="img" aria-label="'+label+'">'+dots+'</div></div>';
+  },
+  shell:function(content){
+    return '<div class="transition-shell">'+Components.statusbar()+Components.lockup()+content+'</div>';
+  }
+};
+
+var Renderers = {
+  welcome:function(){
+    return Components.shell(
+      '<main class="welcome-panel">'
+        +Components.progress()
+        +'<div class="welcome-content">'
+          +'<h2><span class="welcome-to">Welcome to</span> <span class="gym">Gym</span></h2>'
+          +'<p class="sub">Practice out loud with Guy and the class.</p>'
+          +'<p class="explain">Another text that maybe explains a bit about what’s going to happen- optional</p>'
+          +'<button class="primary-cta" type="button" data-action="av-check">Check camera &amp; mic</button>'
+        +'</div>'
+      +'</main>'
+    );
+  },
+  "av-check":function(){
+    var previewInner=STATE.camOff
+      ? '<span class="av-face">Y</span><span class="camoff-cap">Camera off</span>'
+      : '<div class="vid" style="background-image:url(\''+IMG_YOU+'\')"></div>'
+        +(STATE.blurOn?'<div class="vid vid-subject" style="background-image:url(\''+IMG_YOU+'\')"></div>':'');
+    var error=STATE.permError
+      ? '<p class="av-error">Camera or microphone permission is blocked in this browser. You can still continue — turn them on from your browser settings when you can.</p>'
+      : '';
+    return Components.shell(
+      '<main class="av-canon">'
+        +'<header class="av-head"><h2>Video &amp; audio check</h2></header>'
+        +'<section class="av-card" aria-label="Camera and microphone check">'
+          +'<div class="av-stage">'
+            +'<div class="av-preview'+(STATE.camOff?' cam-off':'')+(!STATE.camOff&&STATE.blurOn?' is-blur':'')+'">'+previewInner+'</div>'
+            +'<div class="av-tools">'
+              +'<div class="av-tool"><button class="av-control" type="button" data-action="toggle-camera" aria-pressed="'+(!STATE.camOff)+'" aria-label="'+(STATE.camOff?'Turn camera on':'Turn camera off')+'">'+ICONS.cam+(STATE.camOff?'<span class="slash"></span>':'')+'</button><span class="av-tool-label">Camera</span></div>'
+              +'<div class="av-tool"><span class="av-mic-echo" aria-hidden="true"></span><button class="av-control" type="button" data-action="toggle-mic" aria-pressed="'+(!STATE.micOff)+'" aria-label="'+(STATE.micOff?'Turn microphone on':'Turn microphone off')+'">'+ICONS.mic+(STATE.micOff?'<span class="slash"></span>':'')+'</button><span class="av-tool-label">Mic</span></div>'
+              +'<div class="av-tool"><button class="av-control'+(STATE.blurOn?' blur-on':'')+'" type="button" data-action="toggle-blur" aria-pressed="'+STATE.blurOn+'" aria-label="'+(STATE.blurOn?'Turn background blur off':'Turn background blur on')+'">'+ICONS.blur+'</button><span class="av-tool-label">Blur</span></div>'
+            +'</div>'
+          +'</div>'
+        +'</section>'
+        +'<footer class="av-foot">'+error
+          +'<p class="av-privacy">In the Main Room, only you can see yourself. In Practice Rooms, your partner can see and hear you.</p>'
+          +'<button class="primary-cta" type="button" data-action="ready">I\u2019m ready</button>'
+        +'</footer>'
+      +'</main>'
+    );
+  }
+};
+
+function setScene(scene){
+  if(!SCREENS[scene]||!SCREENS[scene].implemented) return;
+  STATE.scene=scene;
+  render();
+}
+
+function render(){
+  var renderer=Renderers[STATE.scene]||Renderers.welcome;
+  document.getElementById("app").innerHTML=renderer();
+  document.querySelectorAll("[data-scene]").forEach(function(button){
+    button.classList.toggle("on",button.dataset.scene===STATE.scene);
+  });
+  document.getElementById("state-note").textContent=STATE.scene==="av-check"
+    ? "Canonical mobile A/V Check. Camera, microphone, blur and voice feedback are interactive."
+    : "Canonical Mobile Welcome. Continue opens the mobile A/V Check.";
+  syncAvMicMeter();
+}
+
+document.querySelectorAll("[data-scene]").forEach(function(button){
+  button.addEventListener("click",function(){ setScene(button.dataset.scene); });
+});
+document.getElementById("app").addEventListener("click",function(event){
+  var action=event.target.closest("[data-action]");
+  if(!action) return;
+  var name=action.dataset.action;
+  if(name==="av-check"){ setScene("av-check"); return; }
+  if(name==="toggle-camera"){ STATE.camOff=!STATE.camOff; render(); return; }
+  if(name==="toggle-mic"){ STATE.micOff=!STATE.micOff; render(); return; }
+  if(name==="toggle-blur"){ STATE.blurOn=!STATE.blurOn; render(); return; }
+  if(name==="ready") finishAv();
+});
+
+/* Keep the approved desktop routing decisions without rendering later states yet. */
+function finishAv(){
+  var target;
+  if(STATE.route.path==="late") target="arrive";
+  else if(STATE.route.path==="last-minute"||STATE.timing.waiting<60) target="starting";
+  else target="waiting";
+  STATE.route.entering=target==="arrive";
+  document.getElementById("state-note").textContent=
+    "I\u2019m ready routes to "+SCREENS[target].label+". That mobile state remains intentionally unimplemented.";
+}
+
+/* A/V Check only — real microphone level where supported, approved ripple fallback otherwise. */
+var AV_MIC={stream:null,ctx:null,analyser:null,data:null,raf:0,live:false,lastEcho:0};
+function releaseAvMic(){
+  if(AV_MIC.raf){ cancelAnimationFrame(AV_MIC.raf); AV_MIC.raf=0; }
+  if(AV_MIC.stream){ try{ AV_MIC.stream.getTracks().forEach(function(track){ track.stop(); }); }catch(error){} }
+  if(AV_MIC.ctx){ try{ AV_MIC.ctx.close(); }catch(error){} }
+  AV_MIC.stream=null;
+  AV_MIC.ctx=null;
+  AV_MIC.analyser=null;
+  AV_MIC.data=null;
+  AV_MIC.live=false;
+}
+function avMicLevel(){
+  if(AV_MIC.live&&AV_MIC.analyser){
+    AV_MIC.analyser.getByteFrequencyData(AV_MIC.data);
+    var sum=0;
+    var count=Math.min(24,AV_MIC.data.length);
+    for(var i=0;i<count;i++) sum+=AV_MIC.data[i];
+    return Math.min(1,(sum/count)/88);
+  }
+  var now=performance.now();
+  var pulse=.18+.42*Math.sin(now/150)+.2*Math.sin(now/67)+.14*Math.sin(now/31);
+  var gate=(Math.sin(now/540)+1)/2;
+  return Math.min(1,Math.max(0,pulse*gate));
+}
+function spawnAvEcho(level){
+  var host=document.querySelector(".av-mic-echo");
+  if(!host||level<.09) return;
+  var now=performance.now();
+  var gap=430-level*270;
+  if(now-AV_MIC.lastEcho<gap) return;
+  AV_MIC.lastEcho=now;
+  var ring=document.createElement("i");
+  var scale=1.65+level*1.15;
+  var opacity=.26+level*.42;
+  ring.className="av-echo-ring";
+  ring.style.setProperty("--echo-scale",String(scale));
+  ring.style.setProperty("--echo-op",String(opacity));
+  ring.style.borderColor="rgba(255,227,0,"+opacity.toFixed(2)+")";
+  host.appendChild(ring);
+  ring.addEventListener("animationend",function(){ if(ring.parentNode) ring.parentNode.removeChild(ring); });
+  if(level>.62){
+    var second=ring.cloneNode(false);
+    second.style.setProperty("--echo-scale",String(scale+.35));
+    second.style.setProperty("--echo-op",String(opacity*.55));
+    second.style.borderColor="rgba(255,227,0,"+(opacity*.45).toFixed(2)+")";
+    second.style.animationDelay="70ms";
+    host.appendChild(second);
+    second.addEventListener("animationend",function(){ if(second.parentNode) second.parentNode.removeChild(second); });
+  }
+}
+function tickAvMic(){
+  if(STATE.scene!=="av-check"||STATE.micOff){ AV_MIC.raf=0; return; }
+  spawnAvEcho(avMicLevel());
+  AV_MIC.raf=requestAnimationFrame(tickAvMic);
+}
+function syncAvMicMeter(){
+  var host=document.querySelector(".av-mic-echo");
+  if(!host||STATE.scene!=="av-check"||STATE.micOff||STATE.permError){
+    if(AV_MIC.raf){ cancelAnimationFrame(AV_MIC.raf); AV_MIC.raf=0; }
+    if(STATE.scene!=="av-check"||STATE.micOff) releaseAvMic();
+    return;
+  }
+  function start(){
+    if(AV_MIC.raf) cancelAnimationFrame(AV_MIC.raf);
+    tickAvMic();
+  }
+  if(AV_MIC.analyser){ start(); return; }
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){ start(); return; }
+  navigator.mediaDevices.getUserMedia({audio:true,video:false}).then(function(stream){
+    if(STATE.scene!=="av-check"||STATE.micOff){
+      stream.getTracks().forEach(function(track){ track.stop(); });
+      return;
+    }
+    AV_MIC.stream=stream;
+    var AudioContext=window.AudioContext||window.webkitAudioContext;
+    if(!AudioContext){ start(); return; }
+    AV_MIC.ctx=new AudioContext();
+    AV_MIC.analyser=AV_MIC.ctx.createAnalyser();
+    AV_MIC.analyser.fftSize=256;
+    AV_MIC.analyser.smoothingTimeConstant=.72;
+    AV_MIC.ctx.createMediaStreamSource(stream).connect(AV_MIC.analyser);
+    AV_MIC.data=new Uint8Array(AV_MIC.analyser.frequencyBinCount);
+    AV_MIC.live=true;
+    start();
+  }).catch(function(){ start(); });
+}
+
+render();
+</script>
+</body>
+</html>

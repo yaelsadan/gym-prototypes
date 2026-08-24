@@ -406,7 +406,8 @@ h2{font-size:15px;margin:var(--s32) 0 var(--s8)}
   .clock.warn{animation:none}
   .room-time.final{animation:none}
   .rhalf .startchip{animation:none;opacity:0}
-  .rhalf.turn.starting{animation:none}
+  .rhalf.turn.starting,
+  .rhalf.turn.car-blink{animation:none}
   .rhalf .tile-startword{animation:none;opacity:1}
   .act-done .ad-spark .spark{animation:none!important;opacity:1!important;transform:none!important}
   .act-done .ad-bg,.act-done .ad-ic-disk,.act-done .ad-ic-mark,.act-done .ad-ltr{animation:none!important;opacity:1;transform:none}
@@ -613,7 +614,8 @@ h2{font-size:15px;margin:var(--s32) 0 var(--s8)}
 }
 
 /* Who starts — white Assistant ExtraBold caps on the starter video */
-.rhalf.turn.starting{
+.rhalf.turn.starting,
+.rhalf.turn.car-blink{
   animation:startframepulse 1.45s ease-in-out infinite;
 }
 .rhalf .tile-startword{
@@ -634,7 +636,8 @@ h2{font-size:15px;margin:var(--s32) 0 var(--s8)}
   50%{opacity:1}
 }
 @media (prefers-reduced-motion:reduce){
-  .rhalf.turn.starting{animation:none}
+  .rhalf.turn.starting,
+  .rhalf.turn.car-blink{animation:none}
   .rhalf .tile-startword{animation:none;opacity:1}
 }
 
@@ -740,21 +743,21 @@ h2{font-size:15px;margin:var(--s32) 0 var(--s8)}
 @keyframes adCfPop{
   0%{
     opacity:0;
-    transform:translate(0,0) scale(.34) rotate(var(--rot0));
-    animation-timing-function:cubic-bezier(.16,.82,.22,1);
+    transform:translate(0,0) scale(.22) rotate(var(--rot0));
+    animation-timing-function:cubic-bezier(.08,.92,.18,1);
   }
-  8%{opacity:1}
-  28%{
+  5%{opacity:1}
+  18%{
     opacity:1;
-    transform:translate(var(--dx),var(--dy)) scale(var(--sc)) rotate(var(--rot));
-    animation-timing-function:cubic-bezier(.32,.1,.5,1);
+    transform:translate(var(--dx),var(--dy)) scale(calc(var(--sc) * 1.22)) rotate(var(--rot));
+    animation-timing-function:cubic-bezier(.28,.08,.48,1);
   }
-  70%{
+  62%{
     opacity:1;
     transform:translate(var(--mx),var(--my)) scale(var(--sc)) rotate(var(--rotm));
     animation-timing-function:linear;
   }
-  88%{
+  86%{
     opacity:0;
     transform:translate(var(--vx),var(--vy)) scale(var(--sc)) rotate(var(--rotv));
   }
@@ -1051,7 +1054,7 @@ h2{font-size:15px;margin:var(--s32) 0 var(--s8)}
   justify-content:center;
   width:auto;
   height:auto;
-  padding:9px 10px;
+  padding:11px 18px 10px;
   border-radius:999px;
   box-sizing:border-box;
   border:1px solid rgba(255,246,236,.08);
@@ -1066,12 +1069,26 @@ h2{font-size:15px;margin:var(--s32) 0 var(--s8)}
   width:auto;
   justify-content:center;
   align-items:center;
-  gap:9px;
+  gap:12px;
 }
-.rfooter .duo-dock .rc-item{gap:0;position:relative}
+.rfooter .duo-dock .rc-item{gap:3px;position:relative;min-width:48px}
 .rfooter .duo-dock .rc-cap{
-  position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;
-  clip:rect(0,0,0,0);white-space:nowrap;border:0;
+  position:static;
+  width:auto;
+  height:auto;
+  padding:0;
+  margin:0;
+  overflow:visible;
+  clip:auto;
+  white-space:nowrap;
+  border:0;
+  font-family:var(--font-ui),Assistant,system-ui,sans-serif;
+  font-size:10px;
+  font-weight:600;
+  letter-spacing:.02em;
+  line-height:1.15;
+  color:rgba(247,246,236,.78);
+  text-shadow:none;
 }
 .rfooter .duo-dock .rc-btn{
   width:48px;height:48px;border-radius:50%;
@@ -1082,7 +1099,7 @@ h2{font-size:15px;margin:var(--s32) 0 var(--s8)}
   -webkit-backdrop-filter:none;backdrop-filter:none;
 }
 .rfooter .duo-dock .rc-btn svg{width:22px;height:22px;color:inherit}
-.rfooter .duo-dock .rc-btn.tip svg{color:var(--brand-yellow)}
+.rfooter .duo-dock .rc-btn.tip svg{width:25px;height:25px;color:#FFE300}
 .rfooter .duo-dock .rc-btn .slash{width:32px;height:2.8px}
 
 /* ===== Hub-style tooltips (shared across icon-only controls) ===== */
@@ -1230,7 +1247,7 @@ var I={
   clock:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
   cam:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 10l5-3v10l-5-3v-4zM2 6h11a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2z"/></svg>',
   mic:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0014 0M12 18v3"/></svg>',
-  bulb:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4M12 3a6 6 0 00-4 10.5c.7.7 1 1.3 1 2.5h6c0-1.2.3-1.8 1-2.5A6 6 0 0012 3z"/></svg>',
+  bulb:'<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FFE300" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m4.93 4.93 2.83 2.83"/><path d="m16.24 7.76 2.83-2.83"/><path d="m16.24 16.24 2.83 2.83"/><path d="m7.76 16.24-2.83 2.83"/><circle cx="12" cy="12" r="6"/></svg>',
   shield:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.4-3 7.4-7 8.5C8 21.4 5 18.4 5 14V6z"/><path d="M12 8v4M12 15h.01"/></svg>',
   check:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>',
   play:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13l11-6.5z"/></svg>',
@@ -1354,7 +1371,13 @@ function actTick(){
     if(el>0 && el%5===0){
       advanceCue();
       ST.actFrame=pickCarFrame();
+      render();
+      return;
     }
+    /* Keep tiles mounted so the carousel turn frame can keep blinking. */
+    syncCue();
+    updateNote();
+    return;
   }
   if(st && (st.t==='prep'||st.t==='trans'||st.t==='break')){
     var num=document.querySelector('.seam-count');
@@ -1723,6 +1746,7 @@ function rheader(){
 function doneConfetti(){
   var C='#373230';
   var colors=['#F7AAF3','#F9746B','#F69700','#FFE300','#90C7FC','#449CFC','#DAEF81','#7EE07C','#6D8C58','#6BBFC4','#8B90FF','#CEB1FF'];
+  var nextKind={stroke:'circ',circ:'dia',dia:'stroke'};
   function ink(fill){
     return 'fill="'+fill+'" stroke="'+C+'" stroke-width="0.5" vector-effect="non-scaling-stroke"';
   }
@@ -1732,35 +1756,60 @@ function doneConfetti(){
     if(kind==='circ') return '<svg viewBox="0 0 10 10" aria-hidden="true"><circle cx="5" cy="5" r="3.55" '+a+'/></svg>';
     return '<svg viewBox="0 0 10 10" aria-hidden="true"><path d="M5 1.2 L8.8 5 L5 8.8 L1.2 5 Z" '+a+'/></svg>';
   }
+  function spin(x,y,deg){
+    var r=deg*Math.PI/180, c=Math.cos(r), s=Math.sin(r);
+    return [Math.round(x*c-y*s), Math.round(x*s+y*c)];
+  }
   var bits=[
-    {k:'stroke', dx:-80,  dy:-92,  ex:-122, ey:-22, rot0:-16, rot:-38, rot2:18,  sc:1, s:22, d:0.50, dur:1.62},
-    {k:'circ',   dx:16,   dy:-124, ex:38,   ey:-86, rot0:8,   rot:26,  rot2:54,  sc:1, s:13, d:0.52, dur:1.90},
-    {k:'dia',    dx:98,   dy:-68,  ex:132,  ey:6,   rot0:18,  rot:42,  rot2:78,  sc:1, s:14, d:0.51, dur:1.56},
-    {k:'circ',   dx:-40,  dy:-108, ex:-56,  ey:4,   rot0:-10, rot:16,  rot2:50,  sc:1, s:14, d:0.54, dur:1.98},
-    {k:'stroke', dx:114,  dy:-30,  ex:142,  ey:2,   rot0:12,  rot:34,  rot2:14,  sc:1, s:20, d:0.53, dur:1.74},
-    {k:'dia',    dx:-118, dy:-46,  ex:-148, ey:-8,  rot0:-22, rot:-14, rot2:28,  sc:1, s:13, d:0.55, dur:1.68},
-    {k:'circ',   dx:56,   dy:-96,  ex:82,   ey:-34, rot0:6,   rot:-22, rot2:16,  sc:1, s:12, d:0.56, dur:1.48},
-    {k:'dia',    dx:-12,  dy:-120, ex:18,   ey:2,   rot0:14,  rot:32,  rot2:64,  sc:1, s:15, d:0.52, dur:2.06},
-    {k:'stroke', dx:44,   dy:-36,  ex:20,   ey:4,   rot0:-8,  rot:18,  rot2:48,  sc:1, s:21, d:0.57, dur:1.70},
-    {k:'circ',   dx:-72,  dy:-80,  ex:-102, ey:2,   rot0:-14, rot:8,   rot2:42,  sc:1, s:15, d:0.58, dur:1.84},
-    {k:'stroke', dx:8,    dy:-62,  ex:-28,  ey:0,   rot0:10,  rot:-24, rot2:22,  sc:1, s:19, d:0.54, dur:1.78},
-    {k:'dia',    dx:78,   dy:-116, ex:104,  ey:-58, rot0:20,  rot:48,  rot2:34,  sc:1, s:13, d:0.59, dur:1.94}
+    {k:'stroke', dx:-80,  dy:-92,  ex:-122, ey:-22, rot0:-16, rot:-38, rot2:18,  sc:1, s:22, d:0.50, dur:1.88},
+    {k:'circ',   dx:16,   dy:-124, ex:38,   ey:-86, rot0:8,   rot:26,  rot2:54,  sc:1, s:13, d:0.52, dur:2.18},
+    {k:'dia',    dx:98,   dy:-68,  ex:132,  ey:6,   rot0:18,  rot:42,  rot2:78,  sc:1, s:14, d:0.51, dur:1.80},
+    {k:'circ',   dx:-40,  dy:-108, ex:-56,  ey:4,   rot0:-10, rot:16,  rot2:50,  sc:1, s:14, d:0.54, dur:2.26},
+    {k:'stroke', dx:114,  dy:-30,  ex:142,  ey:2,   rot0:12,  rot:34,  rot2:14,  sc:1, s:20, d:0.53, dur:2.00},
+    {k:'dia',    dx:-118, dy:-46,  ex:-148, ey:-8,  rot0:-22, rot:-14, rot2:28,  sc:1, s:13, d:0.55, dur:1.94},
+    {k:'circ',   dx:56,   dy:-96,  ex:82,   ey:-34, rot0:6,   rot:-22, rot2:16,  sc:1, s:12, d:0.56, dur:1.72},
+    {k:'dia',    dx:-12,  dy:-120, ex:18,   ey:2,   rot0:14,  rot:32,  rot2:64,  sc:1, s:15, d:0.52, dur:2.34},
+    {k:'stroke', dx:44,   dy:-36,  ex:20,   ey:4,   rot0:-8,  rot:18,  rot2:48,  sc:1, s:21, d:0.57, dur:1.96},
+    {k:'circ',   dx:-72,  dy:-80,  ex:-102, ey:2,   rot0:-14, rot:8,   rot2:42,  sc:1, s:15, d:0.58, dur:2.12},
+    {k:'stroke', dx:8,    dy:-62,  ex:-28,  ey:0,   rot0:10,  rot:-24, rot2:22,  sc:1, s:19, d:0.54, dur:2.04},
+    {k:'dia',    dx:78,   dy:-116, ex:104,  ey:-58, rot0:20,  rot:48,  rot2:34,  sc:1, s:13, d:0.59, dur:2.22}
   ];
+  var pieces=[], i, b, p, q;
+  for(i=0;i<bits.length;i++){
+    b=bits[i];
+    pieces.push({k:b.k, dx:b.dx, dy:b.dy, ex:b.ex, ey:b.ey, rot0:b.rot0, rot:b.rot, rot2:b.rot2, sc:b.sc, s:b.s, d:b.d, dur:b.dur, fill:colors[i]});
+    p=spin(b.dx, b.dy, i%2?30:-30);
+    q=spin(b.ex, b.ey, i%2?30:-30);
+    pieces.push({
+      k:nextKind[b.k],
+      dx:Math.round(p[0]*0.88), dy:Math.round(p[1]*0.88),
+      ex:Math.round(q[0]*0.88), ey:Math.round(q[1]*0.88),
+      rot0:b.rot0+(i%2?26:-26), rot:b.rot+(i%2?-22:22), rot2:b.rot2+28,
+      sc:b.sc, s:Math.max(12, b.s-2), d:+(b.d+0.05).toFixed(2), dur:+(b.dur+0.16).toFixed(2),
+      fill:colors[i]
+    });
+  }
   var html='<span class="ad-confetti" aria-hidden="true">';
-  for(var i=0;i<bits.length;i++){
-    var b=bits[i];
-    var mx=Math.round(b.dx+(b.ex-b.dx)*0.70);
-    var my=Math.round(b.dy+(b.ey-b.dy)*0.70);
-    var vx=Math.round(b.dx+(b.ex-b.dx)*0.86);
-    var vy=Math.round(b.dy+(b.ey-b.dy)*0.86);
+  /* Portrait phone: same doubled burst as desktop, but less width and more height. */
+  var burstX=1.7, burstY=2.2;
+  for(i=0;i<pieces.length;i++){
+    b=pieces[i];
+    var dx=Math.round(b.dx*burstX);
+    var dy=Math.round(b.dy*burstY);
+    var ex=Math.round(b.ex*burstX);
+    var ey=Math.round(b.ey*burstY);
+    var mx=Math.round(dx+(ex-dx)*0.70);
+    var my=Math.round(dy+(ey-dy)*0.70);
+    var vx=Math.round(dx+(ex-dx)*0.86);
+    var vy=Math.round(dy+(ey-dy)*0.86);
     var rotm=Math.round(b.rot+(b.rot2-b.rot)*0.70);
     var rotv=Math.round(b.rot+(b.rot2-b.rot)*0.86);
     html+='<span class="cf" style="'
-      +'--dx:'+b.dx+'px;--dy:'+b.dy+'px;--mx:'+mx+'px;--my:'+my+'px;'
+      +'--dx:'+dx+'px;--dy:'+dy+'px;--mx:'+mx+'px;--my:'+my+'px;'
       +'--vx:'+vx+'px;--vy:'+vy+'px;'
       +'--rot0:'+b.rot0+'deg;--rot:'+b.rot+'deg;--rotm:'+rotm+'deg;--rotv:'+rotv+'deg;'
       +'--sc:'+b.sc+';--s:'+b.s+'px;--d:'+b.d+'s;--dur:'+b.dur+'s">'
-      +shape(b.k, colors[i])+'</span>';
+      +shape(b.k, b.fill)+'</span>';
   }
   return html+'</span>';
 }
@@ -1786,7 +1835,7 @@ function doneBadge(){
 
 function half(side,name,o){
   o=o||{};
-  var cls='rhalf '+side+(o.turn?' turn':'')+(o.starting?' starting':'')+(o.camOff?' cam-off':'');
+  var cls='rhalf '+side+(o.turn?' turn':'')+(o.starting?' starting':'')+(o.carBlink?' car-blink':'')+(o.camOff?' cam-off':'');
   var bg=o.camOff?'':(' style="background-image:url(\''+o.bg+'\')"');
   var chip='<span class="who">'+(o.chipLabel||name)+'</span>';
   var start=o.startCue?'<span class="startchip">Start</span>':'';
@@ -1842,9 +1891,9 @@ function duoStage(){
   var isHandoff=live&&(ST.actStep==='trans'||ST.actStep==='break');
   var carRun=(live && ST.activity==='carousel' && isTurn);
   return '<div class="rstage'+(carRun?' car-run':'')+'" onclick="revealChrome()">'
-    + half('top', PARTNER, {turn:danaF, chipLabel:chipFor('dana',PARTNER), bg:IMG_DANA, startCue:(startOn&&danaF), starting:(isPrep||isHandoff)&&danaF, startLabel:(isPrep&&danaF)?(PARTNER+' starts'):''})
+    + half('top', PARTNER, {turn:danaF, chipLabel:chipFor('dana',PARTNER), bg:IMG_DANA, startCue:(startOn&&danaF), starting:(isPrep||isHandoff)&&danaF, carBlink:carRun&&danaF, startLabel:(isPrep&&danaF)?(PARTNER+' starts'):''})
     + half('bottom','You', {turn:youF,  chipLabel:chipFor('you','You'),   bg:IMG_YOU,
-                            camOff:ST.camOff, micOff:ST.micOff, startCue:(startOn&&youF), starting:(isPrep||isHandoff)&&youF, startLabel:(isPrep&&youF)?'You start':''})
+                            camOff:ST.camOff, micOff:ST.micOff, startCue:(startOn&&youF), starting:(isPrep||isHandoff)&&youF, carBlink:carRun&&youF, startLabel:(isPrep&&youF)?'You start':''})
     + '</div>'
     + seamZone();
 }

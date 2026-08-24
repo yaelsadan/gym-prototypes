@@ -1618,7 +1618,8 @@ body.present .demo-split{
   50%{box-shadow:0 0 44px 10px rgba(18,14,12,.20),inset 0 0 0 2px rgba(249,226,76,.95)}
 }
 /* Who starts: yellow frame breathes slowly; white word on the starter video, same family as 3-2-1 */
-.demo-half.turn.starting{
+.demo-half.turn.starting,
+.demo-half.turn.car-blink{
   animation:startframepulse 1.45s ease-in-out infinite;
 }
 .demo-half .tile-startword{
@@ -1644,7 +1645,8 @@ body.present .demo-half .tile-startword{font-size:72px}
   50%{opacity:1}
 }
 @media (prefers-reduced-motion:reduce){
-  .demo-half.turn.starting{animation:none}
+  .demo-half.turn.starting,
+  .demo-half.turn.car-blink{animation:none}
   .demo-half .tile-startword{animation:none;opacity:1}
 }
 
@@ -1903,21 +1905,21 @@ body.present .clock.vt3.lg{--d:246px;width:var(--d);height:var(--d)}
 @keyframes adCfPop{
   0%{
     opacity:0;
-    transform:translate(0,0) scale(.34) rotate(var(--rot0));
-    animation-timing-function:cubic-bezier(.16,.82,.22,1);
+    transform:translate(0,0) scale(.22) rotate(var(--rot0));
+    animation-timing-function:cubic-bezier(.08,.92,.18,1);
   }
-  8%{opacity:1}
-  28%{
+  5%{opacity:1}
+  18%{
     opacity:1;
-    transform:translate(var(--dx),var(--dy)) scale(calc(var(--sc) * 1.12)) rotate(var(--rot));
-    animation-timing-function:cubic-bezier(.32,.1,.5,1);
+    transform:translate(var(--dx),var(--dy)) scale(calc(var(--sc) * 1.22)) rotate(var(--rot));
+    animation-timing-function:cubic-bezier(.28,.08,.48,1);
   }
-  70%{
+  62%{
     opacity:1;
     transform:translate(var(--mx),var(--my)) scale(var(--sc)) rotate(var(--rotm));
     animation-timing-function:linear;
   }
-  88%{
+  86%{
     opacity:0;
     transform:translate(var(--vx),var(--vy)) scale(var(--sc)) rotate(var(--rotv));
   }
@@ -2992,7 +2994,7 @@ var RX={
 };
 function rxImg(k){ return (RX[k].indexOf('data:')===0)? '<img src="'+RX[k]+'" alt="'+k+'">' : RX[k]; }
 function pickReaction(btn,k){ if(btn&&btn.animate){btn.animate([{transform:'scale(1)'},{transform:'scale(1.22)'},{transform:'scale(1)'}],{duration:260});} }
-I.bulb='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4M12 3a6 6 0 00-4 10.5c.7.7 1 1.3 1 2.5h6c0-1.2.3-1.8 1-2.5A6 6 0 0012 3z"/></svg>';
+I.bulb='<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FFE300" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m4.93 4.93 2.83 2.83"/><path d="m16.24 7.76 2.83-2.83"/><path d="m16.24 16.24 2.83 2.83"/><path d="m7.76 16.24-2.83 2.83"/><circle cx="12" cy="12" r="6"/></svg>';
 function rxSet(){
   var items=[['clap','Clap'],['cheers','Cheers'],['heart','Heart'],['flame','Flame'],['question','Thinking']];
   var row='<div class="rx-set">';
@@ -3137,17 +3139,18 @@ function tile(name,o){
   var trn=o.turn?' turn':'';
   var pls=o.pulse?' pulse':'';
   var stt=o.starting?' starting':'';
+  var blink=o.carBlink?' car-blink':'';
   var chip=o.chipLabel||name;  /* (3) name chip is stateful and carries the turn state (no separate badge) */
   var word=o.startLabel?'<div class="tile-startword">'+o.startLabel+'</div>':'';
   if(o.camOff){
-    return '<div class="demo-half '+o.side+trn+pls+stt+' tile-camoff"><span class="who">'+chip+'</span>'
+    return '<div class="demo-half '+o.side+trn+pls+stt+blink+' tile-camoff"><span class="who">'+chip+'</span>'
       +'<div class="tile-camoff-body"><span class="av">'+name[0]+'</span><span class="lbl">Camera off</span></div>'+word+'</div>';
   }
   var bg=o.bg?(' style="'+o.bg+'"'):'';
   var flag=o.micOff?'<div class="tile-flag"><span class="ic">'+I.mic+'<span class="sl"></span></span>Mic off</div>':'';
   var ct=o.timer?'<div class="tile-timer">'+o.timer+'</div>':'';
   var start=o.startCue?'<div class="tile-startchip">Start</div>':'';   /* v18: small, brief, secondary */
-  return '<div class="demo-half '+o.side+trn+pls+stt+'"'+bg+'><span class="who">'+chip+'</span>'+flag+ct+start+word+'</div>';
+  return '<div class="demo-half '+o.side+trn+pls+stt+blink+'"'+bg+'><span class="who">'+chip+'</span>'+flag+ct+start+word+'</div>';
 }
 function bcastBanner(){ return '<div class="bcast"><span class="bd"></span>'+I.bcast+'Teacher is broadcasting</div>'; }
 
@@ -3265,7 +3268,13 @@ function actTick(){
     if(elapsed>0 && elapsed%5===0){
       advanceCue();
       ST.actFrame=pickCarFrame();
+      render();
+      return;
     }
+    /* Keep tiles mounted so the carousel turn frame can keep blinking. */
+    syncCue();
+    updateNote();
+    return;
   }
   /* Countdown steps keep tiles mounted so the yellow next-turn frame can breathe.
      Done keeps the badge mounted so confetti is not restarted. */
@@ -3362,6 +3371,7 @@ function syncCue(){
 function doneConfetti(){
   var C='#373230';
   var colors=['#F7AAF3','#F9746B','#F69700','#FFE300','#90C7FC','#449CFC','#DAEF81','#7EE07C','#6D8C58','#6BBFC4','#8B90FF','#CEB1FF'];
+  var nextKind={stroke:'circ',circ:'dia',dia:'stroke'};
   function ink(fill){
     return 'fill="'+fill+'" stroke="'+C+'" stroke-width="0.5" vector-effect="non-scaling-stroke"';
   }
@@ -3371,30 +3381,51 @@ function doneConfetti(){
     if(kind==='circ') return '<svg viewBox="0 0 10 10" aria-hidden="true"><circle cx="5" cy="5" r="3.55" '+a+'/></svg>';
     return '<svg viewBox="0 0 10 10" aria-hidden="true"><path d="M5 1.2 L8.8 5 L5 8.8 L1.2 5 Z" '+a+'/></svg>';
   }
+  function spin(x,y,deg){
+    var r=deg*Math.PI/180, c=Math.cos(r), s=Math.sin(r);
+    return [Math.round(x*c-y*s), Math.round(x*s+y*c)];
+  }
   var bits=[
-    {k:'stroke', dx:-80,  dy:-92,  ex:-122, ey:-22, rot0:-16, rot:-38, rot2:18,  sc:1, s:22, d:0.50, dur:1.62},
-    {k:'circ',   dx:16,   dy:-124, ex:38,   ey:-86, rot0:8,   rot:26,  rot2:54,  sc:1, s:13, d:0.52, dur:1.90},
-    {k:'dia',    dx:98,   dy:-68,  ex:132,  ey:6,   rot0:18,  rot:42,  rot2:78,  sc:1, s:14, d:0.51, dur:1.56},
-    {k:'circ',   dx:-40,  dy:-108, ex:-56,  ey:4,   rot0:-10, rot:16,  rot2:50,  sc:1, s:14, d:0.54, dur:1.98},
-    {k:'stroke', dx:114,  dy:-30,  ex:142,  ey:2,   rot0:12,  rot:34,  rot2:14,  sc:1, s:20, d:0.53, dur:1.74},
-    {k:'dia',    dx:-118, dy:-46,  ex:-148, ey:-8,  rot0:-22, rot:-14, rot2:28,  sc:1, s:13, d:0.55, dur:1.68},
-    {k:'circ',   dx:56,   dy:-96,  ex:82,   ey:-34, rot0:6,   rot:-22, rot2:16,  sc:1, s:12, d:0.56, dur:1.48},
-    {k:'dia',    dx:-12,  dy:-120, ex:18,   ey:2,   rot0:14,  rot:32,  rot2:64,  sc:1, s:15, d:0.52, dur:2.06},
-    {k:'stroke', dx:44,   dy:-36,  ex:20,   ey:4,   rot0:-8,  rot:18,  rot2:48,  sc:1, s:21, d:0.57, dur:1.70},
-    {k:'circ',   dx:-72,  dy:-80,  ex:-102, ey:2,   rot0:-14, rot:8,   rot2:42,  sc:1, s:15, d:0.58, dur:1.84},
-    {k:'stroke', dx:8,    dy:-62,  ex:-28,  ey:0,   rot0:10,  rot:-24, rot2:22,  sc:1, s:19, d:0.54, dur:1.78},
-    {k:'dia',    dx:78,   dy:-116, ex:104,  ey:-58, rot0:20,  rot:48,  rot2:34,  sc:1, s:13, d:0.59, dur:1.94}
+    {k:'stroke', dx:-80,  dy:-92,  ex:-122, ey:-22, rot0:-16, rot:-38, rot2:18,  sc:1, s:22, d:0.50, dur:1.88},
+    {k:'circ',   dx:16,   dy:-124, ex:38,   ey:-86, rot0:8,   rot:26,  rot2:54,  sc:1, s:13, d:0.52, dur:2.18},
+    {k:'dia',    dx:98,   dy:-68,  ex:132,  ey:6,   rot0:18,  rot:42,  rot2:78,  sc:1, s:14, d:0.51, dur:1.80},
+    {k:'circ',   dx:-40,  dy:-108, ex:-56,  ey:4,   rot0:-10, rot:16,  rot2:50,  sc:1, s:14, d:0.54, dur:2.26},
+    {k:'stroke', dx:114,  dy:-30,  ex:142,  ey:2,   rot0:12,  rot:34,  rot2:14,  sc:1, s:20, d:0.53, dur:2.00},
+    {k:'dia',    dx:-118, dy:-46,  ex:-148, ey:-8,  rot0:-22, rot:-14, rot2:28,  sc:1, s:13, d:0.55, dur:1.94},
+    {k:'circ',   dx:56,   dy:-96,  ex:82,   ey:-34, rot0:6,   rot:-22, rot2:16,  sc:1, s:12, d:0.56, dur:1.72},
+    {k:'dia',    dx:-12,  dy:-120, ex:18,   ey:2,   rot0:14,  rot:32,  rot2:64,  sc:1, s:15, d:0.52, dur:2.34},
+    {k:'stroke', dx:44,   dy:-36,  ex:20,   ey:4,   rot0:-8,  rot:18,  rot2:48,  sc:1, s:21, d:0.57, dur:1.96},
+    {k:'circ',   dx:-72,  dy:-80,  ex:-102, ey:2,   rot0:-14, rot:8,   rot2:42,  sc:1, s:15, d:0.58, dur:2.12},
+    {k:'stroke', dx:8,    dy:-62,  ex:-28,  ey:0,   rot0:10,  rot:-24, rot2:22,  sc:1, s:19, d:0.54, dur:2.04},
+    {k:'dia',    dx:78,   dy:-116, ex:104,  ey:-58, rot0:20,  rot:48,  rot2:34,  sc:1, s:13, d:0.59, dur:2.22}
   ];
+  var pieces=[], i, b, p, q;
+  for(i=0;i<bits.length;i++){
+    b=bits[i];
+    pieces.push({k:b.k, dx:b.dx, dy:b.dy, ex:b.ex, ey:b.ey, rot0:b.rot0, rot:b.rot, rot2:b.rot2, sc:b.sc, s:b.s, d:b.d, dur:b.dur, fill:colors[i]});
+    p=spin(b.dx, b.dy, i%2?30:-30);
+    q=spin(b.ex, b.ey, i%2?30:-30);
+    pieces.push({
+      k:nextKind[b.k],
+      dx:Math.round(p[0]*0.88), dy:Math.round(p[1]*0.88),
+      ex:Math.round(q[0]*0.88), ey:Math.round(q[1]*0.88),
+      rot0:b.rot0+(i%2?26:-26), rot:b.rot+(i%2?-22:22), rot2:b.rot2+28,
+      sc:b.sc, s:Math.max(12, b.s-2), d:+(b.d+0.05).toFixed(2), dur:+(b.dur+0.16).toFixed(2),
+      fill:colors[i]
+    });
+  }
   var html='<span class="ad-confetti" aria-hidden="true">';
-  for(var i=0;i<bits.length;i++){
-    var b=bits[i];
-    var burst=1.32;
+  var burst=2.7;
+  for(i=0;i<pieces.length;i++){
+    b=pieces[i];
     var dx=Math.round(b.dx*burst);
     var dy=Math.round(b.dy*burst);
-    var mx=Math.round(dx+(b.ex-dx)*0.70);
-    var my=Math.round(dy+(b.ey-dy)*0.70);
-    var vx=Math.round(dx+(b.ex-dx)*0.86);
-    var vy=Math.round(dy+(b.ey-dy)*0.86);
+    var ex=Math.round(b.ex*burst);
+    var ey=Math.round(b.ey*burst);
+    var mx=Math.round(dx+(ex-dx)*0.70);
+    var my=Math.round(dy+(ey-dy)*0.70);
+    var vx=Math.round(dx+(ex-dx)*0.86);
+    var vy=Math.round(dy+(ey-dy)*0.86);
     var rotm=Math.round(b.rot+(b.rot2-b.rot)*0.70);
     var rotv=Math.round(b.rot+(b.rot2-b.rot)*0.86);
     html+='<span class="cf" style="'
@@ -3402,7 +3433,7 @@ function doneConfetti(){
       +'--vx:'+vx+'px;--vy:'+vy+'px;'
       +'--rot0:'+b.rot0+'deg;--rot:'+b.rot+'deg;--rotm:'+rotm+'deg;--rotv:'+rotv+'deg;'
       +'--sc:'+b.sc+';--s:'+b.s+'px;--d:'+b.d+'s;--dur:'+b.dur+'s">'
-      +shape(b.k, colors[i])+'</span>';
+      +shape(b.k, b.fill)+'</span>';
   }
   return html+'</span>';
 }
@@ -3457,8 +3488,8 @@ function duoStage(){
   var carRun=(live && ST.activity==='carousel' && isTurn);
 
   var s='<div class="demo-stage'+(carRun?' car-run':'')+'"><div class="demo-split">'
-    + tile('You', {side:'student',turn:youFrame, chipLabel:chipFor('you','You'),   bg:youBg, camOff:ST.camOff,micOff:ST.micOff, timer:youClock, startCue:(startOn&&youFrame), starting:(isPrep||isHandoff)&&youFrame, startLabel:(isPrep&&youFrame)?'You start':''})
-    + tile('Dana',{side:'student',turn:danaFrame,chipLabel:chipFor('dana','Dana'), bg:danaBg, timer:danaClock, startCue:(startOn&&danaFrame), starting:(isPrep||isHandoff)&&danaFrame, startLabel:(isPrep&&danaFrame)?'Dana starts':''})
+    + tile('You', {side:'student',turn:youFrame, chipLabel:chipFor('you','You'),   bg:youBg, camOff:ST.camOff,micOff:ST.micOff, timer:youClock, startCue:(startOn&&youFrame), starting:(isPrep||isHandoff)&&youFrame, carBlink:carRun&&youFrame, startLabel:(isPrep&&youFrame)?'You start':''})
+    + tile('Dana',{side:'student',turn:danaFrame,chipLabel:chipFor('dana','Dana'), bg:danaBg, timer:danaClock, startCue:(startOn&&danaFrame), starting:(isPrep||isHandoff)&&danaFrame, carBlink:carRun&&danaFrame, startLabel:(isPrep&&danaFrame)?'Dana starts':''})
     + '</div></div>';
 
   /* 5s prep / transition / break \u2014 big cinematic count. Yellow frame is already on. */

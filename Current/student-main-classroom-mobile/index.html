@@ -1220,6 +1220,10 @@ h1{font-size:20px}
   text-align:center;
   padding:1px 0 0;
 }
+.m2.is-helper .av-halo,
+.m2.is-teacher .av-halo{display:none}
+.m2.is-helper .av-face,
+.m2.is-teacher .av-face{background:#FFE300}
 
 /* Sheet composer — Desktop cream field language, mobile scale */
 .sheet .composer{
@@ -1332,6 +1336,10 @@ h1{font-size:20px}
   text-align:center;
   padding:1px 0 0;
 }
+.pp-row:has(.pp-chip-teacher) .pp-lvl,
+.pp-row:has(.pp-chip-helper) .pp-lvl{display:none}
+.pp-row:has(.pp-chip-teacher) .av-face,
+.pp-row:has(.pp-chip-helper) .av-face{background:#FFE300}
 .pp-name{
   font-size:14.5px;
   font-weight:600;
@@ -1542,6 +1550,10 @@ h1{font-size:20px}
   font-size:13px;line-height:1;display:flex;align-items:center;justify-content:center;
   padding:1px 0 0;
 }
+.mo.is-helper .av-halo,
+.mo.is-teacher .av-halo{display:none}
+.mo.is-helper .av-face,
+.mo.is-teacher .av-face{background:#FFE300}
 
 /* Name labels — Desktop product pills (cream), mobile scale */
 .d-half .d-who{
@@ -2927,16 +2939,16 @@ function msgSamePerson(a,b){
 function msgIsLead(i){ return i===0 || !msgSamePerson(MSGS[i],MSGS[i-1]); }
 function renderMsg(m,opts){
   opts=opts||{};
-  var own=(m.sender==='own'), helper=(m.sender==='helper');
+  var own=(m.sender==='own'), helper=(m.sender==='helper'), teacher=(m.sender==='teacher');
   var expanded=!!opts.expanded;
   var isLead=(opts.isLead!==undefined)?opts.isLead:true;
-  var cls='mo'+(helper?' is-helper':'')+(own?' is-own':'')+(expanded?(isLead?' has-av':' cont'):'');
+  var cls='mo'+(helper?' is-helper':'')+(teacher?' is-teacher':'')+(own?' is-own':'')+(expanded?(isLead?' has-av':' cont'):'');
   var nm=own?'You':(helper?(m.name==='Helper'||m.name==='helper'?'Helper':m.name+' \u00B7 Helper'):m.name);
   var body=m.reply
     ? '<div class="reply-group"><div class="quote"><span class="qn">'+m.reply.name+'</span>'+m.reply.text+'</div><div class="tx">'+m.text+'</div></div>'
     : '<div class="tx">'+m.text+'</div>';
   var lvlHalo={Yellow:'#DAEF81','Light Blue':'#90C7FC',Green:'#DAEF81',Orange:'#F69700',Blue:'#90C7FC',Pink:'#F7AAF3',Red:'#F9746B',Turquoise:'#6BBEC4'};
-  var haloCol=m.level?lvlHalo[m.level]:(own?lvlHalo.Green:(helper?'var(--brand-yellow)':null));
+  var haloCol=m.level?lvlHalo[m.level]:(own?lvlHalo.Green:null);
   var av=(haloCol?'<span class="av-halo" style="background:'+haloCol+'" aria-hidden="true"></span>':'')+'<span class="av-face">'+initial(m.name)+'</span>';
   var avInner=(expanded&&isLead)?('<span class="av">'+av+'</span>'):'';
   return '<div class="'+cls+'"><div class="av-gutter">'+avInner+'</div><div class="bd"><div class="nm">'+nm+'</div>'+body+'</div></div>';

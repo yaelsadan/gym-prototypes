@@ -1323,6 +1323,10 @@ body.present .topbar .session-rec{font-size:13.5px}
   text-align:center;
   padding:1px 0 0;
 }
+.pp-row:has(.pp-chip.teacher) .pp-lvl,
+.pp-row:has(.pp-chip.helper) .pp-lvl{display:none}
+.pp-row:has(.pp-chip.teacher) .av-face,
+.pp-row:has(.pp-chip.helper) .av-face{background:#FFE300}
 /* Role badges stay secondary — not part of avatar construction */
 .pp-chip{font-size:9.5px;font-weight:700;letter-spacing:.35px;text-transform:uppercase;padding:2px 7px;border-radius:var(--pill)}
 .pp-chip.teacher{background:rgba(247,246,239,.10);color:rgba(255,255,255,.62);border:1px solid rgba(255,255,255,.14)}
@@ -2517,6 +2521,8 @@ body.present .act-timer.pos-tc{
   justify-content:center;
   box-shadow:0 1px 3px rgba(55,50,48,.18);
 }
+.ephem-msg.helper .eph-halo{display:none}
+.ephem-msg.helper .eph-av .av-face{background:#FFE300}
 .ephem-msg .eph-bd{
   width:fit-content;
   max-width:280px;
@@ -4537,7 +4543,7 @@ function ephIsLead(i){
   return i===0||!ephSamePerson(EPH[i],EPH[i-1]);
 }
 function ephHalo(name,who){
-  if(who==='helper') return '<span class="eph-halo" style="background:var(--brand-yellow)" aria-hidden="true"></span>';
+  if(who==='helper') return '';
   var map={Sarrah:'#DAEF81',Hanna:'#90C7FC',David:'#F69700',Lior:'#DAEF81',Tom:'#90C7FC',You:'#DAEF81'};
   var c=map[name];
   return c?'<span class="eph-halo" style="background:'+c+'" aria-hidden="true"></span>':'';
