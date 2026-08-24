@@ -2308,28 +2308,21 @@ body.present .solo-wrap{padding:9vh 5vw calc(var(--footer-h) + 30px)}
     <div class="row">
       <span class="grp-lbl">Scene</span>
       <button class="sc on" data-sc="duo">Duo / Couples Room</button>
-      <button class="sc" data-sc="transfer">Transfer to Practice Room</button>
-      <button class="sc" data-sc="enforce">Mic/Cam enforcement</button>
-      <button class="sc" data-sc="consent">Room consent (Yes/No)</button>
-      <button class="sc" data-sc="wait">Consent declined &rarr; waiting</button>
       <button class="sc" data-sc="partnerleft">Partner left &rarr; solo</button>
       <button class="sc" data-sc="solo">Solo Room</button>
+      <button class="sc" data-sc="enforce">Mic/Cam enforcement</button>
+      <button class="sc" data-sc="transfer">Transfer to Practice Room</button>
+      <button class="sc" data-sc="wait">Consent declined &rarr; waiting</button>
       <button class="sc" data-sc="return">Return to Main Room</button>
-      <span class="sep"></span>
-      <span class="grp-lbl">Duo device states</span>
-      <button class="play" onclick="deviceOff('camera')">My camera off</button>
-      <button class="play" onclick="deviceOff('mic')">My mic off</button>
-      <button class="play" onclick="showPartnerLeft()">Partner left / cam off</button>
-      <button class="play" onclick="unevenSolo()">Uneven students &rarr; Solo</button>
     </div>
     <div class="row">
       <span class="grp-lbl">Activity (prepared — does not start on its own)</span>
       <button class="ac" data-ac="none">None</button>
-      <button class="ac on" data-ac="generic">Timed round</button>
-      <button class="ac" data-ac="dialogue">Dialogue</button>
+      <button class="ac on" data-ac="dialogue">Dialogue</button>
       <button class="ac" data-ac="intensive">Intensive Exercise</button>
       <button class="ac" data-ac="grandma">Operation Grandma</button>
       <button class="ac" data-ac="carousel">Carousel</button>
+      <button class="ac" data-ac="generic">custom timer</button>
     </div>
     <div class="row">
       <span class="grp-lbl">Teacher control (simulated Cockpit event)</span>
@@ -2339,23 +2332,13 @@ body.present .solo-wrap{padding:9vh 5vw calc(var(--footer-h) + 30px)}
     </div>
     <div class="row">
       <span class="grp-lbl">Review states (static — no timers)</span>
-      <button class="play" onclick="actJump('prep')">5s countdown</button>
+      <button class="play" onclick="actJump('prep')">openning 10s countdown</button>
       <button class="play" onclick="actJump('you')">Turn: You</button>
       <button class="play" onclick="actJump('trans')">Transition / break</button>
-      <button class="play" onclick="actJump('dana')">Turn: Dana</button>
+      <button class="play" onclick="actJump('dana')">Turn: Partner</button>
       <button class="play" onclick="actJump('done')">Done</button>
       <span class="sep"></span>
       <button class="play" onclick="playTip()">Open TIP (teacher instruction)</button>
-    </div>
-    <div class="row">
-      <span class="grp-lbl">Waiting screen (consent declined) &amp; escape</span>
-      <button class="play" onclick="ST.roomTimerActive=false;render()">Pause room clock (loader fallback)</button>
-      <button class="play" onclick="ST.roomTimerActive=true;render()">Start / resume room clock</button>
-      <button class="play" onclick="resetRoomClock();ST.roomTimerActive=true;render()">Reset room clock (01:48)</button>
-      <button class="play" onclick="ST.roomsEnded=!ST.roomsEnded;render()">Toggle rooms ended (leave&rarr;return)</button>
-      <span class="sep"></span>
-      <button class="play" onclick="openLeaveReport()">Open Leave &amp; report</button>
-      <button class="play" onclick="setScene('report')">Open Report screen</button>
     </div>
     <div class="row">
       <span class="grp-lbl">Room timer (top pill)</span>
@@ -2370,29 +2353,6 @@ body.present .solo-wrap{padding:9vh 5vw calc(var(--footer-h) + 30px)}
       <span class="grp-lbl">Enforcement target</span>
       <button class="et on" data-et="mic">Mic</button>
       <button class="et" data-et="camera">Camera</button>
-    </div>
-    <div class="row">
-      <span class="grp-lbl">Panel (Main Room only — removed from Rooms)</span>
-      <button class="pn on" data-pn="">None</button>
-      <button class="pn" data-pn="chat">Chat</button>
-      <button class="pn" data-pn="timeline">Timeline</button>
-      <button class="pn" data-pn="participants">Participants</button>
-      <span class="sep"></span>
-      <span class="grp-lbl">Width</span>
-      <button class="wd on" data-wd="wide">Wide</button>
-      <button class="wd" data-wd="laptop">Laptop</button>
-      <button class="wd" data-wd="narrow">Narrow</button>
-    </div>
-    <div class="row">
-      <span class="grp-lbl">Video bg</span>
-      <button class="vb" data-vb="flat">Flat</button>
-      <button class="vb on" data-vb="real">Realistic</button>
-      <span class="sep"></span>
-      <span class="grp-lbl">Live chat (Main Room only — removed from Rooms)</span>
-      <button class="play" onclick="trigMsg()">Trigger message</button>
-      <button class="play" onclick="trigHelper()">Trigger helper reply</button>
-      <button class="play" onclick="trigBurst()">Trigger burst</button>
-      <button class="play" id="chatHideBtn" onclick="toggleChatHidden()">Hide live chat</button>
     </div>
   </div>
   <div class="state-note" id="note"></div>
@@ -3931,7 +3891,7 @@ setInterval(roomTick,1000);
 
 /* ---------- state ---------- */
 var TEACHER='Niv Rubin';  /* teacher name variable */
-var ST={scene:'duo',roomPhase:'normal',activity:'generic',bcast:false,enforceTarget:'mic',soloReason:'partner',transVariant:'solo',
+var ST={scene:'duo',roomPhase:'normal',activity:'dialogue',bcast:false,enforceTarget:'mic',soloReason:'partner',transVariant:'solo',
         soloIdx:0,soloRevealed:false,soloPlaying:false,soloMarked:false,
         speaker:'none',panel:'',width:'wide',vb:'real',askOpen:false,
         roomTimerActive:false,roomsEnded:false,leaveReport:false,roomLeft:108,
