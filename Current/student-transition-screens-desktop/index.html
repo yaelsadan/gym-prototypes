@@ -450,11 +450,10 @@ body.present .mode-btn:hover{opacity:1}
 .wait:not(.flash-open) .invite{font-size:20px;margin-bottom:20px}
 .wait:not(.flash-open) .wait-acts .btn{min-width:252px;min-height:58px;font-size:17px}
 .wait-flash-stack{
-  min-width:0;min-height:0;display:grid;
-  grid-template-rows:minmax(0,1fr) 104px;gap:14px;
+  position:relative;min-width:0;min-height:0;
 }
 .wait-flashcard{
-  position:relative;min-width:0;border-radius:22px;background:#fff;color:var(--brand-charcoal);
+  position:relative;width:100%;height:100%;min-width:0;border-radius:22px;background:#fff;color:var(--brand-charcoal);
   box-shadow:0 16px 40px rgba(18,14,12,.28),0 2px 8px rgba(18,14,12,.12);
   cursor:pointer;
 }
@@ -470,7 +469,7 @@ body.present .mode-btn:hover{opacity:1}
 }
 .wait-flashcard .flash-close svg{width:20px;height:20px}
 .wait-flashcard-copy{
-  position:absolute;left:36px;right:36px;top:50%;transform:translateY(-54%);
+  position:absolute;left:36px;right:36px;top:calc(50% - 59px);transform:translateY(-54%);
   display:flex;flex-direction:column;align-items:center;text-align:center;
 }
 .wait-flashcard-copy.is-answer{transform:translateY(-57%)}
@@ -508,22 +507,22 @@ body.present .mode-btn:hover{opacity:1}
 }
 @keyframes flashwave{0%,100%{transform:scaleY(.72)}50%{transform:scaleY(1)}}
 .wait-flashcard-controls{
-  position:relative;left:50%;width:420px;height:104px;min-height:104px;
+  position:absolute;left:50%;bottom:18px;width:384px;height:88px;min-height:88px;z-index:2;
   transform:translateX(-50%);border-radius:999px;
-  display:flex;align-items:center;justify-content:center;gap:14px;padding:17px 22px;
-  border:1px solid rgba(255,246,236,.16);
-  background:linear-gradient(135deg,rgba(255,255,255,.08) 0%,transparent 42%,rgba(0,0,0,.05) 100%),rgba(45,40,36,.78);
-  backdrop-filter:blur(28px) saturate(1.16);-webkit-backdrop-filter:blur(28px) saturate(1.16);
-  box-shadow:inset 1px 1px 0 rgba(255,255,255,.10),0 12px 34px rgba(18,14,12,.30);
+  display:flex;align-items:center;justify-content:center;gap:10px;padding:12px 16px;
+  border:1px solid rgba(55,50,48,.12);
+  background:rgba(247,246,239,.52);
+  backdrop-filter:blur(16px) saturate(1.04);-webkit-backdrop-filter:blur(16px) saturate(1.04);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.48),0 3px 10px rgba(55,50,48,.08);
 }
 .wait-flashcard-controls .nav{
-  width:70px;height:70px;border:0;border-radius:50%;background:transparent;color:#F7F6EF;
+  width:64px;height:64px;border:0;border-radius:50%;background:transparent;color:var(--brand-charcoal);
   display:grid;place-items:center;cursor:pointer;flex:none;
 }
-.wait-flashcard-controls .nav:hover{background:rgba(55,50,48,.28);color:#fff}
-.wait-flashcard-controls .nav svg{width:28px;height:28px}
+.wait-flashcard-controls .nav:hover{background:rgba(55,50,48,.08)}
+.wait-flashcard-controls .nav svg{width:26px;height:26px}
 .wait-flashcard-controls .reveal{
-  flex:1;min-width:168px;height:70px;border-radius:999px;border:1.5px solid var(--brand-charcoal);
+  flex:1;min-width:168px;height:64px;border-radius:999px;border:1.5px solid var(--brand-charcoal);
   background:var(--brand-yellow);color:var(--brand-charcoal);font-family:var(--font-ui);
   font-size:18px;font-weight:700;letter-spacing:-.1px;cursor:pointer;padding:0 28px;
 }
@@ -965,14 +964,14 @@ function flashLayer(){
     +'<div class="wait-flashcard-copy'+(ST.flashRevealed?' is-answer':'')+'">'
       +(ST.flashRevealed?answerBody:'<div class="dir">'+c.dir+'</div><div class="prompt" lang="he">'+c.prompt+'</div>')
     +'</div>'
-    +'</aside>'
-    +'<div class="wait-flashcard-controls">'
+    +'<div class="wait-flashcard-controls" onclick="event.stopPropagation()">'
       +'<button class="nav" onclick="flashPrev()"'+hubTipAttrs('Previous flashcard')+'>'+prev+'</button>'
       +'<button class="reveal" onclick="'+(ST.flashRevealed?'flashNext()':'flashReveal()')+'">'
         +(ST.flashRevealed?'Next':'Show Answer')
       +'</button>'
       +'<button class="nav" onclick="flashNext()"'+hubTipAttrs('Next flashcard')+'>'+next+'</button>'
     +'</div>'
+    +'</aside>'
     +'</div>';
 }
 function flashWave(){

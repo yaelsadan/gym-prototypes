@@ -319,6 +319,8 @@ h1{font-size:20px;line-height:1.25}
   letter-spacing:-.1px;
 }
 .primary-cta:focus-visible{outline:3px solid #fff;outline-offset:3px}
+.welcome-panel .welcome-content .primary-cta,
+.waiting-panel .waiting-content .primary-cta{border:none}
 
 /* Canonical mobile A/V Check: a focused task, without the Welcome panel. */
 .av-canon{
@@ -344,9 +346,9 @@ h1{font-size:20px;line-height:1.25}
   letter-spacing:-.2px;
 }
 .av-card{
-  width:calc(100% + 8px);
+  width:clamp(212px,calc(62% + 16px),240px);
   flex:none;
-  padding:3px 3px 48px;
+  padding:11px 11px 48px;
   border:1px solid rgba(247,246,239,.28);
   border-radius:var(--r-lg);
   background:rgba(247,246,239,.1);
@@ -358,7 +360,7 @@ h1{font-size:20px;line-height:1.25}
 .av-preview{
   position:relative;
   width:100%;
-  aspect-ratio:16 / 9;
+  aspect-ratio:106 / 139;
   overflow:hidden;
   border:1px solid rgba(255,255,255,.12);
   border-radius:var(--r-md);
@@ -367,8 +369,9 @@ h1{font-size:20px;line-height:1.25}
 .av-preview .vid{
   position:absolute;
   inset:0;
-  background-position:center;
+  background-position:center 18%;
   background-size:cover;
+  background-repeat:no-repeat;
 }
 .av-preview.cam-off{display:grid;place-items:center;background:#3a3531}
 .av-preview .av-face{
@@ -574,6 +577,7 @@ h1{font-size:20px;line-height:1.25}
   letter-spacing:-2.4px;
   line-height:.95;
 }
+.waiting-countdown.pre-start{color:var(--brand-yellow)}
 .waiting-prompt{
   margin:0 0 16px;
   color:rgba(247,246,239,.8);
@@ -590,22 +594,33 @@ h1{font-size:20px;line-height:1.25}
   position:absolute;
   right:14px;
   bottom:14px;
-  width:132px;
-  aspect-ratio:16 / 9;
+  width:142px;
+  aspect-ratio:106 / 139;
+  overflow:visible;
+  padding:0;
+  border:0;
+  background:transparent;
+}
+.waiting-self-media,
+.self-view-overlay-media{
+  position:absolute;
+  inset:0;
   overflow:hidden;
   border:1.5px solid rgba(255,255,255,.72);
   border-radius:12px;
   background:linear-gradient(160deg,#5b5650,#332f2b);
   box-shadow:0 8px 22px rgba(18,14,12,.2);
 }
-.waiting-self .vid{
+.waiting-self-media .vid{
   position:absolute;
   inset:0;
-  background-position:center;
+  background-position:center 18%;
   background-size:cover;
+  background-repeat:no-repeat;
 }
-.waiting-self.cam-off{display:grid;place-items:center;background:#3a3531}
-.waiting-self .av-face{
+.waiting-self-media.cam-off,
+.self-view-overlay-media.cam-off{display:grid;place-items:center;background:#3a3531}
+.waiting-self-media .av-face{
   width:34px;
   height:34px;
   display:grid;
@@ -615,7 +630,7 @@ h1{font-size:20px;line-height:1.25}
   font-size:14px;
   font-weight:700;
 }
-.waiting-self .camoff-cap{
+.waiting-self-media .camoff-cap{
   position:absolute;
   right:0;
   bottom:7px;
@@ -626,13 +641,379 @@ h1{font-size:20px;line-height:1.25}
   letter-spacing:.35px;
   text-transform:uppercase;
 }
-.waiting-self.is-blur .vid{filter:blur(8px);transform:scale(1.12)}
-.waiting-self.is-blur .vid-subject{
+.waiting-self-media.is-blur .vid{filter:blur(8px);transform:scale(1.12)}
+.waiting-self-media.is-blur .vid-subject{
   filter:none;
   transform:none;
   -webkit-mask-image:radial-gradient(ellipse 48% 74% at 50% 44%,#000 40%,transparent 76%);
   mask-image:radial-gradient(ellipse 48% 74% at 50% 44%,#000 40%,transparent 76%);
 }
+.waiting-av-tools{
+  bottom:8px;
+  gap:4px;
+  padding:0;
+  border:0;
+  background:transparent;
+  box-shadow:none;
+  -webkit-backdrop-filter:none;
+  backdrop-filter:none;
+}
+.waiting-av-tools .av-tool{width:42px;gap:0}
+.waiting-av-tools .av-control{
+  width:42px;
+  height:42px;
+  border-color:rgba(255,246,236,.18);
+  background:rgba(45,40,36,.52);
+  box-shadow:inset 1px 1px 0 rgba(255,255,255,.1),0 3px 9px rgba(18,14,12,.14);
+}
+.waiting-av-tools .av-control.blur-on{
+  border-color:rgba(247,246,239,.34);
+  background:rgba(247,246,239,.2);
+}
+.waiting-av-tools .av-control svg{width:18px;height:18px}
+.waiting-av-tools .av-control .slash{width:28px;height:3px}
+
+/* Waiting + Flashcards: the same surface reprioritizes into context + practice. */
+.waiting-panel.flashcards-active{
+  overflow:visible;
+  display:grid;
+  grid-template-rows:210px minmax(0,1fr);
+  align-items:stretch;
+  gap:12px;
+  border:0;
+  border-radius:0;
+  background:transparent;
+  box-shadow:none;
+  -webkit-backdrop-filter:none;
+  backdrop-filter:none;
+}
+.flash-wait-context{
+  position:relative;
+  min-height:0;
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  border:1px solid rgba(247,246,239,.3);
+  border-radius:var(--r-lg);
+  background:rgba(247,246,239,.12);
+  box-shadow:inset 0 1px 0 rgba(247,246,239,.16);
+  color:#fff;
+  text-align:center;
+  -webkit-backdrop-filter:blur(34px) saturate(1.16);
+  backdrop-filter:blur(34px) saturate(1.16);
+}
+.flash-wait-context .session-progress{padding-top:20px;gap:7px}
+.flash-wait-label{
+  margin-top:31px;
+  color:rgba(247,246,239,.8);
+  font-size:15px;
+  font-weight:500;
+  line-height:1.3;
+}
+.flash-wait-context .waiting-countdown{margin:6px 0 0}
+.waiting-flashcard{
+  position:relative;
+  min-height:0;
+  overflow:hidden;
+  border-radius:var(--r-lg);
+  background:#fff;
+  color:var(--brand-charcoal);
+  box-shadow:0 16px 40px rgba(18,14,12,.28),0 2px 8px rgba(18,14,12,.12);
+}
+.waiting-flashcard .bookmark{
+  position:absolute;
+  z-index:2;
+  top:12px;
+  right:12px;
+  width:36px;
+  height:36px;
+  padding:0;
+  border:0;
+  background:transparent;
+  color:var(--brand-charcoal);
+  display:grid;
+  place-items:center;
+  cursor:pointer;
+}
+.waiting-flashcard .bookmark svg{width:22px;height:22px}
+.waiting-flashcard .bookmark.is-saved svg{fill:var(--brand-yellow)}
+.waiting-flashcard .flash-close{
+  position:absolute;
+  z-index:2;
+  top:12px;
+  left:12px;
+  width:36px;
+  height:36px;
+  padding:0;
+  border:0;
+  background:transparent;
+  color:var(--brand-charcoal);
+  display:grid;
+  place-items:center;
+  cursor:pointer;
+}
+.waiting-flashcard .flash-close svg{width:20px;height:20px}
+.waiting-flashcard-copy{
+  position:absolute;
+  inset:0 26px 84px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+}
+.waiting-flashcard .dir{
+  margin-bottom:10px;
+  color:#8A8680;
+  font-size:14px;
+  font-weight:400;
+}
+.waiting-flashcard .prompt{
+  color:var(--brand-charcoal);
+  font-family:var(--font-ui);
+  font-size:30px;
+  font-weight:700;
+  line-height:1.25;
+  direction:rtl;
+}
+.waiting-flashcard .answer-art{
+  width:128px;
+  height:94px;
+  margin:0 0 10px;
+  display:block;
+  object-fit:contain;
+}
+.waiting-flashcard .answer-label{
+  margin-bottom:9px;
+  color:#9A9590;
+  font-size:14px;
+  font-weight:500;
+}
+.waiting-flashcard .answer{
+  color:var(--brand-charcoal);
+  font-size:28px;
+  font-weight:700;
+  line-height:1.25;
+}
+.waiting-flashcard-controls{
+  position:absolute;
+  z-index:2;
+  right:18px;
+  bottom:16px;
+  left:18px;
+  height:66px;
+  padding:9px 12px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  border:1px solid rgba(55,50,48,.12);
+  border-radius:var(--pill);
+  background:rgba(247,246,239,.52);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.48),0 3px 10px rgba(55,50,48,.08);
+  -webkit-backdrop-filter:blur(16px) saturate(1.04);
+  backdrop-filter:blur(16px) saturate(1.04);
+}
+.waiting-flashcard-controls .nav{
+  width:46px;
+  height:46px;
+  flex:none;
+  padding:0;
+  border:0;
+  border-radius:50%;
+  background:transparent;
+  color:var(--brand-charcoal);
+  display:grid;
+  place-items:center;
+  cursor:pointer;
+}
+.waiting-flashcard-controls .nav svg{width:22px;height:22px}
+.waiting-flashcard-controls .reveal{
+  min-width:0;
+  height:48px;
+  flex:1;
+  padding:0 18px;
+  border:1.5px solid var(--brand-charcoal);
+  border-radius:var(--pill);
+  background:var(--brand-yellow);
+  color:var(--brand-charcoal);
+  font-family:var(--font-ui);
+  font-size:16px;
+  font-weight:700;
+  letter-spacing:-.1px;
+  cursor:pointer;
+}
+
+/* Flashcards own the space; self-view reduces to a phone-edge tab. */
+.waiting-panel.flashcards-active .waiting-self{display:none}
+.self-view-peek{
+  position:absolute;
+  z-index:7;
+  top:300px;
+  right:-16px;
+  width:42px;
+  height:72px;
+  padding:0;
+  border:1px solid rgba(255,255,255,.24);
+  border-right:0;
+  border-radius:14px 0 0 14px;
+  background:rgba(45,40,36,.86);
+  box-shadow:0 6px 18px rgba(18,14,12,.2);
+  color:#fff;
+  font-family:inherit;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:4px;
+  cursor:pointer;
+  -webkit-backdrop-filter:blur(18px);
+  backdrop-filter:blur(18px);
+}
+.self-view-peek .peek-label{
+  color:#fff;
+  font-size:9px;
+  font-weight:700;
+  line-height:1;
+}
+.self-view-peek svg{
+  width:16px;
+  height:16px;
+}
+.self-view-peek .peek-chevron{
+  width:12px;
+  height:12px;
+  opacity:.78;
+}
+.self-view-peek:focus-visible,
+.self-view-close:focus-visible{outline:3px solid #fff;outline-offset:2px}
+.self-view-overlay-scrim{
+  position:absolute;
+  z-index:8;
+  inset:0;
+  border:0;
+  background:rgba(18,14,12,.2);
+  cursor:default;
+}
+.self-view-overlay{
+  position:absolute;
+  z-index:9;
+  right:24px;
+  bottom:128px;
+  width:clamp(150px,46%,176px);
+  aspect-ratio:106 / 139;
+  overflow:visible;
+}
+.self-view-overlay-media{
+  border-color:rgba(255,255,255,.78);
+  border-radius:14px;
+  box-shadow:0 12px 30px rgba(18,14,12,.3);
+}
+.self-view-overlay-media .vid{
+  position:absolute;
+  inset:0;
+  background-position:center 18%;
+  background-size:cover;
+  background-repeat:no-repeat;
+}
+.self-view-overlay-media.is-blur .vid{filter:blur(10px);transform:scale(1.12)}
+.self-view-overlay-media.is-blur .vid-subject{
+  filter:none;
+  transform:none;
+  -webkit-mask-image:radial-gradient(ellipse 48% 74% at 50% 44%,#000 40%,transparent 76%);
+  mask-image:radial-gradient(ellipse 48% 74% at 50% 44%,#000 40%,transparent 76%);
+}
+.self-view-overlay-media .av-face{
+  width:44px;
+  height:44px;
+  display:grid;
+  place-items:center;
+  border-radius:50%;
+  background:#5c554e;
+  font-size:17px;
+  font-weight:700;
+}
+.self-view-overlay-media .camoff-cap{
+  position:absolute;
+  right:0;
+  bottom:14px;
+  left:0;
+  color:#e8e2d6;
+  font-size:9px;
+  font-weight:700;
+  letter-spacing:.35px;
+  text-transform:uppercase;
+}
+.self-view-close{
+  position:absolute;
+  z-index:4;
+  top:7px;
+  right:7px;
+  width:26px;
+  height:26px;
+  padding:0;
+  display:grid;
+  place-items:center;
+  border:1px solid rgba(255,255,255,.34);
+  border-radius:50%;
+  background:rgba(45,40,36,.62);
+  color:#fff;
+  font:700 17px/1 inherit;
+  cursor:pointer;
+}
+
+/* Mobile T−10 / entering transition mirrors the canonical desktop sequence. */
+.mobile-start{
+  position:absolute;
+  z-index:3;
+  inset:108px var(--s16) max(18px,env(safe-area-inset-bottom,0px));
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  padding:22px 22px 130px;
+  color:#fff;
+  text-align:center;
+}
+.mobile-start .t-hero{display:grid;place-items:center;margin-bottom:12px}
+.mobile-start .t-lottie{width:286px;height:190px;max-width:82vw}
+.mobile-start .t-lottie svg{width:100%;height:100%;display:block}
+.mobile-start h2{
+  margin:8px 0 10px;
+  font-family:var(--font-brand);
+  font-size:31px;
+  font-weight:400;
+  font-synthesis:none;
+  line-height:1.16;
+  letter-spacing:-.2px;
+  text-wrap:balance;
+}
+.mobile-start .waiting-countdown{
+  margin:6px 0 0;
+  color:var(--brand-yellow);
+}
+.mobile-start .t-loadline{
+  position:relative;
+  width:120px;
+  height:2px;
+  margin-top:28px;
+  overflow:hidden;
+  border-radius:2px;
+  background:rgba(255,255,255,.12);
+}
+.mobile-start .t-loadline::after{
+  content:"";
+  position:absolute;
+  top:0;
+  left:-40%;
+  width:40%;
+  height:100%;
+  border-radius:2px;
+  background:linear-gradient(90deg,transparent,rgba(249,226,76,.85),transparent);
+  animation:mobile-loadslide 1.7s ease-in-out infinite;
+}
+@keyframes mobile-loadslide{0%{left:-42%}100%{left:100%}}
 
 @media (max-width:720px){
   body{padding:var(--s16)}
@@ -658,6 +1039,7 @@ h1{font-size:20px;line-height:1.25}
 }
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{scroll-behavior:auto!important}
+  .mobile-start .t-loadline::after{animation:none}
 }
 </style>
 </head>
@@ -677,10 +1059,16 @@ h1{font-size:20px;line-height:1.25}
     <button class="on" type="button" data-scene="welcome">Welcome</button>
     <button type="button" data-scene="av-check">A/V Check</button>
     <button type="button" data-scene="waiting">Waiting Room</button>
+    <div class="grp">Timer preview</div>
+    <button type="button" data-timer-preview="20">T−20</button>
+    <button type="button" data-timer-preview="10">T−10</button>
+    <button type="button" data-timer-preview="0">0 / Entering</button>
     <div class="state" id="state-note"></div>
   </aside>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.12.2/lottie.min.js"></script>
+<script src="../student-transition-screens-desktop/matkot.js"></script>
 <script>
 /* Shared state catalogue mirrors the desktop transition routing.
    This pass implements Welcome, A/V Check, and the canonical default Waiting Room. */
@@ -721,7 +1109,13 @@ var STATE = {
   camOff:false,
   micOff:false,
   blurOn:false,
-  permError:false
+  permError:false,
+  flashcardsActive:false,
+  waitingSelfOpen:false,
+  waitingPhase:"waiting",
+  flashIdx:0,
+  flashRevealed:false,
+  flashSaved:{}
 };
 
 var ICONS = {
@@ -734,6 +1128,76 @@ var ICONS = {
 };
 
 var IMG_YOU="../student-main-classroom-desktop/assets/pip-you.png";
+var MOBILE_MATKOT_SVG='<svg class="matkot-fallback" viewBox="0 0 300 170" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">'
+  +'<g stroke="#F7F6EF" stroke-width="4" stroke-linejoin="round">'
+  +'<g transform="rotate(-16 92 92)"><rect x="52" y="34" width="80" height="98" rx="40" fill="rgba(255,255,255,.05)"/><rect x="82" y="128" width="20" height="34" rx="9" fill="rgba(255,255,255,.05)"/></g>'
+  +'<g transform="rotate(16 208 92)"><rect x="168" y="34" width="80" height="98" rx="40" fill="rgba(255,255,255,.05)"/><rect x="198" y="128" width="20" height="34" rx="9" fill="rgba(255,255,255,.05)"/></g>'
+  +'</g><circle cx="150" cy="72" r="16" fill="#F9E24C" stroke="#F7F6EF" stroke-width="4"/></svg>';
+var MOBILE_LOTTIE=null;
+var MOBILE_LOTTIE_HOST=null;
+function mobileRackets(){
+  return '<div class="t-hero"><div id="mobile-matkot" class="t-lottie">'+MOBILE_MATKOT_SVG+'</div></div>';
+}
+function mountMobileMatkot(){
+  var host=document.getElementById("mobile-matkot");
+  if(!host){
+    if(MOBILE_LOTTIE){ try{ MOBILE_LOTTIE.destroy(); }catch(error){} MOBILE_LOTTIE=null; }
+    MOBILE_LOTTIE_HOST=null;
+    return;
+  }
+  if(MOBILE_LOTTIE&&MOBILE_LOTTIE_HOST===host) return;
+  if(MOBILE_LOTTIE){
+    try{ MOBILE_LOTTIE.destroy(); }catch(error){}
+    MOBILE_LOTTIE=null;
+    MOBILE_LOTTIE_HOST=null;
+  }
+  if(typeof lottie==="undefined"||typeof MATKOT==="undefined") return;
+  try{
+    host.innerHTML="";
+    MOBILE_LOTTIE_HOST=host;
+    MOBILE_LOTTIE=lottie.loadAnimation({container:host,renderer:"svg",loop:true,autoplay:true,animationData:MATKOT});
+  }catch(error){
+    host.innerHTML=MOBILE_MATKOT_SVG;
+    MOBILE_LOTTIE=null;
+    MOBILE_LOTTIE_HOST=null;
+  }
+}
+function mobileStartScreen(){
+  var entering=STATE.waitingPhase==="entering";
+  return Components.shell(
+    '<main class="mobile-start">'
+      +mobileRackets()
+      +'<h2>'+(entering?'Entering the Main Room':'The session is about to start!')+'</h2>'
+      +(entering
+        ? '<div class="t-loadline" aria-hidden="true"></div>'
+        : '<div class="waiting-countdown" id="waiting-countdown" role="timer" aria-live="off">'+formatTime(STATE.left)+'</div>')
+    +'</main>'
+  );
+}
+function showMobileEntering(){
+  var start=document.querySelector(".mobile-start");
+  var title=start&&start.querySelector("h2");
+  var clock=start&&start.querySelector("#waiting-countdown");
+  if(!start||!title){ render(); return; }
+  title.textContent="Entering the Main Room";
+  if(clock) clock.outerHTML='<div class="t-loadline" aria-hidden="true"></div>';
+}
+var FLASH_DECK=[
+  {dir:"translate to English",prompt:"הגעת כבר?",answer:"Have you arrived yet?"},
+  {dir:"translate to English",prompt:"בריכת שחייה",answer:"Swimming pool"},
+  {dir:"translate to English",prompt:"קפה",answer:"Coffee"},
+  {dir:"translate to English",prompt:"תודה",answer:"Thank you"},
+  {dir:"translate to English",prompt:"בוקר טוב",answer:"Good morning"},
+  {dir:"translate to English",prompt:"חבר",answer:"Friend"}
+];
+var FLASH_ICONS={
+  bookmark:'<svg viewBox="0 0 24 28" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" aria-hidden="true"><path d="M5 3.5h14v20L12 19l-7 4.5z"/></svg>',
+  prev:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 7v10M18 6.5L10 12l8 5.5z"/></svg>',
+  next:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 7v10M6 6.5l8 5.5-8 5.5z"/></svg>',
+  close:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>',
+  chevron:'<svg class="peek-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>'
+};
+var FLASH_ANSWER_ICON="../student-transition-screens-desktop/answer-icon.png";
 
 var Components = {
   statusbar:function(){
@@ -760,6 +1224,35 @@ var Components = {
     return '<div class="transition-shell">'+Components.statusbar()+Components.lockup()+content+'</div>';
   }
 };
+
+function waitingFlashcard(){
+  var index=((STATE.flashIdx%FLASH_DECK.length)+FLASH_DECK.length)%FLASH_DECK.length;
+  var card=FLASH_DECK[index];
+  var saved=!!STATE.flashSaved[index];
+  var copy=STATE.flashRevealed
+    ? '<img class="answer-art" src="'+FLASH_ANSWER_ICON+'" alt="">'
+      +'<div class="answer-label">Correct Answer</div>'
+      +'<div class="answer">'+card.answer+'</div>'
+    : '<div class="dir">'+card.dir+'</div><div class="prompt" lang="he">'+card.prompt+'</div>';
+  return '<section class="waiting-flashcard" data-action="flash-toggle" aria-label="Flashcard practice">'
+    +'<button class="flash-close" type="button" data-action="close-flashcards" aria-label="Close flashcards">'+FLASH_ICONS.close+'</button>'
+    +'<button class="bookmark'+(saved?' is-saved':'')+'" type="button" data-action="toggle-flash-save" aria-pressed="'+saved+'" aria-label="'+(saved?'Remove bookmark':'Bookmark flashcard')+'">'+FLASH_ICONS.bookmark+'</button>'
+    +'<div class="waiting-flashcard-copy">'+copy+'</div>'
+    +'<div class="waiting-flashcard-controls">'
+      +'<button class="nav" type="button" data-action="flash-prev" aria-label="Previous flashcard">'+FLASH_ICONS.prev+'</button>'
+      +'<button class="reveal" type="button" data-action="'+(STATE.flashRevealed?'flash-next':'flash-reveal')+'">'+(STATE.flashRevealed?'Next':'Show Answer')+'</button>'
+      +'<button class="nav" type="button" data-action="flash-next" aria-label="Next flashcard">'+FLASH_ICONS.next+'</button>'
+    +'</div>'
+  +'</section>';
+}
+
+function waitingSelfControls(){
+  return '<div class="av-tools waiting-av-tools">'
+    +'<div class="av-tool"><button class="av-control" type="button" data-action="toggle-camera" aria-pressed="'+(!STATE.camOff)+'" aria-label="'+(STATE.camOff?'Turn camera on':'Turn camera off')+'">'+ICONS.cam+(STATE.camOff?'<span class="slash"></span>':'')+'</button></div>'
+    +'<div class="av-tool"><button class="av-control" type="button" data-action="toggle-mic" aria-pressed="'+(!STATE.micOff)+'" aria-label="'+(STATE.micOff?'Turn microphone on':'Turn microphone off')+'">'+ICONS.mic+(STATE.micOff?'<span class="slash"></span>':'')+'</button></div>'
+    +'<div class="av-tool"><button class="av-control'+(STATE.blurOn?' blur-on':'')+'" type="button" data-action="toggle-blur" aria-pressed="'+STATE.blurOn+'" aria-label="'+(STATE.blurOn?'Turn background blur off':'Turn background blur on')+'">'+ICONS.blur+'</button></div>'
+  +'</div>';
+}
 
 var Renderers = {
   welcome:function(){
@@ -804,20 +1297,45 @@ var Renderers = {
     );
   },
   waiting:function(){
+    if(STATE.waitingPhase!=="waiting") return mobileStartScreen();
     var previewInner=STATE.camOff
       ? '<span class="av-face">Y</span><span class="camoff-cap">Camera off</span>'
       : '<div class="vid" style="background-image:url(\''+IMG_YOU+'\')"></div>'
         +(STATE.blurOn?'<div class="vid vid-subject" style="background-image:url(\''+IMG_YOU+'\')"></div>':'');
-    return Components.shell(
-      '<main class="waiting-panel">'
-        +Components.progress()
+    var mediaClass=(STATE.camOff?' cam-off':'')+(!STATE.camOff&&STATE.blurOn?' is-blur':'');
+    var selfViewTrigger=STATE.flashcardsActive
+      ? '<button class="self-view-peek" type="button" data-action="toggle-waiting-self" aria-expanded="'+STATE.waitingSelfOpen+'" aria-label="'+(STATE.waitingSelfOpen?'Close self-view':'Open self-view')+'">'+ICONS.cam+'<span class="peek-label">You</span>'+FLASH_ICONS.chevron+'</button>'
+      : '<div class="waiting-self" aria-label="Your self-view">'
+          +'<div class="waiting-self-media'+mediaClass+'">'+previewInner+'</div>'
+          +waitingSelfControls()
+        +'</div>';
+    var selfViewOverlay=STATE.waitingSelfOpen
+      ? '<button class="self-view-overlay-scrim" type="button" data-action="close-waiting-self" aria-label="Close self-view"></button>'
+        +'<div class="self-view-overlay" role="dialog" aria-modal="false" aria-label="Your self-view">'
+          +'<div class="self-view-overlay-media'+mediaClass+'">'+previewInner+'</div>'
+          +waitingSelfControls()
+          +'<button class="self-view-close" type="button" data-action="close-waiting-self" aria-label="Close self-view">\u00d7</button>'
+        +'</div>'
+      : '';
+    var selfView=selfViewTrigger+selfViewOverlay;
+    var waitingBody=STATE.flashcardsActive
+      ? '<section class="flash-wait-context" aria-label="Session countdown">'
+          +Components.progress()
+          +'<div class="flash-wait-label">Session starts in</div>'
+          +'<div class="waiting-countdown'+(STATE.left<=STATE.timing.t20?' pre-start':'')+'" id="waiting-countdown" role="timer" aria-live="off">'+formatTime(STATE.left)+'</div>'
+        +'</section>'
+        +waitingFlashcard()
+      : Components.progress()
         +'<div class="waiting-content">'
           +'<h2>We\u2019re about to start</h2>'
-          +'<div class="waiting-countdown" id="waiting-countdown" role="timer" aria-live="off">'+formatTime(STATE.left)+'</div>'
+          +'<div class="waiting-countdown'+(STATE.left<=STATE.timing.t20?' pre-start':'')+'" id="waiting-countdown" role="timer" aria-live="off">'+formatTime(STATE.left)+'</div>'
           +'<p class="waiting-prompt">Want to warm up while you wait?</p>'
-          +'<button class="primary-cta" type="button" data-action="flashcards-placeholder">Practice flashcards</button>'
-        +'</div>'
-        +'<div class="waiting-self'+(STATE.camOff?' cam-off':'')+(!STATE.camOff&&STATE.blurOn?' is-blur':'')+'" aria-label="Your self-view">'+previewInner+'</div>'
+          +'<button class="primary-cta" type="button" data-action="open-flashcards">Practice flashcards</button>'
+        +'</div>';
+    return Components.shell(
+      '<main class="waiting-panel'+(STATE.flashcardsActive?' flashcards-active':'')+(STATE.waitingSelfOpen?' self-view-open':'')+'">'
+        +waitingBody
+        +selfView
       +'</main>'
     );
   }
@@ -829,6 +1347,8 @@ function setScene(scene){
   if(scene==="waiting"){
     STATE.left=STATE.timing.waiting;
     STATE.clockOn=true;
+    STATE.waitingPhase="waiting";
+    closeWaitingSecondary();
   }else{
     STATE.clockOn=false;
   }
@@ -846,16 +1366,37 @@ function render(){
   document.querySelectorAll("[data-scene]").forEach(function(button){
     button.classList.toggle("on",button.dataset.scene===STATE.scene);
   });
+  var timerPreview=STATE.scene==="waiting"
+    ? (STATE.waitingPhase==="entering"?"0":(STATE.waitingPhase==="t10"?"10":(STATE.left<=STATE.timing.t20?"20":"")))
+    : "";
+  document.querySelectorAll("[data-timer-preview]").forEach(function(button){
+    button.classList.toggle("on",button.dataset.timerPreview===timerPreview);
+  });
   document.getElementById("state-note").textContent=STATE.scene==="av-check"
     ? "Canonical mobile A/V Check. Camera, microphone, blur and voice feedback are interactive."
     : STATE.scene==="waiting"
-      ? "Canonical Mobile Waiting Room. Countdown updates in place; Flashcards remains a placeholder in this pass."
+      ? (STATE.flashcardsActive
+        ? "Waiting Room Flashcards. Session countdown remains visible; self-view is collapsed and expandable."
+        : "Canonical Mobile Waiting Room. Countdown updates in place; Flashcards compresses the waiting context.")
       : "Canonical Mobile Welcome. Continue opens the mobile A/V Check.";
   syncAvMicMeter();
+  mountMobileMatkot();
 }
 
 document.querySelectorAll("[data-scene]").forEach(function(button){
   button.addEventListener("click",function(){ setScene(button.dataset.scene); });
+});
+document.querySelectorAll("[data-timer-preview]").forEach(function(button){
+  button.addEventListener("click",function(){
+    var seconds=Number(button.dataset.timerPreview);
+    STATE.scene="waiting";
+    STATE.left=seconds;
+    STATE.route.entering=seconds===0;
+    STATE.waitingPhase=seconds===0?"entering":(seconds<=STATE.timing.t10?"t10":"waiting");
+    STATE.clockOn=seconds>0;
+    closeWaitingSecondary();
+    render();
+  });
 });
 document.getElementById("app").addEventListener("click",function(event){
   var action=event.target.closest("[data-action]");
@@ -865,13 +1406,35 @@ document.getElementById("app").addEventListener("click",function(event){
   if(name==="toggle-camera"){ STATE.camOff=!STATE.camOff; render(); return; }
   if(name==="toggle-mic"){ STATE.micOff=!STATE.micOff; render(); return; }
   if(name==="toggle-blur"){ STATE.blurOn=!STATE.blurOn; render(); return; }
-  if(name==="flashcards-placeholder"){
-    action.textContent="Flashcards coming next";
-    action.setAttribute("aria-label","Flashcards mobile experience is not implemented in this pass");
-    document.getElementById("state-note").textContent="Flashcards-open is intentionally not implemented in this pass.";
+  if(name==="toggle-waiting-self"){ STATE.waitingSelfOpen=!STATE.waitingSelfOpen; render(); return; }
+  if(name==="close-waiting-self"){ STATE.waitingSelfOpen=false; render(); return; }
+  if(name==="open-flashcards"){ STATE.flashcardsActive=true; STATE.waitingSelfOpen=false; render(); return; }
+  if(name==="close-flashcards"){ STATE.flashcardsActive=false; STATE.waitingSelfOpen=false; render(); return; }
+  if(name==="flash-reveal"){ STATE.flashRevealed=true; render(); return; }
+  if(name==="flash-toggle"){ STATE.flashRevealed=!STATE.flashRevealed; render(); return; }
+  if(name==="flash-prev"){ STATE.flashIdx--; STATE.flashRevealed=false; render(); return; }
+  if(name==="flash-next"){ STATE.flashIdx++; STATE.flashRevealed=false; render(); return; }
+  if(name==="toggle-flash-save"){
+    var flashIndex=((STATE.flashIdx%FLASH_DECK.length)+FLASH_DECK.length)%FLASH_DECK.length;
+    STATE.flashSaved[flashIndex]=!STATE.flashSaved[flashIndex];
+    render();
     return;
   }
   if(name==="ready") finishAv();
+});
+
+/* T−10 can call this before handing off to the existing start transition. */
+function closeWaitingSecondary(){
+  STATE.flashcardsActive=false;
+  STATE.waitingSelfOpen=false;
+  STATE.flashRevealed=false;
+}
+
+document.addEventListener("keydown",function(event){
+  if(event.key==="Escape"&&STATE.waitingSelfOpen){
+    STATE.waitingSelfOpen=false;
+    render();
+  }
 });
 
 /* Keep the approved desktop routing decisions without rendering later states yet. */
@@ -889,12 +1452,28 @@ function finishAv(){
     "I\u2019m ready routes to "+SCREENS[target].label+". That mobile state remains intentionally unimplemented.";
 }
 
-/* Waiting countdown updates only its text node; later states own their transitions. */
+/* Waiting countdown mirrors desktop: yellow at T−20, rackets at T−10, entering at zero. */
 setInterval(function(){
-  if(STATE.scene!=="waiting"||!STATE.clockOn||STATE.left<=0) return;
-  STATE.left--;
+  if(STATE.scene!=="waiting"||!STATE.clockOn) return;
+  if(STATE.left>0) STATE.left--;
+  if(STATE.waitingPhase==="waiting"&&STATE.left<=STATE.timing.t10){
+    STATE.waitingPhase="t10";
+    closeWaitingSecondary();
+    render();
+    return;
+  }
+  if(STATE.waitingPhase==="t10"&&STATE.left<=0){
+    STATE.waitingPhase="entering";
+    STATE.route.entering=true;
+    STATE.clockOn=false;
+    showMobileEntering();
+    return;
+  }
   var clock=document.getElementById("waiting-countdown");
-  if(clock) clock.textContent=formatTime(STATE.left);
+  if(clock){
+    clock.textContent=formatTime(STATE.left);
+    clock.classList.toggle("pre-start",STATE.waitingPhase==="waiting"&&STATE.left<=STATE.timing.t20);
+  }
 },1000);
 
 /* A/V Check only — real microphone level where supported, approved ripple fallback otherwise. */
