@@ -615,19 +615,6 @@ h1{font-size:20px}
 .vol-b{font-size:15px;line-height:1.4;text-wrap:pretty}
 .vol-c{font-size:13px;line-height:1.4;text-wrap:pretty}
 
-/* ===== v9c Practice Room transfer — shared full-screen matkot loading takeover =====
-   Mirrors the transfer screen in Student Main Classroom Desktop. Non-numeric loader only.
-   z-index 44 keeps it below the phone status bar (45), same as the Practice Rooms transitions. */
-.transition{position:absolute;inset:0;z-index:44;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:#2B2724;color:#fff;padding:32px}
-.t-hero{display:grid;place-items:center;margin-bottom:4px}
-.t-lottie{width:346px;height:196px;max-width:86vw}
-.t-headline{font-family:"FedraSerifPro",var(--font-brand),Georgia,serif;font-size:28px;font-weight:400;font-style:normal;font-synthesis:none;line-height:1.2;margin-top:14px;max-width:320px}
-.t-explain{font-family:var(--font-ui);font-size:17px;font-weight:500;line-height:1.5;opacity:.86;margin-top:11px;max-width:320px}
-.t-loadline{width:110px;height:2px;border-radius:2px;background:rgba(255,255,255,.14);overflow:hidden;position:relative;margin-top:26px}
-.t-loadline::after{content:"";position:absolute;top:0;left:-40%;width:40%;height:100%;border-radius:2px;background:linear-gradient(90deg,transparent,rgba(249,226,76,.9),transparent);animation:loadslide 1.7s ease-in-out infinite}
-@keyframes loadslide{0%{left:-42%}100%{left:100%}}
-@media (prefers-reduced-motion:reduce){.t-loadline::after{animation:none;left:30%}}
-
 /* ===== Room Consent — milky / Citizen bottom sheet (mobile) ===== */
 .rc-scrim{position:absolute;inset:0;z-index:50;background:rgba(55,50,48,.42);backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px)}
 .rc-sheet{position:absolute;left:0;right:0;bottom:0;z-index:51;box-sizing:border-box;background:rgba(250,249,244,.7);-webkit-backdrop-filter:blur(38px) saturate(1.4);backdrop-filter:blur(38px) saturate(1.4);color:var(--brand-charcoal);border-top:1px solid rgba(255,255,255,.55);border-radius:26px 26px 0 0;padding:14px 22px 28px;box-shadow:0 -12px 40px rgba(55,50,48,.3);font-family:var(--font-ui);animation:rcup .28s cubic-bezier(.2,.9,.25,1) both}
@@ -644,18 +631,6 @@ h1{font-size:20px}
 @keyframes rcbar{from{width:100%}to{width:0}}
 .rc-cap{font-size:11.5px;color:var(--text-muted);margin:9px 0 0;text-align:center}
 @media (prefers-reduced-motion:reduce){.rc-line i{animation:none;width:100%}}
-
-/* ===== Waiting-return — calm full-screen with a room countdown (consent No / timeout) ===== */
-.waitreturn{position:absolute;inset:0;z-index:44;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:#2B2724;color:#fff;padding:32px}
-.waitreturn .wr-hero{margin-bottom:2px}
-.waitreturn .wr-hero .t-lottie{width:300px;height:170px;max-width:82vw}
-.matkot-fallback{width:100%;height:100%;display:block}
-.waitreturn .wr-chip{display:inline-flex;align-items:center;gap:7px;font-size:10.5px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;color:rgba(255,255,255,.72);background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);padding:6px 12px;border-radius:999px;margin-bottom:14px}
-.waitreturn .wr-chip .d{width:7px;height:7px;border-radius:50%;background:var(--brand-yellow)}
-.waitreturn h2{font-family:"FedraSerifPro",var(--font-brand),Georgia,serif;font-size:27px;font-weight:400;font-style:normal;font-synthesis:none;line-height:1.22;margin:0 0 12px;max-width:320px}
-.waitreturn .wr-sub{font-family:var(--font-ui);font-size:17px;font-weight:500;line-height:1.5;max-width:320px;opacity:.86;margin:0}
-.waitreturn .wr-num{font-variant-numeric:tabular-nums;font-weight:800;font-size:40px;letter-spacing:1px;margin-top:22px}
-.waitreturn .wr-note{margin-top:18px;font-size:14px;font-weight:600;color:rgba(255,255,255,.72)}
 
 /* ==========================================================
    Pass 1 — Main Room Mobile shell alignment to Desktop
@@ -2819,12 +2794,8 @@ Mobile max-width target: min(280px, calc(100vw - 40px)).
       <button onclick="volPickOther()">Pick someone else</button>
       <button onclick="volNone()">No volunteers / return to Main Room</button>
       <button onclick="volEndDemo()">End demonstration</button>
-      <div class="grp">Practice Room transfer (debug)</div>
+      <div class="grp">Practice Room flow</div>
       <button onclick="roomConsentShow()">Room consent (Practice Room)</button>
-      <button onclick="transferShow()">Transfer to Practice Room</button>
-      <button onclick="transferHide()">Room ready · hide transfer</button>
-      <button onclick="roomConsentNo()">Consent No / timeout → waiting-return</button>
-      <button onclick="waitReturnHide()">Room ended · hide waiting-return</button>
       <div class="grp">Activity (debug)</div>
       <button onclick="activityRun()">Activity timer running</button>
       <button onclick="activityFinal()">Final 5 seconds</button>
@@ -3497,11 +3468,10 @@ function micTip(s){
 /* ---------- full screen ---------- */
 function screenHTML(s){
   s=s||{};
-  /* (v9c) Practice Room transfer AND waiting-return are TRUE full-screen takeovers: only the
-     phone status bar survives - no room, rail, chat, composer, self-view, mic/cam controls or
-     session chrome. */
-  if(s.transfer){ return statusbar()+transferScreen(); }
-  if(s.waitreturn){ return statusbar()+waitReturnScreen(); }
+  /* Transition visuals live only in student-transition-screens-mobile.
+     These state hooks mark the product-flow handoff without duplicating that UI here. */
+  if(s.transfer){ return statusbar()+transitionHandoff('practice-going'); }
+  if(s.waitreturn){ return statusbar()+transitionHandoff('practice-wait-declined'); }
   var H=statusbar();
   H+='<div class="room'+((!s.chrome && !isChromeBlocked(s))?' chrome-off':'')+(s.composerFocus?' composer-focus':'')+(s.demo==='me'?' demo-you':'')+'" id="room">';
   H+='<div class="chrome-tap" onclick="revealChrome()"></div>';
@@ -3527,36 +3497,13 @@ function screenHTML(s){
   return H;
 }
 
-/* ---------- Room Consent (A) + Practice Room Transfer (B) + Waiting-return (v9c) ----------
+/* ---------- Room Consent + transition handoff ----------
    Room Consent (A) = milky bottom sheet, the ONE decision UI, with a visible 10s decision timer.
    In the integrated product, students should be asked for camera/mic consent only once.
-   Yes -> Practice Room Transfer (B): full-screen matkot loading, non-numeric only (no 3-2-1 / 5-4-3-2-1).
-   No / 10s timeout -> Waiting-return: calm full-screen with a room countdown (never Solo, never normal Main Room). */
-/* Static matkot fallback (paddles + yellow ball) shown if the Lottie/CDN animation is
-   unavailable, so the transfer / waiting screens are never empty. */
-var MATKOT_SVG='<svg class="matkot-fallback" viewBox="0 0 300 170" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">'
-  +'<g stroke="#F7F6EF" stroke-width="4" stroke-linejoin="round">'
-  +'<g transform="rotate(-16 92 92)"><rect x="52" y="34" width="80" height="98" rx="40" fill="rgba(255,255,255,.05)"/><rect x="82" y="128" width="20" height="34" rx="9" fill="rgba(255,255,255,.05)"/></g>'
-  +'<g transform="rotate(16 208 92)"><rect x="168" y="34" width="80" height="98" rx="40" fill="rgba(255,255,255,.05)"/><rect x="198" y="128" width="20" height="34" rx="9" fill="rgba(255,255,255,.05)"/></g>'
-  +'</g>'
-  +'<circle cx="150" cy="72" r="16" fill="#F9E24C" stroke="#F7F6EF" stroke-width="4"/>'
-  +'</svg>';
-function transferScreen(){
-  return '<div class="transition" role="status" aria-live="polite">'
-    +'<div class="t-hero"><div id="matkot-lottie" class="t-lottie">'+MATKOT_SVG+'</div></div>'
-    +'<div class="t-headline">Yalla - let’s practice together</div>'
-    +'<p class="t-explain">Practice Hebrew out loud with classmates.<br>Mistakes are welcome.</p>'
-    +'<div class="t-loadline"></div></div>';
-}
-function waitReturnScreen(){
-  return '<div class="waitreturn">'
-    +'<div class="t-hero wr-hero"><div id="matkot-lottie" class="t-lottie">'+MATKOT_SVG+'</div></div>'
-    +'<span class="wr-chip"><span class="d"></span>Waiting</span>'
-    +'<h2>You’ll rejoin the main room shortly</h2>'
-    +'<p class="wr-sub">Camera and mic are needed for room practice. You’ll wait here until the class regroups.</p>'
-    +'<div class="wr-num" id="wrNum">'+wrFmt(wrLeft)+'</div>'
-    +'<div class="wr-note">You’ll be muted again in the main room</div>'
-    +'</div>';
+   Yes -> practice-going. No / timeout -> practice-wait-declined.
+   Canonical visuals: Current/student-transition-screens-mobile/index.html. */
+function transitionHandoff(target){
+  return '<!-- Transition handoff: '+target+'; UI is owned by student-transition-screens-mobile. -->';
 }
 function roomConsentLayer(){
   return '<div class="rc-scrim"></div>'
@@ -3577,46 +3524,19 @@ function armMCConsent(){ clearMCConsent(); mcConsentTimer=setTimeout(function(){
 function roomConsentShow(){ clearMCConsent(); st.transfer=false; st.waitreturn=false; st.consent=true; render(); armMCConsent(); }
 function roomConsentYes(){ clearMCConsent(); st.consent=false; st.waitreturn=false; st.transfer=true; render(); }   /* -> transfer (B) */
 function roomConsentNo(){  clearMCConsent(); st.consent=false; st.transfer=false; st.waitreturn=true; render(); }    /* -> waiting-return (never Solo, never Main) */
-function transferShow(){ clearMCConsent(); st.consent=false; st.waitreturn=false; st.transfer=true; render(); }       /* debug: jump straight to transfer */
 function transferHide(){ st.transfer=false; render(); }                        /* room is ready -> leave the takeover */
 function waitReturnHide(){ st.waitreturn=false; render(); }                     /* room activity ended -> back to the main room */
 
-/* waiting-return room countdown (targeted DOM write; started/stopped from render) */
-var wrLeft=108, wrInt=null;
-function wrFmt(s){ s=Math.max(0,s|0); var m=Math.floor(s/60), x=s%60; return (m<10?'0':'')+m+':'+(x<10?'0':'')+x; }
-function startWaitReturn(){ stopWaitReturn(); wrLeft=108; var el=document.getElementById('wrNum'); if(el) el.textContent=wrFmt(wrLeft);
-  wrInt=setInterval(function(){ if(!st||!st.waitreturn){ stopWaitReturn(); return; } wrLeft=Math.max(0,wrLeft-1); var e=document.getElementById('wrNum'); if(e) e.textContent=wrFmt(wrLeft); },1000); }
-function stopWaitReturn(){ if(wrInt){clearInterval(wrInt);wrInt=null;} }
-
-/* one matkot Lottie instance; the node is rebuilt whenever #live is re-rendered */
-var lottieAnim=null, lottieHost=null;
-function mountLottie(){
-  var box=document.getElementById('matkot-lottie');
-  if(!box){ return; }
-  if(lottieAnim && lottieHost===box) return;   /* already running on this exact node */
-  destroyLottie();
-  if(typeof lottie==='undefined'||typeof MATKOT==='undefined') return;   /* CDN unavailable -> static SVG fallback stays */
-  try{
-    box.innerHTML='';
-    lottieHost=box;
-    lottieAnim=lottie.loadAnimation({container:box,renderer:'svg',loop:true,autoplay:true,animationData:MATKOT});
-  }catch(e){ box.innerHTML=MATKOT_SVG; lottieAnim=null; lottieHost=null; }   /* Lottie threw -> restore fallback */
-}
-function destroyLottie(){
-  if(lottieAnim){ try{ lottieAnim.destroy(); }catch(e){} }
-  lottieAnim=null; lottieHost=null;
-}
-
 /* ---------- state / render ---------- */
 var st;
-function reset(){ stopCarTimer(); stopVolTimer(); destroyLottie(); stopWaitReturn(); clearMCConsent(); st={mode:'open',side:'right',cy:300,pos:{x:SW-PW-PAD,y:HEAD},chatMode:'compact',chatPrevMode:'compact',chatBeforeDemo:null,composerFocus:false,tip:false,rec:false,sheet:null,chrome:true,activity:null,actDur:20,actStart:0,demo:null,carousel:false,carIdx:0,carWho:null,vol:null,volLeft:10,consent:false,transfer:false,waitreturn:false,camOff:false,micOff:false}; seedFeed(); render(); }
+function reset(){ stopCarTimer(); stopVolTimer(); clearMCConsent(); st={mode:'open',side:'right',cy:300,pos:{x:SW-PW-PAD,y:HEAD},chatMode:'compact',chatPrevMode:'compact',chatBeforeDemo:null,composerFocus:false,tip:false,rec:false,sheet:null,chrome:true,activity:null,actDur:20,actStart:0,demo:null,carousel:false,carIdx:0,carWho:null,vol:null,volLeft:10,consent:false,transfer:false,waitreturn:false,camOff:false,micOff:false}; seedFeed(); render(); }
 function render(){
   document.getElementById('live').innerHTML=screenHTML(st);
   var n=document.getElementById('state-note');
   if(n) n.innerHTML = st.transfer
-    ? 'Practice Room transfer \u00B7 full-screen matkot loading (no numeric countdown)'
+    ? 'PRODUCT FLOW HANDOFF \u00B7 Practice Room transfer. Visual UI lives in student-transition-screens-mobile.'
     : st.waitreturn
-    ? 'Waiting-return \u00B7 full-screen with a room countdown (consent No / timeout - never Solo, never Main)'
+    ? 'PRODUCT FLOW HANDOFF \u00B7 Waiting-return after consent No / timeout. Visual UI lives in student-transition-screens-mobile.'
     : ('self-view: '+(st.mode==='collapsed'?('collapsed @'+st.side+' (camera on)'):'expanded')
       +' \u00B7 chat: '+st.chatMode
       +(st.demo==='me'
@@ -3624,10 +3544,7 @@ function render(){
         : (' \u00B7 mic: muted (teacher-controlled)'+(st.tip?' \u00B7 tooltip open':'')))
       +(st.sheet?' \u00B7 sheet:'+st.sheet:'')
       +(st.consent?' \u00B7 room consent open':''));
-  if(st.transfer){ stopWaitReturn(); mountLottie(); return; }   /* takeover has no pip / room chrome to wire or fade */
-  if(st.waitreturn){ if(!wrInt) startWaitReturn(); mountLottie(); return; }   /* full-screen waiting-return: matkot + ticking countdown */
-  destroyLottie();
-  stopWaitReturn();
+  if(st.transfer||st.waitreturn){ return; }
   wire();
   wireChatScroll();
   applyComposerFocus();

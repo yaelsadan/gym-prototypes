@@ -2311,9 +2311,6 @@ body.present .solo-wrap{padding:9vh 5vw calc(var(--footer-h) + 30px)}
       <button class="sc" data-sc="partnerleft">Partner left &rarr; solo</button>
       <button class="sc" data-sc="solo">Solo Room</button>
       <button class="sc" data-sc="enforce">Mic/Cam enforcement</button>
-      <button class="sc" data-sc="transfer">Transfer to Practice Room</button>
-      <button class="sc" data-sc="wait">Consent declined &rarr; waiting</button>
-      <button class="sc" data-sc="return">Return to Main Room</button>
     </div>
     <div class="row">
       <span class="grp-lbl">Activity (prepared — does not start on its own)</span>
@@ -3761,44 +3758,17 @@ var MATKOT_SVG='<svg class="matkot-fallback" viewBox="0 0 300 170" fill="none" x
   +'<circle cx="150" cy="72" r="16" fill="#F9E24C" stroke="#F7F6EF" stroke-width="4"/>'
   +'</svg>';
 /* Short transition — reused component, destination-specific copy (unchanged from v03) */
+/* Practice-going, waiting and return visuals live only in
+   Current/student-transition-screens-desktop/index.html. */
 function transitionScene(variant){
   var hero='<div class="t-hero"><div id="matkot-lottie" class="t-lottie">'+MATKOT_SVG+'</div></div>';
-  if(variant==='return'){
-    return '<div class="transition">'+hero
-      +'<div class="t-headline2">Time\u2019s up - heading back to class</div>'
-      +'<p class="t-explain2">Nice work. You\u2019ll rejoin the main room as everyone regroups.</p>'
-      +'<div class="t-muted-note">'+I.mic+'You\u2019ll be muted again in the main room</div></div>';
-  }
   if(variant==='solo'){
     return '<div class="transition">'+hero
       +'<div class="t-headline2">Solo practice is starting</div>'
       +'<p class="t-explain2">Keep going - practice is still on.</p>'
       +'<div class="t-loadline"></div></div>';
   }
-  if(variant==='wait'){
-    /* waiting (rooms still active): matkot + a compact room countdown pill; calm loader only if no room timer yet. */
-    /* STATE A - the room is still active: show the synchronised countdown.
-       ST.roomLeft is the single source of truth, shared with the header pill.
-       The loader is only a fallback for the debug state where no room clock runs.
-       STATE B (roomLeft === 0 / roomsEnded) never reaches here: roomEnd() and
-       backToMain() both route to the 'return' variant, which carries the
-       "Time's up - heading back to class" copy and no countdown. */
-    var timer;
-    if(ST.roomTimerActive&&!ST.roomsEnded&&ST.roomLeft>0){
-      timer='<div class="wait-num'+(ST.roomPhase==='final'?' final':'')+'">'+roomFmt(ST.roomLeft)+'</div>';
-    } else {
-      timer='<div class="t-loadline"></div>';
-    }
-    return '<div class="transition">'+hero
-      +'<div class="t-headline2">You\u2019ll rejoin the main room shortly</div>'
-      +'<p class="t-explain2">Camera and mic are needed for room practice.<br>You\u2019ll wait here until the room activity ends. [Placeholder copy]</p>'
-      + timer
-      +'<div class="t-muted-note">'+I.mic+'You\u2019ll be muted again in the main room</div></div>';
-  }
-  return '<div class="transition">'+hero
-    +'<div class="t-headline2">Yalla - let\u2019s practice together</div>'
-    +'<p class="t-explain2">Practice Hebrew out loud with classmates.<br>Mistakes are welcome.</p>'
-    +'<div class="t-loadline"></div></div>';
+  return '<!-- Transition handoff: practice-'+variant+'; UI is owned by student-transition-screens-desktop. -->';
 }
 /* v21: one animation instance, one playhead.
    - mounting on the same node twice is a no-op (no competing instances)
@@ -3952,11 +3922,11 @@ function updateNote(){
     'consent':'ROOM CONSENT (pre-room). Yes \u2192 enter room. No \u2192 waiting / return screen (NOT Solo). Auto-declines after ~10s.',
     'enforce':'MY CAMERA / MIC OFF (inside room). The device turns off immediately, then the popup: Stay in room \u2192 device back on, stay. Leave room or 10s timeout \u2192 waiting / return to main room. NEVER Solo.',
     'partnerleft':'PARTNER LEFT / UNAVAILABLE \u2192 calm popup \u2192 Solo transition \u2192 Solo Room flashcards. This is the only student-side path into Solo, together with an uneven number of students.',
-    'wait':'WAITING / RETURN. Calm, non-punitive. Numeric room countdown while the room timer runs; loader only when there is no room timer. Copy is placeholder.',
+    'wait':'PRODUCT FLOW HANDOFF · Waiting / return. Visual UI lives in student-transition-screens-desktop.',
     'solo':'SOLO ROOM ('+(ST.soloReason==='uneven'?'uneven number of students':'partner left / unavailable')+'). Flashcard review until the room clock ends · '+(ST.soloRevealed?'answer':'prompt')+'.',
     'trans':'SOLO TRANSITION (reused component). Auto-advances to the Solo Room flashcards.',
-    'return':'RETURN TO MAIN ROOM. Reuses the Short transition. Students return muted.',
-    'transfer':'PRACTICE ROOM TRANSFER / LOADING. Full-screen matkot takeover shown while the room is being prepared. No numeric countdown - not the 5s activity prep, not the return countdown. Clears when the room is ready.'
+    'return':'PRODUCT FLOW HANDOFF · Return to Main Room. Students return muted; visual UI lives in student-transition-screens-desktop.',
+    'transfer':'PRODUCT FLOW HANDOFF · Practice Room transfer. Visual UI lives in student-transition-screens-desktop.'
   };
   var phase=(ST.roomPhase==='final'&&(ST.scene==='duo'||ST.scene==='enforce'||ST.scene==='partnerleft'||ST.scene==='solo'))?' \u00b7 Room final 10s (branded yellow)':'';
   var bc=(ST.bcast&&(ST.scene==='duo'||ST.scene==='enforce'||ST.scene==='partnerleft'))?' \u00b7 Teacher broadcasting':'';

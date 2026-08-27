@@ -190,18 +190,6 @@ body.present .mode-btn:hover{opacity:1}
 .wait-card .count{font-family:var(--font-ui);font-size:64px;font-weight:800;color:var(--text-primary);font-variant-numeric:tabular-nums;line-height:1;letter-spacing:-1px}
 .wait-card .sub{font-family:var(--font-brand);font-size:17px;color:var(--text-muted);margin-top:14px}
 
-/* ===== B. short transition — vector matkot hero, no white box ===== */
-.transition{position:absolute;inset:0;z-index:14;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:rgba(43,39,36,.97);color:#fff;padding:40px}
-.t-hero{display:grid;place-items:center;margin-bottom:22px}
-.t-lottie{width:500px;height:282px;max-width:84vw}
-.t-headline2{font-family:var(--font-brand);font-size:40px;line-height:1.16;letter-spacing:.2px;margin-bottom:16px;max-width:540px}
-.t-explain2{font-family:var(--font-ui);font-size:22px;font-weight:500;line-height:1.5;max-width:540px;opacity:.9}
-/* very subtle non-dominant loading line (replaces the circular indicator) */
-.t-loadline{width:120px;height:2px;border-radius:2px;background:rgba(255,255,255,.12);overflow:hidden;position:relative;margin-top:36px}
-.t-loadline::after{content:"";position:absolute;top:0;left:-40%;width:40%;height:100%;border-radius:2px;background:linear-gradient(90deg,transparent,rgba(249,226,76,.85),transparent);animation:loadslide 1.7s ease-in-out infinite}
-@keyframes loadslide{0%{left:-42%}100%{left:100%}}
-@media (prefers-reduced-motion:reduce){.t-loadline::after{animation:none;left:30%}.switch-num{animation:none!important;opacity:1!important}}
-
 /* ===== volunteer popup (from mobile .invite primitive) ===== */
 .invite-overlay{position:absolute;inset:0;z-index:16;display:flex;align-items:center;justify-content:center;background:rgba(43,39,36,.42);backdrop-filter:blur(2px)}
 .invite{width:300px;border-radius:16px;padding:18px;box-shadow:var(--elev-f)}
@@ -237,18 +225,6 @@ body.present .mode-btn:hover{opacity:1}
 .invite.milky .respline{height:4px;background:rgba(55,50,48,.14);margin-top:26px}
 .invite.milky .respline i{background:var(--brand-charcoal)}
 .invite.milky .resp-cap{color:var(--text-muted);margin-top:9px}
-/* ===== Waiting-return — calm full-screen with a room countdown (consent No / timeout) ===== */
-.waitreturn{position:absolute;inset:0;z-index:14;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:rgba(43,39,36,.97);color:#fff;padding:40px}
-.waitreturn .wr-hero{margin-bottom:4px}
-.waitreturn .wr-hero .t-lottie{width:440px;height:248px;max-width:78vw}
-.matkot-fallback{width:100%;height:100%;display:block}
-.waitreturn .wr-chip{display:inline-flex;align-items:center;gap:7px;font-size:11px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;color:rgba(255,255,255,.72);background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);padding:6px 13px;border-radius:999px;margin-bottom:16px}
-.waitreturn .wr-chip .d{width:7px;height:7px;border-radius:50%;background:var(--brand-yellow)}
-.waitreturn h2{font-family:var(--font-brand);font-size:36px;line-height:1.18;margin:0 0 14px;max-width:540px}
-.waitreturn .wr-sub{font-family:var(--font-ui);font-size:20px;font-weight:500;line-height:1.5;max-width:540px;opacity:.9;margin:0}
-.waitreturn .wr-num{font-variant-numeric:tabular-nums;font-weight:800;font-size:50px;letter-spacing:1px;margin-top:26px}
-.waitreturn .wr-note{margin-top:20px;font-size:15px;font-weight:600;color:rgba(255,255,255,.72)}
-
 /* ===== demo / dialogue / grandma central safe area ===== */
 .demo-stage{position:absolute;inset:0;z-index:3;display:flex;align-items:center;justify-content:center;padding:96px 48px 126px}
 .demo-split{display:flex;gap:18px;width:100%;height:100%;max-width:920px;max-height:520px;margin:0 auto}
@@ -469,8 +445,6 @@ body.present .demo-split{max-width:min(1680px,94vw);max-height:78vh}
 .vid-still{inset:0;border-radius:0;box-shadow:none;border:none}
 /* (3) Level dot stroke = exactly the avatar stroke (1.5px charcoal), thin/subtle — drop the heavier separator ring. */
 .pp-lvl{border:1.5px solid var(--brand-charcoal);box-shadow:none}
-/* (4) Transition layering: rail + any opened sheet sit ABOVE the transition overlay and stay usable. */
-.transition{z-index:14}
 .rail{position:relative;z-index:22}
 .panel:not(.closed){z-index:22}
 /* (6)(v9d) next-turn blink frame removed — Main Room demo has no automatic turn framing. */
@@ -665,10 +639,8 @@ body.present .car-cue{left:3vw;width:calc(var(--car-slot-w) + 48px);padding:22px
       <button class="sc on" data-sc="default">Default</button>
       <button class="sc" data-sc="activity">Activity timer</button>
       <button class="sc" data-sc="intermission">Intermission (A)</button>
-      <button class="sc" data-sc="transition">Practice Room transfer</button>
       <button class="sc" data-sc="volunteer">Volunteer popup</button>
       <button class="sc" data-sc="roomconsent">Room consent (→rooms)</button>
-      <button class="sc" data-sc="waitreturn">Waiting / return</button>
       <button class="sc" data-sc="dialogue">Dialogue · MVP</button>
       <button class="sc" data-sc="grandma">Operation Grandma</button>
     </div>
@@ -1397,31 +1369,9 @@ function armMCConsent(){ clearMCConsent(); mcConsentTimer=setTimeout(function(){
 function roomConsentYes(){ clearMCConsent(); setScene('transition'); }              /* Yes -> Practice Room Transfer (B) */
 function roomConsentNo(){ clearMCConsent(); setScene('waitreturn'); }               /* No / timeout -> waiting-return (never Solo, never Main) */
 
-/* Waiting-return \u2014 calm full-screen with a room countdown, shown when consent is declined or times out.
-   Distinct from the transfer (B): this is where a student waits to rejoin the main room. */
-var wrLeft=108, wrInt=null;
-function wrFmt(s){ s=Math.max(0,s|0); var m=Math.floor(s/60), x=s%60; return (m<10?'0':'')+m+':'+(x<10?'0':'')+x; }
-function startWaitReturn(){ stopWaitReturn(); wrLeft=108; var el=document.getElementById('wrNum'); if(el) el.textContent=wrFmt(wrLeft);
-  wrInt=setInterval(function(){ if(ST.scene!=='waitreturn'){ stopWaitReturn(); return; } wrLeft=Math.max(0,wrLeft-1); var e=document.getElementById('wrNum'); if(e) e.textContent=wrFmt(wrLeft); },1000); }
-function stopWaitReturn(){ if(wrInt){clearInterval(wrInt);wrInt=null;} }
-/* Static matkot fallback (paddles + yellow ball) shown if the Lottie/CDN animation is
-   unavailable, so the transfer / waiting screens are never empty. */
-var MATKOT_SVG='<svg class="matkot-fallback" viewBox="0 0 300 170" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">'
-  +'<g stroke="#F7F6EF" stroke-width="4" stroke-linejoin="round">'
-  +'<g transform="rotate(-16 92 92)"><rect x="52" y="34" width="80" height="98" rx="40" fill="rgba(255,255,255,.05)"/><rect x="82" y="128" width="20" height="34" rx="9" fill="rgba(255,255,255,.05)"/></g>'
-  +'<g transform="rotate(16 208 92)"><rect x="168" y="34" width="80" height="98" rx="40" fill="rgba(255,255,255,.05)"/><rect x="198" y="128" width="20" height="34" rx="9" fill="rgba(255,255,255,.05)"/></g>'
-  +'</g>'
-  +'<circle cx="150" cy="72" r="16" fill="#F9E24C" stroke="#F7F6EF" stroke-width="4"/>'
-  +'</svg>';
-function waitReturnScreen(){
-  return '<div class="waitreturn">'
-    +'<div class="t-hero wr-hero"><div id="matkot-lottie" class="t-lottie">'+MATKOT_SVG+'</div></div>'
-    +'<span class="wr-chip"><span class="d"></span>Waiting</span>'
-    +'<h2>You\u2019ll rejoin the main room shortly</h2>'
-    +'<p class="wr-sub">Camera and mic are needed for room practice. You\u2019ll wait here until the class regroups.</p>'
-    +'<div class="wr-num" id="wrNum">'+wrFmt(wrLeft)+'</div>'
-    +'<div class="wr-note">You\u2019ll be muted again in the main room</div>'
-    +'</div>';
+/* Keep the product-flow states here, but own their visuals in the dedicated file. */
+function transitionHandoff(target){
+  return '<!-- Transition handoff: '+target+'; UI is owned by student-transition-screens-desktop. -->';
 }
 /* (v9d) passive chrome fade: like mobile, non-essential header chrome dims after a few
    seconds of inactivity; any pointer move over the room restores it. Session timer + REC stay. */
@@ -1429,23 +1379,6 @@ var chromeDimT=null;
 function armChromeDim(){ var f=document.getElementById('frame'); if(!f) return; f.classList.remove('chrome-dim'); clearTimeout(chromeDimT); chromeDimT=setTimeout(function(){ var ff=document.getElementById('frame'); if(ff) ff.classList.add('chrome-dim'); },4000); }
 function wakeChrome(){ var f=document.getElementById('frame'); if(!f) return; if(f.classList.contains('chrome-dim')) f.classList.remove('chrome-dim'); clearTimeout(chromeDimT); chromeDimT=setTimeout(function(){ var ff=document.getElementById('frame'); if(ff) ff.classList.add('chrome-dim'); },4000); }
 (function(){ var f=document.getElementById('frame'); if(f){ f.addEventListener('mousemove',wakeChrome); f.addEventListener('click',wakeChrome); } })();
-function transitionDark(){
-  return '<div class="transition">'
-    +'<div class="t-hero"><div id="matkot-lottie" class="t-lottie">'+MATKOT_SVG+'</div></div>'
-    +'<div class="t-headline2">Yalla - let’s practice together</div>'
-    +'<p class="t-explain2">Practice Hebrew out loud with classmates.<br>Mistakes are welcome.</p>'
-    +'<div class="t-loadline"></div>'
-    +'</div>';
-}
-var lottieAnim=null;
-function mountLottie(){
-  var box=document.getElementById('matkot-lottie');
-  if(lottieAnim){try{lottieAnim.destroy();}catch(e){}lottieAnim=null;}
-  if(!box) return;
-  if(typeof lottie==='undefined'||typeof MATKOT==='undefined') return;   /* CDN unavailable -> static SVG fallback stays */
-  try{ box.innerHTML=''; lottieAnim=lottie.loadAnimation({container:box,renderer:'svg',loop:true,autoplay:true,animationData:MATKOT}); }
-  catch(e){ box.innerHTML=MATKOT_SVG; lottieAnim=null; }   /* Lottie threw -> restore fallback */
-}
 function joinStage(){ ST.perspective='selected'; syncAll(); setScene('dialogue'); }
 
 function rightRegion(active){
@@ -1519,9 +1452,9 @@ function render(){
     inner+=footer(ST.camOff,false,panel);
     inner+='<div class="intermission"><div class="wait-card"><div class="kicker">Next session starts in</div><div class="count">03:00</div><div class="sub">Stretch, sip water, and get ready to speak</div></div></div>';
   } else if(scene==='transition'){
-    inner+=transitionDark();
+    inner+=transitionHandoff('practice-going');
   } else if(scene==='waitreturn'){
-    inner+=waitReturnScreen();
+    inner+=transitionHandoff('practice-wait-declined');
   } else if(scene==='volunteer'){
     inner+=selfview(selfMode);
     inner+=footer(ST.camOff,false,panel);
@@ -1562,8 +1495,6 @@ function render(){
      the rail column lets the stage - and the full-screen state inside it - span the whole frame. */
   var showRight = (scene!=='transition' && scene!=='waitreturn');
   f.innerHTML='<div class="room"><div class="stage">'+inner+'</div>'+(showRight?rightRegion(panel):'')+'</div>';
-  if(scene==='transition'||scene==='waitreturn'){mountLottie();} else if(lottieAnim){try{lottieAnim.destroy();}catch(e){}lottieAnim=null;}
-  if(scene==='waitreturn'){ if(!wrInt) startWaitReturn(); } else { stopWaitReturn(); }
   armChromeDim();
   restoreEph();
   updateNote();
@@ -1573,11 +1504,11 @@ function updateNote(){
     'default':'Default room. Open a panel from the Panel row or rail — the scene stays active. Toggle Video bg → Realistic to test overlays on video-like stills.',
     'activity':'Standalone ACTIVITY timer. Compare A · Top-center (safe default) vs B · Corner-attached.',
     'intermission':'A · INTERMISSION — calm branded card. Fedra headline, Assistant number.',
-    'transition':'B · SHORT transition — vector matkot hero (no white box, enlarged), regular-hyphen headline, thin quiet loading line. No chips, no numeric countdown.',
+    'transition':'PRODUCT FLOW HANDOFF · Practice Room transfer. Visual UI lives in student-transition-screens-desktop.',
     'demonstrate':'DEMONSTRATION - teacher + the chosen student, split view. Everyone sees it. The chosen student sees themselves in the split AND their self-view is FOLDED; their camera + mic are shared for this state only. End demonstration returns everyone to the basic Main Room, muted.',
     'volunteer':'DEMONSTRATION volunteer — single popup with consent (Yes, let’s go! / Not this time, 10s). Yes → teacher + student split view; a 10s timeout with no volunteer returns to the normal Main Room (no student-facing no-volunteers state).',
     'roomconsent':'ROOM CONSENT (A) - milky centered modal with a visible 10s decision timer. Yes → Practice Room Transfer (B). Not now / 10s timeout → Waiting-return (never Solo, never normal Main Room). In the integrated product students are asked for camera/mic consent only once.',
-    'waitreturn':'WAITING-RETURN - calm full-screen with a room countdown. Where a student waits to rejoin the main room after declining / timing out room consent. Not Solo, not the normal Main Room.',
+    'waitreturn':'PRODUCT FLOW HANDOFF · Waiting-return after declining or timing out room consent. Visual UI lives in student-transition-screens-desktop.',
     'dialogue':'DIALOGUE · MVP — neutral labels, shared timer floating low in the center gutter. Open a panel to confirm it stays active over the scene.',
     'grandma':'LEGACY / DEBUG ONLY - Operation Grandma is now a Practice Rooms activity. The Main Room version should be retired before the final checkpoint unless product decides otherwise. OPERATION GRANDMA — press ▶ Play sequence: A active → Timer done → cinematic 3 → 2 → 1 overlay (next turn pulses) → B active. Large spacious corner timer, no STARTS chip.'
   };

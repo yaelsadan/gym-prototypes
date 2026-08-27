@@ -235,7 +235,16 @@ h1{font-size:20px;line-height:1.25}
   -webkit-backdrop-filter:blur(34px) saturate(1.16);
   backdrop-filter:blur(34px) saturate(1.16);
 }
+.welcome-shape{
+  position:absolute;
+  z-index:0;
+  inset:10px 8px 8px;
+  pointer-events:none;
+}
+.welcome-shape img{width:100%;height:100%;display:block}
 .session-progress{
+  position:relative;
+  z-index:1;
   flex:none;
   padding-top:var(--s24);
   display:flex;
@@ -261,6 +270,8 @@ h1{font-size:20px;line-height:1.25}
 .progress-dots i.now{border-color:transparent;background:var(--brand-yellow)}
 
 .welcome-content{
+  position:relative;
+  z-index:1;
   width:100%;
   min-height:0;
   flex:1;
@@ -270,7 +281,7 @@ h1{font-size:20px;line-height:1.25}
   align-items:center;
   justify-content:center;
   text-align:center;
-  transform:translateY(-20px);
+  transform:translateY(-72px);
 }
 .welcome-content h2{
   margin:0 0 14px;
@@ -1015,6 +1026,429 @@ h1{font-size:20px;line-height:1.25}
 }
 @keyframes mobile-loadslide{0%{left:-42%}100%{left:100%}}
 
+/* Shared mobile Ending: one scrolling composition, driven by session count and availability. */
+.mobile-ending{
+  position:absolute;
+  z-index:3;
+  inset:0;
+  overflow:hidden;
+  color:var(--neutral-100);
+}
+.mobile-ending::after{
+  content:"";
+  position:absolute;
+  z-index:8;
+  inset:0;
+  pointer-events:none;
+  background:rgba(18,14,12,.62);
+  opacity:0;
+}
+.ending-scroll{
+  position:absolute;
+  z-index:9;
+  inset:0;
+  overflow-x:hidden;
+  overflow-y:auto;
+  overscroll-behavior-y:contain;
+  -webkit-overflow-scrolling:touch;
+  padding:58px var(--s16) max(34px,env(safe-area-inset-bottom,0px));
+  scroll-padding:120px 0 max(180px,calc(env(safe-area-inset-bottom,0px) + 40px));
+}
+.ending-scroll > .session-lockup{
+  position:relative;
+  top:auto;
+  left:auto;
+  width:max-content;
+  margin:0 0 24px;
+}
+.ending-surface{
+  position:relative;
+  padding:108px 22px 28px;
+  border:1px solid rgba(247,246,239,.3);
+  border-radius:20px 20px 66px 20px;
+  background:rgba(247,246,239,.12);
+  box-shadow:inset 0 1px 0 rgba(247,246,239,.16);
+  -webkit-backdrop-filter:blur(34px) saturate(1.16);
+  backdrop-filter:blur(34px) saturate(1.16);
+}
+.end-hero h2{
+  margin:0 0 22px;
+  color:#fff;
+  font-family:var(--font-brand);
+  font-size:43px;
+  font-weight:400;
+  font-synthesis:none;
+  line-height:1.08;
+  letter-spacing:-.3px;
+}
+.mobile-ending h3,
+.end-feedback-title{
+  margin:0 0 11px;
+  color:#fff;
+  font-size:18px;
+  font-weight:700;
+  line-height:1.25;
+  letter-spacing:-.1px;
+}
+.end-today ul{margin:0;padding-left:19px}
+.end-today li{
+  margin:0 0 7px;
+  color:rgba(247,246,239,.9);
+  font-size:17px;
+  line-height:1.45;
+}
+.end-tools-message{
+  margin:18px 0 0;
+  color:rgba(247,246,239,.84);
+  font-size:16px;
+  line-height:1.5;
+}
+.end-tools-message a{
+  color:#fff;
+  font-weight:700;
+  text-decoration:underline;
+  text-decoration-color:rgba(247,246,239,.5);
+  text-underline-offset:3px;
+}
+.end-people{margin-top:24px}
+.end-partners{display:flex;flex-wrap:wrap;gap:9px}
+.end-partner{
+  min-height:44px;
+  padding:5px 13px 5px 6px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  border:1px solid rgba(247,246,239,.22);
+  border-radius:var(--pill);
+  background:rgba(247,246,239,.09);
+  color:var(--neutral-100);
+  font-size:14px;
+  font-weight:600;
+}
+.end-partner-avatar{
+  position:relative;
+  width:35px;
+  height:35px;
+  flex:none;
+  border-radius:50%;
+  overflow:visible;
+  background:transparent;
+  color:var(--brand-charcoal);
+}
+.end-partner-halo{
+  position:absolute;
+  z-index:0;
+  top:0;
+  left:0;
+  width:32px;
+  height:32px;
+  border-radius:50%;
+  background:var(--partner-color);
+  opacity:.92;
+}
+.end-partner-face{
+  position:absolute;
+  z-index:1;
+  top:3px;
+  left:3px;
+  width:32px;
+  height:32px;
+  padding-top:1px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:50%;
+  background:var(--neutral-100);
+  box-shadow:0 2px 6px rgba(55,50,48,.16),0 1px 2px rgba(55,50,48,.08);
+  font-family:var(--font-brand);
+  font-size:14px;
+  font-weight:700;
+  line-height:1;
+}
+.end-feedback{
+  margin:30px -4px 0;
+  padding:28px 4px 0;
+  border-top:1px solid rgba(247,246,239,.3);
+}
+.end-feedback-title{font-size:18px}
+.end-question{
+  margin:20px 0 10px;
+  color:rgba(247,246,239,.94);
+  font-size:16px;
+  font-weight:600;
+}
+.end-options{display:flex;flex-wrap:wrap;gap:8px}
+.end-option{
+  min-height:44px;
+  padding:9px 14px;
+  border:1px solid rgba(247,246,239,.24);
+  border-radius:var(--pill);
+  background:rgba(247,246,239,.08);
+  color:var(--neutral-100);
+  font-size:14px;
+  font-weight:600;
+}
+.end-option.on{
+  border-color:transparent;
+  background:var(--brand-yellow);
+  color:var(--brand-charcoal);
+}
+.end-note{
+  width:100%;
+  min-height:82px;
+  padding:12px 13px;
+  display:block;
+  border:1px solid rgba(247,246,239,.26);
+  border-radius:12px;
+  background:rgba(247,246,239,.08);
+  color:#fff;
+  font:400 16px/1.45 var(--font-ui);
+  resize:vertical;
+}
+.end-note::placeholder{color:rgba(247,246,239,.68)}
+.end-note:focus{outline:2px solid rgba(249,226,76,.55);outline-offset:2px}
+.end-actions{
+  margin-top:30px;
+  padding-top:28px;
+  display:flex;
+  flex-direction:column;
+  gap:11px;
+  border-top:1px solid rgba(247,246,239,.3);
+}
+.end-actions button{
+  width:100%;
+  min-height:54px;
+  padding:12px 18px;
+  border-radius:var(--pill);
+  font-size:16px;
+  font-weight:700;
+}
+.end-primary{
+  border:1px solid transparent;
+  background:var(--brand-yellow);
+  color:var(--brand-charcoal);
+}
+.end-home{
+  border:1.5px solid var(--brand-yellow);
+  background:transparent;
+  color:var(--brand-yellow);
+}
+.end-badge{
+  position:absolute;
+  z-index:10;
+  top:-22px;
+  right:-9px;
+  width:136px;
+  height:164px;
+  overflow:visible;
+  pointer-events:none;
+}
+.end-done{
+  position:relative;
+  z-index:1;
+  width:136px;
+  height:136px;
+  transform-origin:50% 50%;
+  transition:transform .28s cubic-bezier(.22,.68,.24,1);
+  will-change:transform,opacity;
+}
+.end-done-art{
+  position:absolute;
+  z-index:1;
+  top:50%;
+  left:50%;
+  width:136px;
+  height:164px;
+  transform:translate(-50%,-46%) rotate(16deg);
+}
+.end-done-art svg{width:100%;height:100%;display:block;overflow:visible}
+.end-done-burst-pair{
+  transform-box:fill-box;
+  transform-origin:center;
+  animation:mobileEndHaloSpin 8s linear infinite;
+  filter:drop-shadow(0 3px 7px rgba(18,14,12,.22));
+}
+.end-done-burst-back,
+.end-done-burst{transform-box:fill-box;transform-origin:center}
+.end-done-burst-back{fill:var(--brand-yellow);transform:scale(1.06)}
+.end-done-burst{fill:var(--brand-yellow);transform:scale(.9)}
+.end-done-ribbon{fill:var(--neutral-100)}
+.end-done-text{
+  position:absolute;
+  top:35.2%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  color:var(--brand-charcoal);
+  font-family:var(--font-brand);
+  font-size:22px;
+  font-style:italic;
+  font-weight:600;
+  line-height:1;
+  white-space:nowrap;
+}
+.end-done-glow{
+  position:absolute;
+  z-index:0;
+  top:44%;
+  left:50%;
+  width:210px;
+  height:210px;
+  border-radius:50%;
+  background:radial-gradient(circle,rgba(249,226,76,.22) 0%,rgba(18,14,12,0) 72%);
+  opacity:0;
+  transform:translate(-50%,-50%);
+}
+.end-done-confetti{
+  position:absolute;
+  z-index:0;
+  top:36%;
+  left:50%;
+  width:0;
+  height:0;
+  overflow:visible;
+  transform:translate(var(--end-from-x,0px),var(--end-from-y,0px));
+}
+.end-cf{
+  position:absolute;
+  top:0;
+  left:0;
+  width:calc(var(--s) * 1.61);
+  height:auto;
+  display:block;
+  color:inherit;
+  transform-origin:50% 50%;
+  will-change:transform,opacity;
+}
+.end-cf svg{width:100%;height:auto;display:block;overflow:visible}
+.mobile-ending:not(.is-playing) .end-done-confetti{visibility:hidden}
+.mobile-ending.is-playing .end-done-confetti .end-cf{
+  animation:mobileEndConfetti var(--dur,2.6s) linear var(--d) both;
+}
+.mobile-ending:not(.is-playing):not(.is-rested) .end-hero,
+.mobile-ending:not(.is-playing):not(.is-rested) .end-today,
+.mobile-ending:not(.is-playing):not(.is-rested) .end-tools-message,
+.mobile-ending:not(.is-playing):not(.is-rested) .end-people,
+.mobile-ending:not(.is-playing):not(.is-rested) .end-feedback,
+.mobile-ending:not(.is-playing):not(.is-rested) .end-actions,
+.mobile-ending:not(.is-playing):not(.is-rested) .end-done{opacity:0}
+.mobile-ending.is-playing::after{animation:mobileEndVeil 4.2s both}
+.mobile-ending.is-playing .end-done{animation:mobileDoneTravel 4.2s both}
+.mobile-ending.is-playing .end-done-burst{animation:mobileDoneFill .32s ease 2.7s forwards}
+.mobile-ending.is-playing .end-done-glow{animation:mobileEndGlow 4.2s both}
+.mobile-ending.is-playing .end-hero{animation:mobileEndContent .5s cubic-bezier(.22,.68,.24,1) 2.86s both}
+.mobile-ending.is-playing .end-today,
+.mobile-ending.is-playing .end-tools-message,
+.mobile-ending.is-playing .end-people{animation:mobileEndContent .5s cubic-bezier(.22,.68,.24,1) 3s both}
+.mobile-ending.is-playing .end-feedback,
+.mobile-ending.is-playing .end-actions{animation:mobileEndContent .5s cubic-bezier(.22,.68,.24,1) 3.14s both}
+.mobile-ending.is-rested .end-hero,
+.mobile-ending.is-rested .end-today,
+.mobile-ending.is-rested .end-tools-message,
+.mobile-ending.is-rested .end-people,
+.mobile-ending.is-rested .end-feedback,
+.mobile-ending.is-rested .end-actions,
+.mobile-ending.is-rested .end-done{opacity:1;animation:none;transform:scale(.82)}
+.mobile-ending.is-rested .end-done-burst{fill:var(--neutral-100);transform:scale(.9)}
+@keyframes mobileDoneTravel{
+  0%{opacity:0;transform:translate(var(--end-from-x),var(--end-from-y)) scale(1.8);animation-timing-function:cubic-bezier(.2,.9,.22,1)}
+  3.5%{opacity:1;transform:translate(var(--end-from-x),var(--end-from-y)) scale(2.385);animation-timing-function:cubic-bezier(.34,.1,.5,1)}
+  8.5%{transform:translate(var(--end-from-x),var(--end-from-y)) scale(2.25);animation-timing-function:linear}
+  54%{transform:translate(var(--end-from-x),var(--end-from-y)) scale(2.25);animation-timing-function:cubic-bezier(.28,.16,.32,1)}
+  68%,100%{opacity:1;transform:none}
+}
+@keyframes mobileEndContent{
+  0%{opacity:0;transform:translateX(-24px)}
+  100%{opacity:1;transform:none}
+}
+@keyframes mobileDoneFill{
+  0%{fill:var(--brand-yellow)}
+  100%{fill:var(--neutral-100)}
+}
+@keyframes mobileEndHaloSpin{
+  from{transform:rotate(0deg)}
+  to{transform:rotate(360deg)}
+}
+@keyframes mobileEndGlow{
+  0%{opacity:0}
+  6%,50%{opacity:1}
+  68%,100%{opacity:0}
+}
+@keyframes mobileEndVeil{
+  0%{opacity:0}
+  6%,50%{opacity:1}
+  68%,100%{opacity:0}
+}
+@keyframes mobileEndConfetti{
+  0%{opacity:0;transform:translate(0,0) scale(.22) rotate(var(--rot0));animation-timing-function:cubic-bezier(.08,.92,.18,1)}
+  6%{opacity:1}
+  16%{opacity:1;transform:translate(var(--dx),var(--dy)) scale(calc(var(--sc) * 1.22)) rotate(var(--rot));animation-timing-function:cubic-bezier(.28,.08,.48,1)}
+  48%{opacity:1;transform:translate(var(--mx),var(--my)) scale(var(--sc)) rotate(var(--rotm));animation-timing-function:linear}
+  78%{opacity:.42;transform:translate(var(--vx),var(--vy)) scale(var(--sc)) rotate(var(--rotv))}
+  100%{opacity:0;transform:translate(var(--lx),var(--ly)) scale(calc(var(--sc) * .92)) rotate(var(--rotl))}
+}
+
+/* ---------- Canonical Practice Room transitions ---------- */
+.practice-transition-mobile{
+  position:absolute;z-index:3;inset:0;overflow:hidden;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:calc(96px + env(safe-area-inset-top,0px)) 24px max(44px,env(safe-area-inset-bottom,0px));
+  color:var(--neutral-100);text-align:center;
+  background:
+    radial-gradient(circle at 50% 39%,rgba(146,143,125,.72),rgba(55,50,48,.96) 68%),
+    var(--brand-charcoal);
+}
+.practice-transition-mobile .t-hero{display:grid;place-items:center;margin:0 0 10px}
+.practice-transition-mobile .t-lottie{width:286px;height:174px;max-width:82vw}
+.practice-transition-mobile .t-lottie svg{display:block;width:100%;height:100%}
+.practice-transition-mobile h2{
+  max-width:330px;margin:0;
+  font-family:var(--font-brand);font-size:36px;font-weight:400;font-synthesis:none;
+  line-height:1.13;letter-spacing:-.25px;text-wrap:balance;
+}
+.practice-transition-mobile .practice-support{
+  max-width:320px;margin:16px 0 0;color:rgba(247,246,239,.84);
+  font-size:17px;font-weight:500;line-height:1.48;white-space:pre-line;
+}
+.practice-transition-mobile.is-going,
+.practice-transition-mobile.is-return{
+  justify-content:flex-start;
+  padding-top:calc(272px + env(safe-area-inset-top,0px));
+}
+.practice-transition-mobile.is-return h2{font-size:34px}
+.practice-transition-mobile.is-waiting{
+  justify-content:flex-start;
+  padding-top:calc(224px + env(safe-area-inset-top,0px));
+}
+.practice-transition-mobile.is-waiting .t-hero{margin:0}
+.practice-transition-mobile.is-waiting .t-lottie{width:220px;height:126px}
+.practice-transition-mobile.is-waiting h2{max-width:330px;font-size:31px}
+.practice-transition-mobile.is-waiting .practice-support{margin-top:11px;font-size:16px}
+.practice-room-countdown-mobile{
+  margin:22px 0 0;color:var(--brand-yellow);
+  font-family:var(--font-ui);font-size:66px;font-weight:800;font-variant-numeric:tabular-nums;
+  letter-spacing:-1.5px;line-height:1;
+}
+.practice-wait-reassurance-mobile{
+  max-width:300px;margin:12px 0 0;color:rgba(247,246,239,.66);
+  font-size:14px;font-weight:600;line-height:1.35;
+}
+
+/* Same-space loading keeps the current mobile surface recognizable. */
+.soft-loading-overlay{
+  position:absolute;z-index:100;inset:0;display:grid;place-items:center;
+  background:rgba(28,25,23,.48);pointer-events:none;
+}
+.soft-loading-ball{
+  width:31px;height:31px;border-radius:50%;background:var(--brand-yellow);
+  box-shadow:0 0 0 1px var(--brand-charcoal),0 10px 20px rgba(0,0,0,.28);
+  animation:soft-ball-bounce .82s cubic-bezier(.46,.03,.52,.96) infinite;
+}
+@keyframes soft-ball-bounce{
+  0%,100%{transform:translateY(8px) scale(1.04,.96)}
+  50%{transform:translateY(-20px) scale(.97,1.03)}
+}
+.controls [data-soft-loading].on{background:var(--brand-yellow);color:var(--brand-charcoal);border-color:var(--brand-charcoal)}
+
 @media (max-width:720px){
   body{padding:var(--s16)}
   .phone{width:min(390px,calc(100vw - 32px))}
@@ -1040,12 +1474,24 @@ h1{font-size:20px;line-height:1.25}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{scroll-behavior:auto!important}
   .mobile-start .t-loadline::after{animation:none}
+  .soft-loading-ball{animation:soft-ball-breathe 1.4s ease-in-out infinite}
+  .mobile-ending::after,
+  .mobile-ending .end-done,
+  .mobile-ending .end-hero,
+  .mobile-ending .end-today,
+  .mobile-ending .end-tools-message,
+  .mobile-ending .end-people,
+  .mobile-ending .end-feedback,
+  .mobile-ending .end-actions{animation:none!important}
+  .mobile-ending .end-done-confetti,
+  .mobile-ending .end-done-glow{display:none!important}
 }
+@keyframes soft-ball-breathe{0%,100%{opacity:.7}50%{opacity:1}}
 </style>
 </head>
 <body>
 <h1>Student Transition Screens — Mobile</h1>
-<p class="lead">Canonical Mobile Welcome, A/V Check, and Waiting Room. Prototype controls remain outside the simulated phone.</p>
+<p class="lead">Canonical Mobile Welcome, A/V Check, Waiting Room, Ending, and Practice Room transition system. Full transitions and same-space loading remain visually distinct.</p>
 
 <div class="demo">
   <div class="phone" aria-label="Mobile transition screen prototype">
@@ -1059,10 +1505,23 @@ h1{font-size:20px;line-height:1.25}
     <button class="on" type="button" data-scene="welcome">Welcome</button>
     <button type="button" data-scene="av-check">A/V Check</button>
     <button type="button" data-scene="waiting">Waiting Room</button>
+    <div class="grp">Ending · session count</div>
+    <button type="button" data-ending-sessions="1">1 session</button>
+    <button type="button" data-ending-sessions="2">2 sessions</button>
+    <button type="button" data-ending-sessions="3">3+ sessions</button>
+    <div class="grp">Ending · availability</div>
+    <button type="button" data-ending-available="1">Another session available</button>
+    <button type="button" data-ending-available="0">No additional session available</button>
     <div class="grp">Timer preview</div>
     <button type="button" data-timer-preview="20">T−20</button>
     <button type="button" data-timer-preview="10">T−10</button>
     <button type="button" data-timer-preview="0">0 / Entering</button>
+    <div class="grp">Practice Room transitions</div>
+    <button type="button" data-scene="practice-going">Going to Practice Rooms</button>
+    <button type="button" data-scene="practice-wait-declined">Waiting — did not enter</button>
+    <button type="button" data-scene="practice-wait-left">Waiting — left room early</button>
+    <button type="button" data-scene="practice-return">Returning to Main Room</button>
+    <button type="button" data-soft-loading>Soft loading overlay</button>
     <div class="state" id="state-note"></div>
   </aside>
 </div>
@@ -1070,8 +1529,7 @@ h1{font-size:20px;line-height:1.25}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.12.2/lottie.min.js"></script>
 <script src="../student-transition-screens-desktop/matkot.js"></script>
 <script>
-/* Shared state catalogue mirrors the desktop transition routing.
-   This pass implements Welcome, A/V Check, and the canonical default Waiting Room. */
+/* Shared state catalogue mirrors the desktop transition routing. */
 var SCREENS = {
   welcome:{label:"Welcome",implemented:true},
   "welcome-late":{label:"Welcome Late",implemented:false},
@@ -1083,11 +1541,12 @@ var SCREENS = {
   starting:{label:"Starting / T−10",implemented:false},
   "blocked-next":{label:"Blocked entry · next session",implemented:false},
   "blocked-none":{label:"Blocked entry · no later session",implemented:false},
-  "ending-1":{label:"Ending · one session",implemented:false},
-  "ending-2":{label:"Ending · two sessions",implemented:false},
-  "ending-3":{label:"Ending · three sessions",implemented:false},
-  "ending-more":{label:"Ending · one more available",implemented:false},
-  arrive:{label:"Entering Main Room",implemented:false}
+  ending:{label:"Ending",implemented:true},
+  arrive:{label:"Entering Main Room",implemented:false},
+  "practice-going":{label:"Going to Practice Rooms",implemented:true},
+  "practice-wait-declined":{label:"Waiting return · did not enter",implemented:true},
+  "practice-wait-left":{label:"Waiting return · left early",implemented:true},
+  "practice-return":{label:"Returning to Main Room",implemented:true}
 };
 
 var STATE = {
@@ -1115,7 +1574,15 @@ var STATE = {
   waitingPhase:"waiting",
   flashIdx:0,
   flashRevealed:false,
-  flashSaved:{}
+  flashSaved:{},
+  endingSessions:1,
+  endingAvailable:true,
+  endingRested:false,
+  feedbackFeel:"",
+  feedbackHelp:"",
+  feedbackNote:"",
+  practiceWaitReason:"",
+  softLoading:false
 };
 
 var ICONS = {
@@ -1156,6 +1623,7 @@ function mountMobileMatkot(){
     host.innerHTML="";
     MOBILE_LOTTIE_HOST=host;
     MOBILE_LOTTIE=lottie.loadAnimation({container:host,renderer:"svg",loop:true,autoplay:true,animationData:MATKOT});
+    MOBILE_LOTTIE.setSpeed(1.15);
   }catch(error){
     host.innerHTML=MOBILE_MATKOT_SVG;
     MOBILE_LOTTIE=null;
@@ -1181,6 +1649,45 @@ function showMobileEntering(){
   if(!start||!title){ render(); return; }
   title.textContent="Entering the Main Room";
   if(clock) clock.outerHTML='<div class="t-loadline" aria-hidden="true"></div>';
+}
+function practiceGoingScreen(){
+  return Components.shell(
+    '<main class="practice-transition-mobile is-going" aria-labelledby="practice-going-title">'
+      +mobileRackets()
+      +'<h2 id="practice-going-title">Yalla - let’s practice together</h2>'
+      +'<p class="practice-support">Practice Hebrew out loud with classmates.\nMistakes are welcome.</p>'
+    +'</main>'
+  );
+}
+function practiceWaitingScreen(){
+  return Components.shell(
+    '<main class="practice-transition-mobile is-waiting" aria-labelledby="practice-wait-title">'
+      +mobileRackets()
+      +'<h2 id="practice-wait-title">You’ll rejoin the main room shortly</h2>'
+      +'<p class="practice-support">Camera and mic are needed for room practice. You’ll wait here until the class regroups.</p>'
+      +'<div class="practice-room-countdown-mobile" id="practice-room-countdown" role="timer" aria-live="off">'+formatTime(STATE.left)+'</div>'
+      +'<p class="practice-wait-reassurance-mobile">You’ll be muted again in the main room</p>'
+    +'</main>'
+  );
+}
+function practiceReturnScreen(){
+  return Components.shell(
+    '<main class="practice-transition-mobile is-return" aria-labelledby="practice-return-title">'
+      +mobileRackets()
+      +'<h2 id="practice-return-title">Time\'s up!</h2>'
+      +'<p class="practice-support">Heading back to the main room</p>'
+    +'</main>'
+  );
+}
+function softLoadingOverlay(){
+  if(!STATE.softLoading) return "";
+  return '<div class="soft-loading-overlay" role="status" aria-label="Loading">'
+    +'<span class="soft-loading-ball" aria-hidden="true"></span>'
+    +'</div>';
+}
+function toggleSoftLoading(){
+  STATE.softLoading=!STATE.softLoading;
+  render();
 }
 var FLASH_DECK=[
   {dir:"translate to English",prompt:"הגעת כבר?",answer:"Have you arrived yet?"},
@@ -1225,6 +1732,199 @@ var Components = {
   }
 };
 
+var ENDING_RECAP={
+  1:{
+    today:["Greetings and getting into the room","Café ordering, out loud"],
+    people:[{name:"Dana",initial:"D",color:"#F7AAF3"},{name:"Lior",initial:"L",color:"#DAEF81"},{name:"Hanna",initial:"H",color:"#90C7FC"}]
+  },
+  2:{
+    today:["Greetings and getting into the room","Café ordering, out loud","Asking for directions"],
+    people:[{name:"Dana",initial:"D",color:"#F7AAF3"},{name:"Lior",initial:"L",color:"#DAEF81"},{name:"Hanna",initial:"H",color:"#90C7FC"}]
+  },
+  3:{
+    today:["Greetings and getting into the room","Café ordering, out loud","Asking for directions","A short conversation at the market"],
+    people:[{name:"Dana",initial:"D",color:"#F7AAF3"},{name:"Lior",initial:"L",color:"#DAEF81"},{name:"Hanna",initial:"H",color:"#90C7FC"},{name:"Tom",initial:"T",color:"#CEB1FF"}]
+  }
+};
+
+function endingBurstPath(){
+  var cx=100,cy=88,outer=80.2,inner=74.8,n=16,round=.42;
+  var d=[],i,a,a0,a1,ox,oy,ix,iy,jx,jy,px,py,qx,qy;
+  for(i=0;i<n;i++){
+    a=-Math.PI/2+(i*2*Math.PI)/n;
+    a0=a-Math.PI/n;
+    a1=a+Math.PI/n;
+    ix=cx+inner*Math.cos(a0); iy=cy+inner*Math.sin(a0);
+    ox=cx+outer*Math.cos(a); oy=cy+outer*Math.sin(a);
+    jx=cx+inner*Math.cos(a1); jy=cy+inner*Math.sin(a1);
+    px=ox+(ix-ox)*round; py=oy+(iy-oy)*round;
+    qx=ox+(jx-ox)*round; qy=oy+(jy-oy)*round;
+    d.push((i?"L":"M")+ix.toFixed(2)+","+iy.toFixed(2));
+    d.push("L"+px.toFixed(2)+","+py.toFixed(2));
+    d.push("Q"+ox.toFixed(2)+","+oy.toFixed(2)+" "+qx.toFixed(2)+","+qy.toFixed(2));
+  }
+  return d.join(" ")+"Z";
+}
+function endingConfetti(){
+  var C="#373230";
+  var colors=["#F9E24C","#FFE300","#F69700","#F9746B","#90C7FC","#449CFC","#DAEF81","#7EE07C","#6D8C58","#6BBFC4","#8B90FF","#CEB1FF"];
+  var nextKind={stroke:"circ",circ:"dia",dia:"stroke"};
+  function ink(fill){
+    return 'fill="'+fill+'" stroke="'+C+'" stroke-width="0.5" vector-effect="non-scaling-stroke"';
+  }
+  function shape(kind,fill){
+    var attributes=ink(fill);
+    if(kind==="stroke") return '<svg viewBox="0 0 16 6" aria-hidden="true"><rect x="1.2" y="1.9" width="13.6" height="2.2" rx="1.1" '+attributes+'/></svg>';
+    if(kind==="circ") return '<svg viewBox="0 0 10 10" aria-hidden="true"><circle cx="5" cy="5" r="3.55" '+attributes+'/></svg>';
+    return '<svg viewBox="0 0 10 10" aria-hidden="true"><path d="M5 1.2 L8.8 5 L5 8.8 L1.2 5 Z" '+attributes+'/></svg>';
+  }
+  function spin(x,y,degrees){
+    var radians=degrees*Math.PI/180;
+    return [Math.round(x*Math.cos(radians)-y*Math.sin(radians)),Math.round(x*Math.sin(radians)+y*Math.cos(radians))];
+  }
+  var bits=[
+    {k:"stroke",dx:-80,dy:-92,ex:-122,ey:28,rot0:-16,rot:-38,rot2:18,sc:1.08,s:22,d:.22,dur:2.72},
+    {k:"circ",dx:16,dy:-124,ex:48,ey:-40,rot0:8,rot:26,rot2:54,sc:.92,s:13,d:.28,dur:3.08},
+    {k:"dia",dx:98,dy:-68,ex:154,ey:36,rot0:18,rot:42,rot2:78,sc:1,s:14,d:.24,dur:2.58},
+    {k:"circ",dx:-40,dy:-108,ex:-28,ey:52,rot0:-10,rot:16,rot2:50,sc:1.12,s:16,d:.31,dur:3.18},
+    {k:"stroke",dx:114,dy:-30,ex:168,ey:44,rot0:12,rot:34,rot2:14,sc:.95,s:20,d:.26,dur:2.84},
+    {k:"dia",dx:-118,dy:-46,ex:-164,ey:22,rot0:-22,rot:-14,rot2:28,sc:1,s:13,d:.34,dur:2.66},
+    {k:"circ",dx:56,dy:-96,ex:92,ey:-8,rot0:6,rot:-22,rot2:16,sc:.86,s:12,d:.38,dur:2.48},
+    {k:"dia",dx:-12,dy:-120,ex:36,ey:48,rot0:14,rot:32,rot2:64,sc:1.18,s:17,d:.25,dur:3.24},
+    {k:"stroke",dx:44,dy:-36,ex:18,ey:56,rot0:-8,rot:18,rot2:48,sc:1,s:21,d:.4,dur:2.76},
+    {k:"circ",dx:-72,dy:-80,ex:-118,ey:40,rot0:-14,rot:8,rot2:42,sc:.9,s:15,d:.33,dur:2.96},
+    {k:"stroke",dx:8,dy:-62,ex:-42,ey:50,rot0:10,rot:-24,rot2:22,sc:1.05,s:19,d:.29,dur:2.88},
+    {k:"dia",dx:78,dy:-116,ex:126,ey:-22,rot0:20,rot:48,rot2:34,sc:.88,s:13,d:.36,dur:3.02}
+  ];
+  var pieces=[],i,b,p,q;
+  for(i=0;i<bits.length;i++){
+    b=bits[i];
+    pieces.push({k:b.k,dx:b.dx,dy:b.dy,ex:b.ex,ey:b.ey,rot0:b.rot0,rot:b.rot,rot2:b.rot2,sc:b.sc,s:b.s,d:b.d,dur:b.dur,fill:colors[i%colors.length]});
+    p=spin(b.dx,b.dy,i%2?38:-42);
+    q=spin(b.ex,b.ey,i%2?38:-42);
+    pieces.push({
+      k:nextKind[b.k],dx:Math.round(p[0]*.92),dy:Math.round(p[1]*.92),
+      ex:Math.round(q[0]*.92),ey:Math.round(q[1]*.92+18),
+      rot0:b.rot0+(i%2?26:-26),rot:b.rot+(i%2?-22:22),rot2:b.rot2+34,
+      sc:b.sc,s:Math.max(11,b.s-3),d:+(b.d+.07).toFixed(2),dur:+(b.dur+.22).toFixed(2),fill:colors[(i+4)%colors.length]
+    });
+    p=spin(b.dx,b.dy,i%3?62:-58);
+    q=spin(b.ex,b.ey,i%3?62:-58);
+    pieces.push({
+      k:nextKind[nextKind[b.k]],dx:Math.round(p[0]*.74),dy:Math.round(p[1]*.74),
+      ex:Math.round(q[0]*.78),ey:Math.round(q[1]*.78+28),
+      rot0:b.rot0+(i%2?-18:20),rot:b.rot+(i%2?16:-28),rot2:b.rot2-12,
+      sc:+(b.sc*.82).toFixed(2),s:Math.max(10,b.s-5),d:+(b.d+.11).toFixed(2),dur:+(b.dur+.34).toFixed(2),fill:colors[(i+7)%colors.length]
+    });
+    pieces.push({
+      k:nextKind[b.k],
+      dx:Math.round(-b.dx*.72),dy:Math.round(Math.abs(b.dy)*.65+28),
+      ex:Math.round(-b.ex*.68),ey:Math.round(Math.abs(b.ey)*.8+120),
+      rot0:b.rot0+90,rot:b.rot+(i%2?72:-72),rot2:b.rot2+118,
+      sc:+(b.sc*.88).toFixed(2),s:Math.max(10,b.s-4),d:+(b.d+.04).toFixed(2),dur:+(b.dur+.18).toFixed(2),
+      fill:colors[(i+9)%colors.length]
+    });
+  }
+  var html='<span class="end-done-confetti" aria-hidden="true">';
+  var burst=2.5;
+  for(i=0;i<pieces.length;i++){
+    b=pieces[i];
+    var dx=Math.round(b.dx*burst),dy=Math.round(b.dy*burst);
+    var ex=Math.round(b.ex*burst),ey=Math.round(b.ey*burst);
+    var mx=Math.round(dx+(ex-dx)*.62),my=Math.round(dy+(ey-dy)*.62);
+    var vx=Math.round(dx+(ex-dx)*.84),vy=Math.round(dy+(ey-dy)*.84);
+    var lx=Math.round(ex+(i%2?12:-18)),ly=Math.round(ey+36+(i%5)*8);
+    var rotm=Math.round(b.rot+(b.rot2-b.rot)*.62),rotv=Math.round(b.rot+(b.rot2-b.rot)*.84);
+    html+='<span class="end-cf" style="--dx:'+dx+'px;--dy:'+dy+'px;--mx:'+mx+'px;--my:'+my+'px;--vx:'+vx+'px;--vy:'+vy+'px;--lx:'+lx+'px;--ly:'+ly+'px;--rot0:'+b.rot0+'deg;--rot:'+b.rot+'deg;--rotm:'+rotm+'deg;--rotv:'+rotv+'deg;--rotl:'+(b.rot2+(i%2?16:-14))+'deg;--sc:'+b.sc+';--s:'+b.s+'px;--d:'+b.d+'s;--dur:'+b.dur+'s">'+shape(b.k,b.fill)+"</span>";
+  }
+  return html+'</span>';
+}
+function endingBadge(){
+  var stroke='stroke="#373230" stroke-width="1.15" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"';
+  return '<div class="end-badge" aria-hidden="true">'
+    +endingConfetti()
+    +'<div class="end-done"><div class="end-done-glow"></div><div class="end-done-art">'
+      +'<svg viewBox="0 0 200 248" fill="none">'
+        +'<path class="end-done-ribbon" d="M93 122L52 136L34 224L64 208L78 236L104 142Z" '+stroke+'/>'
+        +'<path class="end-done-ribbon" d="M107 122L148 136L166 224L136 208L122 236L96 142Z" '+stroke+'/>'
+        +'<g class="end-done-burst-pair"><path class="end-done-burst-back" d="'+endingBurstPath()+'" '+stroke+'/><path class="end-done-burst" d="'+endingBurstPath()+'" '+stroke+'/></g>'
+      +'</svg><span class="end-done-text">Done!</span>'
+    +'</div></div>'
+  +'</div>';
+}
+function endingOptions(key,labels){
+  return '<div class="end-options">'+labels.map(function(label){
+    return '<button class="end-option'+(STATE[key]===label?' on':'')+'" type="button" data-feedback-key="'+key+'" data-feedback-value="'+label+'" aria-pressed="'+(STATE[key]===label)+'">'+label+'</button>';
+  }).join("")+'</div>';
+}
+function renderEnding(){
+  var depth=STATE.endingSessions>=3?3:STATE.endingSessions===2?2:1;
+  var recap=ENDING_RECAP[depth];
+  var today=recap.today.map(function(item){return "<li>"+item+"</li>";}).join("");
+  var people=recap.people.map(function(person){
+    return '<button class="end-partner" type="button" data-action="message-partner" data-name="'+person.name+'"><span class="end-partner-avatar" style="--partner-color:'+person.color+'"><span class="end-partner-halo" aria-hidden="true"></span><span class="end-partner-face">'+person.initial+'</span></span>'+person.name+'</button>';
+  }).join("");
+  var note=depth===3
+    ? '<div class="end-question">Anything else you\u2019d like to share?</div>'
+      +'<textarea class="end-note" rows="3" placeholder="Share a thought, if you\u2019d like" data-feedback-note>'+escapeHtml(STATE.feedbackNote)+'</textarea>'
+    : "";
+  var primary=STATE.endingAvailable?"One more session":"Open Practice Tools";
+  var primaryAction=STATE.endingAvailable?"one-more":"practice-tools";
+  return '<div class="transition-shell">'+Components.statusbar()
+    +'<main class="mobile-ending'+(STATE.endingRested?' is-rested':'')+'">'
+      +'<div class="ending-scroll">'
+        +Components.lockup()
+        +'<section class="ending-surface">'
+          +endingBadge()
+          +'<div class="ending-content">'
+            +'<div class="end-hero"><h2>That\u2019s a wrap.</h2></div>'
+            +'<div class="end-today"><h3>Today</h3><ul>'+today+'</ul></div>'
+            +'<p class="end-tools-message">Today\u2019s flashcards and phrases are saved to your <a href="#" data-action="practice-tools">Practice Tools</a>, so you can come back to them anytime.</p>'
+            +'<div class="end-people"><h3>People you practiced with</h3><div class="end-partners">'+people+'</div></div>'
+            +'<section class="end-feedback" aria-label="Optional feedback">'
+              +'<div class="end-feedback-title">One quick thing</div>'
+              +'<div class="end-question">How did that feel</div>'
+              +endingOptions("feedbackFeel",["Light","Good stretch","Tired in a good way"])
+              +'<div class="end-question">What helped you most?</div>'
+              +endingOptions("feedbackHelp",["Hearing others","The teacher","The practice rooms"])
+              +note
+            +'</section>'
+            +'<div class="end-actions">'
+              +'<button class="end-primary" type="button" data-action="'+primaryAction+'">'+primary+'</button>'
+              +'<button class="end-home" type="button" data-action="home">Back to homepage</button>'
+            +'</div>'
+          +'</div>'
+        +'</section>'
+      +'</div>'
+    +'</main>'
+  +'</div>';
+}
+function escapeHtml(value){
+  return String(value||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+}
+function playMobileEnding(){
+  var root=document.querySelector(".mobile-ending");
+  var badge=root&&root.querySelector(".end-done");
+  var screen=root&&root.closest(".screen");
+  if(!root||!badge||!screen) return;
+  if(STATE.endingRested||window.matchMedia("(prefers-reduced-motion: reduce)").matches){
+    STATE.endingRested=true;
+    root.classList.add("is-rested");
+    return;
+  }
+  var screenRect=screen.getBoundingClientRect();
+  var badgeRect=badge.getBoundingClientRect();
+  root.style.setProperty("--end-from-x",((screenRect.left+screenRect.width/2)-(badgeRect.left+badgeRect.width/2))+"px");
+  root.style.setProperty("--end-from-y",((screenRect.top+screenRect.height*.52)-(badgeRect.top+badgeRect.height/2))+"px");
+  void badge.offsetWidth;
+  root.classList.add("is-playing");
+  badge.addEventListener("animationend",function(event){
+    if(event.animationName!=="mobileDoneTravel") return;
+    STATE.endingRested=true;
+    root.classList.add("is-rested");
+  },{once:true});
+}
+
 function waitingFlashcard(){
   var index=((STATE.flashIdx%FLASH_DECK.length)+FLASH_DECK.length)%FLASH_DECK.length;
   var card=FLASH_DECK[index];
@@ -1258,6 +1958,7 @@ var Renderers = {
   welcome:function(){
     return Components.shell(
       '<main class="welcome-panel">'
+        +'<div class="welcome-shape" aria-hidden="true"><img src="welcome-shape.png" alt=""></div>'
         +Components.progress()
         +'<div class="welcome-content">'
           +'<h2><span class="welcome-to">Welcome to</span> <span class="gym">Gym</span></h2>'
@@ -1338,19 +2039,44 @@ var Renderers = {
         +selfView
       +'</main>'
     );
+  },
+  "practice-going":function(){
+    return practiceGoingScreen();
+  },
+  "practice-wait-declined":function(){
+    return practiceWaitingScreen();
+  },
+  "practice-wait-left":function(){
+    return practiceWaitingScreen();
+  },
+  "practice-return":function(){
+    return practiceReturnScreen();
+  },
+  ending:function(){
+    return renderEnding();
   }
 };
 
 function setScene(scene){
   if(!SCREENS[scene]||!SCREENS[scene].implemented) return;
   STATE.scene=scene;
+  STATE.softLoading=false;
   if(scene==="waiting"){
     STATE.left=STATE.timing.waiting;
     STATE.clockOn=true;
     STATE.waitingPhase="waiting";
     closeWaitingSecondary();
+  }else if(scene==="ending"){
+    STATE.endingRested=false;
+    STATE.clockOn=false;
+  }else if(scene==="practice-wait-declined"||scene==="practice-wait-left"){
+    STATE.left=5*60;
+    STATE.clockOn=true;
+    STATE.practiceWaitReason=scene==="practice-wait-declined"?"declined-timeout":"left-early";
+    closeWaitingSecondary();
   }else{
     STATE.clockOn=false;
+    STATE.practiceWaitReason="";
   }
   render();
 }
@@ -1362,7 +2088,7 @@ function formatTime(seconds){
 
 function render(){
   var renderer=Renderers[STATE.scene]||Renderers.welcome;
-  document.getElementById("app").innerHTML=renderer();
+  document.getElementById("app").innerHTML=renderer()+softLoadingOverlay();
   document.querySelectorAll("[data-scene]").forEach(function(button){
     button.classList.toggle("on",button.dataset.scene===STATE.scene);
   });
@@ -1372,15 +2098,33 @@ function render(){
   document.querySelectorAll("[data-timer-preview]").forEach(function(button){
     button.classList.toggle("on",button.dataset.timerPreview===timerPreview);
   });
+  document.querySelectorAll("[data-ending-sessions]").forEach(function(button){
+    button.classList.toggle("on",Number(button.dataset.endingSessions)===STATE.endingSessions);
+  });
+  document.querySelectorAll("[data-ending-available]").forEach(function(button){
+    button.classList.toggle("on",(button.dataset.endingAvailable==="1")===STATE.endingAvailable);
+  });
+  document.querySelectorAll("[data-soft-loading]").forEach(function(button){
+    button.classList.toggle("on",STATE.softLoading);
+  });
   document.getElementById("state-note").textContent=STATE.scene==="av-check"
     ? "Canonical mobile A/V Check. Camera, microphone, blur and voice feedback are interactive."
     : STATE.scene==="waiting"
       ? (STATE.flashcardsActive
         ? "Waiting Room Flashcards. Session countdown remains visible; self-view is collapsed and expandable."
         : "Canonical Mobile Waiting Room. Countdown updates in place; Flashcards compresses the waiting context.")
-      : "Canonical Mobile Welcome. Continue opens the mobile A/V Check.";
+      : STATE.scene==="ending"
+        ? "Shared Mobile Ending · "+(STATE.endingSessions>=3?"3+":STATE.endingSessions)+" session"+(STATE.endingSessions===1?"":"s")+" · "+(STATE.endingAvailable?"another session available":"no additional session available")
+        : STATE.scene==="practice-going"
+          ? "Full transition · Main Room to Practice Rooms."
+          : STATE.scene==="practice-wait-declined"||STATE.scene==="practice-wait-left"
+            ? "Shared Waiting-return layout · internal reason: "+STATE.practiceWaitReason+"."
+            : STATE.scene==="practice-return"
+              ? "Full transition · Practice Rooms to Main Room."
+        : "Canonical Mobile Welcome. Continue opens the mobile A/V Check.";
   syncAvMicMeter();
   mountMobileMatkot();
+  if(STATE.scene==="ending") playMobileEnding();
 }
 
 document.querySelectorAll("[data-scene]").forEach(function(button){
@@ -1398,7 +2142,34 @@ document.querySelectorAll("[data-timer-preview]").forEach(function(button){
     render();
   });
 });
+document.querySelectorAll("[data-soft-loading]").forEach(function(button){
+  button.addEventListener("click",toggleSoftLoading);
+});
+document.querySelectorAll("[data-ending-sessions]").forEach(function(button){
+  button.addEventListener("click",function(){
+    STATE.endingSessions=Number(button.dataset.endingSessions);
+    setScene("ending");
+  });
+});
+document.querySelectorAll("[data-ending-available]").forEach(function(button){
+  button.addEventListener("click",function(){
+    STATE.endingAvailable=button.dataset.endingAvailable==="1";
+    if(STATE.scene!=="ending"){ setScene("ending"); return; }
+    render();
+  });
+});
 document.getElementById("app").addEventListener("click",function(event){
+  var feedback=event.target.closest("[data-feedback-key]");
+  if(feedback){
+    var key=feedback.dataset.feedbackKey;
+    STATE[key]=feedback.dataset.feedbackValue;
+    document.querySelectorAll('[data-feedback-key="'+key+'"]').forEach(function(button){
+      var on=button.dataset.feedbackValue===STATE[key];
+      button.classList.toggle("on",on);
+      button.setAttribute("aria-pressed",on);
+    });
+    return;
+  }
   var action=event.target.closest("[data-action]");
   if(!action) return;
   var name=action.dataset.action;
@@ -1420,7 +2191,19 @@ document.getElementById("app").addEventListener("click",function(event){
     render();
     return;
   }
+  if(name==="practice-tools"){ event.preventDefault(); alert("Practice Tools — destination placeholder"); return; }
+  if(name==="one-more"){ setScene("waiting"); return; }
+  if(name==="home"){ alert("Homepage — destination placeholder"); return; }
+  if(name==="message-partner"){ alert("Message "+action.dataset.name+" — destination placeholder"); return; }
   if(name==="ready") finishAv();
+});
+document.getElementById("app").addEventListener("input",function(event){
+  if(!event.target.matches("[data-feedback-note]")) return;
+  STATE.feedbackNote=event.target.value;
+});
+document.getElementById("app").addEventListener("focusin",function(event){
+  if(!event.target.matches("[data-feedback-note]")) return;
+  window.setTimeout(function(){ event.target.scrollIntoView({block:"center",behavior:"smooth"}); },180);
 });
 
 /* T−10 can call this before handing off to the existing start transition. */
@@ -1454,6 +2237,13 @@ function finishAv(){
 
 /* Waiting countdown mirrors desktop: yellow at T−20, rackets at T−10, entering at zero. */
 setInterval(function(){
+  if((STATE.scene==="practice-wait-declined"||STATE.scene==="practice-wait-left")&&STATE.clockOn){
+    if(STATE.left>0) STATE.left--;
+    var practiceClock=document.getElementById("practice-room-countdown");
+    if(practiceClock) practiceClock.textContent=formatTime(STATE.left);
+    if(STATE.left<=0) setScene("practice-return");
+    return;
+  }
   if(STATE.scene!=="waiting"||!STATE.clockOn) return;
   if(STATE.left>0) STATE.left--;
   if(STATE.waitingPhase==="waiting"&&STATE.left<=STATE.timing.t10){

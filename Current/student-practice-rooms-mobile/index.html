@@ -1136,10 +1136,8 @@ h2{font-size:15px;margin:var(--s32) 0 var(--s8)}
     <div class="controls">
       <div class="grp">Scene</div>
       <button class="sc on" data-sc="duo">Duo Room</button>
-      <button class="sc" data-sc="transfer">Transfer to Practice Room</button>
       <button class="sc" data-sc="consent">Room consent</button>
       <button class="sc" data-sc="solo">Solo Room</button>
-      <button class="sc" data-sc="wait">Waiting / return</button>
       <button class="sc" data-sc="report">Report screen</button>
 
       <div class="grp">Activity (prepared — never auto-starts)</div>
@@ -1958,40 +1956,18 @@ function leaveReportSheet(){
     +'<button class="btn" onclick="lrCancel()">Cancel - stay in room</button>', false);
 }
 
-/* ---- transitions (matkot) ---- */
+/* ---- transition handoffs ----
+   Practice-going, waiting and return visuals live only in
+   Current/student-transition-screens-mobile/index.html. */
 function transitionScene(variant){
   var hero='<div id="matkot-lottie" class="t-lottie">'+MATKOT_SVG+'</div>';
-  if(variant==='return'){
-    return '<div class="transition">'+hero
-      +'<div class="t-headline">Time\u2019s up - heading back to class</div>'
-      +'<p class="t-explain">Nice work. You\u2019ll rejoin the main room as everyone regroups.</p>'
-      +'<div class="t-muted">'+I.mic+'You\u2019ll be muted again in the main room</div></div>';
-  }
   if(variant==='solo'){
     return '<div class="transition">'+hero
       +'<div class="t-headline">Solo practice is starting</div>'
       +'<p class="t-explain">Keep going - practice is still on.</p>'
       +'<div class="t-loadline"></div></div>';
   }
-  if(variant==='transfer'){
-    /* (v9) Practice Room transfer / loading - full-screen matkot takeover shown while the
-       room is being prepared. Non-numeric loader only; NOT a countdown. */
-    return '<div class="transition">'+hero
-      +'<div class="t-headline">Yalla - let’s practice together</div>'
-      +'<p class="t-explain">Practice Hebrew out loud with classmates.<br>Mistakes are welcome.</p>'
-      +'<div class="t-loadline"></div></div>';
-  }
-  /* waiting. STATE A = the room is still active -> the synchronised countdown from
-     ST.roomLeft (the same value the header reads). STATE B (roomLeft === 0) never
-     lands here: roomEnd() and backToMain() both route to the 'return' variant. */
-  var timer = (ST.roomTimerActive && !ST.roomsEnded && ST.roomLeft>0)
-    ? '<div class="wait-num'+(ST.roomPhase==='final'?' final':'')+'">'+roomFmt(ST.roomLeft)+'</div>'
-    : '<div class="t-loadline"></div>';   /* loader = fallback only, when no room clock runs */
-  return '<div class="transition">'+hero
-    +'<div class="t-headline">You\u2019ll rejoin the main room shortly</div>'
-    +'<p class="t-explain">Camera and mic are needed for room practice.<br>You\u2019ll wait here until the room activity ends. [Placeholder copy]</p>'
-    + timer
-    +'<div class="t-muted">'+I.mic+'You\u2019ll be muted again in the main room</div></div>';
+  return '<!-- Transition handoff: practice-'+variant+'; UI is owned by student-transition-screens-mobile. -->';
 }
 var SOLO_ANSWER_ICON='data:image/png;base64,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';
 var SOLO_DECK=[
@@ -2192,12 +2168,12 @@ function updateNote(){
     consent:'ROOM CONSENT. Yes -> room. No -> waiting / return (NOT Solo).',
     enforce:'MY CAMERA / MIC OFF. Stay in room -> device back on. Leave room or 10s timeout -> waiting / return. NEVER Solo.',
     partnerleft:'PARTNER LEFT -> Solo. The only student-side path into Solo, together with an uneven number of students.',
-    wait:'WAITING / RETURN. Synchronised room countdown from ST.roomLeft; loader only when no room clock runs.',
+    wait:'PRODUCT FLOW HANDOFF · Waiting / return. Visual UI lives in student-transition-screens-mobile.',
     solo:'SOLO ROOM ('+(ST.soloReason==='uneven'?'uneven number of students':'partner left / unavailable')+'). Flashcard review until the room clock ends · '+(ST.soloRevealed?'answer':'prompt')+'.',
     trans:'SOLO TRANSITION -> Solo activity.',
-    transfer:'PRACTICE ROOM TRANSFER / LOADING. Full-screen matkot takeover while the room is prepared. No numeric countdown - not the 5s activity prep, not the return countdown.',
+    transfer:'PRODUCT FLOW HANDOFF · Practice Room transfer. Visual UI lives in student-transition-screens-mobile.',
     report:'REPORT SCREEN. Submit / Skip -> waiting / return (NOT Solo).',
-    'return':'RETURN TO MAIN ROOM. Students return muted.'
+    'return':'PRODUCT FLOW HANDOFF · Return to Main Room. Students return muted; visual UI lives in student-transition-screens-mobile.'
   }[ST.scene]||'';
   var rc=' \u00b7 Room clock '+roomFmt(ST.roomLeft)+(ST.roomPhase==='final'?' (final 10s)':'')+(ST.roomTimerActive?'':' [paused]');
   var n=document.getElementById('state-note');
