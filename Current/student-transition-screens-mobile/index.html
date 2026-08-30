@@ -1539,6 +1539,92 @@ h1{font-size:20px;line-height:1.25}
 .mobile-ending.is-rested .end-actions{opacity:1;animation:none;transform:none}
 .mobile-ending.is-rested .end-done{opacity:1;animation:none;transform:none}
 .mobile-ending.is-rested .end-done-burst{fill:var(--neutral-100);transform:scale(.9)}
+
+/* Optional reflection — compact floating bottom sheet over the settled Ending. */
+.end-reflection{
+  position:absolute;
+  z-index:16;
+  left:10px;
+  right:10px;
+  bottom:max(10px,env(safe-area-inset-bottom,0px));
+  max-height:48%;
+  overflow-x:hidden;
+  overflow-y:auto;
+  overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch;
+  padding:16px 16px 14px;
+  border:1px solid rgba(247,246,239,.28);
+  border-radius:20px 20px 16px 16px;
+  background:rgba(55,50,48,.92);
+  box-shadow:0 -10px 28px rgba(18,14,12,.2),inset 0 1px 0 rgba(247,246,239,.12);
+  color:var(--neutral-100);
+  -webkit-backdrop-filter:none;
+  backdrop-filter:none;
+  pointer-events:none;
+  visibility:hidden;
+  opacity:0;
+  transform:translateY(18px);
+}
+.end-reflection.is-open{
+  pointer-events:auto;
+  visibility:visible;
+  animation:endReflectionIn .46s cubic-bezier(.22,.68,.24,1) both;
+}
+@keyframes endReflectionIn{
+  from{opacity:0;transform:translateY(18px)}
+  to{opacity:1;transform:none}
+}
+.end-reflection-head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+  margin:0 0 4px;
+}
+.end-reflection-title{
+  margin:0;
+  padding-top:4px;
+  color:#fff;
+  font-size:18px;
+  font-weight:700;
+  line-height:1.25;
+  letter-spacing:-.1px;
+}
+.end-reflection-close{
+  flex:none;
+  width:44px;
+  height:44px;
+  margin:-8px -10px 0 0;
+  padding:0;
+  display:grid;
+  place-items:center;
+  border:0;
+  border-radius:50%;
+  background:transparent;
+  color:rgba(247,246,239,.72);
+  font:400 28px/1 var(--font-ui);
+  cursor:pointer;
+}
+.end-reflection-close:active{
+  color:#fff;
+  background:rgba(247,246,239,.1);
+}
+.end-reflection .end-question{
+  margin:12px 0 8px;
+  font-size:15px;
+}
+.end-reflection .end-question:first-of-type{margin-top:8px}
+.end-reflection .end-options{margin:0}
+.end-reflection-saved{
+  min-height:18px;
+  margin:10px 0 0;
+  color:rgba(247,246,239,.56);
+  font-size:13px;
+  font-weight:600;
+}
+.mobile-ending.is-prompt-open .ending-scroll{
+  padding-bottom:280px;
+}
 @keyframes mobileDoneTravel{
   0%{opacity:0;transform:translate(var(--end-from-x),var(--end-from-y)) scale(1.8);animation-timing-function:cubic-bezier(.2,.9,.22,1)}
   3.5%{opacity:1;transform:translate(var(--end-from-x),var(--end-from-y)) scale(2.385);animation-timing-function:cubic-bezier(.34,.1,.5,1)}
@@ -1679,6 +1765,7 @@ h1{font-size:20px;line-height:1.25}
   .mobile-ending .end-done-glow{display:none!important}
   .mobile-ending .end-today li::before,
   .mobile-ending .end-today li::after{animation:none!important}
+  .end-reflection.is-open{animation:none!important;opacity:1!important;transform:none!important}
 }
 @keyframes soft-ball-breathe{0%,100%{opacity:.7}50%{opacity:1}}
 </style>
@@ -1700,6 +1787,7 @@ h1{font-size:20px;line-height:1.25}
     <button type="button" data-scene="av-check">A/V Check</button>
     <button type="button" data-scene="waiting">Waiting Room</button>
     <button type="button" data-scene="ending">Ending</button>
+    <button type="button" data-scene="ending-prompt">Ending — Reflection prompt</button>
     <div class="grp">A/V permission</div>
     <button type="button" data-av-perm="needed">Permission needed</button>
     <button type="button" data-av-perm="retryable">Can request again</button>
@@ -1742,6 +1830,7 @@ var SCREENS = {
   "blocked-next":{label:"Blocked entry · next session",implemented:false},
   "blocked-none":{label:"Blocked entry · no later session",implemented:false},
   ending:{label:"Ending",implemented:true},
+  "ending-prompt":{label:"Ending · Reflection prompt",implemented:true},
   arrive:{label:"Entering Main Room",implemented:false},
   "practice-going":{label:"Going to Practice Rooms",implemented:true},
   "practice-wait-declined":{label:"Waiting return · did not enter",implemented:true},
@@ -1780,6 +1869,11 @@ var STATE = {
   endingSessions:1,
   endingAvailable:true,
   endingRested:false,
+  fb1:"",
+  fb2:"",
+  reflectionDismissed:false,
+  reflectionOpen:false,
+  reflectionSkipDelay:false,
   practiceWaitReason:"",
   softLoading:false
 };
@@ -2047,6 +2141,84 @@ function endingHeadline(){
   if(n===3) return '<span class="end-h-ach">Three back-to-back?</span> <span class="end-h-resp">You\u2019re a champion!</span>';
   return '<span class="end-h-ach">That\u2019s a wrap!</span> <span class="end-h-resp">Great practice.</span>';
 }
+function isEndingScene(scene){
+  scene=scene||STATE.scene;
+  return scene==="ending"||scene==="ending-prompt";
+}
+var REFLECTION_TIMER=0;
+var REFLECTION_DISMISS_TIMER=0;
+function clearReflectionTimer(){
+  if(REFLECTION_TIMER){ clearTimeout(REFLECTION_TIMER); REFLECTION_TIMER=0; }
+}
+function clearReflectionDismissTimer(){
+  if(REFLECTION_DISMISS_TIMER){ clearTimeout(REFLECTION_DISMISS_TIMER); REFLECTION_DISMISS_TIMER=0; }
+}
+function reflectionComplete(){
+  return !!(STATE.fb1&&STATE.fb2);
+}
+function scheduleReflectionDismiss(){
+  clearReflectionDismissTimer();
+  if(!reflectionComplete()||STATE.reflectionDismissed||!STATE.reflectionOpen) return;
+  REFLECTION_DISMISS_TIMER=setTimeout(dismissReflection,1000);
+}
+function endingFeedbackOpts(key,labels){
+  return '<div class="end-options">'+labels.map(function(label){
+    return '<button class="end-option'+(STATE[key]===label?' on':'')+'" type="button" data-action="set-feedback" data-fb="'+key+'" data-val="'+label+'">'+label+'</button>';
+  }).join("")+'</div>';
+}
+function reflectionPromptHtml(){
+  if(STATE.scene!=="ending-prompt"||STATE.reflectionDismissed) return "";
+  var saved=(STATE.fb1||STATE.fb2)?"Thanks \u2014 saved":"";
+  return '<aside class="end-reflection'+(STATE.reflectionOpen?' is-open':'')+'" aria-label="Optional check-in">'
+    +'<div class="end-reflection-head">'
+      +'<div class="end-reflection-title">Quick check-in</div>'
+      +'<button class="end-reflection-close" type="button" data-action="dismiss-reflection" aria-label="Close check-in">&times;</button>'
+    +'</div>'
+    +'<div class="end-question">How did that feel?</div>'
+    +endingFeedbackOpts("fb1",["Light","Good stretch","Tired in a good way"])
+    +'<div class="end-question">What helped you most?</div>'
+    +endingFeedbackOpts("fb2",["Hearing others","The teacher","The practice rooms","Interaction"])
+    +'<div class="end-reflection-saved" aria-live="polite">'+saved+'</div>'
+  +'</aside>';
+}
+function openReflectionPrompt(){
+  if(STATE.scene!=="ending-prompt"||STATE.reflectionDismissed) return;
+  STATE.reflectionOpen=true;
+  var root=document.querySelector(".mobile-ending");
+  var sheet=document.querySelector(".end-reflection");
+  if(root) root.classList.add("is-prompt-open");
+  if(sheet) sheet.classList.add("is-open");
+}
+function scheduleReflectionPrompt(){
+  clearReflectionTimer();
+  if(STATE.scene!=="ending-prompt"||STATE.reflectionDismissed) return;
+  if(STATE.reflectionOpen||STATE.reflectionSkipDelay){
+    openReflectionPrompt();
+    return;
+  }
+  REFLECTION_TIMER=setTimeout(openReflectionPrompt,1000);
+}
+function dismissReflection(){
+  STATE.reflectionDismissed=true;
+  STATE.reflectionOpen=false;
+  clearReflectionTimer();
+  clearReflectionDismissTimer();
+  var root=document.querySelector(".mobile-ending");
+  var sheet=document.querySelector(".end-reflection");
+  if(root) root.classList.remove("is-prompt-open");
+  if(sheet) sheet.remove();
+}
+function setEndingFeedback(key,val){
+  if(key!=="fb1"&&key!=="fb2") return;
+  STATE[key]=val;
+  document.querySelectorAll('.end-option[data-fb="'+key+'"]').forEach(function(button){
+    button.classList.toggle("on",button.getAttribute("data-val")===val);
+  });
+  var saved=document.querySelector(".end-reflection-saved");
+  if(saved) saved.textContent="Thanks \u2014 saved";
+  if(reflectionComplete()) scheduleReflectionDismiss();
+  else clearReflectionDismissTimer();
+}
 function renderEnding(){
   var recap=ENDING_RECAP;
   var today=recap.today.map(function(item){return "<li>"+item+"</li>";}).join("");
@@ -2061,8 +2233,9 @@ function renderEnding(){
     : "";
   var primary=STATE.endingAvailable?"Let\u2019s do it!":"Open Practice Tools";
   var primaryAction=STATE.endingAvailable?"one-more":"practice-tools";
+  var promptOpen=STATE.scene==="ending-prompt"&&STATE.reflectionOpen&&!STATE.reflectionDismissed;
   return '<div class="transition-shell">'+Components.statusbar()
-    +'<main class="mobile-ending ending-streak-'+(STATE.endingSessions>=3?3:STATE.endingSessions===2?2:1)+(STATE.endingRested?' is-rested':'')+'">'
+    +'<main class="mobile-ending ending-streak-'+(STATE.endingSessions>=3?3:STATE.endingSessions===2?2:1)+(STATE.endingRested?' is-rested':'')+(promptOpen?' is-prompt-open':'')+'">'
       +'<div class="ending-scroll">'
         +Components.lockup()
         +'<section class="ending-surface">'
@@ -2086,6 +2259,7 @@ function renderEnding(){
           +'</div>'
         +'</section>'
       +'</div>'
+      +reflectionPromptHtml()
     +'</main>'
   +'</div>';
 }
@@ -2097,6 +2271,7 @@ function playMobileEnding(){
   if(STATE.endingRested||window.matchMedia("(prefers-reduced-motion: reduce)").matches){
     STATE.endingRested=true;
     root.classList.add("is-rested");
+    scheduleReflectionPrompt();
     return;
   }
   var screenRect=screen.getBoundingClientRect();
@@ -2109,6 +2284,7 @@ function playMobileEnding(){
     if(event.animationName!=="mobileDoneTravel") return;
     STATE.endingRested=true;
     root.classList.add("is-rested");
+    scheduleReflectionPrompt();
   },{once:true});
 }
 
@@ -2382,11 +2558,29 @@ var Renderers = {
   },
   ending:function(){
     return renderEnding();
+  },
+  "ending-prompt":function(){
+    return renderEnding();
   }
 };
 
 function setScene(scene){
   if(!SCREENS[scene]||!SCREENS[scene].implemented) return;
+  clearReflectionTimer();
+  clearReflectionDismissTimer();
+  if(scene==="ending-prompt"&&isEndingScene(STATE.scene)){
+    STATE.scene="ending-prompt";
+    STATE.clockOn=false;
+    STATE.softLoading=false;
+    STATE.endingRested=true;
+    STATE.fb1="";
+    STATE.fb2="";
+    STATE.reflectionDismissed=false;
+    STATE.reflectionSkipDelay=true;
+    STATE.reflectionOpen=true;
+    render();
+    return;
+  }
   STATE.scene=scene;
   STATE.softLoading=false;
   if(scene==="waiting"){
@@ -2394,9 +2588,14 @@ function setScene(scene){
     STATE.clockOn=true;
     STATE.waitingPhase="waiting";
     closeWaitingSecondary();
-  }else if(scene==="ending"){
-    STATE.endingRested=false;
+  }else if(isEndingScene(scene)){
     STATE.clockOn=false;
+    STATE.endingRested=false;
+    STATE.fb1="";
+    STATE.fb2="";
+    STATE.reflectionDismissed=false;
+    STATE.reflectionSkipDelay=false;
+    STATE.reflectionOpen=false;
   }else if(scene==="practice-wait-declined"||scene==="practice-wait-left"){
     STATE.left=5*60;
     STATE.clockOn=true;
@@ -2446,7 +2645,9 @@ function render(){
         : "Canonical Mobile Waiting Room. Countdown updates in place; Flashcards compresses the waiting context.")
       : STATE.scene==="ending"
         ? "Mobile Ending · "+(STATE.endingSessions>=3?"3 back-to-back":STATE.endingSessions===2?"2 in a row":"1 session")+" · "+(STATE.endingAvailable?"next session available":"no next session available")
-        : STATE.scene==="practice-going"
+        : STATE.scene==="ending-prompt"
+          ? "Mobile Ending · optional reflection prompt. Celebration plays first; the sheet arrives ~1s after the screen settles. Click this control from a settled Ending to preview the sheet immediately."
+          : STATE.scene==="practice-going"
           ? "Full transition · Main Room to Practice Rooms."
           : STATE.scene==="practice-wait-declined"||STATE.scene==="practice-wait-left"
             ? "Shared Waiting-return layout · internal reason: "+STATE.practiceWaitReason+"."
@@ -2455,7 +2656,7 @@ function render(){
         : "Canonical Mobile Welcome. Continue opens the mobile A/V Check.";
   syncAvMicMeter();
   mountMobileMatkot();
-  if(STATE.scene==="ending") playMobileEnding();
+  if(isEndingScene()) playMobileEnding();
   if(STATE.scene==="av-check") refreshAvPermission();
 }
 
@@ -2481,11 +2682,11 @@ document.querySelectorAll("[data-soft-loading]").forEach(function(button){
   button.addEventListener("click",toggleSoftLoading);
 });
 function previewEnding(){
-  var already=STATE.scene==="ending";
+  var already=isEndingScene();
   STATE.endingRested=already;
   STATE.softLoading=false;
   STATE.clockOn=false;
-  STATE.scene="ending";
+  if(!already) STATE.scene="ending";
   render();
 }
 document.querySelectorAll("[data-ending-sessions]").forEach(function(button){
@@ -2533,6 +2734,8 @@ document.getElementById("app").addEventListener("click",function(event){
   if(name==="one-more"){ setScene("waiting"); return; }
   if(name==="home"){ alert("Homepage — destination placeholder"); return; }
   if(name==="message-partner"){ alert("Message "+action.dataset.name+" — destination placeholder"); return; }
+  if(name==="dismiss-reflection"){ dismissReflection(); return; }
+  if(name==="set-feedback"){ setEndingFeedback(action.dataset.fb,action.dataset.val); return; }
   if(name==="ready") finishAv();
 });
 /* T−10 can call this before handing off to the existing start transition. */
@@ -2543,7 +2746,9 @@ function closeWaitingSecondary(){
 }
 
 document.addEventListener("keydown",function(event){
-  if(event.key==="Escape"&&STATE.waitingSelfOpen){
+  if(event.key!=="Escape") return;
+  if(STATE.reflectionOpen){ dismissReflection(); return; }
+  if(STATE.waitingSelfOpen){
     STATE.waitingSelfOpen=false;
     render();
   }
