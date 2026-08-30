@@ -649,10 +649,6 @@ body.present .mode-btn:hover{opacity:1}
   min-height:100%;padding:36px 48px 32px;
   display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:48px;align-items:start;
 }
-.ending .kicker{
-  font-size:12px;font-weight:800;letter-spacing:.7px;text-transform:uppercase;
-  color:rgba(247,246,239,.58);margin:0 0 12px;
-}
 .ending h2{
   font-family:var(--font-brand);font-weight:400;font-synthesis:none;
   font-size:42px;line-height:1.15;letter-spacing:-.25px;margin:0 0 10px;color:#fff;
@@ -781,6 +777,17 @@ body.present .mode-btn:hover{opacity:1}
 .ending.is-close .end-stay p{
   font-size:21px;line-height:1.5;color:rgba(247,246,239,.78);margin:0;
 }
+.ending.is-close .end-stay-lead{
+  display:block;
+  color:rgba(247,246,239,.94);
+  font-weight:600;
+}
+.ending.is-close .end-stay-detail{
+  display:block;
+  font-size:18px;
+  font-weight:500;
+  white-space:nowrap;
+}
 .ending.is-close .end-stay a{
   color:rgba(247,246,239,.92);font-weight:700;
   text-decoration:underline;text-decoration-thickness:1px;
@@ -834,6 +841,248 @@ body.present .mode-btn:hover{opacity:1}
 }
 .ending.is-close .btn.end-home:hover{background:rgba(249,226,76,.1)}
 
+/* Ending explorations — the original Full reflection composition above remains unchanged. */
+.ending.is-close.ending-base .ending-stage{
+  display:block;
+}
+.ending.is-close.ending-base .ending-panel{
+  width:100%;height:calc(100% - 6px);
+  border-radius:20px 20px 96px 20px;
+}
+.ending.is-close.ending-base .ending-inner{
+  display:grid;
+  grid-template-columns:minmax(0,760px) minmax(270px,1fr);
+  grid-template-rows:1fr auto;
+  column-gap:72px;
+  min-height:100%;
+  padding:44px 62px 48px 48px;
+}
+.ending.is-close.ending-base .end-copy{
+  grid-column:1;grid-row:1 / span 2;
+  max-width:760px;padding-top:32px;
+}
+.ending.is-close.ending-base .end-recap{max-width:700px}
+.ending.is-close.ending-base .end-today ul{
+  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+  column-gap:38px;row-gap:4px;
+}
+.ending.is-close.ending-base .end-today li{padding-right:12px}
+.ending.is-close.ending-base .end-stay{max-width:680px}
+.ending.is-close.ending-base .end-people{margin-top:46px}
+.ending.is-close.ending-base .end-seal{
+  top:28px;right:42px;
+  transform:scale(1.30);
+  transform-origin:50% 50%;
+}
+.ending.is-close.ending-base .end-base-actions{
+  grid-column:2;grid-row:2;align-self:end;justify-self:end;
+  width:min(100%,310px);padding:0 0 4px;
+}
+.ending.is-close.ending-base .end-next-k{
+  margin:0 0 10px;
+  color:rgba(247,246,239,.58);
+  font-size:12px;font-weight:800;letter-spacing:.7px;text-transform:uppercase;
+}
+.ending.is-close.ending-base .end-next-copy{
+  margin:0 0 20px;color:rgba(247,246,239,.78);
+  font-size:16px;font-weight:500;line-height:1.45;
+  white-space:nowrap;
+}
+.ending.is-close.ending-base .end-acts{
+  margin:0;gap:12px;
+}
+.ending.is-close.ending-base .end-acts .btn{
+  width:100%;min-height:54px;padding:14px 26px;
+}
+.ending.is-close.ending-base .btn.end-home{
+  background:transparent;color:var(--brand-yellow);border:1.5px solid var(--brand-yellow);
+}
+.ending.is-close.ending-base .btn.end-home:hover{background:rgba(249,226,76,.1)}
+
+/* Base only — asymmetrical recap composition without decorative fill. */
+.ending.is-close.ending-base:not(.ending-prompt) .end-seal{
+  top:10px;right:22px;
+  transform:scale(1.34);
+  transform-origin:50% 50%;
+}
+.ending.is-close.ending-base:not(.ending-prompt) .ending-inner{
+  display:block;
+  padding:44px 64px 48px 114px;
+}
+.ending.is-close.ending-base:not(.ending-prompt) .end-copy{
+  max-width:650px;
+  padding-top:28px;
+}
+.ending.is-close.ending-base:not(.ending-prompt) .end-eyebrow{
+  margin:0 0 8px;
+  font-family:var(--font-ui);
+  font-size:13px;
+  font-weight:600;
+  letter-spacing:.15px;
+  text-transform:none;
+  color:rgba(247,246,239,.48);
+}
+.ending.is-close.ending-base:not(.ending-prompt) h2{
+  margin-bottom:36px;
+  font-size:56px;
+  white-space:nowrap;
+}
+.ending.is-close.ending-base:not(.ending-prompt) h2 .end-h-ach{
+  font-weight:700;
+  font-style:normal;
+  font-synthesis:none;
+}
+.ending.is-close.ending-base:not(.ending-prompt) h2 .end-h-resp{
+  font-weight:600;
+  font-style:italic;
+  font-synthesis:none;
+}
+.ending.is-close.ending-base.ending-streak-2:not(.ending-prompt) h2{font-size:54px}
+.ending.is-close.ending-base.ending-streak-3:not(.ending-prompt) h2{font-size:47px}
+.ending.is-close.ending-base:not(.ending-prompt) .end-recap{
+  max-width:630px;
+  display:flex;
+  flex-direction:column;
+}
+.ending.is-close.ending-base:not(.ending-prompt) .end-today h3{font-size:22px}
+.ending.is-close.ending-base:not(.ending-prompt) .end-today ul{
+  display:block;
+  padding-left:0;
+  list-style:none;
+}
+.ending.is-close.ending-base:not(.ending-prompt) .end-today li{
+  position:relative;
+  min-height:41px;
+  padding:0 0 0 50px;
+  font-size:25px;
+  line-height:1.62;
+}
+.ending.is-close.ending-base:not(.ending-prompt) .end-today li::before{
+  content:"";
+  position:absolute;
+  left:0;top:50%;z-index:1;
+  width:35px;height:35px;
+  border-radius:50%;
+  background:url("earned-coin.png") center/145% 145% no-repeat;
+  box-shadow:inset -2px 0 0 rgba(55,50,48,.24),2px 0 0 #D0A900,4px 0 0 rgba(55,50,48,.72);
+  filter:drop-shadow(0 3px 5px rgba(18,14,12,.25));
+  transform:translateY(-50%);
+  transform-origin:50% 50%;
+  animation:earnedCoinSpin 1.9s linear infinite;
+}
+.ending.is-close.ending-base:not(.ending-prompt) .end-today li:nth-child(2)::before{
+  animation-delay:-.62s;
+}
+.ending.is-close.ending-base:not(.ending-prompt) .end-today li::after{
+  content:"";
+  position:absolute;
+  left:14px;top:50%;z-index:0;
+  width:8px;height:35px;
+  border:1px solid rgba(55,50,48,.72);
+  border-radius:5px;
+  background:linear-gradient(90deg,#9E7A00 0%,#F9E24C 38%,#C69D00 72%,#765C00 100%);
+  box-shadow:2px 2px 5px rgba(18,14,12,.28);
+  transform:translateY(-50%);
+  opacity:0;
+  animation:earnedCoinEdge 1.9s linear infinite;
+}
+.ending.is-close.ending-base:not(.ending-prompt) .end-today li:nth-child(2)::after{
+  animation-delay:-.62s;
+}
+@keyframes earnedCoinSpin{
+  0%{transform:translateY(-50%) scaleX(1)}
+  25%{transform:translateY(-50%) scaleX(.08)}
+  50%{transform:translateY(-50%) scaleX(-1)}
+  75%{transform:translateY(-50%) scaleX(-.08)}
+  100%{transform:translateY(-50%) scaleX(1)}
+}
+@keyframes earnedCoinEdge{
+  0%,12%,38%,62%,88%,100%{opacity:0}
+  20%,30%,70%,80%{opacity:.72}
+  25%,75%{opacity:1}
+}
+.ending.is-close.ending-base:not(.ending-prompt) .end-stay{
+  max-width:620px;
+  padding-top:32px;
+}
+.ending.is-close.ending-base:not(.ending-prompt) .end-stay p{
+  font-size:22px;
+  line-height:1.58;
+}
+.ending.is-close.ending-base:not(.ending-prompt) .end-tools-link{
+  display:inline-block;
+  margin-top:12px;
+  font-size:18px;
+  font-weight:600;
+}
+.ending.is-close.ending-base:not(.ending-prompt) .end-people{margin-top:48px}
+.ending.is-close.ending-base:not(.ending-prompt) .end-people h3{
+  margin-bottom:24px;
+  font-size:22px;
+}
+.ending.is-close.ending-base:not(.ending-prompt) .end-base-actions{
+  position:absolute;
+  right:148px;bottom:58px;
+  width:400px;
+  padding:0;
+}
+
+/* Optional reflection floats in the reserved upper-right space; Base never reflows. */
+.ending.is-close.ending-prompt .end-reflection{
+  position:absolute;z-index:5;
+  top:154px;right:54px;width:344px;
+  padding:22px 22px 18px;
+  border:1px solid rgba(247,246,239,.26);
+  border-radius:16px;
+  background:rgba(55,50,48,.46);
+  box-shadow:0 18px 38px rgba(18,14,12,.18),inset 0 1px 0 rgba(247,246,239,.10);
+  backdrop-filter:blur(24px) saturate(1.12);
+  -webkit-backdrop-filter:blur(24px) saturate(1.12);
+  opacity:0;
+  animation:endReflectionIn .38s cubic-bezier(.22,.68,.24,1) .6s both;
+}
+.ending.is-close.ending-prompt.is-play .end-reflection{
+  animation:endCopyIn .5s cubic-bezier(.22,.68,.24,1) 3.14s both;
+}
+.ending.is-close.ending-prompt.is-rested .end-reflection{
+  opacity:1;animation:none;transform:none;
+}
+.ending.is-close.ending-prompt .end-reflection-head{
+  display:flex;align-items:flex-start;justify-content:space-between;gap:16px;
+  margin:0 0 16px;
+}
+.ending.is-close.ending-prompt .end-reflection-title{
+  margin:0;color:#fff;font-size:18px;font-weight:700;line-height:1.25;
+}
+.ending.is-close.ending-prompt .end-reflection-optional{
+  display:block;margin-top:3px;color:rgba(247,246,239,.5);
+  font-size:12px;font-weight:600;
+}
+.ending.is-close.ending-prompt .end-reflection-close{
+  display:grid;place-items:center;flex:none;
+  width:28px;height:28px;margin:-5px -6px 0 0;padding:0;
+  border:0;border-radius:50%;background:transparent;
+  color:rgba(247,246,239,.68);font:400 22px/1 var(--font-ui);cursor:pointer;
+}
+.ending.is-close.ending-prompt .end-reflection-close:hover{
+  color:#fff;background:rgba(247,246,239,.10);
+}
+.ending.is-close.ending-prompt .end-reflection .fb-q{
+  margin:14px 0 8px;font-size:15px;font-weight:600;
+}
+.ending.is-close.ending-prompt .end-reflection .fb-opts{gap:6px;margin-bottom:10px}
+.ending.is-close.ending-prompt .end-reflection .fb-opt{
+  padding:7px 11px;font-size:12px;
+}
+.ending.is-close.ending-prompt .end-reflection-saved{
+  min-height:17px;margin:4px 0 0;
+  color:rgba(247,246,239,.56);font-size:12px;font-weight:600;
+}
+@keyframes endReflectionIn{
+  from{opacity:0;transform:translateY(6px)}
+  to{opacity:1;transform:none}
+}
+
 /* Done stamp — large yellow victory, then cream docked on the recap corner */
 .ending.is-close .end-seal{
   position:absolute;top:-36px;right:-40px;z-index:4;
@@ -850,6 +1099,8 @@ body.present .mode-btn:hover{opacity:1}
 .ending.is-close:not(.is-play):not(.is-rested) .end-after,
 .ending.is-close:not(.is-play):not(.is-rested) .end-fb,
 .ending.is-close:not(.is-play):not(.is-rested) .end-rule,
+.ending.is-close:not(.is-play):not(.is-rested) .end-base-actions,
+.ending.is-close:not(.is-play):not(.is-rested) .end-reflection,
 .ending.is-close:not(.is-play):not(.is-rested) .end-done{opacity:0}
 .ending.is-close.is-play .end-hero{
   animation:endCopyIn .5s cubic-bezier(.22,.68,.24,1) 2.86s both;
@@ -859,7 +1110,9 @@ body.present .mode-btn:hover{opacity:1}
 }
 .ending.is-close.is-play .end-after,
 .ending.is-close.is-play .end-fb,
-.ending.is-close.is-play .end-rule{
+.ending.is-close.is-play .end-rule,
+.ending.is-close.is-play .end-base-actions,
+.ending.is-close.is-play .end-reflection{
   animation:endCopyIn .5s cubic-bezier(.22,.68,.24,1) 3.14s both;
 }
 .ending.is-close.is-play .end-done{
@@ -876,6 +1129,8 @@ body.present .mode-btn:hover{opacity:1}
 .ending.is-close.is-rested .end-after,
 .ending.is-close.is-rested .end-fb,
 .ending.is-close.is-rested .end-rule,
+.ending.is-close.is-rested .end-base-actions,
+.ending.is-close.is-rested .end-reflection,
 .ending.is-close.is-rested .end-done{opacity:1;animation:none}
 .ending.is-close.is-rested .end-done{transform:none}
 .ending.is-close.is-rested .end-done-art{filter:none}
@@ -1008,8 +1263,11 @@ body.present .mode-btn:hover{opacity:1}
   font-size:30px;line-height:1;letter-spacing:-.2px;color:var(--brand-charcoal);
   white-space:nowrap;pointer-events:none;
 }
+.ending.is-close .end-celebrate{
+  position:absolute;inset:0;z-index:3;pointer-events:none;overflow:visible;
+}
 .ending.is-close .end-done-confetti{
-  position:absolute;left:50%;top:42%;width:0;height:0;
+  position:absolute;left:50%;top:50%;width:0;height:0;
   pointer-events:none;overflow:visible;z-index:0;
   transform:translate(var(--from-x,0px),var(--from-y,0px));
 }
@@ -1127,6 +1385,8 @@ body.present .mode-btn:hover{opacity:1}
   .ending.is-close .end-after,
   .ending.is-close .end-fb,
   .ending.is-close .end-rule,
+  .ending.is-close .end-base-actions,
+  .ending.is-close .end-reflection,
   .ending.is-close .end-done{animation:none!important;opacity:1}
   .ending.is-close .end-done{transform:none!important}
   .ending.is-close .end-done-burst{animation:none!important;fill:var(--ink-cream);transform:none!important}
@@ -1136,6 +1396,8 @@ body.present .mode-btn:hover{opacity:1}
   .ending.is-close .end-done-glow{display:none!important}
   .ending.is-close::after{animation:none!important;opacity:0!important}
   .ending.is-close .ending-panel::before{animation:none!important;opacity:1!important}
+  .ending.is-close.ending-prompt .end-reflection{animation:none!important;opacity:1!important;transform:none!important}
+  .ending.is-close.ending-base:not(.ending-prompt) .end-today li::before{animation:none!important}
 }
 @keyframes soft-ball-breathe{0%,100%{opacity:.7}50%{opacity:1}}
 </style>
@@ -1164,13 +1426,17 @@ body.present .mode-btn:hover{opacity:1}
       <button class="sc" data-sc="blocked-none">Blocked — no next</button>
       <span class="sep"></span>
       <span class="grp-lbl">Ending</span>
-      <button class="sc" data-sc="ending-1">1 session</button>
-      <button class="sc" data-sc="ending-2">2 sessions</button>
-      <button class="sc" data-sc="ending-3">3+ sessions</button>
+      <button class="sc" data-sc="ending-full">Ending — Full reflection</button>
+      <button class="sc" data-sc="ending-prompt">Ending — Reflection prompt</button>
+      <span class="sep"></span>
+      <span class="grp-lbl">Base</span>
+      <button class="sc" data-sc="ending-base">Ending — 1 session</button>
+      <button class="sc" data-sc="ending-base-2">Ending — 2 in a row</button>
+      <button class="sc" data-sc="ending-base-3">Ending — 3 back-to-back</button>
       <span class="sep"></span>
       <span class="grp-lbl">Availability</span>
-      <button type="button" class="end-avail" data-avail="1" onclick="setEndingAvailable(true)">Another session available</button>
-      <button type="button" class="end-avail" data-avail="0" onclick="setEndingAvailable(false)">No additional session available</button>
+      <button type="button" class="end-avail" data-avail="1" onclick="setEndingAvailable(true)">Next session available</button>
+      <button type="button" class="end-avail" data-avail="0" onclick="setEndingAvailable(false)">No next session available</button>
     </div>
     <div class="row">
       <span class="grp-lbl">Play flow</span>
@@ -1284,9 +1550,14 @@ var NOTES={
   'starting':'STARTING FROM A/V — less than 1 minute after check. Countdown then loading line; no Waiting Room.',
   'blocked-next':'ENTRY BLOCKED — last 7 min of current session, another session exists. Waiting Room for the next one. New copy.',
   'blocked-none':'ENTRY BLOCKED — last 7 min, no later session. Dedicated no-entry. Not Waiting/Return.',
-  'ending-1':'ENDING · 1 session — shared Done celebration, then recap + optional quick feedback. CTAs follow availability.',
-  'ending-2':'ENDING · 2 sessions — same Ending composition. Recap reflects the additional session. Quick-answer feedback, no textarea.',
-  'ending-3':'ENDING · 3+ sessions — same Ending composition. Written-feedback field added beneath the chips.',
+  'ending-full':'ENDING — FULL REFLECTION · preserved original composition with recap and full feedback column.',
+  'ending-base':'ENDING — 1 SESSION · Base wrap-up. Headline for one completed session; recap stays the same. Availability is independent.',
+  'ending-base-2':'ENDING — 2 IN A ROW · Base wrap-up. Stronger celebration after two consecutive sessions. Recap stays the same.',
+  'ending-base-3':'ENDING — 3 BACK-TO-BACK · Base wrap-up. Strongest celebration after three consecutive sessions. Recap stays the same.',
+  'ending-prompt':'ENDING — REFLECTION PROMPT · Base composition with a delayed, optional quick reflection.',
+  'ending-1':'ENDING · legacy 1-session state — opens Full reflection.',
+  'ending-2':'ENDING · legacy 2-session state — opens Full reflection.',
+  'ending-3':'ENDING · legacy 3+ session state — opens Full reflection.',
   'ending-more':'ENDING · legacy hash — remaps to 1 session with another session available.',
   'arrive':'ENTERING MAIN ROOM — same screen as T−10; countdown swaps to loading line, copy becomes “Entering the Main Room”.',
   'practice-going':'PRACTICE ROOMS — full spatial transition from Main Room into Practice Rooms.',
@@ -1299,15 +1570,15 @@ var NOTES={
 var ENDING_RECAP={
   1:{
     today:['Greetings and getting into the room','Café ordering, out loud'],
-    people:[{n:'Dana',i:'D',c:'#F7AAF3'},{n:'Lior',i:'L',c:'#DAEF81'},{n:'Hanna',i:'H',c:'#90C7FC'}]
+    people:[{n:'Dana Levine',i:'D',c:'#F7AAF3'},{n:'Lior Sharabi',i:'L',c:'#DAEF81'},{n:'Hanna Weiss',i:'H',c:'#90C7FC'}]
   },
   2:{
     today:['Greetings and getting into the room','Café ordering, out loud','Asking for directions'],
-    people:[{n:'Dana',i:'D',c:'#F7AAF3'},{n:'Lior',i:'L',c:'#DAEF81'},{n:'Hanna',i:'H',c:'#90C7FC'}]
+    people:[{n:'Dana Levine',i:'D',c:'#F7AAF3'},{n:'Lior Sharabi',i:'L',c:'#DAEF81'},{n:'Hanna Weiss',i:'H',c:'#90C7FC'}]
   },
   3:{
     today:['Greetings and getting into the room','Café ordering, out loud','Asking for directions','A short conversation at the market'],
-    people:[{n:'Dana',i:'D',c:'#F7AAF3'},{n:'Lior',i:'L',c:'#DAEF81'},{n:'Hanna',i:'H',c:'#90C7FC'},{n:'Tom',i:'T',c:'#90C7FC'}]
+    people:[{n:'Dana Levine',i:'D',c:'#F7AAF3'},{n:'Lior Sharabi',i:'L',c:'#DAEF81'},{n:'Hanna Weiss',i:'H',c:'#90C7FC'},{n:'Tom Adler',i:'T',c:'#90C7FC'}]
   }
 };
 
@@ -1329,6 +1600,7 @@ var ST={
   fb1:'', fb2:'', fbNote:'',
   fbSent:false,
   endingRested:false,
+  reflectionDismissed:false,
   endSessions:1,            /* 1 | 2 | 3 (3 = 3+) */
   endMoreAvailable:true,    /* independent of session count */
   path:'on-time',          /* on-time | late | last-minute */
@@ -1728,25 +2000,37 @@ function endDoneConfetti(){
     return [Math.round(x*c-y*s), Math.round(x*s+y*c)];
   }
   var bits=[
-    {k:'stroke', dx:-80,  dy:-92,  ex:-122, ey:28,  rot0:-16, rot:-38, rot2:18,  sc:1.08, s:22, d:0.22, dur:2.72},
-    {k:'circ',   dx:16,   dy:-124, ex:48,   ey:-40, rot0:8,   rot:26,  rot2:54,  sc:.92,  s:13, d:0.28, dur:3.08},
-    {k:'dia',    dx:98,   dy:-68,  ex:154,  ey:36,  rot0:18,  rot:42,  rot2:78,  sc:1,    s:14, d:0.24, dur:2.58},
-    {k:'circ',   dx:-40,  dy:-108, ex:-28,  ey:52,  rot0:-10, rot:16,  rot2:50,  sc:1.12, s:16, d:0.31, dur:3.18},
-    {k:'stroke', dx:114,  dy:-30,  ex:168,  ey:44,  rot0:12,  rot:34,  rot2:14,  sc:.95,  s:20, d:0.26, dur:2.84},
-    {k:'dia',    dx:-118, dy:-46,  ex:-164, ey:22,  rot0:-22, rot:-14, rot2:28,  sc:1,    s:13, d:0.34, dur:2.66},
-    {k:'circ',   dx:56,   dy:-96,  ex:92,   ey:-8,  rot0:6,   rot:-22, rot2:16,  sc:.86,  s:12, d:0.38, dur:2.48},
-    {k:'dia',    dx:-12,  dy:-120, ex:36,   ey:48,  rot0:14,  rot:32,  rot2:64,  sc:1.18, s:17, d:0.25, dur:3.24},
-    {k:'stroke', dx:44,   dy:-36,  ex:18,   ey:56,  rot0:-8,  rot:18,  rot2:48,  sc:1,    s:21, d:0.40, dur:2.76},
-    {k:'circ',   dx:-72,  dy:-80,  ex:-118, ey:40,  rot0:-14, rot:8,   rot2:42,  sc:.9,   s:15, d:0.33, dur:2.96},
-    {k:'stroke', dx:8,    dy:-62,  ex:-42,  ey:50,  rot0:10,  rot:-24, rot2:22,  sc:1.05, s:19, d:0.29, dur:2.88},
-    {k:'dia',    dx:78,   dy:-116, ex:126,  ey:-22, rot0:20,  rot:48,  rot2:34,  sc:.88,  s:13, d:0.36, dur:3.02}
+    {k:'circ',   dx:108,  dy:-18,  ex:168,  ey:28,  rot0:6,   rot:-22, rot2:16,  sc:.86,  s:12, d:0.20, dur:2.48},
+    {k:'dia',    dx:124,  dy:14,   ex:186,  ey:64,  rot0:14,  rot:32,  rot2:64,  sc:1.18, s:17, d:0.24, dur:3.24},
+    {k:'stroke', dx:132,  dy:42,   ex:192,  ey:98,  rot0:-8,  rot:18,  rot2:48,  sc:1,    s:21, d:0.22, dur:2.76},
+    {k:'circ',   dx:116,  dy:62,   ex:174,  ey:118, rot0:-14, rot:8,   rot2:42,  sc:.9,   s:15, d:0.28, dur:2.96},
+    {k:'stroke', dx:120,  dy:8,    ex:178,  ey:56,  rot0:10,  rot:-24, rot2:22,  sc:1.05, s:19, d:0.26, dur:2.88},
+    {k:'dia',    dx:138,  dy:30,   ex:198,  ey:86,  rot0:20,  rot:48,  rot2:34,  sc:.88,  s:13, d:0.31, dur:3.02},
+    {k:'stroke', dx:-110, dy:-14,  ex:-170, ey:32,  rot0:12,  rot:30,  rot2:46,  sc:1.02, s:20, d:0.21, dur:2.70},
+    {k:'circ',   dx:-128, dy:16,   ex:-186, ey:70,  rot0:8,   rot:34,  rot2:20,  sc:.9,   s:14, d:0.25, dur:2.94},
+    {k:'dia',    dx:-102, dy:52,   ex:-160, ey:110, rot0:16,  rot:42,  rot2:64,  sc:1,    s:13, d:0.23, dur:2.62},
+    {k:'circ',   dx:-122, dy:4,    ex:-180, ey:50,  rot0:-12, rot:-24, rot2:18,  sc:1.08, s:16, d:0.27, dur:3.02},
+    {k:'stroke', dx:-118, dy:38,   ex:-176, ey:96,  rot0:-18, rot:-6,  rot2:26,  sc:.96,  s:21, d:0.29, dur:2.80},
+    {k:'dia',    dx:-136, dy:26,   ex:-194, ey:82,  rot0:-10, rot:16,  rot2:38,  sc:1,    s:13, d:0.32, dur:2.58},
+    {k:'stroke', dx:-34,  dy:96,   ex:-62,  ey:168, rot0:-8,  rot:18,  rot2:40,  sc:1.04, s:19, d:0.20, dur:2.82},
+    {k:'circ',   dx:26,   dy:114,  ex:58,   ey:178, rot0:10,  rot:26,  rot2:50,  sc:.94,  s:15, d:0.24, dur:3.12},
+    {k:'dia',    dx:-6,   dy:104,  ex:22,   ey:172, rot0:6,   rot:-16, rot2:30,  sc:1.1,  s:17, d:0.22, dur:2.70},
+    {k:'circ',   dx:64,   dy:90,   ex:108,  ey:156, rot0:14,  rot:38,  rot2:24,  sc:.88,  s:12, d:0.26, dur:2.92},
+    {k:'stroke', dx:-58,  dy:86,   ex:-98,  ey:150, rot0:-14, rot:12,  rot2:34,  sc:1,    s:20, d:0.28, dur:2.76},
+    {k:'dia',    dx:40,   dy:108,  ex:76,   ey:174, rot0:18,  rot:44,  rot2:60,  sc:.9,   s:13, d:0.30, dur:3.08},
+    {k:'stroke', dx:-42,  dy:-70,  ex:-68,  ey:-8,  rot0:-16, rot:-38, rot2:18,  sc:1.08, s:22, d:0.26, dur:2.72},
+    {k:'circ',   dx:12,   dy:-78,  ex:36,   ey:-12, rot0:8,   rot:26,  rot2:54,  sc:.92,  s:13, d:0.30, dur:3.08},
+    {k:'dia',    dx:52,   dy:-66,  ex:84,   ey:2,   rot0:18,  rot:42,  rot2:78,  sc:1,    s:14, d:0.28, dur:2.58},
+    {k:'circ',   dx:-18,  dy:-74,  ex:-4,   ey:8,   rot0:-10, rot:16,  rot2:50,  sc:1.12, s:16, d:0.33, dur:3.18},
+    {k:'stroke', dx:32,   dy:-62,  ex:54,   ey:10,  rot0:12,  rot:34,  rot2:14,  sc:.95,  s:20, d:0.31, dur:2.84},
+    {k:'dia',    dx:-56,  dy:-58,  ex:-88,  ey:6,   rot0:-22, rot:-14, rot2:28,  sc:1,    s:13, d:0.35, dur:2.66}
   ];
   var pieces=[], i, b, p, q;
   for(i=0;i<bits.length;i++){
     b=bits[i];
     pieces.push({k:b.k, dx:b.dx, dy:b.dy, ex:b.ex, ey:b.ey, rot0:b.rot0, rot:b.rot, rot2:b.rot2, sc:b.sc, s:b.s, d:b.d, dur:b.dur, fill:colors[i%colors.length]});
-    p=spin(b.dx, b.dy, i%2?38:-42);
-    q=spin(b.ex, b.ey, i%2?38:-42);
+    p=spin(b.dx, b.dy, i%2?16:-18);
+    q=spin(b.ex, b.ey, i%2?16:-18);
     pieces.push({
       k:nextKind[b.k],
       dx:Math.round(p[0]*0.92), dy:Math.round(p[1]*0.92),
@@ -1755,8 +2039,8 @@ function endDoneConfetti(){
       sc:b.sc, s:Math.max(11, b.s-3), d:+(b.d+0.07).toFixed(2), dur:+(b.dur+0.22).toFixed(2),
       fill:colors[(i+4)%colors.length]
     });
-    p=spin(b.dx, b.dy, i%3?62:-58);
-    q=spin(b.ex, b.ey, i%3?62:-58);
+    p=spin(b.dx, b.dy, i%3?28:-26);
+    q=spin(b.ex, b.ey, i%3?28:-26);
     pieces.push({
       k:nextKind[nextKind[b.k]],
       dx:Math.round(p[0]*0.74), dy:Math.round(p[1]*0.74),
@@ -1796,8 +2080,7 @@ function endDoneMark(){
   var ink='#373230';
   var sw='1.15';
   var stroke='stroke="'+ink+'" stroke-width="'+sw+'" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"';
-  return endDoneConfetti()
-    +'<div class="end-done" aria-hidden="true">'
+  return '<div class="end-done" aria-hidden="true">'
     +'<div class="end-done-glow"></div>'
     +'<div class="end-done-art">'
       +'<svg viewBox="0 0 200 248" fill="none" aria-hidden="true">'
@@ -1812,26 +2095,44 @@ function endDoneMark(){
     +'</div>'
   +'</div>';
 }
+function endingCelebrateMarkup(){
+  return '<div class="end-celebrate" aria-hidden="true">'+endDoneConfetti()+'</div>';
+}
 function isEndingScene(scene){
   scene=scene||ST.scene;
-  return scene==='ending-1'||scene==='ending-2'||scene==='ending-3'||scene==='ending-more';
+  return scene==='ending-full'||isEndingBaseScene(scene)||scene==='ending-prompt'
+    ||scene==='ending-1'||scene==='ending-2'||scene==='ending-3'||scene==='ending-more';
+}
+function isEndingBaseScene(scene){
+  scene=scene||ST.scene;
+  return scene==='ending-base'||scene==='ending-base-2'||scene==='ending-base-3';
 }
 function endingDepth(){
   return ST.endSessions>=3?3:ST.endSessions===2?2:1;
 }
+function endingHeadline(){
+  var n=endingDepth();
+  if(n===2) return '<span class="end-h-ach">Two in a row!</span> <span class="end-h-resp">We are impressed.</span>';
+  if(n===3) return '<span class="end-h-ach">Three back-to-back?</span> <span class="end-h-resp">You\u2019re a champion!</span>';
+  return '<span class="end-h-ach">That\u2019s a wrap!</span> <span class="end-h-resp">Great practice.</span>';
+}
 function endingSceneName(){
-  var d=endingDepth();
-  return d===2?'ending-2':d===3?'ending-3':'ending-1';
+  if(isEndingBaseScene()||ST.scene==='ending-prompt') return ST.scene;
+  return 'ending-full';
 }
 function canonicalEnding(scene){
   if(scene==='ending-more'){
     ST.endMoreAvailable=true;
     ST.endSessions=1;
-    return 'ending-1';
+    return 'ending-full';
   }
-  if(scene==='ending-1') ST.endSessions=1;
-  else if(scene==='ending-2') ST.endSessions=2;
-  else if(scene==='ending-3') ST.endSessions=3;
+  if(scene==='ending-1'){ ST.endSessions=1; return 'ending-full'; }
+  if(scene==='ending-2'){ ST.endSessions=2; return 'ending-full'; }
+  if(scene==='ending-3'){ ST.endSessions=3; return 'ending-full'; }
+  if(scene==='ending-base'){ ST.endSessions=1; return scene; }
+  if(scene==='ending-base-2'){ ST.endSessions=2; return scene; }
+  if(scene==='ending-base-3'){ ST.endSessions=3; return scene; }
+  if(scene==='ending-full'||scene==='ending-prompt') ST.endSessions=1;
   return scene;
 }
 function openPracticeTools(){
@@ -1853,13 +2154,44 @@ function setEndingAvailable(on){
     setScene(endingSceneName());
     return;
   }
-  var acts=document.querySelector('.ending.is-close .end-acts');
-  if(acts){
-    acts.innerHTML=endingCtas();
+  if(syncEndingAvailability()){
     syncSwitcher();
     return;
   }
   render();
+}
+function syncEndingAvailability(){
+  var root=document.querySelector('.ending.is-close');
+  if(!root) return false;
+  var acts=root.querySelector('.end-acts');
+  if(!acts) return false;
+  if(root.classList.contains('ending-prompt')){
+    acts.innerHTML=endingPromptCtas();
+    return true;
+  }
+  if(root.classList.contains('ending-base')){
+    var stay=root.querySelector('.end-stay');
+    var actions=root.querySelector('.end-base-actions');
+    if(!stay||!actions) return false;
+    var link=stay.querySelector('.end-tools-link');
+    var next=actions.querySelector('.end-next-copy');
+    if(ST.endMoreAvailable){
+      if(!link){
+        stay.insertAdjacentHTML('beforeend','<a href="#" class="end-tools-link" onclick="openPracticeTools();return false;">Open Practice Tools \u2192</a>');
+      }
+      if(!next){
+        acts.insertAdjacentHTML('beforebegin',endingNextCopyHtml());
+      }
+      acts.innerHTML=endingBaseCtas();
+    }else{
+      if(link) link.remove();
+      if(next) next.remove();
+      acts.innerHTML=endingBaseCtas();
+    }
+    return true;
+  }
+  acts.innerHTML=endingCtas();
+  return true;
 }
 function setFbNote(val){
   ST.fbNote=val;
@@ -1872,10 +2204,11 @@ function endingPartnerHtml(people){
   }).join('');
 }
 
-function playEnding(){
+function playEndingCelebration(){
   var root=document.querySelector('.ending.is-close');
   var seal=root && root.querySelector('.end-done');
   var stage=root && (root.querySelector('.ending-stage')||root);
+  var confetti=root && root.querySelector('.end-done-confetti');
   if(!root || !seal || !stage) return;
   if(ST.endingRested){
     root.classList.add('is-rested');
@@ -1889,7 +2222,13 @@ function playEnding(){
   var pr=stage.getBoundingClientRect();
   var sr=seal.getBoundingClientRect();
   var fx=((pr.left+pr.width/2)-(sr.left+sr.width/2)+52).toFixed(1)+'px';
-  var fy=((pr.top+pr.height/2)-(sr.top+sr.height/2)).toFixed(1)+'px';
+  var fy=((pr.top+pr.height/2)-(sr.top+sr.height/2)-64).toFixed(1)+'px';
+  if(confetti){
+    var host=confetti.offsetParent||root;
+    var hr=host.getBoundingClientRect();
+    confetti.style.left=(sr.left-hr.left+sr.width*0.5)+'px';
+    confetti.style.top=(sr.top-hr.top+sr.height*0.5)+'px';
+  }
   root.style.setProperty('--from-x', fx);
   root.style.setProperty('--from-y', fy);
   seal.style.setProperty('--from-x', fx);
@@ -1902,8 +2241,9 @@ function playEnding(){
     root.classList.add('is-rested');
   });
 }
+function playEnding(){ playEndingCelebration(); }
 
-function screenEnding(){
+function screenEndingFull(){
   var depth=endingDepth();
   var recap=ENDING_RECAP[depth]||ENDING_RECAP[1];
   var today=recap.today.map(function(item){ return '<li>'+item+'</li>'; }).join('');
@@ -1922,21 +2262,22 @@ function screenEnding(){
     +'<div class="ending is-close'+(depth>=3?' is-deep':'')+(ST.endingRested?' is-rested':'')+'"><div class="ending-stage">'
     +'<div class="ending-panel"><div class="ending-inner">'
     +'<div class="end-copy">'
-      +'<div class="end-hero"><h2>That\u2019s a wrap.</h2></div>'
+      +'<div class="end-hero"><h2>That\u2019s a wrap! Well done.</h2></div>'
       +'<div class="end-recap">'
         +'<div class="end-today">'
-          +'<h3>Today</h3>'
+          +'<h3>Here\u2019s what you did today:</h3>'
           +'<ul>'+today+'</ul>'
         +'</div>'
         +'<div class="end-stay">'
-          +'<p>Today\u2019s flashcards and phrases are saved to your <a href="#" onclick="openPracticeTools();return false;">Practice Tools</a>, so you can come back to them anytime.</p>'
+          +'<p><span class="end-stay-lead">Gym phrases stay with you.</span><span class="end-stay-detail">This session\u2019s vocabulary is waiting whenever you want another pass.</span></p>'
         +'</div>'
         +'<div class="end-people">'
-          +'<h3>People you practiced with</h3>'
+          +'<h3>Your Gym partners:</h3>'
           +'<div class="partners">'+endingPartnerHtml(recap.people)+'</div>'
         +'</div>'
       +'</div>'
     +'</div>'
+    +endingCelebrateMarkup()
     +'<div class="end-seal">'+endDoneMark()+'</div>'
     +'</div></div>'
     +'<aside class="end-fb">'
@@ -1952,6 +2293,89 @@ function screenEnding(){
       +'<div class="end-acts">'+endingCtas()+'</div>'
     +'</aside>'
     +'</div></div>';
+}
+function endingPromptCtas(){
+  return '<button class="btn primary" onclick="oneMore()">One more session</button>'
+    +'<button class="btn end-home" onclick="goHome()">Back to homepage</button>';
+}
+function endingBaseCtas(){
+  var primary=ST.endMoreAvailable
+    ? '<button class="btn primary" onclick="oneMore()">Let\u2019s do it!</button>'
+    : '<button class="btn primary" onclick="openPracticeTools()">Open Practice Tools</button>';
+  return primary+'<button class="btn end-home" onclick="goHome()">Back to homepage</button>';
+}
+function endingNextCopyHtml(){
+  return '<p class="end-next-copy">There\u2019s another Gym session starting soon.<br>Want to join?</p>';
+}
+function dismissReflection(){
+  ST.reflectionDismissed=true;
+  var card=document.querySelector('.end-reflection');
+  if(card) card.remove();
+}
+function reflectionPrompt(){
+  if(ST.reflectionDismissed) return '';
+  var saved=(ST.fb1||ST.fb2)?'Saved':'';
+  return '<aside class="end-reflection" aria-label="Optional reflection">'
+    +'<div class="end-reflection-head">'
+      +'<div><div class="end-reflection-title">One quick thing</div><span class="end-reflection-optional">Optional · answers save as you choose</span></div>'
+      +'<button type="button" class="end-reflection-close" onclick="dismissReflection()" aria-label="Skip reflection">&times;</button>'
+    +'</div>'
+    +'<div class="fb-q">How did that feel?</div>'
+    +fbOpts('fb1',['Light','Good stretch','Tired in a good way'])
+    +'<div class="fb-q">What helped you most?</div>'
+    +fbOpts('fb2',['Hearing others','The teacher','The practice rooms'])
+    +'<div class="end-reflection-saved" aria-live="polite">'+saved+'</div>'
+    +'</aside>';
+}
+function screenEndingBase(withPrompt){
+  var recap=ENDING_RECAP[1];
+  var today=recap.today.map(function(item){ return '<li>'+item+'</li>'; }).join('');
+  var headline=withPrompt?'That\u2019s a wrap! Well done.':endingHeadline();
+  var eyebrow=withPrompt?'':'<div class="end-eyebrow">Session complete</div>';
+  var toolsLink=(!withPrompt && ST.endMoreAvailable)
+    ? '<a href="#" class="end-tools-link" onclick="openPracticeTools();return false;">Open Practice Tools \u2192</a>'
+    : '';
+  var nextCopy=(!withPrompt && ST.endMoreAvailable)
+    ? endingNextCopyHtml()
+    : '';
+  var acts=withPrompt?endingPromptCtas():endingBaseCtas();
+  var streak=withPrompt?'':' ending-streak-'+endingDepth();
+  return lockupWelcome()
+    +'<div class="ending is-close'+(ST.endingRested?' is-rested':'')+' ending-base'+(withPrompt?' ending-prompt':'')+streak+'"><div class="ending-stage">'
+    +'<div class="ending-panel"><div class="ending-inner">'
+    +'<div class="end-copy">'
+      +'<div class="end-hero">'+eyebrow+'<h2>'+headline+'</h2></div>'
+      +'<div class="end-recap">'
+        +'<div class="end-today">'
+          +'<h3>Here\u2019s what you did today:</h3>'
+          +'<ul>'+today+'</ul>'
+        +'</div>'
+        +'<div class="end-stay">'
+          +'<p><span class="end-stay-lead">Gym phrases stay with you.</span><span class="end-stay-detail">This session\u2019s vocabulary is waiting whenever you want another pass.</span></p>'
+          +toolsLink
+        +'</div>'
+        +'<div class="end-people">'
+          +'<h3>Your Gym partners:</h3>'
+          +'<div class="partners">'+endingPartnerHtml(recap.people)+'</div>'
+        +'</div>'
+      +'</div>'
+    +'</div>'
+    +'<div class="end-base-actions">'
+      +(withPrompt?'<div class="end-next-k">What\u2019s next</div>':'')
+      +(withPrompt?'<p class="end-next-copy">Keep the momentum going, or call it a day.</p>':'')
+      +nextCopy
+      +'<div class="end-acts">'+acts+'</div>'
+    +'</div>'
+    +endingCelebrateMarkup()
+    +'<div class="end-seal">'+endDoneMark()+'</div>'
+    +'</div>'
+    +(withPrompt?reflectionPrompt():'')
+    +'</div></div></div>';
+}
+function screenEnding(){
+  if(isEndingBaseScene()) return screenEndingBase(false);
+  if(ST.scene==='ending-prompt') return screenEndingBase(true);
+  return screenEndingFull();
 }
 function fbOpts(key, labels){
   var html='<div class="fb-opts">';
@@ -2023,6 +2447,8 @@ function setFb(key,val){
     btns.forEach(function(b){ b.classList.toggle('on', b.getAttribute('data-val')===val); });
     var send=document.querySelector('.end-send');
     if(send && !ST.fbSent) send.disabled=!hasEndingFeedback();
+    var saved=document.querySelector('.end-reflection-saved');
+    if(saved) saved.textContent='Saved';
     return;
   }
   render();
@@ -2178,7 +2604,11 @@ function seedFor(scene){
   if(scene==='starting'){ ST.left=DUR.starting; ST.clockOn=true; ST.path='last-minute'; ST.entering=false; }
   if(scene==='blocked-next'){ ST.left=DUR.blockedNext; ST.clockOn=true; }
   if(scene==='blocked-none'){ ST.clockOn=false; }
-  if(scene.indexOf('ending')===0){ ST.clockOn=false; ST.endingRested=false; ST.fbSent=false; }
+  if(scene.indexOf('ending')===0){
+    ST.clockOn=false; ST.endingRested=false; ST.fbSent=false;
+    ST.reflectionDismissed=false;
+    if(scene==='ending-prompt'){ ST.fb1=''; ST.fb2=''; }
+  }
   if(scene==='arrive'){ ST.clockOn=false; }
   if(scene==='practice-going'||scene==='practice-return'){ ST.clockOn=false; ST.practiceWaitReason=''; }
   if(scene==='practice-wait-declined'){
@@ -2210,7 +2640,7 @@ function playFlow(kind){
   if(kind==='on-time'){ ST.late=false; ST.left=DUR.waiting; setScene('welcome'); }
   if(kind==='late'){ ST.late=true; setScene('welcome-late'); }
   if(kind==='last-minute'){ ST.late=false; ST.left=DUR.lastMinute; setScene('welcome'); }
-  if(kind==='one-more'){ ST.late=false; ST.endMoreAvailable=true; ST.endSessions=1; setScene('ending-1'); }
+  if(kind==='one-more'){ ST.late=false; ST.endMoreAvailable=true; ST.endSessions=1; setScene('ending-full'); }
 }
 
 function render(){
@@ -2235,7 +2665,7 @@ function render(){
   var needsLottie=(scene==='waiting'||scene==='waiting-t20'||scene==='waiting-t10'||scene==='starting'||scene==='blocked-next'||scene==='arrive'||scene.indexOf('practice-')===0);
   if(needsLottie) mountLottie();
   else { destroyLottie(); lottieFrame=0; }
-  if(isEndingScene(scene)) playEnding();
+  if(isEndingScene(scene)) playEndingCelebration();
   syncSwitcher();
   syncAvMicMeter();
 }
@@ -2249,7 +2679,8 @@ function syncSwitcher(){
   var note=document.getElementById('stateNote');
   if(note){
     var extra=isEndingScene()
-      ? ' · '+(ST.endMoreAvailable?'another session available':'no additional session available')
+      ? ' · '+(isEndingBaseScene()?ST.endSessions+' session'+(ST.endSessions===1?'':'s')+' · ':'')
+        +(ST.endMoreAvailable?'next session available':'no next session available')
       : '';
     note.innerHTML='<b>'+ST.scene+'</b>'+extra+(ST.entering?' · entering':'')+' — '+(NOTES[ST.scene]||'')+' · clock '+(ST.clockOn?'on':'paused')+' · '+fmt(ST.left);
   }
