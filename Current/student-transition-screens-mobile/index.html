@@ -281,7 +281,7 @@ h1{font-size:20px;line-height:1.25}
   align-items:center;
   justify-content:center;
   text-align:center;
-  transform:translateY(-72px);
+  transform:translateY(-28px);
 }
 .welcome-content h2{
   margin:0 0 14px;
@@ -517,6 +517,86 @@ h1{font-size:20px;line-height:1.25}
   align-items:center;
   justify-content:flex-start;
 }
+.av-perm{
+  flex:none;
+  width:100%;
+  max-width:330px;
+  margin:10px 0 0;
+  font-size:14px;
+  font-weight:600;
+  line-height:1.4;
+}
+.av-perm-needed{
+  appearance:none;
+  -webkit-appearance:none;
+  display:block;
+  width:100%;
+  max-width:330px;
+  margin:10px 0 0;
+  padding:0;
+  border:0;
+  background:none;
+  color:var(--brand-yellow);
+  font:inherit;
+  font-size:14px;
+  font-weight:600;
+  line-height:1.4;
+  text-align:center;
+  cursor:pointer;
+  text-wrap:pretty;
+}
+.av-perm-needed:focus-visible{outline:2px solid #fff;outline-offset:4px}
+.av-perm-blocked,.av-error{
+  display:flex;
+  align-items:flex-start;
+  gap:8px;
+  width:100%;
+  max-width:330px;
+  margin:10px 0 0;
+  padding:10px 12px;
+  border:1px solid rgba(247,246,239,.28);
+  border-radius:10px;
+  background:rgba(247,246,239,.1);
+  box-shadow:inset 0 1px 0 rgba(247,246,239,.14);
+  color:#F7F6EF;
+  font-size:12px;
+  font-weight:500;
+  line-height:1.35;
+  text-align:left;
+  -webkit-backdrop-filter:blur(36px) saturate(1.16);
+  backdrop-filter:blur(36px) saturate(1.16);
+}
+.av-perm-mark{
+  flex:none;
+  width:7px;
+  height:7px;
+  margin-top:.5em;
+  border-radius:50%;
+  background:#FFE300;
+}
+.av-perm-copy{min-width:0;flex:1}
+.av-perm-blocked p{margin:0;color:#F7F6EF}
+.av-perm-retry{
+  appearance:none;
+  -webkit-appearance:none;
+  display:inline-block;
+  margin:8px 0 0;
+  padding:0;
+  border:0;
+  background:none;
+  color:#FFE300;
+  font:inherit;
+  font-size:13px;
+  font-weight:700;
+  cursor:pointer;
+}
+.av-perm-blocked p .av-perm-retry{
+  display:inline;
+  margin:0;
+  text-decoration:underline;
+  text-underline-offset:2px;
+}
+.av-perm-retry:focus-visible{outline:2px solid #fff;outline-offset:3px}
 .av-privacy{
   max-width:330px;
   margin:0 0 50px;
@@ -526,18 +606,8 @@ h1{font-size:20px;line-height:1.25}
   line-height:1.42;
   text-wrap:pretty;
 }
-.av-error{
-  width:100%;
-  margin:0 0 10px;
-  padding:8px 10px;
-  border:1px solid rgba(249,116,107,.45);
-  border-radius:10px;
-  background:rgba(249,116,107,.12);
-  color:#fff;
-  font-size:12px;
-  line-height:1.3;
-  text-align:left;
-}
+.av-canon:has(.av-perm) .av-foot{padding-top:12px}
+.av-canon:has(.av-perm) .av-privacy{margin-bottom:28px}
 .av-foot .primary-cta{width:154px;min-height:50px}
 
 /* Canonical mobile Waiting Room: countdown first, optional practice second. */
@@ -1051,7 +1121,7 @@ h1{font-size:20px;line-height:1.25}
   overflow-y:auto;
   overscroll-behavior-y:contain;
   -webkit-overflow-scrolling:touch;
-  padding:58px var(--s16) max(34px,env(safe-area-inset-bottom,0px));
+  padding:52px var(--s16) max(28px,env(safe-area-inset-bottom,0px));
   scroll-padding:120px 0 max(180px,calc(env(safe-area-inset-bottom,0px) + 40px));
 }
 .ending-scroll > .session-lockup{
@@ -1059,11 +1129,11 @@ h1{font-size:20px;line-height:1.25}
   top:auto;
   left:auto;
   width:max-content;
-  margin:0 0 24px;
+  margin:0 0 16px;
 }
 .ending-surface{
   position:relative;
-  padding:108px 22px 28px;
+  padding:108px 20px 24px;
   border:1px solid rgba(247,246,239,.3);
   border-radius:20px 20px 66px 20px;
   background:rgba(247,246,239,.12);
@@ -1071,15 +1141,37 @@ h1{font-size:20px;line-height:1.25}
   -webkit-backdrop-filter:blur(34px) saturate(1.16);
   backdrop-filter:blur(34px) saturate(1.16);
 }
+.end-eyebrow{
+  margin:0 0 8px;
+  color:rgba(247,246,239,.48);
+  font-family:var(--font-ui);
+  font-size:13px;
+  font-weight:600;
+  letter-spacing:.15px;
+  line-height:1.3;
+}
 .end-hero h2{
-  margin:0 0 22px;
+  margin:0 0 24px;
   color:#fff;
   font-family:var(--font-brand);
-  font-size:43px;
+  font-size:34px;
   font-weight:400;
   font-synthesis:none;
-  line-height:1.08;
-  letter-spacing:-.3px;
+  line-height:1.16;
+  letter-spacing:-.28px;
+}
+.end-hero h2 .end-h-ach{
+  white-space:nowrap;
+  font-weight:700;
+  font-style:normal;
+  font-synthesis:none;
+}
+.mobile-ending.ending-streak-3 .end-h-ach{white-space:normal}
+.end-hero h2 .end-h-resp{
+  display:block;
+  font-weight:600;
+  font-style:italic;
+  font-synthesis:none;
 }
 .mobile-ending h3,
 .end-feedback-title{
@@ -1090,27 +1182,103 @@ h1{font-size:20px;line-height:1.25}
   line-height:1.25;
   letter-spacing:-.1px;
 }
-.end-today ul{margin:0;padding-left:19px}
+.end-today ul{
+  margin:0;
+  padding-left:0;
+  list-style:none;
+}
 .end-today li{
-  margin:0 0 7px;
+  position:relative;
+  min-height:34px;
+  margin:0 0 11px;
+  padding:2px 0 2px 42px;
   color:rgba(247,246,239,.9);
   font-size:17px;
-  line-height:1.45;
+  line-height:1.5;
 }
-.end-tools-message{
-  margin:18px 0 0;
+.end-today li:last-child{margin-bottom:0}
+.end-today li::before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:50%;
+  z-index:1;
+  width:28px;
+  height:28px;
+  border-radius:50%;
+  background:url("../student-transition-screens-desktop/earned-coin.png") center/145% 145% no-repeat;
+  box-shadow:inset -2px 0 0 rgba(55,50,48,.24),2px 0 0 #D0A900,4px 0 0 rgba(55,50,48,.72);
+  filter:drop-shadow(0 3px 5px rgba(18,14,12,.25));
+  transform:translateY(-50%);
+  transform-origin:50% 50%;
+  animation:earnedCoinSpin 1.9s linear infinite;
+}
+.end-today li:nth-child(2)::before{animation-delay:-.62s}
+.end-today li::after{
+  content:"";
+  position:absolute;
+  left:11px;
+  top:50%;
+  z-index:0;
+  width:6px;
+  height:28px;
+  border:1px solid rgba(55,50,48,.72);
+  border-radius:4px;
+  background:linear-gradient(90deg,#9E7A00 0%,#F9E24C 38%,#C69D00 72%,#765C00 100%);
+  box-shadow:2px 2px 5px rgba(18,14,12,.28);
+  transform:translateY(-50%);
+  opacity:0;
+  animation:earnedCoinEdge 1.9s linear infinite;
+}
+.end-today li:nth-child(2)::after{animation-delay:-.62s}
+@keyframes earnedCoinSpin{
+  0%{transform:translateY(-50%) scaleX(1)}
+  25%{transform:translateY(-50%) scaleX(.08)}
+  50%{transform:translateY(-50%) scaleX(-1)}
+  75%{transform:translateY(-50%) scaleX(-.08)}
+  100%{transform:translateY(-50%) scaleX(1)}
+}
+@keyframes earnedCoinEdge{
+  0%,12%,38%,62%,88%,100%{opacity:0}
+  20%,30%,70%,80%{opacity:.72}
+  25%,75%{opacity:1}
+}
+.end-stay{
+  margin:22px 0 0;
+  padding:14px 16px 15px;
+  border:1px solid rgba(247,246,239,.32);
+  border-radius:14px;
+  background:rgba(247,246,239,.05);
+  box-shadow:inset 0 1px 0 rgba(247,246,239,.1);
+}
+.end-stay p{
+  margin:0;
   color:rgba(247,246,239,.84);
   font-size:16px;
   line-height:1.5;
 }
-.end-tools-message a{
+.end-stay-lead{
+  display:block;
+  color:rgba(247,246,239,.94);
+  font-weight:600;
+}
+.end-stay-detail{
+  display:block;
+  margin-top:3px;
+  font-weight:500;
+}
+.end-tools-link{
+  display:inline-block;
+  margin-top:10px;
   color:#fff;
+  font-size:15px;
   font-weight:700;
   text-decoration:underline;
   text-decoration-color:rgba(247,246,239,.5);
   text-underline-offset:3px;
 }
-.end-people{margin-top:24px}
+.end-people{margin-top:52px}
+.end-people h3{margin-bottom:16px}
 .end-partners{display:flex;flex-wrap:wrap;gap:9px}
 .end-partner{
   min-height:44px;
@@ -1207,13 +1375,30 @@ h1{font-size:20px;line-height:1.25}
 }
 .end-note::placeholder{color:rgba(247,246,239,.68)}
 .end-note:focus{outline:2px solid rgba(249,226,76,.55);outline-offset:2px}
+.end-next{
+  margin-top:26px;
+  padding-top:22px;
+  border-top:1px solid rgba(247,246,239,.3);
+}
+.end-next-copy{
+  margin:0;
+  color:rgba(247,246,239,.82);
+  font-size:16px;
+  font-weight:500;
+  line-height:1.45;
+}
 .end-actions{
-  margin-top:30px;
-  padding-top:28px;
+  margin-top:22px;
+  padding-top:20px;
   display:flex;
   flex-direction:column;
   gap:11px;
   border-top:1px solid rgba(247,246,239,.3);
+}
+.end-next + .end-actions{
+  margin-top:14px;
+  padding-top:0;
+  border-top:none;
 }
 .end-actions button{
   width:100%;
@@ -1236,8 +1421,8 @@ h1{font-size:20px;line-height:1.25}
 .end-badge{
   position:absolute;
   z-index:10;
-  top:-22px;
-  right:-9px;
+  top:-30px;
+  right:0;
   width:136px;
   height:164px;
   overflow:visible;
@@ -1326,9 +1511,9 @@ h1{font-size:20px;line-height:1.25}
 }
 .mobile-ending:not(.is-playing):not(.is-rested) .end-hero,
 .mobile-ending:not(.is-playing):not(.is-rested) .end-today,
-.mobile-ending:not(.is-playing):not(.is-rested) .end-tools-message,
+.mobile-ending:not(.is-playing):not(.is-rested) .end-stay,
 .mobile-ending:not(.is-playing):not(.is-rested) .end-people,
-.mobile-ending:not(.is-playing):not(.is-rested) .end-feedback,
+.mobile-ending:not(.is-playing):not(.is-rested) .end-next,
 .mobile-ending:not(.is-playing):not(.is-rested) .end-actions,
 .mobile-ending:not(.is-playing):not(.is-rested) .end-done{opacity:0}
 .mobile-ending.is-playing::after{animation:mobileEndVeil 4.2s both}
@@ -1337,17 +1522,17 @@ h1{font-size:20px;line-height:1.25}
 .mobile-ending.is-playing .end-done-glow{animation:mobileEndGlow 4.2s both}
 .mobile-ending.is-playing .end-hero{animation:mobileEndContent .5s cubic-bezier(.22,.68,.24,1) 2.86s both}
 .mobile-ending.is-playing .end-today,
-.mobile-ending.is-playing .end-tools-message,
+.mobile-ending.is-playing .end-stay,
 .mobile-ending.is-playing .end-people{animation:mobileEndContent .5s cubic-bezier(.22,.68,.24,1) 3s both}
-.mobile-ending.is-playing .end-feedback,
+.mobile-ending.is-playing .end-next,
 .mobile-ending.is-playing .end-actions{animation:mobileEndContent .5s cubic-bezier(.22,.68,.24,1) 3.14s both}
 .mobile-ending.is-rested .end-hero,
 .mobile-ending.is-rested .end-today,
-.mobile-ending.is-rested .end-tools-message,
+.mobile-ending.is-rested .end-stay,
 .mobile-ending.is-rested .end-people,
-.mobile-ending.is-rested .end-feedback,
-.mobile-ending.is-rested .end-actions,
-.mobile-ending.is-rested .end-done{opacity:1;animation:none;transform:scale(.82)}
+.mobile-ending.is-rested .end-next,
+.mobile-ending.is-rested .end-actions{opacity:1;animation:none;transform:none}
+.mobile-ending.is-rested .end-done{opacity:1;animation:none;transform:none}
 .mobile-ending.is-rested .end-done-burst{fill:var(--neutral-100);transform:scale(.9)}
 @keyframes mobileDoneTravel{
   0%{opacity:0;transform:translate(var(--end-from-x),var(--end-from-y)) scale(1.8);animation-timing-function:cubic-bezier(.2,.9,.22,1)}
@@ -1462,6 +1647,7 @@ h1{font-size:20px;line-height:1.25}
   .av-head h2{font-size:28px}
   .av-tools{gap:14px}
   .av-privacy{font-size:14px}
+  .av-perm-needed{font-size:13px}
 }
 @media (max-height:740px){
   .welcome-content{padding-top:14px;padding-bottom:20px}
@@ -1479,12 +1665,14 @@ h1{font-size:20px;line-height:1.25}
   .mobile-ending .end-done,
   .mobile-ending .end-hero,
   .mobile-ending .end-today,
-  .mobile-ending .end-tools-message,
+  .mobile-ending .end-stay,
   .mobile-ending .end-people,
-  .mobile-ending .end-feedback,
+  .mobile-ending .end-next,
   .mobile-ending .end-actions{animation:none!important}
   .mobile-ending .end-done-confetti,
   .mobile-ending .end-done-glow{display:none!important}
+  .mobile-ending .end-today li::before,
+  .mobile-ending .end-today li::after{animation:none!important}
 }
 @keyframes soft-ball-breathe{0%,100%{opacity:.7}50%{opacity:1}}
 </style>
@@ -1505,13 +1693,19 @@ h1{font-size:20px;line-height:1.25}
     <button class="on" type="button" data-scene="welcome">Welcome</button>
     <button type="button" data-scene="av-check">A/V Check</button>
     <button type="button" data-scene="waiting">Waiting Room</button>
-    <div class="grp">Ending · session count</div>
-    <button type="button" data-ending-sessions="1">1 session</button>
-    <button type="button" data-ending-sessions="2">2 sessions</button>
-    <button type="button" data-ending-sessions="3">3+ sessions</button>
-    <div class="grp">Ending · availability</div>
-    <button type="button" data-ending-available="1">Another session available</button>
-    <button type="button" data-ending-available="0">No additional session available</button>
+    <button type="button" data-scene="ending">Ending</button>
+    <div class="grp">A/V permission</div>
+    <button type="button" data-av-perm="needed">Permission needed</button>
+    <button type="button" data-av-perm="retryable">Can request again</button>
+    <button type="button" data-av-perm="blocked">Permission blocked</button>
+    <button type="button" data-av-perm="granted">Permission granted</button>
+    <div class="grp">Ending · streak</div>
+    <button type="button" data-ending-sessions="1">Ending — 1 session</button>
+    <button type="button" data-ending-sessions="2">Ending — 2 in a row</button>
+    <button type="button" data-ending-sessions="3">Ending — 3 back-to-back</button>
+    <div class="grp">Ending · next session</div>
+    <button type="button" data-ending-available="1">Next session available</button>
+    <button type="button" data-ending-available="0">No next session available</button>
     <div class="grp">Timer preview</div>
     <button type="button" data-timer-preview="20">T−20</button>
     <button type="button" data-timer-preview="10">T−10</button>
@@ -1569,6 +1763,8 @@ var STATE = {
   micOff:false,
   blurOn:false,
   permError:false,
+  perm:"needed",
+  permPreview:"",
   flashcardsActive:false,
   waitingSelfOpen:false,
   waitingPhase:"waiting",
@@ -1578,9 +1774,6 @@ var STATE = {
   endingSessions:1,
   endingAvailable:true,
   endingRested:false,
-  feedbackFeel:"",
-  feedbackHelp:"",
-  feedbackNote:"",
   practiceWaitReason:"",
   softLoading:false
 };
@@ -1733,18 +1926,8 @@ var Components = {
 };
 
 var ENDING_RECAP={
-  1:{
-    today:["Greetings and getting into the room","Café ordering, out loud"],
-    people:[{name:"Dana",initial:"D",color:"#F7AAF3"},{name:"Lior",initial:"L",color:"#DAEF81"},{name:"Hanna",initial:"H",color:"#90C7FC"}]
-  },
-  2:{
-    today:["Greetings and getting into the room","Café ordering, out loud","Asking for directions"],
-    people:[{name:"Dana",initial:"D",color:"#F7AAF3"},{name:"Lior",initial:"L",color:"#DAEF81"},{name:"Hanna",initial:"H",color:"#90C7FC"}]
-  },
-  3:{
-    today:["Greetings and getting into the room","Café ordering, out loud","Asking for directions","A short conversation at the market"],
-    people:[{name:"Dana",initial:"D",color:"#F7AAF3"},{name:"Lior",initial:"L",color:"#DAEF81"},{name:"Hanna",initial:"H",color:"#90C7FC"},{name:"Tom",initial:"T",color:"#CEB1FF"}]
-  }
+  today:["Greetings and getting into the room","Café ordering, out loud"],
+  people:[{name:"Dana Levine",initial:"D",color:"#F7AAF3"},{name:"Lior Sharabi",initial:"L",color:"#DAEF81"},{name:"Hanna Weiss",initial:"H",color:"#90C7FC"}]
 };
 
 function endingBurstPath(){
@@ -1852,43 +2035,44 @@ function endingBadge(){
     +'</div></div>'
   +'</div>';
 }
-function endingOptions(key,labels){
-  return '<div class="end-options">'+labels.map(function(label){
-    return '<button class="end-option'+(STATE[key]===label?' on':'')+'" type="button" data-feedback-key="'+key+'" data-feedback-value="'+label+'" aria-pressed="'+(STATE[key]===label)+'">'+label+'</button>';
-  }).join("")+'</div>';
+function endingHeadline(){
+  var n=STATE.endingSessions>=3?3:STATE.endingSessions===2?2:1;
+  if(n===2) return '<span class="end-h-ach">Two in a row!</span> <span class="end-h-resp">We are impressed.</span>';
+  if(n===3) return '<span class="end-h-ach">Three back-to-back?</span> <span class="end-h-resp">You\u2019re a champion!</span>';
+  return '<span class="end-h-ach">That\u2019s a wrap!</span> <span class="end-h-resp">Great practice.</span>';
 }
 function renderEnding(){
-  var depth=STATE.endingSessions>=3?3:STATE.endingSessions===2?2:1;
-  var recap=ENDING_RECAP[depth];
+  var recap=ENDING_RECAP;
   var today=recap.today.map(function(item){return "<li>"+item+"</li>";}).join("");
   var people=recap.people.map(function(person){
     return '<button class="end-partner" type="button" data-action="message-partner" data-name="'+person.name+'"><span class="end-partner-avatar" style="--partner-color:'+person.color+'"><span class="end-partner-halo" aria-hidden="true"></span><span class="end-partner-face">'+person.initial+'</span></span>'+person.name+'</button>';
   }).join("");
-  var note=depth===3
-    ? '<div class="end-question">Anything else you\u2019d like to share?</div>'
-      +'<textarea class="end-note" rows="3" placeholder="Share a thought, if you\u2019d like" data-feedback-note>'+escapeHtml(STATE.feedbackNote)+'</textarea>'
+  var toolsLink=STATE.endingAvailable
+    ? '<a href="#" class="end-tools-link" data-action="practice-tools">Open Practice Tools \u2192</a>'
     : "";
-  var primary=STATE.endingAvailable?"One more session":"Open Practice Tools";
+  var nextCopy=STATE.endingAvailable
+    ? '<div class="end-next"><p class="end-next-copy">There\u2019s another Gym session starting soon. Want to join?</p></div>'
+    : "";
+  var primary=STATE.endingAvailable?"Let\u2019s do it!":"Open Practice Tools";
   var primaryAction=STATE.endingAvailable?"one-more":"practice-tools";
   return '<div class="transition-shell">'+Components.statusbar()
-    +'<main class="mobile-ending'+(STATE.endingRested?' is-rested':'')+'">'
+    +'<main class="mobile-ending ending-streak-'+(STATE.endingSessions>=3?3:STATE.endingSessions===2?2:1)+(STATE.endingRested?' is-rested':'')+'">'
       +'<div class="ending-scroll">'
         +Components.lockup()
         +'<section class="ending-surface">'
           +endingBadge()
           +'<div class="ending-content">'
-            +'<div class="end-hero"><h2>That\u2019s a wrap.</h2></div>'
-            +'<div class="end-today"><h3>Today</h3><ul>'+today+'</ul></div>'
-            +'<p class="end-tools-message">Today\u2019s flashcards and phrases are saved to your <a href="#" data-action="practice-tools">Practice Tools</a>, so you can come back to them anytime.</p>'
-            +'<div class="end-people"><h3>People you practiced with</h3><div class="end-partners">'+people+'</div></div>'
-            +'<section class="end-feedback" aria-label="Optional feedback">'
-              +'<div class="end-feedback-title">One quick thing</div>'
-              +'<div class="end-question">How did that feel</div>'
-              +endingOptions("feedbackFeel",["Light","Good stretch","Tired in a good way"])
-              +'<div class="end-question">What helped you most?</div>'
-              +endingOptions("feedbackHelp",["Hearing others","The teacher","The practice rooms"])
-              +note
-            +'</section>'
+            +'<div class="end-hero">'
+              +'<div class="end-eyebrow">Session complete</div>'
+              +'<h2>'+endingHeadline()+'</h2>'
+            +'</div>'
+            +'<div class="end-today"><h3>Here\u2019s what you did today:</h3><ul>'+today+'</ul></div>'
+            +'<div class="end-stay">'
+              +'<p><span class="end-stay-lead">Gym phrases stay with you.</span><span class="end-stay-detail">This session\u2019s vocabulary is waiting whenever you want another pass.</span></p>'
+              +toolsLink
+            +'</div>'
+            +'<div class="end-people"><h3>Your Gym partners:</h3><div class="end-partners">'+people+'</div></div>'
+            +nextCopy
             +'<div class="end-actions">'
               +'<button class="end-primary" type="button" data-action="'+primaryAction+'">'+primary+'</button>'
               +'<button class="end-home" type="button" data-action="home">Back to homepage</button>'
@@ -1898,9 +2082,6 @@ function renderEnding(){
       +'</div>'
     +'</main>'
   +'</div>';
-}
-function escapeHtml(value){
-  return String(value||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
 }
 function playMobileEnding(){
   var root=document.querySelector(".mobile-ending");
@@ -1954,6 +2135,148 @@ function waitingSelfControls(){
   +'</div>';
 }
 
+var AV_PERM_REQ={inflight:false};
+function avPermState(){
+  return STATE.permPreview || STATE.perm;
+}
+function avPermIsError(){
+  var state=avPermState();
+  return state==="blocked"||state==="retryable";
+}
+function applyAvPerm(status){
+  STATE.perm=status;
+  STATE.permError=status==="blocked"||status==="retryable";
+}
+function setAvPermPreview(kind){
+  STATE.permPreview=STATE.permPreview===kind?"":kind;
+  STATE.permError=avPermIsError();
+  render();
+}
+function stopAvTracks(stream){
+  if(!stream) return;
+  try{ stream.getTracks().forEach(function(track){ track.stop(); }); }catch(error){}
+}
+function queryAvPermissionName(name){
+  if(!navigator.permissions||!navigator.permissions.query) return Promise.resolve({state:"unknown",known:false});
+  try{
+    return navigator.permissions.query({name:name}).then(function(result){ return {state:result.state,known:true}; }, function(){ return {state:"unknown",known:false}; });
+  }catch(error){
+    return Promise.resolve({state:"unknown",known:false});
+  }
+}
+function queryAvPermission(){
+  function fromDevices(){
+    if(!navigator.mediaDevices||!navigator.mediaDevices.enumerateDevices){
+      return Promise.resolve(STATE.perm==="granted"?"granted":(STATE.perm==="blocked"?"blocked":STATE.perm==="retryable"?"retryable":"needed"));
+    }
+    return navigator.mediaDevices.enumerateDevices().then(function(list){
+      var camOk=list.some(function(device){ return device.kind==="videoinput"&&device.label; });
+      var micOk=list.some(function(device){ return device.kind==="audioinput"&&device.label; });
+      if(camOk&&micOk) return "granted";
+      if(STATE.perm==="blocked") return "blocked";
+      if(STATE.perm==="retryable") return "retryable";
+      return "needed";
+    }).catch(function(){ return STATE.perm==="granted"?"granted":(STATE.perm==="blocked"?"blocked":STATE.perm==="retryable"?"retryable":"needed"); });
+  }
+  return Promise.all([queryAvPermissionName("camera"), queryAvPermissionName("microphone")]).then(function(results){
+    var cam=results[0], mic=results[1];
+    if(!cam.known&&!mic.known) return fromDevices();
+    if(cam.state==="granted"&&mic.state==="granted") return "granted";
+    if(cam.state==="denied"||mic.state==="denied") return "blocked";
+    if(STATE.perm==="retryable") return "retryable";
+    return fromDevices();
+  }).catch(function(){ return fromDevices(); });
+}
+function classifyAfterDenial(elapsedMs){
+  return Promise.all([queryAvPermissionName("camera"), queryAvPermissionName("microphone")]).then(function(results){
+    var cam=results[0], mic=results[1];
+    if(cam.state==="denied"||mic.state==="denied") return "blocked";
+    if(cam.state==="granted"&&mic.state==="granted") return "granted";
+    if(cam.known||mic.known) return "retryable";
+    return elapsedMs<400?"blocked":"retryable";
+  });
+}
+function refreshAvPermission(){
+  if(STATE.permPreview||AV_PERM_REQ.inflight) return;
+  queryAvPermission().then(function(status){
+    if(status===STATE.perm) return;
+    applyAvPerm(status);
+    if(STATE.scene==="av-check") render();
+  });
+}
+function promptAvPermission(then){
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){
+    STATE.permPreview="";
+    applyAvPerm("blocked");
+    render();
+    if(then) then(false);
+    return;
+  }
+  AV_PERM_REQ.inflight=true;
+  var started=Date.now();
+  navigator.mediaDevices.getUserMedia({audio:true,video:true}).then(function(stream){
+    stopAvTracks(stream);
+    AV_PERM_REQ.inflight=false;
+    STATE.permPreview="";
+    applyAvPerm("granted");
+    render();
+    if(then) then(true);
+  }).catch(function(){
+    var elapsed=Date.now()-started;
+    classifyAfterDenial(elapsed).then(function(status){
+      AV_PERM_REQ.inflight=false;
+      STATE.permPreview="";
+      applyAvPerm(status);
+      render();
+      if(then) then(false);
+    });
+  });
+}
+function requestAvPermission(then){
+  if(AV_PERM_REQ.inflight) return;
+  var ui=avPermState();
+  if(ui==="granted"&&!STATE.permPreview){
+    if(then) then(true);
+    return;
+  }
+  if(ui==="blocked"){
+    if(STATE.permPreview){ if(then) then(false); return; }
+    queryAvPermission().then(function(status){
+      applyAvPerm(status);
+      if(status==="granted"){ render(); if(then) then(true); return; }
+      if(status==="needed"||status==="retryable"){ promptAvPermission(then); return; }
+      render();
+      if(then) then(false);
+    });
+    return;
+  }
+  promptAvPermission(then);
+}
+function avPermHelper(){
+  var state=avPermState();
+  if(state==="needed"){
+    return '<button type="button" class="av-perm av-perm-needed" data-action="allow-av">To join the Gym, allow camera and microphone access.</button>';
+  }
+  if(state==="retryable"){
+    return '<div class="av-perm av-perm-blocked" role="status">'
+      +'<span class="av-perm-mark" aria-hidden="true"></span>'
+      +'<div class="av-perm-copy">'
+      +'<p>Camera and microphone access is required to participate.</p>'
+      +'<button type="button" class="av-perm-retry" data-action="retry-av">Try again \u2192</button>'
+      +'</div>'
+      +'</div>';
+  }
+  if(state==="blocked"){
+    return '<div class="av-perm av-perm-blocked" role="status">'
+      +'<span class="av-perm-mark" aria-hidden="true"></span>'
+      +'<div class="av-perm-copy">'
+      +'<p>Camera and microphone access is required to participate. Enable Camera and Microphone for this site in your <button type="button" class="av-perm-retry" data-action="retry-av">browser or site settings</button>.</p>'
+      +'</div>'
+      +'</div>';
+  }
+  return "";
+}
+
 var Renderers = {
   welcome:function(){
     return Components.shell(
@@ -1963,7 +2286,7 @@ var Renderers = {
         +'<div class="welcome-content">'
           +'<h2><span class="welcome-to">Welcome to</span> <span class="gym">Gym</span></h2>'
           +'<p class="sub">Practice out loud with Guy and the class.</p>'
-          +'<p class="explain">Another text that maybe explains a bit about what’s going to happen- optional</p>'
+          +'<p class="explain">During the next 17 minutes, you will be practicing Hebrew with a live teacher as well as other students. Get ready to work out your Hebrew muscles and get exposed to new words and phrases. You’ll be exhausted in the best way possible…<br><br>This is an active practice, so make sure your camera and mic are on to get the most out of the session!</p>'
           +'<button class="primary-cta" type="button" data-action="av-check">Check camera &amp; mic</button>'
         +'</div>'
       +'</main>'
@@ -1974,9 +2297,6 @@ var Renderers = {
       ? '<span class="av-face">Y</span><span class="camoff-cap">Camera off</span>'
       : '<div class="vid" style="background-image:url(\''+IMG_YOU+'\')"></div>'
         +(STATE.blurOn?'<div class="vid vid-subject" style="background-image:url(\''+IMG_YOU+'\')"></div>':'');
-    var error=STATE.permError
-      ? '<p class="av-error">Camera or microphone permission is blocked in this browser. You can still continue — turn them on from your browser settings when you can.</p>'
-      : '';
     return Components.shell(
       '<main class="av-canon">'
         +'<header class="av-head"><h2>Video &amp; audio check</h2></header>'
@@ -1990,7 +2310,8 @@ var Renderers = {
             +'</div>'
           +'</div>'
         +'</section>'
-        +'<footer class="av-foot">'+error
+        +avPermHelper()
+        +'<footer class="av-foot">'
           +'<p class="av-privacy">In the Main Room, only you can see yourself. In Practice Rooms, your partner can see and hear you.</p>'
           +'<button class="primary-cta" type="button" data-action="ready">I\u2019m ready</button>'
         +'</footer>'
@@ -2107,14 +2428,17 @@ function render(){
   document.querySelectorAll("[data-soft-loading]").forEach(function(button){
     button.classList.toggle("on",STATE.softLoading);
   });
+  document.querySelectorAll("[data-av-perm]").forEach(function(button){
+    button.classList.toggle("on",button.dataset.avPerm===avPermState());
+  });
   document.getElementById("state-note").textContent=STATE.scene==="av-check"
-    ? "Canonical mobile A/V Check. Camera, microphone, blur and voice feedback are interactive."
+    ? "Canonical mobile A/V Check. Helper: needed → native prompt; can retry → Try again; blocked → browser/site settings. Privacy copy stays visible."
     : STATE.scene==="waiting"
       ? (STATE.flashcardsActive
         ? "Waiting Room Flashcards. Session countdown remains visible; self-view is collapsed and expandable."
         : "Canonical Mobile Waiting Room. Countdown updates in place; Flashcards compresses the waiting context.")
       : STATE.scene==="ending"
-        ? "Shared Mobile Ending · "+(STATE.endingSessions>=3?"3+":STATE.endingSessions)+" session"+(STATE.endingSessions===1?"":"s")+" · "+(STATE.endingAvailable?"another session available":"no additional session available")
+        ? "Mobile Ending · "+(STATE.endingSessions>=3?"3 back-to-back":STATE.endingSessions===2?"2 in a row":"1 session")+" · "+(STATE.endingAvailable?"next session available":"no next session available")
         : STATE.scene==="practice-going"
           ? "Full transition · Main Room to Practice Rooms."
           : STATE.scene==="practice-wait-declined"||STATE.scene==="practice-wait-left"
@@ -2125,10 +2449,14 @@ function render(){
   syncAvMicMeter();
   mountMobileMatkot();
   if(STATE.scene==="ending") playMobileEnding();
+  if(STATE.scene==="av-check") refreshAvPermission();
 }
 
 document.querySelectorAll("[data-scene]").forEach(function(button){
   button.addEventListener("click",function(){ setScene(button.dataset.scene); });
+});
+document.querySelectorAll("[data-av-perm]").forEach(function(button){
+  button.addEventListener("click",function(){ setAvPermPreview(button.dataset.avPerm); });
 });
 document.querySelectorAll("[data-timer-preview]").forEach(function(button){
   button.addEventListener("click",function(){
@@ -2145,37 +2473,40 @@ document.querySelectorAll("[data-timer-preview]").forEach(function(button){
 document.querySelectorAll("[data-soft-loading]").forEach(function(button){
   button.addEventListener("click",toggleSoftLoading);
 });
+function previewEnding(){
+  var already=STATE.scene==="ending";
+  STATE.endingRested=already;
+  STATE.softLoading=false;
+  STATE.clockOn=false;
+  STATE.scene="ending";
+  render();
+}
 document.querySelectorAll("[data-ending-sessions]").forEach(function(button){
   button.addEventListener("click",function(){
     STATE.endingSessions=Number(button.dataset.endingSessions);
-    setScene("ending");
+    previewEnding();
   });
 });
 document.querySelectorAll("[data-ending-available]").forEach(function(button){
   button.addEventListener("click",function(){
     STATE.endingAvailable=button.dataset.endingAvailable==="1";
-    if(STATE.scene!=="ending"){ setScene("ending"); return; }
-    render();
+    previewEnding();
   });
 });
 document.getElementById("app").addEventListener("click",function(event){
-  var feedback=event.target.closest("[data-feedback-key]");
-  if(feedback){
-    var key=feedback.dataset.feedbackKey;
-    STATE[key]=feedback.dataset.feedbackValue;
-    document.querySelectorAll('[data-feedback-key="'+key+'"]').forEach(function(button){
-      var on=button.dataset.feedbackValue===STATE[key];
-      button.classList.toggle("on",on);
-      button.setAttribute("aria-pressed",on);
-    });
-    return;
-  }
   var action=event.target.closest("[data-action]");
   if(!action) return;
   var name=action.dataset.action;
   if(name==="av-check"){ setScene("av-check"); return; }
-  if(name==="toggle-camera"){ STATE.camOff=!STATE.camOff; render(); return; }
-  if(name==="toggle-mic"){ STATE.micOff=!STATE.micOff; render(); return; }
+  if(name==="allow-av"||name==="retry-av"){ requestAvPermission(); return; }
+  if(name==="toggle-camera"){
+    if(STATE.scene==="av-check"&&avPermState()!=="granted"){ requestAvPermission(); return; }
+    STATE.camOff=!STATE.camOff; render(); return;
+  }
+  if(name==="toggle-mic"){
+    if(STATE.scene==="av-check"&&avPermState()!=="granted"){ requestAvPermission(); return; }
+    STATE.micOff=!STATE.micOff; render(); return;
+  }
   if(name==="toggle-blur"){ STATE.blurOn=!STATE.blurOn; render(); return; }
   if(name==="toggle-waiting-self"){ STATE.waitingSelfOpen=!STATE.waitingSelfOpen; render(); return; }
   if(name==="close-waiting-self"){ STATE.waitingSelfOpen=false; render(); return; }
@@ -2197,15 +2528,6 @@ document.getElementById("app").addEventListener("click",function(event){
   if(name==="message-partner"){ alert("Message "+action.dataset.name+" — destination placeholder"); return; }
   if(name==="ready") finishAv();
 });
-document.getElementById("app").addEventListener("input",function(event){
-  if(!event.target.matches("[data-feedback-note]")) return;
-  STATE.feedbackNote=event.target.value;
-});
-document.getElementById("app").addEventListener("focusin",function(event){
-  if(!event.target.matches("[data-feedback-note]")) return;
-  window.setTimeout(function(){ event.target.scrollIntoView({block:"center",behavior:"smooth"}); },180);
-});
-
 /* T−10 can call this before handing off to the existing start transition. */
 function closeWaitingSecondary(){
   STATE.flashcardsActive=false;
@@ -2221,7 +2543,7 @@ document.addEventListener("keydown",function(event){
 });
 
 /* Keep the approved desktop routing decisions without rendering later states yet. */
-function finishAv(){
+function proceedFinishAv(){
   var target;
   if(STATE.route.path==="late") target="arrive";
   else if(STATE.route.path==="last-minute"||STATE.timing.waiting<60) target="starting";
@@ -2233,6 +2555,10 @@ function finishAv(){
   }
   document.getElementById("state-note").textContent=
     "I\u2019m ready routes to "+SCREENS[target].label+". That mobile state remains intentionally unimplemented.";
+}
+function finishAv(){
+  if(avPermState()==="granted"){ proceedFinishAv(); return; }
+  requestAvPermission(function(ok){ if(ok) proceedFinishAv(); });
 }
 
 /* Waiting countdown mirrors desktop: yellow at T−20, rackets at T−10, entering at zero. */
@@ -2324,7 +2650,7 @@ function tickAvMic(){
 }
 function syncAvMicMeter(){
   var host=document.querySelector(".av-mic-echo");
-  if(!host||STATE.scene!=="av-check"||STATE.micOff||STATE.permError){
+  if(!host||STATE.scene!=="av-check"||STATE.micOff||avPermState()!=="granted"){
     if(AV_MIC.raf){ cancelAnimationFrame(AV_MIC.raf); AV_MIC.raf=0; }
     if(STATE.scene!=="av-check"||STATE.micOff) releaseAvMic();
     return;
@@ -2355,6 +2681,21 @@ function syncAvMicMeter(){
 }
 
 render();
+(function watchAvPermission(){
+  ["camera","microphone"].forEach(function(name){
+    try{
+      if(!navigator.permissions||!navigator.permissions.query) return;
+      navigator.permissions.query({name:name}).then(function(status){
+        status.onchange=function(){ STATE.permPreview=""; refreshAvPermission(); };
+      });
+    }catch(error){}
+  });
+  document.addEventListener("visibilitychange",function(){
+    if(document.visibilityState==="visible") refreshAvPermission();
+  });
+  window.addEventListener("focus",function(){ refreshAvPermission(); });
+})();
+refreshAvPermission();
 </script>
 </body>
 </html>
