@@ -164,13 +164,13 @@ body.present .mode-btn:hover{opacity:1}
 }
 .w-progress{
   position:absolute;z-index:2;top:45px;right:46px;
-  display:flex;flex-direction:column;align-items:center;gap:7px;
+  display:flex;flex-direction:column;align-items:center;gap:9px;
 }
-.w-progress-lbl{font-size:16px;font-weight:500;color:rgba(247,246,239,.82);letter-spacing:.1px}
-.w-dots{display:flex;gap:5px;align-items:center}
+.w-progress-lbl{font-size:20px;font-weight:500;color:rgba(247,246,239,.82);letter-spacing:.1px}
+.w-dots{display:flex;gap:6px;align-items:center}
 .w-dots i{
-  width:10px;height:10px;border-radius:50%;display:block;
-  border:1.25px solid rgba(247,246,239,.55);background:transparent;box-sizing:border-box;
+  width:12px;height:12px;border-radius:50%;display:block;
+  border:1.5px solid rgba(247,246,239,.55);background:transparent;box-sizing:border-box;
 }
 .w-dots i.done{background:#F7F6EF;border-color:transparent}
 .w-dots i.now{background:var(--brand-yellow);border-color:transparent}
@@ -182,20 +182,20 @@ body.present .mode-btn:hover{opacity:1}
 .w-stack .w-copy{
   display:flex;flex-direction:column;align-items:flex-start;
 }
-.w-stack .w-icon{width:70px;height:53px;display:block;object-fit:contain;margin:0 0 34px}
+.w-stack .w-icon{width:84px;height:64px;display:block;object-fit:contain;margin:0 0 38px}
 .w-stack h2{
   font-family:var(--font-brand);font-style:normal;font-synthesis:none;
-  font-size:60px;line-height:1.12;letter-spacing:-.3px;margin:0 0 16px;color:#fff;
+  font-size:72px;line-height:1.12;letter-spacing:-.3px;margin:0 0 20px;color:#fff;
 }
 .w-stack h2 .w-to{font-weight:400}
 .w-stack h2 .w-gym{font-weight:700}
-.w-stack .sub{font-size:22px;font-weight:500;line-height:1.45;color:rgba(247,246,239,.9);margin:0 0 25px;max-width:620px}
+.w-stack .sub{font-size:26px;font-weight:500;line-height:1.45;color:rgba(247,246,239,.9);margin:0 0 28px;max-width:720px}
 .w-stack .explain{
-  font-size:20px;font-weight:400;line-height:1.45;color:rgba(247,246,239,.55);
-  max-width:680px;margin:0 0 30px;min-height:0;
+  font-size:24px;font-weight:400;line-height:1.45;color:rgba(247,246,239,.55);
+  max-width:780px;margin:0 0 34px;min-height:0;
 }
 .w-stack .acts{display:flex;justify-content:flex-start}
-.w-stack .btn.primary{min-width:238px;min-height:54px;border-color:transparent}
+.w-stack .btn.primary{min-width:260px;min-height:58px;border-color:transparent;font-size:18px}
 
 /* ---------- Welcome Late (previous composition — unchanged this pass) ---------- */
 .welcome{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:48px 56px}
@@ -449,15 +449,18 @@ body.present .mode-btn:hover{opacity:1}
 }
 
 /* Flashcards expand beside the countdown instead of covering it. */
-.wait.flash-open .wait-progress{left:28px;transform:none;align-items:flex-start}
-.wait.flash-open .wait-copy{left:28px;right:20px;top:173px;align-items:flex-start;text-align:left}
+.wait.flash-open .wait-progress{left:28px;top:28px;transform:none;align-items:flex-start}
+.wait.flash-open .wait-copy{
+  left:28px;right:20px;top:118px;
+  display:grid;justify-items:start;align-content:start;text-align:left;
+}
 .wait.flash-open h2{
   font-family:var(--font-ui);font-size:22px;font-weight:500;line-height:1.2;
   letter-spacing:.1px;color:rgba(247,246,239,.82);
 }
-.wait.flash-open .count{font-size:112px;margin:6px 0 0}
+.wait.flash-open .count{font-size:112px;margin:6px 0 0;letter-spacing:-1px}
 .wait.flash-open .invite,.wait.flash-open .wait-acts{display:none}
-.wait.flash-open .wait-side{right:22px;bottom:16px;width:294px}
+.wait.flash-open .wait-side{left:28px;right:20px;width:auto;bottom:16px}
 .wait:not(.flash-open) .wait-copy{top:173px}
 .wait:not(.flash-open) h2{font-size:48px}
 .wait:not(.flash-open) .count{font-size:112px;margin-top:16px;margin-bottom:84px}
@@ -472,10 +475,10 @@ body.present .mode-btn:hover{opacity:1}
   cursor:pointer;
 }
 .wait-flashcard .bookmark{
-  position:absolute;right:12px;top:12px;width:36px;height:36px;border:0;background:transparent;
+  position:absolute;right:12px;top:12px;width:44px;height:44px;border:0;background:transparent;
   color:var(--brand-charcoal);display:grid;place-items:center;cursor:pointer;
 }
-.wait-flashcard .bookmark svg{width:22px;height:22px}
+.wait-flashcard .bookmark svg{width:30px;height:30px}
 .wait-flashcard .bookmark.is-saved svg{fill:var(--brand-yellow)}
 .wait-flashcard .flash-close{
   position:absolute;left:12px;top:12px;width:36px;height:36px;border:0;background:transparent;
@@ -486,7 +489,7 @@ body.present .mode-btn:hover{opacity:1}
   position:absolute;left:36px;right:36px;top:48px;bottom:106px;
   display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;
 }
-.wait-flashcard .dir{font-size:14px;font-weight:400;color:#8A8680;margin-bottom:12px}
+.wait-flashcard .dir{font-size:16px;font-weight:400;color:#8A8680;margin-bottom:12px}
 .wait-flashcard .prompt{
   font-family:var(--font-ui);font-size:30px;font-weight:700;line-height:1.25;
   direction:rtl;color:var(--brand-charcoal);
