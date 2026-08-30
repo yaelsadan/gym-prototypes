@@ -755,7 +755,7 @@ body.present .mode-btn:hover{opacity:1}
 }
 .ending.is-close .ending-inner{
   position:relative;z-index:1;
-  display:block;min-height:100%;padding:44px 72px 48px 48px;
+  display:block;min-height:100%;padding:44px 72px 48px 28px;
 }
 .ending.is-close::after{
   content:"";position:absolute;inset:0;z-index:0;pointer-events:none;
@@ -885,7 +885,7 @@ body.present .mode-btn:hover{opacity:1}
 }
 .ending.is-close.ending-base .end-next-copy{
   margin:0 0 20px;color:rgba(247,246,239,.78);
-  font-size:16px;font-weight:500;line-height:1.45;
+  font-size:19px;font-weight:500;line-height:1.35;
   white-space:nowrap;
 }
 .ending.is-close.ending-base .end-acts{
@@ -899,21 +899,21 @@ body.present .mode-btn:hover{opacity:1}
 }
 .ending.is-close.ending-base .btn.end-home:hover{background:rgba(249,226,76,.1)}
 
-/* Base only — asymmetrical recap composition without decorative fill. */
-.ending.is-close.ending-base:not(.ending-prompt) .end-seal{
+/* Base composition — recap left, badge in the corner, CTA bottom-right. Prompt keeps the same screen and overlays optional reflection. */
+.ending.is-close.ending-base .end-seal{
   top:10px;right:22px;
   transform:scale(1.34);
   transform-origin:50% 50%;
 }
-.ending.is-close.ending-base:not(.ending-prompt) .ending-inner{
+.ending.is-close.ending-base .ending-inner{
   display:block;
-  padding:44px 64px 48px 114px;
+  padding:44px 64px 48px 82px;
 }
-.ending.is-close.ending-base:not(.ending-prompt) .end-copy{
+.ending.is-close.ending-base .end-copy{
   max-width:650px;
   padding-top:28px;
 }
-.ending.is-close.ending-base:not(.ending-prompt) .end-eyebrow{
+.ending.is-close.ending-base .end-eyebrow{
   margin:0 0 8px;
   font-family:var(--font-ui);
   font-size:13px;
@@ -922,42 +922,42 @@ body.present .mode-btn:hover{opacity:1}
   text-transform:none;
   color:rgba(247,246,239,.48);
 }
-.ending.is-close.ending-base:not(.ending-prompt) h2{
+.ending.is-close.ending-base h2{
   margin-bottom:36px;
   font-size:56px;
   white-space:nowrap;
 }
-.ending.is-close.ending-base:not(.ending-prompt) h2 .end-h-ach{
+.ending.is-close.ending-base h2 .end-h-ach{
   font-weight:700;
   font-style:normal;
   font-synthesis:none;
 }
-.ending.is-close.ending-base:not(.ending-prompt) h2 .end-h-resp{
+.ending.is-close.ending-base h2 .end-h-resp{
   font-weight:600;
   font-style:italic;
   font-synthesis:none;
 }
-.ending.is-close.ending-base.ending-streak-2:not(.ending-prompt) h2{font-size:54px}
-.ending.is-close.ending-base.ending-streak-3:not(.ending-prompt) h2{font-size:47px}
-.ending.is-close.ending-base:not(.ending-prompt) .end-recap{
+.ending.is-close.ending-base.ending-streak-2 h2{font-size:54px}
+.ending.is-close.ending-base.ending-streak-3 h2{font-size:47px}
+.ending.is-close.ending-base .end-recap{
   max-width:630px;
   display:flex;
   flex-direction:column;
 }
-.ending.is-close.ending-base:not(.ending-prompt) .end-today h3{font-size:22px}
-.ending.is-close.ending-base:not(.ending-prompt) .end-today ul{
+.ending.is-close.ending-base .end-today h3{font-size:22px}
+.ending.is-close.ending-base .end-today ul{
   display:block;
   padding-left:0;
   list-style:none;
 }
-.ending.is-close.ending-base:not(.ending-prompt) .end-today li{
+.ending.is-close.ending-base .end-today li{
   position:relative;
   min-height:41px;
   padding:0 0 0 50px;
   font-size:25px;
   line-height:1.62;
 }
-.ending.is-close.ending-base:not(.ending-prompt) .end-today li::before{
+.ending.is-close.ending-base .end-today li::before{
   content:"";
   position:absolute;
   left:0;top:50%;z-index:1;
@@ -970,10 +970,10 @@ body.present .mode-btn:hover{opacity:1}
   transform-origin:50% 50%;
   animation:earnedCoinSpin 1.9s linear infinite;
 }
-.ending.is-close.ending-base:not(.ending-prompt) .end-today li:nth-child(2)::before{
+.ending.is-close.ending-base .end-today li:nth-child(2)::before{
   animation-delay:-.62s;
 }
-.ending.is-close.ending-base:not(.ending-prompt) .end-today li::after{
+.ending.is-close.ending-base .end-today li::after{
   content:"";
   position:absolute;
   left:14px;top:50%;z-index:0;
@@ -986,7 +986,7 @@ body.present .mode-btn:hover{opacity:1}
   opacity:0;
   animation:earnedCoinEdge 1.9s linear infinite;
 }
-.ending.is-close.ending-base:not(.ending-prompt) .end-today li:nth-child(2)::after{
+.ending.is-close.ending-base .end-today li:nth-child(2)::after{
   animation-delay:-.62s;
 }
 @keyframes earnedCoinSpin{
@@ -1001,37 +1001,41 @@ body.present .mode-btn:hover{opacity:1}
   20%,30%,70%,80%{opacity:.72}
   25%,75%{opacity:1}
 }
-.ending.is-close.ending-base:not(.ending-prompt) .end-stay{
+.ending.is-close.ending-base .end-stay{
   max-width:620px;
   padding-top:32px;
 }
-.ending.is-close.ending-base:not(.ending-prompt) .end-stay p{
+.ending.is-close.ending-base .end-stay p{
   font-size:22px;
   line-height:1.58;
 }
-.ending.is-close.ending-base:not(.ending-prompt) .end-tools-link{
+.ending.is-close.ending-base .end-tools-link{
   display:inline-block;
   margin-top:12px;
   font-size:18px;
   font-weight:600;
 }
-.ending.is-close.ending-base:not(.ending-prompt) .end-people{margin-top:48px}
-.ending.is-close.ending-base:not(.ending-prompt) .end-people h3{
+.ending.is-close.ending-base .end-people{margin-top:48px}
+.ending.is-close.ending-base .end-people h3{
   margin-bottom:24px;
   font-size:22px;
 }
-.ending.is-close.ending-base:not(.ending-prompt) .end-base-actions{
+.ending.is-close.ending-base .end-base-actions{
   position:absolute;
-  right:148px;bottom:58px;
-  width:400px;
+  right:72px;bottom:58px;
+  width:max-content;
   padding:0;
 }
+.ending.is-close.ending-base .end-acts{
+  width:304px;
+  margin-left:auto;
+}
 
-/* Optional reflection floats in the reserved upper-right space; Base never reflows. */
+/* Optional reflection sits in the right column above the CTAs; the ending screen itself matches Base. */
 .ending.is-close.ending-prompt .end-reflection{
   position:absolute;z-index:5;
-  top:154px;right:54px;width:344px;
-  padding:22px 22px 18px;
+  top:168px;right:56px;width:508px;
+  padding:14px 18px 12px;
   border:1px solid rgba(247,246,239,.26);
   border-radius:16px;
   background:rgba(55,50,48,.46);
@@ -1039,17 +1043,16 @@ body.present .mode-btn:hover{opacity:1}
   backdrop-filter:blur(24px) saturate(1.12);
   -webkit-backdrop-filter:blur(24px) saturate(1.12);
   opacity:0;
-  animation:endReflectionIn .38s cubic-bezier(.22,.68,.24,1) .6s both;
+  animation:endReflectionIn .52s cubic-bezier(.22,.68,.24,1) 3s both;
 }
-.ending.is-close.ending-prompt.is-play .end-reflection{
-  animation:endCopyIn .5s cubic-bezier(.22,.68,.24,1) 3.14s both;
-}
+.ending.is-close.ending-prompt.is-play .end-reflection,
 .ending.is-close.ending-prompt.is-rested .end-reflection{
-  opacity:1;animation:none;transform:none;
+  opacity:0;
+  animation:endReflectionIn .52s cubic-bezier(.22,.68,.24,1) 3s both;
 }
 .ending.is-close.ending-prompt .end-reflection-head{
   display:flex;align-items:flex-start;justify-content:space-between;gap:16px;
-  margin:0 0 16px;
+  margin:0 0 8px;
 }
 .ending.is-close.ending-prompt .end-reflection-title{
   margin:0;color:#fff;font-size:18px;font-weight:700;line-height:1.25;
@@ -1068,18 +1071,26 @@ body.present .mode-btn:hover{opacity:1}
   color:#fff;background:rgba(247,246,239,.10);
 }
 .ending.is-close.ending-prompt .end-reflection .fb-q{
-  margin:14px 0 8px;font-size:15px;font-weight:600;
+  margin:8px 0 6px;font-size:14px;font-weight:600;
 }
-.ending.is-close.ending-prompt .end-reflection .fb-opts{gap:6px;margin-bottom:10px}
+.ending.is-close.ending-prompt .end-reflection .fb-opts{
+  display:flex;
+  flex-wrap:nowrap;
+  gap:6px;
+  margin-bottom:6px;
+}
 .ending.is-close.ending-prompt .end-reflection .fb-opt{
-  padding:7px 11px;font-size:12px;
+  flex:none;
+  white-space:nowrap;
+  padding:7px 12px;
+  font-size:13px;
 }
 .ending.is-close.ending-prompt .end-reflection-saved{
-  min-height:17px;margin:4px 0 0;
+  min-height:16px;margin:2px 0 0;
   color:rgba(247,246,239,.56);font-size:12px;font-weight:600;
 }
 @keyframes endReflectionIn{
-  from{opacity:0;transform:translateY(6px)}
+  from{opacity:0;transform:translateX(36px)}
   to{opacity:1;transform:none}
 }
 
@@ -1397,7 +1408,7 @@ body.present .mode-btn:hover{opacity:1}
   .ending.is-close::after{animation:none!important;opacity:0!important}
   .ending.is-close .ending-panel::before{animation:none!important;opacity:1!important}
   .ending.is-close.ending-prompt .end-reflection{animation:none!important;opacity:1!important;transform:none!important}
-  .ending.is-close.ending-base:not(.ending-prompt) .end-today li::before{animation:none!important}
+  .ending.is-close.ending-base .end-today li::before{animation:none!important}
 }
 @keyframes soft-ball-breathe{0%,100%{opacity:.7}50%{opacity:1}}
 </style>
@@ -2000,70 +2011,70 @@ function endDoneConfetti(){
     return [Math.round(x*c-y*s), Math.round(x*s+y*c)];
   }
   var bits=[
-    {k:'circ',   dx:108,  dy:-18,  ex:168,  ey:28,  rot0:6,   rot:-22, rot2:16,  sc:.86,  s:12, d:0.20, dur:2.48},
-    {k:'dia',    dx:124,  dy:14,   ex:186,  ey:64,  rot0:14,  rot:32,  rot2:64,  sc:1.18, s:17, d:0.24, dur:3.24},
-    {k:'stroke', dx:132,  dy:42,   ex:192,  ey:98,  rot0:-8,  rot:18,  rot2:48,  sc:1,    s:21, d:0.22, dur:2.76},
-    {k:'circ',   dx:116,  dy:62,   ex:174,  ey:118, rot0:-14, rot:8,   rot2:42,  sc:.9,   s:15, d:0.28, dur:2.96},
-    {k:'stroke', dx:120,  dy:8,    ex:178,  ey:56,  rot0:10,  rot:-24, rot2:22,  sc:1.05, s:19, d:0.26, dur:2.88},
-    {k:'dia',    dx:138,  dy:30,   ex:198,  ey:86,  rot0:20,  rot:48,  rot2:34,  sc:.88,  s:13, d:0.31, dur:3.02},
-    {k:'stroke', dx:-110, dy:-14,  ex:-170, ey:32,  rot0:12,  rot:30,  rot2:46,  sc:1.02, s:20, d:0.21, dur:2.70},
-    {k:'circ',   dx:-128, dy:16,   ex:-186, ey:70,  rot0:8,   rot:34,  rot2:20,  sc:.9,   s:14, d:0.25, dur:2.94},
-    {k:'dia',    dx:-102, dy:52,   ex:-160, ey:110, rot0:16,  rot:42,  rot2:64,  sc:1,    s:13, d:0.23, dur:2.62},
-    {k:'circ',   dx:-122, dy:4,    ex:-180, ey:50,  rot0:-12, rot:-24, rot2:18,  sc:1.08, s:16, d:0.27, dur:3.02},
-    {k:'stroke', dx:-118, dy:38,   ex:-176, ey:96,  rot0:-18, rot:-6,  rot2:26,  sc:.96,  s:21, d:0.29, dur:2.80},
-    {k:'dia',    dx:-136, dy:26,   ex:-194, ey:82,  rot0:-10, rot:16,  rot2:38,  sc:1,    s:13, d:0.32, dur:2.58},
-    {k:'stroke', dx:-34,  dy:96,   ex:-62,  ey:168, rot0:-8,  rot:18,  rot2:40,  sc:1.04, s:19, d:0.20, dur:2.82},
-    {k:'circ',   dx:26,   dy:114,  ex:58,   ey:178, rot0:10,  rot:26,  rot2:50,  sc:.94,  s:15, d:0.24, dur:3.12},
-    {k:'dia',    dx:-6,   dy:104,  ex:22,   ey:172, rot0:6,   rot:-16, rot2:30,  sc:1.1,  s:17, d:0.22, dur:2.70},
-    {k:'circ',   dx:64,   dy:90,   ex:108,  ey:156, rot0:14,  rot:38,  rot2:24,  sc:.88,  s:12, d:0.26, dur:2.92},
-    {k:'stroke', dx:-58,  dy:86,   ex:-98,  ey:150, rot0:-14, rot:12,  rot2:34,  sc:1,    s:20, d:0.28, dur:2.76},
-    {k:'dia',    dx:40,   dy:108,  ex:76,   ey:174, rot0:18,  rot:44,  rot2:60,  sc:.9,   s:13, d:0.30, dur:3.08},
-    {k:'stroke', dx:-42,  dy:-70,  ex:-68,  ey:-8,  rot0:-16, rot:-38, rot2:18,  sc:1.08, s:22, d:0.26, dur:2.72},
-    {k:'circ',   dx:12,   dy:-78,  ex:36,   ey:-12, rot0:8,   rot:26,  rot2:54,  sc:.92,  s:13, d:0.30, dur:3.08},
-    {k:'dia',    dx:52,   dy:-66,  ex:84,   ey:2,   rot0:18,  rot:42,  rot2:78,  sc:1,    s:14, d:0.28, dur:2.58},
-    {k:'circ',   dx:-18,  dy:-74,  ex:-4,   ey:8,   rot0:-10, rot:16,  rot2:50,  sc:1.12, s:16, d:0.33, dur:3.18},
-    {k:'stroke', dx:32,   dy:-62,  ex:54,   ey:10,  rot0:12,  rot:34,  rot2:14,  sc:.95,  s:20, d:0.31, dur:2.84},
-    {k:'dia',    dx:-56,  dy:-58,  ex:-88,  ey:6,   rot0:-22, rot:-14, rot2:28,  sc:1,    s:13, d:0.35, dur:2.66}
+    {k:'circ',   dx:  286, dy: -54, ex:  368, ey:  62, rot0:6,   rot:-22, rot2:16,  sc:.86,  s:12, d:0.18, dur:2.48},
+    {k:'stroke', dx: 438, dy:-168, ex: 560, ey: -36, rot0:12,  rot:34,  rot2:14,  sc:1.05, s:20, d:0.22, dur:2.88},
+    {k:'dia',    dx:-486, dy: -96, ex:-610, ey:  28, rot0:-22, rot:-14, rot2:28,  sc:1,    s:13, d:0.20, dur:2.66},
+    {k:'circ',   dx:  36, dy: 248, ex:  82, ey: 360, rot0:10,  rot:26,  rot2:50,  sc:.94,  s:15, d:0.24, dur:3.12},
+    {k:'stroke', dx:-412, dy: 176, ex:-520, ey: 292, rot0:-18, rot:-6,  rot2:26,  sc:.96,  s:21, d:0.21, dur:2.80},
+    {k:'dia',    dx: 356, dy: 198, ex: 470, ey: 318, rot0:20,  rot:48,  rot2:34,  sc:.88,  s:13, d:0.29, dur:3.02},
+    {k:'circ',   dx:-218, dy:-236, ex:-160, ey: -90, rot0:8,   rot:26,  rot2:54,  sc:.92,  s:13, d:0.26, dur:3.08},
+    {k:'stroke', dx: 214, dy:  86, ex: 292, ey: 196, rot0:-8,  rot:18,  rot2:48,  sc:1,    s:21, d:0.19, dur:2.76},
+    {k:'dia',    dx:-304, dy:  64, ex:-396, ey: 168, rot0:16,  rot:42,  rot2:64,  sc:1,    s:13, d:0.23, dur:2.62},
+    {k:'circ',   dx: 508, dy:  42, ex: 640, ey: 154, rot0:-14, rot:8,   rot2:42,  sc:.9,   s:15, d:0.27, dur:2.96},
+    {k:'stroke', dx:-142, dy: 128, ex:-196, ey: 236, rot0:10,  rot:-24, rot2:22,  sc:1.05, s:19, d:0.31, dur:2.88},
+    {k:'dia',    dx: 168, dy:-214, ex: 248, ey: -70, rot0:18,  rot:42,  rot2:78,  sc:1,    s:14, d:0.25, dur:2.58},
+    {k:'circ',   dx:-528, dy:  22, ex:-650, ey: 118, rot0:-12, rot:-24, rot2:18,  sc:1.08, s:16, d:0.17, dur:3.02},
+    {k:'stroke', dx:  96, dy: 292, ex: 148, ey: 410, rot0:-8,  rot:18,  rot2:40,  sc:1.04, s:19, d:0.28, dur:2.82},
+    {k:'dia',    dx: 292, dy:-124, ex: 384, ey:  12, rot0:14,  rot:32,  rot2:64,  sc:1.18, s:17, d:0.22, dur:3.24},
+    {k:'circ',   dx: -294, dy: 176, ex: -210, ey: 298, rot0:6,   rot:-16, rot2:30,  sc:1.1,  s:17, d:0.33, dur:2.70},
+    {k:'stroke', dx:-268, dy: 248, ex:-340, ey: 362, rot0:-14, rot:12,  rot2:34,  sc:1,    s:20, d:0.30, dur:2.76},
+    {k:'dia',    dx: 448, dy: 124, ex: 572, ey: 242, rot0:18,  rot:44,  rot2:60,  sc:.9,   s:13, d:0.16, dur:3.08},
+    {k:'circ',   dx: 124, dy:-156, ex: 186, ey: -28, rot0:8,   rot:34,  rot2:20,  sc:.9,   s:14, d:0.34, dur:2.94},
+    {k:'stroke', dx:-356, dy:-188, ex:-448, ey: -42, rot0:-16, rot:-38, rot2:18,  sc:1.08, s:22, d:0.24, dur:2.72},
+    {k:'dia',    dx:  318, dy:  86, ex:  412, ey: 198, rot0:6,   rot:-16, rot2:30,  sc:1.1,  s:17, d:0.21, dur:2.70},
+    {k:'circ',   dx: 572, dy: -72, ex: 690, ey:  48, rot0:14,  rot:38,  rot2:24,  sc:.88,  s:12, d:0.27, dur:2.92},
+    {k:'stroke', dx:-188, dy: 312, ex:-140, ey: 428, rot0:12,  rot:30,  rot2:46,  sc:1.02, s:20, d:0.19, dur:2.70},
+    {k:'dia',    dx: 260, dy:  28, ex: 348, ey: 142, rot0:-10, rot:16,  rot2:38,  sc:1,    s:13, d:0.32, dur:2.58}
   ];
   var pieces=[], i, b, p, q;
   for(i=0;i<bits.length;i++){
     b=bits[i];
     pieces.push({k:b.k, dx:b.dx, dy:b.dy, ex:b.ex, ey:b.ey, rot0:b.rot0, rot:b.rot, rot2:b.rot2, sc:b.sc, s:b.s, d:b.d, dur:b.dur, fill:colors[i%colors.length]});
-    p=spin(b.dx, b.dy, i%2?16:-18);
-    q=spin(b.ex, b.ey, i%2?16:-18);
+    p=spin(b.dx, b.dy, i%2?63:-81);
+    q=spin(b.ex, b.ey, i%2?63:-81);
     pieces.push({
       k:nextKind[b.k],
-      dx:Math.round(p[0]*0.92), dy:Math.round(p[1]*0.92),
-      ex:Math.round(q[0]*0.92), ey:Math.round(q[1]*0.92+18),
+      dx:Math.round(p[0]*1.18), dy:Math.round(p[1]*1.18),
+      ex:Math.round(q[0]*1.28), ey:Math.round(q[1]*1.28+(i%2?36:-22)),
       rot0:b.rot0+(i%2?26:-26), rot:b.rot+(i%2?-22:22), rot2:b.rot2+34,
       sc:b.sc, s:Math.max(11, b.s-3), d:+(b.d+0.07).toFixed(2), dur:+(b.dur+0.22).toFixed(2),
       fill:colors[(i+4)%colors.length]
     });
-    p=spin(b.dx, b.dy, i%3?28:-26);
-    q=spin(b.ex, b.ey, i%3?28:-26);
+    p=spin(b.dx, b.dy, i%3?118:-104);
+    q=spin(b.ex, b.ey, i%3?118:-104);
     pieces.push({
       k:nextKind[nextKind[b.k]],
-      dx:Math.round(p[0]*0.74), dy:Math.round(p[1]*0.74),
-      ex:Math.round(q[0]*0.78), ey:Math.round(q[1]*0.78+28),
+      dx:Math.round(p[0]*0.92), dy:Math.round(p[1]*0.92),
+      ex:Math.round(q[0]*1.04), ey:Math.round(q[1]*1.04+28),
       rot0:b.rot0+(i%2?-18:20), rot:b.rot+(i%2?16:-28), rot2:b.rot2-12,
       sc:+(b.sc*0.82).toFixed(2), s:Math.max(10, b.s-5), d:+(b.d+0.11).toFixed(2), dur:+(b.dur+0.34).toFixed(2),
       fill:colors[(i+7)%colors.length]
     });
   }
   var html='<span class="end-done-confetti" aria-hidden="true">';
-  var burst=3.55;
   for(i=0;i<pieces.length;i++){
     b=pieces[i];
-    var dx=Math.round(b.dx*burst);
-    var dy=Math.round(b.dy*burst);
-    var ex=Math.round(b.ex*burst);
-    var ey=Math.round(b.ey*burst);
-    var mx=Math.round(dx+(ex-dx)*0.62);
-    var my=Math.round(dy+(ey-dy)*0.62);
-    var vx=Math.round(dx+(ex-dx)*0.84);
-    var vy=Math.round(dy+(ey-dy)*0.84);
-    var lx=Math.round(ex+(i%2?12:-18));
-    var ly=Math.round(ey+36+(i%5)*8);
+    var throwOut=1.32;
+    var dx=Math.round(b.dx*throwOut);
+    var dy=Math.round(b.dy*throwOut);
+    var ex=Math.round(b.ex*throwOut);
+    var ey=Math.round(b.ey*throwOut);
+    var mx=Math.round(dx+(ex-dx)*0.58+(i%3?34:-42));
+    var my=Math.round(dy+(ey-dy)*0.58+(i%2?22:-28));
+    var vx=Math.round(dx+(ex-dx)*0.84+(i%4?18:-26));
+    var vy=Math.round(dy+(ey-dy)*0.84+(i%3?16:-20));
+    var lx=Math.round(ex+(i%2?48:-62)+(i%5)*18);
+    var ly=Math.round(ey+52+(i%7)*20);
     var rotm=Math.round(b.rot+(b.rot2-b.rot)*0.62);
     var rotv=Math.round(b.rot+(b.rot2-b.rot)*0.84);
     var rotl=Math.round(b.rot2+(i%2?16:-14));
@@ -2165,10 +2176,6 @@ function syncEndingAvailability(){
   if(!root) return false;
   var acts=root.querySelector('.end-acts');
   if(!acts) return false;
-  if(root.classList.contains('ending-prompt')){
-    acts.innerHTML=endingPromptCtas();
-    return true;
-  }
   if(root.classList.contains('ending-base')){
     var stay=root.querySelector('.end-stay');
     var actions=root.querySelector('.end-base-actions');
@@ -2294,10 +2301,6 @@ function screenEndingFull(){
     +'</aside>'
     +'</div></div>';
 }
-function endingPromptCtas(){
-  return '<button class="btn primary" onclick="oneMore()">One more session</button>'
-    +'<button class="btn end-home" onclick="goHome()">Back to homepage</button>';
-}
 function endingBaseCtas(){
   var primary=ST.endMoreAvailable
     ? '<button class="btn primary" onclick="oneMore()">Let\u2019s do it!</button>'
@@ -2305,7 +2308,7 @@ function endingBaseCtas(){
   return primary+'<button class="btn end-home" onclick="goHome()">Back to homepage</button>';
 }
 function endingNextCopyHtml(){
-  return '<p class="end-next-copy">There\u2019s another Gym session starting soon.<br>Want to join?</p>';
+  return '<p class="end-next-copy">There\u2019s another Gym session starting soon. Want to join?</p>';
 }
 function dismissReflection(){
   ST.reflectionDismissed=true;
@@ -2330,15 +2333,13 @@ function reflectionPrompt(){
 function screenEndingBase(withPrompt){
   var recap=ENDING_RECAP[1];
   var today=recap.today.map(function(item){ return '<li>'+item+'</li>'; }).join('');
-  var headline=withPrompt?'That\u2019s a wrap! Well done.':endingHeadline();
-  var eyebrow=withPrompt?'':'<div class="end-eyebrow">Session complete</div>';
-  var toolsLink=(!withPrompt && ST.endMoreAvailable)
+  var headline=endingHeadline();
+  var eyebrow='<div class="end-eyebrow">Session complete</div>';
+  var toolsLink=ST.endMoreAvailable
     ? '<a href="#" class="end-tools-link" onclick="openPracticeTools();return false;">Open Practice Tools \u2192</a>'
     : '';
-  var nextCopy=(!withPrompt && ST.endMoreAvailable)
-    ? endingNextCopyHtml()
-    : '';
-  var acts=withPrompt?endingPromptCtas():endingBaseCtas();
+  var nextCopy=ST.endMoreAvailable ? endingNextCopyHtml() : '';
+  var acts=endingBaseCtas();
   var streak=withPrompt?'':' ending-streak-'+endingDepth();
   return lockupWelcome()
     +'<div class="ending is-close'+(ST.endingRested?' is-rested':'')+' ending-base'+(withPrompt?' ending-prompt':'')+streak+'"><div class="ending-stage">'
@@ -2361,8 +2362,6 @@ function screenEndingBase(withPrompt){
       +'</div>'
     +'</div>'
     +'<div class="end-base-actions">'
-      +(withPrompt?'<div class="end-next-k">What\u2019s next</div>':'')
-      +(withPrompt?'<p class="end-next-copy">Keep the momentum going, or call it a day.</p>':'')
       +nextCopy
       +'<div class="end-acts">'+acts+'</div>'
     +'</div>'
