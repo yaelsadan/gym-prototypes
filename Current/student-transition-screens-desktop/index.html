@@ -189,10 +189,10 @@ body.present .mode-btn:hover{opacity:1}
 }
 .w-stack h2 .w-to{font-weight:400}
 .w-stack h2 .w-gym{font-weight:700}
-.w-stack .sub{font-size:26px;font-weight:500;line-height:1.45;color:rgba(247,246,239,.9);margin:0 0 28px;max-width:720px}
+.w-stack .sub{font-size:30px;font-weight:600;line-height:1.35;color:rgba(247,246,239,.92);margin:0 0 28px;max-width:760px}
 .w-stack .explain{
-  font-size:20px;font-weight:400;line-height:1.42;color:rgba(247,246,239,.55);
-  max-width:840px;margin:0 0 28px;min-height:0;text-wrap:pretty;
+  font-size:24px;font-weight:400;line-height:1.42;color:rgba(247,246,239,.78);
+  max-width:960px;margin:0 0 56px;min-height:0;text-wrap:pretty;
 }
 .w-stack .acts{display:flex;justify-content:flex-start}
 .w-stack .btn.primary{min-width:260px;min-height:58px;border-color:transparent;font-size:18px}
@@ -224,11 +224,11 @@ body.present .mode-btn:hover{opacity:1}
 .av-canon{
   position:absolute;inset:0;z-index:1;
   display:flex;flex-direction:column;align-items:center;justify-content:center;
-  text-align:center;padding:88px 48px 32px;
+  text-align:center;padding:72px 48px 26px;
 }
 .av-canon .av-head,.av-canon .av-foot{display:flex;flex-direction:column;align-items:center;flex:none}
-.av-canon .av-head{margin-bottom:32px}
-.av-canon .av-foot{margin-top:20px}
+.av-canon .av-head{margin-bottom:24px}
+.av-canon .av-foot{margin-top:16px}
 .av-canon h2{
   font-family:var(--font-brand);font-weight:400;font-synthesis:none;
   font-size:36px;line-height:1.16;letter-spacing:-.2px;margin:0;color:#fff;
@@ -347,25 +347,26 @@ body.present .mode-btn:hover{opacity:1}
     linear-gradient(135deg,rgba(255,255,255,.2) 0%,transparent 42%,rgba(0,0,0,.03) 100%),
     rgba(247,246,239,.3);
 }
+/* Subordinate to .av-privacy. Do not scale this to the privacy size. */
 .av-canon .av-perm{
-  flex:none;width:min(440px,100%);margin:18px 0 0;
-  font-size:16px;font-weight:600;line-height:1.4;
+  flex:none;width:min(440px,100%);margin:14px 0 0;
+  font-size:18px;font-weight:600;line-height:1.4;
 }
 .av-canon .av-perm-needed{
-  appearance:none;-webkit-appearance:none;display:block;width:min(440px,100%);margin:18px 0 0;padding:0;
+  appearance:none;-webkit-appearance:none;display:block;width:min(520px,100%);margin:14px 0 0;padding:0;
   border:0;background:none;color:var(--brand-yellow);
-  font:inherit;font-size:16px;font-weight:600;line-height:1.4;
+  font:inherit;font-size:18px;font-weight:600;line-height:1.4;
   text-align:center;cursor:pointer;
 }
 .av-canon .av-perm-needed:focus-visible{outline:2px solid #fff;outline-offset:4px}
 .av-canon .av-perm-blocked,.av-canon .err{
   display:flex;align-items:flex-start;gap:10px;
-  width:min(440px,100%);margin:18px 0 0;padding:12px 14px;border-radius:12px;text-align:left;
+  width:min(520px,100%);margin:14px 0 0;padding:12px 14px;border-radius:12px;text-align:left;
   background:rgba(247,246,239,.10);border:1px solid rgba(247,246,239,.28);color:#F7F6EF;
   -webkit-backdrop-filter:blur(36px) saturate(1.16);
   backdrop-filter:blur(36px) saturate(1.16);
   box-shadow:inset 0 1px 0 rgba(247,246,239,.14);
-  font-size:14px;font-weight:500;line-height:1.4;
+  font-size:18px;font-weight:500;line-height:1.4;
 }
 .av-canon .av-perm-mark{
   flex:none;width:8px;height:8px;margin-top:.55em;border-radius:50%;background:#FFE300;
@@ -374,18 +375,24 @@ body.present .mode-btn:hover{opacity:1}
 .av-canon .av-perm-blocked p{margin:0;color:#F7F6EF}
 .av-canon .av-perm-retry{
   appearance:none;-webkit-appearance:none;display:inline-block;margin:8px 0 0;padding:0;border:0;background:none;
-  color:#FFE300;font:inherit;font-size:14px;font-weight:700;cursor:pointer;
+  color:#FFE300;font:inherit;font-size:18px;font-weight:700;cursor:pointer;
 }
 .av-canon .av-perm-blocked p .av-perm-retry{
   display:inline;margin:0;text-decoration:underline;text-underline-offset:2px;
 }
 .av-canon .av-perm-retry:focus-visible{outline:2px solid #fff;outline-offset:3px}
+/* Copy is fixed by the product spec. Line length is held by max-width, so this
+   wraps rather than running the full width of the frame. */
 .av-canon .av-privacy{
-  font-size:18px;font-weight:500;line-height:1.45;color:rgba(247,246,239,.82);
-  max-width:none;white-space:nowrap;margin:0 0 16px;
+  font-size:24px;font-weight:500;line-height:1.45;color:rgba(247,246,239,.82);
+  max-width:620px;margin:0 0 16px;text-wrap:pretty;
 }
 .av-canon .acts{display:flex;justify-content:center}
-.av-canon .btn.primary{border-color:transparent}
+/* Scoped to A/V so the Waiting Room and Ending CTAs keep their own sizes. */
+.av-canon .btn.primary{
+  border-color:transparent;
+  min-height:56px;padding:14px 30px;font-size:18px;font-weight:700;
+}
 
 /* ---------- Waiting Room (canonical wait) ---------- */
 .lockup.waiting-lockup{left:28px;top:28px;gap:9px}
@@ -434,7 +441,7 @@ body.present .mode-btn:hover{opacity:1}
   font-variant-numeric:tabular-nums;line-height:.95;margin:14px 0 82px;color:var(--ink-cream);
 }
 .wait .count.pre-start{color:var(--brand-yellow)}
-.wait .invite{font-size:18px;font-weight:500;line-height:1.45;color:rgba(247,246,239,.82);margin:0 0 18px}
+.wait .invite{font-size:22px;font-weight:500;line-height:1.45;color:rgba(247,246,239,.82);margin:0 0 18px}
 .wait-acts{display:flex;align-items:center;justify-content:center}
 .wait-acts .btn{min-width:238px;min-height:54px;font-size:16px;padding:12px 24px}
 .wait-copy .btn.cream{background:var(--brand-yellow);border-color:transparent;color:var(--brand-charcoal)}
@@ -497,7 +504,7 @@ body.present .mode-btn:hover{opacity:1}
 .wait:not(.flash-open) .wait-copy{top:173px}
 .wait:not(.flash-open) h2{font-size:48px}
 .wait:not(.flash-open) .count{font-size:112px;margin-top:16px;margin-bottom:84px}
-.wait:not(.flash-open) .invite{font-size:20px;margin-bottom:20px}
+.wait:not(.flash-open) .invite{font-size:24px;margin-bottom:20px}
 .wait:not(.flash-open) .wait-acts .btn{min-width:252px;min-height:58px;font-size:17px}
 .wait-flash-stack{
   position:relative;min-width:0;min-height:0;
@@ -1006,6 +1013,9 @@ body.present .mode-btn:hover{opacity:1}
 .ending.is-close.ending-base .end-today li:nth-child(2)::before{
   animation-delay:-.62s;
 }
+.ending.is-close.ending-base .end-today li:nth-child(3)::before{
+  animation-delay:-1.24s;
+}
 .ending.is-close.ending-base .end-today li::after{
   content:"";
   position:absolute;
@@ -1021,6 +1031,9 @@ body.present .mode-btn:hover{opacity:1}
 }
 .ending.is-close.ending-base .end-today li:nth-child(2)::after{
   animation-delay:-.62s;
+}
+.ending.is-close.ending-base .end-today li:nth-child(3)::after{
+  animation-delay:-1.24s;
 }
 @keyframes earnedCoinSpin{
   0%{transform:translateY(-50%) scaleX(1)}
@@ -1607,7 +1620,7 @@ var NOTES={
 /* Ending recap is session data, not a layout variant. People stay in a realistic 2–4 range. */
 var ENDING_RECAP={
   1:{
-    today:['Greetings and getting into the room','Café ordering, out loud'],
+    today:['Greetings and getting into the room','Café ordering, out loud','Asking for directions'],
     people:[{n:'Dana Levine',i:'D',c:'#F7AAF3'},{n:'Lior Sharabi',i:'L',c:'#DAEF81'},{n:'Hanna Weiss',i:'H',c:'#90C7FC'}]
   },
   2:{
@@ -1843,10 +1856,10 @@ function screenWelcome(late){
     : '<h2><span class="w-to">Welcome to</span> <span class="w-gym">Gym</span></h2>';
   var sub=late
     ? 'Get ready to work out your Hebrew muscles and get exposed to new words and phrases!'
-    : 'Practice out loud with Guy and the class.';
+    : 'Get ready to work out your Hebrew muscles.';
   var explain=late
     ? 'Please note that the session has already started.'
-    : 'During the next 17 minutes, you will be practicing Hebrew with a live teacher as well as other students. Get ready to work out your Hebrew muscles and get exposed to new words and phrases. You’ll be exhausted in the best way possible\u2026<br><br>This is an active practice, so make sure your camera and mic are on to get the most out of the session!';
+    : 'Practice new words and phrases with fellow Citizens around the world';
   return lockupWelcome()
     +'<div class="welcome-canon'+(late?' is-late':'')+'">'
     +'<div class="w-panel">'
@@ -2434,7 +2447,7 @@ function screenEndingFull(){
       +'<div class="end-hero"><h2>That\u2019s a wrap! Well done.</h2></div>'
       +'<div class="end-recap">'
         +'<div class="end-today">'
-          +'<h3>Here\u2019s what you did today:</h3>'
+          +'<h3>Here\u2019s what you did in this session:</h3>'
           +'<ul>'+today+'</ul>'
         +'</div>'
         +'<div class="end-stay">'
@@ -2510,7 +2523,7 @@ function screenEndingBase(withPrompt){
       +'<div class="end-hero">'+eyebrow+'<h2>'+headline+'</h2></div>'
       +'<div class="end-recap">'
         +'<div class="end-today">'
-          +'<h3>Here\u2019s what you did today:</h3>'
+          +'<h3>Here\u2019s what you did in this session:</h3>'
           +'<ul>'+today+'</ul>'
         +'</div>'
         +'<div class="end-stay">'
