@@ -614,14 +614,14 @@ h1{font-size:20px;line-height:1.25}
   max-width:330px;
   margin:0 0 50px;
   color:rgba(247,246,239,.84);
-  font-size:16px;
+  font-size:17px;
   font-weight:500;
   line-height:1.42;
   text-wrap:pretty;
 }
 .av-canon:has(.av-perm) .av-head{margin-bottom:24px}
 .av-canon:has(.av-perm) .av-foot{padding-top:12px}
-.av-canon:has(.av-perm) .av-privacy{margin-bottom:24px}
+.av-canon:has(.av-perm) .av-privacy{margin-bottom:20px}
 .av-foot .primary-cta{width:154px;min-height:50px}
 
 /* Canonical mobile Waiting Room: countdown first, optional practice second. */
@@ -1747,7 +1747,7 @@ h1{font-size:20px;line-height:1.25}
   .av-canon{right:12px;left:12px}
   .av-head h2{font-size:28px}
   .av-tools{gap:14px}
-  .av-privacy{font-size:15px}
+  .av-privacy{font-size:16px}
   .av-perm-needed{font-size:14px}
 }
 @media (max-height:740px){
@@ -2236,14 +2236,15 @@ function renderEnding(){
   var people=recap.people.map(function(person){
     return '<button class="end-partner" type="button" data-action="message-partner" data-name="'+person.name+'"><span class="end-partner-avatar" style="--partner-color:'+person.color+'"><span class="end-partner-halo" aria-hidden="true"></span><span class="end-partner-face">'+person.initial+'</span></span>'+person.name+'</button>';
   }).join("");
-  var toolsLink=STATE.endingAvailable
-    ? '<a href="#" class="end-tools-link" data-action="practice-tools">Open Practice Tools \u2192</a>'
-    : "";
+  var toolsLink='<a href="#" class="end-tools-link" data-action="practice-tools">Open Practice Tools \u2192</a>';
   var nextCopy=STATE.endingAvailable
     ? '<div class="end-next"><p class="end-next-copy">There\u2019s another Gym session starting soon. Want to join?</p></div>'
     : "";
-  var primary=STATE.endingAvailable?"Let\u2019s do it!":"Open Practice Tools";
-  var primaryAction=STATE.endingAvailable?"one-more":"practice-tools";
+  /* With no next session the tools link carries practice, so the screen closes on a single action. */
+  var actions=STATE.endingAvailable
+    ? '<button class="end-primary" type="button" data-action="one-more">Let\u2019s do it!</button>'
+      +'<button class="end-home" type="button" data-action="home">Back to homepage</button>'
+    : '<button class="end-home" type="button" data-action="home">Back to homepage</button>';
   var promptOpen=STATE.scene==="ending-prompt"&&STATE.reflectionOpen&&!STATE.reflectionDismissed;
   return '<div class="transition-shell">'+Components.statusbar()
     +'<main class="mobile-ending ending-streak-'+(STATE.endingSessions>=3?3:STATE.endingSessions===2?2:1)+(STATE.endingRested?' is-rested':'')+(promptOpen?' is-prompt-open':'')+'">'
@@ -2263,10 +2264,7 @@ function renderEnding(){
             +'</div>'
             +'<div class="end-people"><h3>Your Gym partners:</h3><div class="end-partners">'+people+'</div></div>'
             +nextCopy
-            +'<div class="end-actions">'
-              +'<button class="end-primary" type="button" data-action="'+primaryAction+'">'+primary+'</button>'
-              +'<button class="end-home" type="button" data-action="home">Back to homepage</button>'
-            +'</div>'
+            +'<div class="end-actions">'+actions+'</div>'
           +'</div>'
         +'</section>'
       +'</div>'

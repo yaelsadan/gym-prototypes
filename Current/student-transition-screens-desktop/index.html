@@ -359,9 +359,11 @@ body.present .mode-btn:hover{opacity:1}
   text-align:center;cursor:pointer;
 }
 .av-canon .av-perm-needed:focus-visible{outline:2px solid #fff;outline-offset:4px}
+/* Wider than the other helpers so the long blocked-permission copy wraps to
+   two lines instead of three. This screen has no vertical room to spare. */
 .av-canon .av-perm-blocked,.av-canon .err{
   display:flex;align-items:flex-start;gap:10px;
-  width:min(520px,100%);margin:14px 0 0;padding:12px 14px;border-radius:12px;text-align:left;
+  width:min(700px,100%);margin:14px 0 0;padding:12px 14px;border-radius:12px;text-align:left;
   background:rgba(247,246,239,.10);border:1px solid rgba(247,246,239,.28);color:#F7F6EF;
   -webkit-backdrop-filter:blur(36px) saturate(1.16);
   backdrop-filter:blur(36px) saturate(1.16);
@@ -381,11 +383,20 @@ body.present .mode-btn:hover{opacity:1}
   display:inline;margin:0;text-decoration:underline;text-underline-offset:2px;
 }
 .av-canon .av-perm-retry:focus-visible{outline:2px solid #fff;outline-offset:3px}
-/* Copy is fixed by the product spec. Line length is held by max-width, so this
-   wraps rather than running the full width of the frame. */
+/* "Can request again" only — message and action share one row so the helper
+   reads as a compact status bar. The blocked state keeps its stacked wrap. */
+.av-canon .av-perm-inline{align-items:center}
+.av-canon .av-perm-inline .av-perm-mark{margin-top:0}
+.av-canon .av-perm-inline .av-perm-copy{
+  display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px 28px;
+}
+.av-canon .av-perm-inline .av-perm-copy > p{flex:1 1 auto;min-width:0}
+.av-canon .av-perm-inline .av-perm-retry{flex:none;margin:0}
+/* Copy is fixed by the product spec, and it is set on a single line by
+   intent — do not reintroduce a max-width that would wrap it. */
 .av-canon .av-privacy{
   font-size:24px;font-weight:500;line-height:1.45;color:rgba(247,246,239,.82);
-  max-width:620px;margin:0 0 16px;text-wrap:pretty;
+  max-width:none;white-space:nowrap;margin:0 0 16px;
 }
 .av-canon .acts{display:flex;justify-content:center}
 /* Scoped to A/V so the Waiting Room and Ending CTAs keep their own sizes. */
@@ -938,6 +949,12 @@ body.present .mode-btn:hover{opacity:1}
   background:transparent;color:var(--brand-yellow);border:1.5px solid var(--brand-yellow);
 }
 .ending.is-close.ending-base .btn.end-home:hover{background:rgba(249,226,76,.1)}
+.ending.is-close.ending-base .btn.end-home.is-solo{
+  background:var(--brand-yellow);color:var(--brand-charcoal);border-color:transparent;
+}
+.ending.is-close.ending-base .btn.end-home.is-solo:hover{
+  background:var(--brand-yellow);filter:brightness(.97);
+}
 
 /* Base composition — recap left, badge in the corner, CTA bottom-right. Prompt keeps the same screen and overlays optional reflection. */
 .ending.is-close.ending-base .end-seal{
@@ -947,11 +964,11 @@ body.present .mode-btn:hover{opacity:1}
 }
 .ending.is-close.ending-base .ending-inner{
   display:block;
-  padding:44px 64px 48px 82px;
+  padding:24px 64px 64px 82px;
 }
 .ending.is-close.ending-base .end-copy{
   max-width:650px;
-  padding-top:28px;
+  padding-top:4px;
 }
 .ending.is-close.ending-base .end-eyebrow{
   margin:0 0 8px;
@@ -1081,7 +1098,7 @@ body.present .mode-btn:hover{opacity:1}
 .ending.is-close.ending-prompt .end-reflection{
   position:absolute;z-index:5;
   top:168px;right:56px;width:508px;
-  padding:14px 18px 12px;
+  padding:16px 18px 14px;
   border:1px solid rgba(247,246,239,.26);
   border-radius:16px;
   background:rgba(55,50,48,.46);
@@ -1101,23 +1118,23 @@ body.present .mode-btn:hover{opacity:1}
   margin:0 0 8px;
 }
 .ending.is-close.ending-prompt .end-reflection-title{
-  margin:0;color:#fff;font-size:18px;font-weight:700;line-height:1.25;
+  margin:0;color:#fff;font-size:20px;font-weight:700;line-height:1.25;
 }
 .ending.is-close.ending-prompt .end-reflection-optional{
-  display:block;margin-top:3px;color:rgba(247,246,239,.5);
-  font-size:12px;font-weight:600;
+  display:block;margin-top:4px;color:rgba(247,246,239,.5);
+  font-size:13px;font-weight:600;
 }
 .ending.is-close.ending-prompt .end-reflection-close{
   display:grid;place-items:center;flex:none;
   width:28px;height:28px;margin:-5px -6px 0 0;padding:0;
   border:0;border-radius:50%;background:transparent;
-  color:rgba(247,246,239,.68);font:400 22px/1 var(--font-ui);cursor:pointer;
+  color:rgba(247,246,239,.68);font:400 24px/1 var(--font-ui);cursor:pointer;
 }
 .ending.is-close.ending-prompt .end-reflection-close:hover{
   color:#fff;background:rgba(247,246,239,.10);
 }
 .ending.is-close.ending-prompt .end-reflection .fb-q{
-  margin:8px 0 6px;font-size:14px;font-weight:600;
+  margin:10px 0 7px;font-size:16px;font-weight:600;
 }
 .ending.is-close.ending-prompt .end-reflection .fb-opts{
   display:flex;
@@ -1128,12 +1145,12 @@ body.present .mode-btn:hover{opacity:1}
 .ending.is-close.ending-prompt .end-reflection .fb-opt{
   flex:none;
   white-space:nowrap;
-  padding:7px 12px;
-  font-size:13px;
+  padding:8px 12px;
+  font-size:14px;
 }
 .ending.is-close.ending-prompt .end-reflection-saved{
-  min-height:16px;margin:2px 0 0;
-  color:rgba(247,246,239,.56);font-size:12px;font-weight:600;
+  min-height:17px;margin:3px 0 0;
+  color:rgba(247,246,239,.56);font-size:13px;font-weight:600;
 }
 @keyframes endReflectionIn{
   from{opacity:0;transform:translateX(36px)}
@@ -2009,7 +2026,7 @@ function avPermHelper(){
     return '<button type="button" class="av-perm av-perm-needed" onclick="requestAvPermission()">To join the Gym, allow camera and microphone access.</button>';
   }
   if(state==='retryable'){
-    return '<div class="av-perm av-perm-blocked" role="status">'
+    return '<div class="av-perm av-perm-blocked av-perm-inline" role="status">'
       +'<span class="av-perm-mark" aria-hidden="true"></span>'
       +'<div class="av-perm-copy">'
       +'<p>Camera and microphone access is required to participate.</p>'
@@ -2357,19 +2374,17 @@ function syncEndingAvailability(){
     if(!stay||!actions) return false;
     var link=stay.querySelector('.end-tools-link');
     var next=actions.querySelector('.end-next-copy');
+    if(!link){
+      stay.insertAdjacentHTML('beforeend','<a href="#" class="end-tools-link" onclick="openPracticeTools();return false;">Open Practice Tools \u2192</a>');
+    }
     if(ST.endMoreAvailable){
-      if(!link){
-        stay.insertAdjacentHTML('beforeend','<a href="#" class="end-tools-link" onclick="openPracticeTools();return false;">Open Practice Tools \u2192</a>');
-      }
       if(!next){
         acts.insertAdjacentHTML('beforebegin',endingNextCopyHtml());
       }
-      acts.innerHTML=endingBaseCtas();
-    }else{
-      if(link) link.remove();
-      if(next) next.remove();
-      acts.innerHTML=endingBaseCtas();
+    }else if(next){
+      next.remove();
     }
+    acts.innerHTML=endingBaseCtas();
     return true;
   }
   acts.innerHTML=endingCtas();
@@ -2476,11 +2491,12 @@ function screenEndingFull(){
     +'</aside>'
     +'</div></div>';
 }
+/* With no next session the tools link carries practice, so the screen closes on a single action. */
 function endingBaseCtas(){
-  var primary=ST.endMoreAvailable
-    ? '<button class="btn primary" onclick="oneMore()">Let\u2019s do it!</button>'
-    : '<button class="btn primary" onclick="openPracticeTools()">Open Practice Tools</button>';
-  return primary+'<button class="btn end-home" onclick="goHome()">Back to homepage</button>';
+  var solo=!ST.endMoreAvailable;
+  var home='<button class="btn end-home'+(solo?' is-solo':'')+'" onclick="goHome()">Back to homepage</button>';
+  if(solo) return home;
+  return '<button class="btn primary" onclick="oneMore()">Let\u2019s do it!</button>'+home;
 }
 function endingNextCopyHtml(){
   return '<p class="end-next-copy">There\u2019s another Gym session starting soon. Want to join?</p>';
@@ -2510,9 +2526,7 @@ function screenEndingBase(withPrompt){
   var today=recap.today.map(function(item){ return '<li>'+item+'</li>'; }).join('');
   var headline=endingHeadline();
   var eyebrow='<div class="end-eyebrow">Session complete</div>';
-  var toolsLink=ST.endMoreAvailable
-    ? '<a href="#" class="end-tools-link" onclick="openPracticeTools();return false;">Open Practice Tools \u2192</a>'
-    : '';
+  var toolsLink='<a href="#" class="end-tools-link" onclick="openPracticeTools();return false;">Open Practice Tools \u2192</a>';
   var nextCopy=ST.endMoreAvailable ? endingNextCopyHtml() : '';
   var acts=endingBaseCtas();
   var streak=withPrompt?'':' ending-streak-'+endingDepth();
