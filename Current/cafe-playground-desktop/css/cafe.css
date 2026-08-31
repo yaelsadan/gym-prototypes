@@ -1,0 +1,179 @@
+/* ============================================================================
+   CAFE — product-specific styles
+   ----------------------------------------------------------------------------
+   Everything here is Cafe only. Shared primitives live in gym-primitives.css
+   and must not be edited from this file.
+
+   Cafe uses the Gym visual language with a lighter posture:
+     - warmer ambient shell, less contrast than a Practice Room
+     - fewer chips, more breathing room
+     - no drill countdown ring on the main surface
+     - the session timer is ambient status, not pressure
+   ========================================================================= */
+
+/* ---------------------------------------------------------- CAFE AMBIENT */
+/* Warmer and a touch lighter than the Gym Practice Room shell. */
+.cafe-shell{
+  position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse 70% 64% at 26% 22%, rgba(249,226,76,.10), transparent 58%),
+    radial-gradient(ellipse 84% 78% at 62% 40%, #8E8873 0%, #3B3531 68%);
+}
+.cafe-shell.deep{
+  background:
+    radial-gradient(ellipse 66% 60% at 50% 16%, rgba(249,226,76,.07), transparent 56%),
+    radial-gradient(ellipse 92% 84% at 50% 56%, #3E3833 0%, #241F1C 74%);
+}
+
+/* ------------------------------------------------------------- CAFE MARK */
+/* The cup lockup mark. Replaces the neutral dot in the solo lockup. */
+.cafe-mark{
+  width:32px;height:18px;flex:none;overflow:visible;
+  fill:none;stroke:var(--ink-cream);stroke-width:12;stroke-linejoin:round;
+}
+.cafe-mark .pour{fill:var(--brand-yellow)}
+
+/* Shared centred stage for the pre-session states */
+.cafe-stage{
+  position:absolute;inset:0;z-index:1;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:104px 56px 56px;text-align:center;
+}
+.cafe-stage.left{align-items:flex-start;text-align:left;padding-left:92px}
+.cafe-stage .cafe-copy{max-width:720px}
+.cafe-stage .cafe-copy .g-sub{margin-top:12px}
+.cafe-stage .cafe-copy .g-quiet{margin-top:14px}
+.cafe-acts{display:flex;gap:12px;align-items:center;margin-top:34px}
+.cafe-stage.left .cafe-acts{justify-content:flex-start}
+
+
+/* --------------------------------------------------- 1. ENTRY / PREFERENCES */
+.cafe-entry-panel{
+  position:absolute;left:28px;right:28px;top:96px;bottom:24px;z-index:1;
+  display:flex;flex-direction:column;justify-content:center;
+  padding:56px 92px;
+}
+.cafe-entry-panel .g-display{margin-bottom:10px}
+.cafe-entry-panel .g-sub{max-width:640px}
+
+.pref-groups{display:flex;flex-direction:column;gap:26px;margin:40px 0 8px}
+.pref-group{display:flex;flex-direction:column;gap:12px}
+.pref-label{
+  display:flex;align-items:center;gap:14px;
+  font-size:12px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;
+  color:rgba(247,246,239,.52);
+}
+/* Your own level — identity, not a rule. Quiet by design. */
+.pref-me{
+  display:inline-flex;align-items:center;gap:7px;
+  font-size:12px;font-weight:600;letter-spacing:.3px;text-transform:none;
+  color:rgba(247,246,239,.42);
+}
+.pref-row{display:flex;flex-wrap:wrap;gap:10px}
+.pref-row .g-choice.stacked{min-width:236px}
+/* The ladder-edge line renders only when the band was actually clamped. */
+.pref-edge{
+  margin-top:2px;font-size:14px;font-weight:500;line-height:1.4;
+  color:rgba(247,246,239,.50);
+}
+
+
+/* ------------------------------------------------------------ 2. SEARCHING */
+.cafe-search{display:flex;flex-direction:column;align-items:center;gap:0}
+/* Concentric rings — the "someone is out there" beat. Calm, not a spinner. */
+.search-orb{position:relative;width:196px;height:196px;display:grid;place-items:center;margin-bottom:38px}
+.search-orb .core{
+  width:64px;height:64px;border-radius:50%;background:var(--brand-yellow);
+  box-shadow:0 0 0 1.5px var(--brand-charcoal),0 10px 26px rgba(18,14,12,.34);
+  display:grid;place-items:center;z-index:2;
+}
+.search-orb .core svg{width:26px;height:26px;color:var(--brand-charcoal)}
+.search-orb .ring{
+  position:absolute;inset:0;margin:auto;width:64px;height:64px;border-radius:50%;
+  border:1.5px solid rgba(249,226,76,.42);
+  animation:orbpulse 2.8s cubic-bezier(.25,.5,.35,1) infinite;
+}
+.search-orb .ring:nth-child(2){animation-delay:.9s}
+.search-orb .ring:nth-child(3){animation-delay:1.8s}
+@keyframes orbpulse{
+  0%{transform:scale(1);opacity:.7}
+  100%{transform:scale(3.05);opacity:0}
+}
+.cafe-search .search-meta{display:flex;align-items:center;gap:14px;margin-top:26px}
+.cafe-search .elapsed{font-size:15px;font-weight:600;color:rgba(247,246,239,.52);font-variant-numeric:tabular-nums}
+
+
+/* ---------------------------------------------------------- 3. MATCH FOUND */
+.match-pair{display:flex;align-items:center;gap:26px;margin-bottom:34px}
+.match-face{
+  width:132px;height:132px;border-radius:50%;flex:none;display:grid;place-items:center;
+  font-family:var(--font-brand);font-size:46px;font-weight:700;color:var(--brand-charcoal);
+  background:#EDE8DC;border:2px solid rgba(255,246,236,.72);
+  box-shadow:0 12px 30px rgba(18,14,12,.30);
+}
+.match-face.you{background:var(--brand-yellow)}
+.match-face.enter{animation:matchin .42s cubic-bezier(.2,.9,.25,1) both}
+@keyframes matchin{from{opacity:0;transform:scale(.86)}to{opacity:1;transform:scale(1)}}
+.match-link{
+  width:46px;height:2px;border-radius:2px;flex:none;
+  background:linear-gradient(90deg,rgba(249,226,76,.25),var(--brand-yellow),rgba(249,226,76,.25));
+}
+.match-detail{display:flex;gap:10px;justify-content:center;margin-top:22px}
+
+
+/* ------------------------------------------------------- 4. SESSION AGREEMENT */
+.agree-card{width:min(620px,100%);padding:38px 40px 32px;text-align:left}
+.agree-card h2{font-family:var(--font-brand);font-weight:700;font-size:30px;line-height:1.16;color:#fff;margin-bottom:8px}
+.agree-card .agree-intro{font-size:17px;font-weight:500;color:rgba(247,246,239,.66);line-height:1.45}
+.agree-terms{list-style:none;margin:26px 0 0;display:flex;flex-direction:column;gap:0}
+.agree-terms li{
+  display:flex;align-items:flex-start;gap:14px;padding:15px 0;
+  border-top:1px solid rgba(247,246,239,.14);
+  font-size:17px;font-weight:500;line-height:1.4;color:rgba(247,246,239,.92);
+}
+.agree-terms li:last-child{border-bottom:1px solid rgba(247,246,239,.14)}
+.agree-terms .tick{
+  width:22px;height:22px;border-radius:50%;flex:none;margin-top:1px;display:grid;place-items:center;
+  background:var(--brand-yellow);color:var(--brand-charcoal);
+}
+.agree-terms .tick svg{width:13px;height:13px}
+/* The button pair is on the shared scale and cannot shrink, so the partner
+   line drops to its own row rather than squeezing it. */
+.agree-foot{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:18px;margin-top:26px}
+.agree-foot .acts{flex:none;margin-left:auto}
+.agree-partner{display:inline-flex;align-items:center;gap:10px;font-size:15px;font-weight:600;color:rgba(247,246,239,.60)}
+.agree-partner.is-in{color:var(--status-success)}
+.agree-partner .av-sm{
+  width:28px;height:28px;border-radius:50%;flex:none;display:grid;place-items:center;
+  font-size:12px;font-weight:700;color:var(--brand-charcoal);background:#EDE8DC;
+}
+
+
+/* ------------------------------------------------ 6. LIVE CAFE SESSION */
+.cafe-room{position:absolute;inset:0;display:flex;flex-direction:column}
+.cafe-topbar{
+  position:absolute;left:0;right:0;top:0;z-index:22;height:88px;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 26px;pointer-events:none;
+}
+.cafe-topbar > *{pointer-events:auto}
+/* The shared lockup is absolute by default. Inside the topbar it is a flex child. */
+.cafe-topbar .lockup{position:static;left:auto;top:auto}
+.cafe-topbar .top-right{display:flex;align-items:center;gap:12px}
+
+.cafe-tiles{position:absolute;inset:0;z-index:3;padding:88px 22px 132px;display:flex}
+.cafe-tiles.with-panel{padding-right:calc(var(--panel-w) + 32px)}
+
+
+/* ---------------------------------------- 7. ENDING / SEARCHING AGAIN */
+.cafe-ending{display:flex;flex-direction:column;align-items:center}
+.ending-clock{margin-bottom:30px}
+.ending-again{
+  display:inline-flex;align-items:center;gap:12px;margin-top:30px;
+  font-size:16px;font-weight:600;color:rgba(247,246,239,.62);
+}
+.ending-partner{display:inline-flex;align-items:center;gap:10px;margin-top:18px;font-size:16px;font-weight:500;color:rgba(247,246,239,.70)}
+.ending-partner .av-sm{
+  width:32px;height:32px;border-radius:50%;flex:none;display:grid;place-items:center;
+  font-size:13px;font-weight:700;color:var(--brand-charcoal);background:#EDE8DC;
+}

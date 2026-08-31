@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Citizen Café — Mobile Playground</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+/* FedraSerifPro — the brand serif. Loaded from the repo copy at Current/.
+   Display moments only: the Café headlines, the A/V check title, the partner
+   name on the match card. Every control, chip, timer and body string is
+   Assistant. */
+@font-face{
+  font-family:"FedraSerifPro";
+  src:url("../FedraSerifPRO_HL-Book.otf") format("opentype");
+  font-weight:400;
+  font-style:normal;
+  font-display:swap;
+}
+</style>
+
+<!-- Shared Gym mobile design system. Do not add Café rules to these files. -->
+<link rel="stylesheet" href="css/gym-mobile.css">
+<!-- Café-only styling. -->
+<link rel="stylesheet" href="css/cafe-mobile.css">
+</head>
+<body>
+
+<h1>Citizen Café — Mobile <span style="font-weight:400;color:var(--text-muted);font-size:14px">v01 · primary design surface</span></h1>
+<p class="lead">
+  The mobile Café playground, and from here the primary surface for Café design exploration. Desktop
+  (<code>Current/cafe-playground-desktop/</code>) is frozen as the initial scaffold and reference.
+  Café is a sibling of Gym, not a new visual system: the phone shell, statusbar, transition shell, A/V check,
+  live video stack, participant labels, room clock, glass dock, Leave &amp; report and milky bottom sheets are
+  the existing Gym mobile components at their existing values, taken from
+  <code>student-practice-rooms-mobile</code> and <code>student-transition-screens-mobile</code>. Shared primitives
+  live in <code>css/gym-mobile.css</code> and <code>js/gym-mobile.js</code>; everything Café-specific is in
+  <code>css/cafe-mobile.css</code> and <code>js/cafe-mobile-states.js</code>. This pass is product hierarchy and
+  behaviour, not polish.
+</p>
+
+<h2>Interactive demo</h2>
+<div class="demo">
+  <div class="phone"><div class="screen" id="screen"></div></div>
+
+  <!-- Prototype tooling. Never part of the product viewport. -->
+  <div class="controls">
+    <div class="grp">Canonical states</div>
+    <button class="sc" data-sc="entry">1 · Entry / preferences</button>
+    <button class="sc" data-sc="avcheck">2 · A/V check</button>
+    <button class="sc" data-sc="searching">3 · Active searching</button>
+    <button class="sc" data-sc="hub">3b · Hub indicator (placeholder)</button>
+    <button class="sc" data-sc="flashcards">3c · Flashcards while waiting</button>
+    <button class="sc" data-sc="matched">4 · Match found</button>
+    <button class="sc" data-sc="agreement">5 · Session agreement</button>
+    <button class="sc" data-sc="live">6 · Live Café</button>
+    <button class="sc" data-sc="ending">7 · Ending / requeue</button>
+
+    <div class="grp">Run</div>
+    <button class="play" onclick="runPath()">&#9654; Run the path</button>
+    <button id="clockBtn" onclick="toggleClock()">Clock: running</button>
+
+    <div class="grp">Matching (simulated)</div>
+    <button onclick="offerMatch()">Offer a match now</button>
+    <button onclick="acceptMatch()">You accept</button>
+    <button onclick="bothAccepted()">Partner confirms → Agreement</button>
+    <button onclick="partnerDeclines()">Partner declines → keep matching</button>
+
+    <div class="grp">Live session</div>
+    <button onclick="toggleText()">Toggle activity / text sheet</button>
+    <button onclick="openLeave()">Leave &amp; report</button>
+    <button onclick="jumpFinal()">Jump to final 20s</button>
+
+    <div class="grp">A/V check</div>
+    <button onclick="micRecord()">Mic test: record</button>
+    <button onclick="micStop()">Mic test: recorded</button>
+    <button onclick="micPlay()">Mic test: play back</button>
+    <button onclick="openDevices()">Open device picker</button>
+
+    <div class="grp">Device</div>
+    <button onclick="toggleCam()">Toggle camera</button>
+    <button onclick="toggleMic()">Toggle mic</button>
+    <button onclick="toggleBlur()">Toggle blur</button>
+
+    <div class="grp">A/V permission</div>
+    <button onclick="setPerm('granted')">Granted</button>
+    <button onclick="setPerm('needed')">Needed</button>
+    <button onclick="setPerm('blocked')">Blocked</button>
+
+    <div class="grp">Preferences</div>
+    <button onclick="selectAllLevels()">Select all levels</button>
+    <button onclick="selectOnlyMine()">Only my level</button>
+
+    <div class="state" id="stateNote"></div>
+  </div>
+</div>
+
+<div class="notes">
+  <div class="note-card">
+    <h3>What is reused, not redrawn</h3>
+    <ul>
+      <li><b>Live Café is the Practice Room shell.</b> Vertical stacked video split, cream Assistant participant labels in their fixed per-tile positions, the flat top-right room clock with its yellow final-seconds treatment, the floating milky-glass dock, the mic-off flag, the camera-off cream face, and <b>Leave &amp; report</b>. No new video-call layout was designed.</li>
+      <li><b>A/V check is the canonical mobile A/V block</b> — the same card, preview, 52px glass Camera / Mic / Blur controls, mic echo rings and permission helpers. The mic test and the device row are additions in that same glass; the block starts higher up the screen to fit them, which is the only geometry change.</li>
+      <li><b>Flashcards while waiting are the Solo Room deck</b> — the same flip card, bookmark, replay player and glass nav dock, in a Café waiting shell rather than a room.</li>
+      <li><b>Every decision surface is the Gym milky bottom sheet</b>: match found, the agreement, editing levels mid-search, and Leave &amp; report. The depleting <code>.respline</code> carries the response window, as it does for Gym consent.</li>
+      <li><b>Text is a dark-glass tool sheet</b>, deliberately not the milky decision material and deliberately not the Main Room chat.</li>
+    </ul>
+  </div>
+  <div class="note-card">
+    <h3>Product decisions this pass encodes</h3>
+    <ul>
+      <li><b>Preferences are levels, not scope presets.</b> The choice is a multi-select set of eligible levels, and it opens with <b>only the student’s own level selected</b>. Select all is an accelerator, not the default. Level data is configurable in <code>LEVEL_DATA</code> and is <b>not</b> a canonical ladder — no ordering, count or above/below relationship is implied anywhere in the UI.</li>
+      <li><b>The pool feedback is a sentence, not a bar.</b> Widening the search is not progress toward completion, so it does not get a progress indicator.</li>
+      <li><b>A/V check runs before matching, on every entry.</b> It is technical readiness — right camera, right mic, right output, and proof the mic works — and personal readiness, a moment to see yourself before a stranger does. The Entry CTA is therefore a continuation, and <b>Start matching</b> lives at the end of the check.</li>
+      <li><b>Searching does not block.</b> “Keep exploring” leaves the screen and matching continues; the persistent indicator carries it. Stop matching is the only exit. Flashcards are offered but never required, and a match interrupts them.</li>
+      <li><b>No self-view while searching.</b> The camera is off in the queue — readiness was settled before it, and searching is not a pre-call lobby.</li>
+      <li><b>Match found interrupts.</b> 30 seconds, real content — avatar, name, level, location, one onboarding-derived icebreaker. Accepting keeps the same surface and waits for the partner rather than navigating.</li>
+      <li><b>The agreement is not a checklist.</b> Four statements, one acknowledgement, no decline — it only ever appears after both sides accepted.</li>
+      <li><b>Ending has no “find someone now”.</b> Matching never stopped.</li>
+    </ul>
+  </div>
+  <div class="note-card">
+    <h3>Explicit placeholders</h3>
+    <ul>
+      <li><b>The Hub is not designed.</b> The grey field on state 3b exists only so the matching indicator has something to sit over, and says so on screen.</li>
+      <li><b>Spin the Wheel and Challenge mode are entry points only.</b> Tapping them acknowledges and stops — the experiences are a later pass. What this pass fixes is their place and weight in the dock.</li>
+      <li><b>Flashcards are a reference, not a system.</b> Five placeholder cards, enough to show the interrupt behaviour.</li>
+      <li><b>The devices are mock hardware.</b> Two options per input so “choose the right one” is a real interaction, not a settings surface.</li>
+      <li><b>Level names, the eligible set and the partner’s level</b> come from the sampled palette, which is not authoritative product data.</li>
+      <li><b>Copy is provisional throughout.</b></li>
+    </ul>
+  </div>
+</div>
+
+<script src="js/gym-mobile.js"></script>
+<script src="js/cafe-mobile-states.js"></script>
+</body>
+</html>

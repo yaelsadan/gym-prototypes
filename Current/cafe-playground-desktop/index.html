@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Citizen Cafe — Desktop Playground</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<!-- Shared Gym design system. Do not add Cafe rules to this file. -->
+<link rel="stylesheet" href="css/gym-primitives.css">
+<!-- Cafe-only styling. -->
+<link rel="stylesheet" href="css/cafe.css">
+</head>
+<body>
+
+<button class="mode-btn" id="modeBtn" onclick="togglePresent()">Presentation mode</button>
+
+<h1>Citizen Cafe <span style="font-weight:400;color:var(--text-muted);font-size:14px">desktop &middot; design playground</span></h1>
+<p class="lead">
+  Source of truth for Cafe states. Cafe is a sibling of Gym: same tokens, same buttons, same tiles,
+  same modal and tooltip language — but a lighter, more spontaneous posture. Shared primitives live in
+  <code>css/gym-primitives.css</code> and <code>js/gym-primitives.js</code>; everything Cafe-specific is in
+  <code>css/cafe.css</code> and <code>js/cafe-states.js</code>. First pass: structure, hierarchy and
+  transitions. No onboarding, no Hub integration.
+</p>
+
+<!-- Prototype tooling. Never part of the product viewport. -->
+<div class="controls">
+  <div class="row">
+    <span class="grp-lbl">Happy path</span>
+    <button class="sc" data-sc="entry">1 &middot; Entry</button>
+    <button class="sc" data-sc="searching">2 &middot; Searching</button>
+    <button class="sc" data-sc="matched">3 &middot; Match found</button>
+    <button class="sc" data-sc="agreement">4 &middot; Agreement</button>
+    <button class="sc" data-sc="avcheck">5 &middot; A/V check</button>
+    <button class="sc" data-sc="live">6 &middot; Live session</button>
+    <button class="sc" data-sc="ending">7 &middot; Ending</button>
+  </div>
+  <div class="row">
+    <span class="grp-lbl">Run</span>
+    <button class="play" onclick="runHappyPath()">&#9654; Run happy path</button>
+    <button id="clockBtn" onclick="toggleClock()">Clock: running</button>
+    <span class="sep"></span>
+    <span class="grp-lbl">Device</span>
+    <button onclick="toggleCam()">Toggle camera</button>
+    <button onclick="toggleMic()">Toggle mic</button>
+    <button onclick="toggleBlur()">Toggle blur</button>
+    <span class="sep"></span>
+    <span class="grp-lbl">Chat</span>
+    <button onclick="toggleChat()">Toggle chat</button>
+  </div>
+  <div class="row">
+    <span class="grp-lbl">A/V permission</span>
+    <button onclick="setPerm('granted')">Granted</button>
+    <button onclick="setPerm('needed')">Needed</button>
+    <button onclick="setPerm('blocked')">Blocked</button>
+  </div>
+  <div class="row">
+    <!-- Red and Orange are the specified bottom edge, where "up to 3 levels
+         lower" cannot be honoured in full. There is no top edge: the level
+         ladder above Orange is product data we do not have yet. -->
+    <span class="grp-lbl">Your level</span>
+    <button onclick="setMyLevel('red')">Red — lowest (specified)</button>
+    <button onclick="setMyLevel('orange')">Orange (specified)</button>
+    <button onclick="setMyLevel('yellow')">Yellow — placeholder</button>
+  </div>
+</div>
+
+<p class="state-note" id="stateNote"></p>
+
+<div class="frame" id="frame"></div>
+
+<script src="js/gym-primitives.js"></script>
+<script src="js/cafe-states.js"></script>
+</body>
+</html>

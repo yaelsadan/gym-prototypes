@@ -1,0 +1,444 @@
+/* ============================================================================
+   CAFE — mobile-only styling
+   ----------------------------------------------------------------------------
+   Everything here is Cafe. Shared mobile primitives live in gym-mobile.css and
+   must not be edited from this file.
+
+   Cafe is a sibling of Gym, not a new visual system. Where a Gym mobile
+   component already exists — the video stack, the participant labels, the room
+   clock, the glass dock, the milky decision sheet, the A/V check — Cafe uses it
+   unchanged and only adapts copy and content. What follows is limited to the
+   surfaces Gym has no equivalent for.
+   ========================================================================= */
+
+/* ------------------------------------------------------------- CAFE MARK */
+/* The cup lockup mark. Stroke is heavier than the source artwork so the grid
+   still reads at mobile lockup size. */
+.cafe-mark{
+  width:38px;height:22px;flex:none;overflow:visible;
+  fill:none;stroke:var(--neutral-100);stroke-width:13;stroke-linejoin:round;
+  filter:drop-shadow(0 1px 3px rgba(55,50,48,.45));
+}
+.cafe-mark .pour{fill:var(--brand-yellow)}
+
+
+/* --------------------------------------------------------- SHARED STAGE */
+/* The centred column every pre-session Cafe state sits in. */
+.cafe-stage{
+  position:absolute;z-index:2;top:132px;right:var(--s16);bottom:26px;left:var(--s16);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  color:#fff;text-align:center;
+}
+/* Type is deliberately larger than a default mobile scale. Café is for adults,
+   including older learners, and nothing on these screens is metadata. */
+.cafe-display{
+  font-family:var(--font-brand);font-size:33px;font-weight:400;font-synthesis:none;
+  line-height:1.14;letter-spacing:-.2px;text-wrap:balance;
+}
+.cafe-sub{margin-top:12px;font-size:18px;font-weight:500;line-height:1.45;color:rgba(247,246,239,.82);max-width:310px}
+.cafe-quiet{margin-top:10px;font-size:15px;font-weight:600;color:rgba(247,246,239,.58)}
+.cafe-acts{display:flex;flex-direction:column;align-items:center;gap:12px;margin-top:30px;width:100%}
+
+
+/* =========================================================================
+   1 · ENTRY / MATCHING PREFERENCES
+   An invitation, not a filter form. The preference model is a set of eligible
+   LEVELS the student opts into — configurable data, see LEVEL_DATA in
+   js/cafe-mobile-states.js. Nothing here implies an ordering or a count.
+   ========================================================================= */
+.cafe-entry{
+  position:absolute;z-index:2;top:112px;right:var(--s16);bottom:18px;left:var(--s16);
+  display:flex;flex-direction:column;color:#fff;
+}
+.cafe-entry .cafe-display{text-align:left;margin-top:14px;font-size:42px;line-height:1.08}
+.cafe-entry .cafe-sub{text-align:left;max-width:none;margin-top:14px;font-size:19px;line-height:1.45}
+
+/* The one place the choice is introduced. A readable sentence, not a label.
+   The student's own level is stated here and nowhere else: the chip carries a
+   ring and a marker so it is findable, but does not repeat the level name. */
+.pref-intro{
+  margin:42px 0 18px;font-size:22px;font-weight:600;line-height:1.35;color:#fff;
+}
+.pref-quick{
+  align-self:flex-start;margin-top:16px;padding:0;border:0;background:none;cursor:pointer;
+  font:inherit;font-size:16px;font-weight:700;color:var(--brand-yellow);
+  text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1.5px;
+}
+
+/* the level chips — multi-select, one row-wrapped set, no implied order */
+.lvl-row{display:flex;flex-wrap:wrap;gap:9px}
+.lvl-chip{
+  display:inline-flex;align-items:center;gap:9px;min-height:48px;padding:0 17px 0 14px;
+  border-radius:var(--pill);cursor:pointer;font:inherit;font-size:17px;font-weight:600;
+  background:rgba(247,246,239,.07);border:1px solid rgba(247,246,239,.22);color:rgba(247,246,239,.80);
+}
+.lvl-chip .level-dot{width:13px;height:13px;opacity:.5;transition:opacity .12s ease}
+.lvl-chip.is-on{
+  background:var(--neutral-100);border-color:var(--neutral-100);color:var(--brand-charcoal);
+  box-shadow:0 2px 10px rgba(55,50,48,.20);
+}
+.lvl-chip.is-on .level-dot{opacity:1}
+/* your own level: a persistent yellow ring, in both states */
+.lvl-chip.is-me{box-shadow:0 0 0 2px rgba(249,226,76,.60)}
+.lvl-chip.is-me.is-on{box-shadow:0 0 0 2px var(--brand-yellow),0 2px 10px rgba(55,50,48,.20)}
+.lvl-chip .me-tag{font-size:15px;font-weight:600;opacity:.55}
+
+/* How the selection changes the pool. Supportive, and deliberately not a bar:
+   this is not progress toward completion. */
+.pool-line{
+  margin-top:24px;font-size:17px;font-weight:500;line-height:1.45;color:rgba(247,246,239,.80);
+}
+.pool-line b{font-weight:700;color:#fff}
+.pool-line.is-empty{color:rgba(249,226,76,.92)}
+.cafe-entry .cafe-acts{margin-top:auto;padding-bottom:2px}
+
+
+/* =========================================================================
+   2 · A/V CHECK  —  now before matching, and mandatory on every Café entry
+   The Gym mobile A/V block is used unchanged. What is added below is the mic
+   test and the device row, both in the same glass material, sitting in the
+   existing .av-foot. The block starts higher up the screen to make room; that
+   is the only geometry change to the inherited pattern.
+   ========================================================================= */
+.av-canon.cafe-av{top:106px}
+.av-canon.cafe-av .av-head{margin-bottom:16px}
+.av-canon.cafe-av .av-foot{padding-top:14px;gap:10px}
+.av-canon.cafe-av .av-perm{margin:10px 0 0}
+/* the permission helper is an extra block, so everything else tightens a little */
+.av-canon.cafe-av:has(.av-perm){top:92px}
+.av-canon.cafe-av:has(.av-perm) .av-head{margin-bottom:10px}
+.av-canon.cafe-av:has(.av-perm) .av-card{width:clamp(212px,58%,224px)}
+.av-canon.cafe-av:has(.av-perm) .av-perm{margin:8px 0 0}
+.av-canon.cafe-av:has(.av-perm) .av-foot{padding-top:8px}
+.av-canon.cafe-av .av-privacy{margin:4px 0 0;font-size:16px}
+.av-canon.cafe-av .primary-cta{width:auto;min-width:190px;min-height:54px;font-size:17px;margin-top:auto}
+
+/* the readiness rows share the A/V card's glass */
+.av-row{
+  display:flex;align-items:center;gap:12px;width:100%;max-width:330px;padding:10px 13px;text-align:left;
+  border:1px solid rgba(247,246,239,.28);border-radius:var(--r-lg);background:rgba(247,246,239,.1);
+  box-shadow:inset 0 1px 0 rgba(247,246,239,.14);color:#F7F6EF;font:inherit;
+  -webkit-backdrop-filter:blur(36px) saturate(1.16);backdrop-filter:blur(36px) saturate(1.16);
+}
+.av-row .gm-playbtn{width:42px;height:42px}
+.av-row .av-row-copy{flex:1;min-width:0}
+.av-row .av-row-title{display:block;font-size:16px;font-weight:700;line-height:1.25;color:#fff}
+.av-row .av-row-sub{display:block;margin-top:1px;font-size:14px;font-weight:500;line-height:1.3;color:rgba(247,246,239,.68)}
+.av-row .gm-wave{height:26px;max-width:120px}
+
+/* the mic test — the one thing on this screen that is a task */
+.mic-test.is-live .av-row-title{color:var(--brand-yellow)}
+.mic-test .gm-wave.is-rec i{background:var(--brand-yellow);opacity:.72}
+.mic-test .mt-count{
+  flex:none;font-size:15px;font-weight:700;color:var(--brand-yellow);font-variant-numeric:tabular-nums;
+}
+.mic-redo{
+  border:0;background:none;padding:0;cursor:pointer;flex:none;
+  font:inherit;font-size:14px;font-weight:700;color:rgba(247,246,239,.72);
+  text-decoration:underline;text-underline-offset:3px;
+}
+
+/* devices — secondary, one row that opens the picker */
+.av-devices{cursor:pointer}
+.av-devices .av-dev-icon{
+  width:38px;height:38px;flex:none;border-radius:50%;display:grid;place-items:center;
+  background:rgba(247,246,239,.12);color:#fff;
+}
+.av-devices .av-dev-icon svg{width:19px;height:19px}
+.av-devices .chev{width:18px;height:18px;flex:none;opacity:.6}
+.av-devices .chev svg{width:18px;height:18px;display:block}
+
+/* the picker sheet — dark glass, grouped, one current option per group */
+.dev-sheet h4{font-size:20px}
+.dev-group{margin-bottom:16px}
+.dev-group-label{display:block;margin-bottom:7px;font-size:15px;font-weight:600;color:rgba(247,246,239,.62)}
+.dev-opt{
+  display:flex;align-items:center;gap:10px;width:100%;min-height:48px;padding:0 14px;margin-bottom:7px;
+  border-radius:var(--r-lg);cursor:pointer;text-align:left;font:inherit;font-size:16px;font-weight:600;
+  background:rgba(247,246,239,.08);border:1px solid rgba(247,246,239,.16);color:rgba(247,246,239,.82);
+}
+.dev-opt.is-on{background:var(--neutral-100);border-color:var(--neutral-100);color:var(--brand-charcoal)}
+.dev-opt .tick{width:17px;height:17px;flex:none;margin-left:auto;opacity:0}
+.dev-opt.is-on .tick{opacity:1}
+.dev-opt .tick svg{width:17px;height:17px;display:block}
+
+
+/* =========================================================================
+   3 · ACTIVE SEARCHING
+   Not a waiting room. The student may stay here, or leave and let matching run.
+   ========================================================================= */
+.search-orb{position:relative;width:140px;height:140px;display:grid;place-items:center;margin-bottom:20px}
+.search-orb .core{
+  width:60px;height:60px;border-radius:50%;background:var(--brand-yellow);z-index:2;
+  display:grid;place-items:center;
+  box-shadow:0 0 0 1.5px var(--brand-charcoal),0 10px 26px rgba(18,14,12,.34);
+}
+.search-orb .core svg{width:25px;height:25px;color:var(--brand-charcoal)}
+.search-orb .ring{
+  position:absolute;inset:0;margin:auto;width:60px;height:60px;border-radius:50%;
+  border:1.5px solid rgba(249,226,76,.42);animation:orbpulse 2.8s cubic-bezier(.25,.5,.35,1) infinite;
+}
+.search-orb .ring:nth-child(2){animation-delay:.9s}
+.search-orb .ring:nth-child(3){animation-delay:1.8s}
+@keyframes orbpulse{0%{transform:scale(1);opacity:.7}100%{transform:scale(2.6);opacity:0}}
+
+/* One quiet line instead of a dense row of level pills. */
+.search-summary{
+  display:inline-flex;align-items:center;gap:9px;margin-top:16px;
+  font-size:16px;font-weight:500;color:rgba(247,246,239,.72);
+}
+.search-summary .sep{opacity:.4}
+.search-summary .edit{
+  border:0;background:none;padding:0;cursor:pointer;font:inherit;font-size:16px;font-weight:700;
+  color:var(--brand-yellow);text-decoration:underline;text-underline-offset:3px;
+}
+.search-meta{display:flex;align-items:center;gap:12px;margin-top:14px}
+.search-meta .elapsed{font-size:15px;font-weight:600;color:rgba(247,246,239,.55);font-variant-numeric:tabular-nums}
+
+/* Optional, and framed as optional. Matching does not depend on it and the
+   student is never asked to stay here. */
+.wait-practice{
+  display:flex;align-items:center;gap:13px;width:100%;margin-top:26px;padding:13px 15px;
+  border-radius:var(--r-lg);cursor:pointer;text-align:left;font:inherit;
+  background:rgba(247,246,239,.08);border:1px solid rgba(247,246,239,.20);color:#fff;
+}
+.wait-practice .wp-icon{
+  width:42px;height:42px;flex:none;border-radius:50%;display:grid;place-items:center;
+  background:var(--brand-yellow);color:var(--brand-charcoal);
+}
+.wait-practice .wp-icon svg{width:21px;height:21px}
+.wait-practice .wp-copy{flex:1;min-width:0}
+.wait-practice .wp-kicker{display:block;font-size:14px;font-weight:500;color:rgba(247,246,239,.66)}
+.wait-practice .wp-title{display:block;margin-top:1px;font-size:17px;font-weight:700;line-height:1.25;color:#fff}
+.wait-practice .chev{width:18px;height:18px;flex:none;opacity:.6}
+.wait-practice .chev svg{width:18px;height:18px;display:block}
+
+/* the edit-levels sheet reuses the entry chips verbatim */
+.levels-sheet .lvl-chip{
+  background:rgba(55,50,48,.05);border-color:rgba(55,50,48,.18);color:#544f49;
+}
+.levels-sheet .lvl-chip.is-on{
+  background:var(--brand-charcoal);border-color:var(--brand-charcoal);color:#fff;box-shadow:none;
+}
+.levels-sheet .lvl-chip.is-on .me-tag{opacity:.72}
+.levels-sheet .lvl-chip.is-me{box-shadow:0 0 0 2px rgba(249,226,76,.85)}
+.levels-sheet .lvl-chip.is-me.is-on{box-shadow:0 0 0 2px var(--brand-yellow)}
+.levels-sheet .pool-line{color:#544f49;font-size:16px;margin:14px 0 0}
+.levels-sheet .pool-line b{color:var(--brand-charcoal)}
+
+
+/* -------------------------------------------------------------------------
+   FLASHCARDS WHILE WAITING
+   The Gym Solo Room deck, inside a Café waiting shell. Matching stays visible
+   at the top so it is obvious it did not pause, and a match interrupts this
+   screen the same way it interrupts the Hub.
+   ------------------------------------------------------------------------- */
+.fc-screen{position:absolute;inset:0;z-index:2;display:flex;flex-direction:column;padding:48px 0 0;color:#fff}
+.fc-top{display:flex;align-items:center;gap:10px;flex:none;padding:6px 12px 2px;min-height:44px;z-index:2}
+.fc-top .icon-btn{
+  position:static;width:34px;height:34px;flex:none;padding:0;border-radius:var(--pill);cursor:pointer;
+  display:grid;place-items:center;color:#fff;
+  background:rgba(55,50,48,.32);border:1px solid rgba(255,246,236,.16);
+  -webkit-backdrop-filter:blur(12px) saturate(1.1);backdrop-filter:blur(12px) saturate(1.1);
+}
+.fc-top .icon-btn svg{width:17px;height:17px}
+.fc-status{
+  flex:1;min-width:0;display:inline-flex;align-items:center;gap:9px;
+  font-size:15px;font-weight:600;color:rgba(247,246,239,.82);
+}
+.fc-status .mi-dot{position:relative;width:9px;height:9px;flex:none;border-radius:50%;background:var(--brand-yellow)}
+.fc-status .mi-dot::after{
+  content:"";position:absolute;inset:-5px;border-radius:50%;border:1.5px solid rgba(249,226,76,.5);
+  animation:orbpulse 2.2s cubic-bezier(.25,.5,.35,1) infinite;
+}
+
+
+/* =========================================================================
+   PERSISTENT MATCHING INDICATOR + PLACEHOLDER HUB
+   The Hub is NOT designed in this pass. The grey field below is an explicit
+   stand-in whose only job is to prove the indicator can live over something.
+   ========================================================================= */
+.hub-mock{position:absolute;inset:0;background:var(--surface-base);color:var(--text-primary)}
+.hub-mock .hub-stamp{
+  position:absolute;top:62px;left:var(--s16);right:var(--s16);
+  font-size:11px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:#B4AEA6;
+}
+.hub-blocks{position:absolute;top:96px;left:var(--s16);right:var(--s16);display:flex;flex-direction:column;gap:12px}
+.hub-blocks i{display:block;border-radius:16px;background:#E6E3DB}
+.hub-blocks i:nth-child(1){height:120px}
+.hub-blocks i:nth-child(2){height:86px}
+.hub-blocks i:nth-child(3){height:86px}
+.hub-blocks i:nth-child(4){height:150px}
+.hub-tabbar{
+  position:absolute;left:0;right:0;bottom:0;height:76px;display:flex;align-items:center;justify-content:space-around;
+  padding:0 26px 14px;background:#EDEAE2;border-top:1px solid #DDD9D0;
+}
+.hub-tabbar i{width:26px;height:26px;border-radius:8px;background:#CFCAC1;display:block}
+
+/* the indicator itself — Cafe label, yellow status cue, one line of status */
+.match-indicator{
+  position:absolute;left:var(--s16);right:var(--s16);bottom:88px;z-index:12;
+  display:flex;align-items:center;gap:11px;width:calc(100% - var(--s16) * 2);
+  padding:11px 14px;border-radius:var(--pill);cursor:pointer;text-align:left;
+  background:var(--brand-charcoal);border:1px solid var(--brand-charcoal);color:#fff;
+  box-shadow:0 8px 22px rgba(18,14,12,.24);font:inherit;
+}
+.match-indicator .mi-dot{
+  position:relative;width:10px;height:10px;flex:none;border-radius:50%;background:var(--brand-yellow);
+}
+.match-indicator .mi-dot::after{
+  content:"";position:absolute;inset:-5px;border-radius:50%;border:1.5px solid rgba(249,226,76,.5);
+  animation:orbpulse 2.2s cubic-bezier(.25,.5,.35,1) infinite;
+}
+.match-indicator .mi-copy{flex:1;min-width:0;display:block}
+.match-indicator .mi-title{display:block;font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:rgba(247,246,239,.55)}
+.match-indicator .mi-line{display:block;font-size:14px;font-weight:600;color:#fff;line-height:1.25;margin-top:1px}
+.match-indicator .mi-chev{width:16px;height:16px;flex:none;opacity:.6}
+.match-indicator .mi-chev svg{width:16px;height:16px;display:block}
+
+
+/* =========================================================================
+   4 · MATCH FOUND
+   A time-sensitive interrupt over whatever the student was doing. It is the
+   Gym milky decision sheet, carrying a partner card instead of body copy.
+   ========================================================================= */
+.match-card{display:flex;flex-direction:column;align-items:center;text-align:center}
+.match-photo{
+  width:96px;height:96px;border-radius:50%;overflow:hidden;flex:none;
+  border:2px solid #fff;background:#EDE8DC;box-shadow:0 8px 22px rgba(55,50,48,.22);
+}
+.match-photo img{width:100%;height:100%;display:block;object-fit:cover;object-position:center 22%}
+.sheet.milky .match-name{
+  margin-top:14px;font-family:var(--font-brand);font-size:28px;font-weight:400;font-synthesis:none;
+  line-height:1.1;letter-spacing:-.2px;color:var(--brand-charcoal);
+}
+.match-facts{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px;margin-top:10px}
+.fact{
+  display:inline-flex;align-items:center;gap:7px;padding:5px 12px;border-radius:var(--pill);
+  background:rgba(55,50,48,.06);border:1px solid rgba(55,50,48,.10);
+  font-size:13px;font-weight:600;color:#544f49;
+}
+.fact svg{width:14px;height:14px;color:#8B857E}
+
+/* the one onboarding-derived detail — the reason to say yes.
+   A quiet warm panel, not a badge: it carries content, not status. */
+.ice{
+  display:block;margin-top:18px;padding:13px 16px;width:100%;text-align:left;
+  border-radius:var(--r-lg);background:rgba(249,226,76,.20);border:1px solid rgba(249,226,76,.55);
+}
+.ice .ice-label{display:block;font-size:11px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:#7C7469}
+.ice .ice-text{display:block;font-size:15.5px;font-weight:600;line-height:1.35;color:var(--brand-charcoal);margin-top:3px}
+
+/* the response window — the depleting Gym respline plus a readable count */
+.match-count{
+  display:flex;align-items:center;justify-content:center;gap:7px;margin-top:16px;
+  font-size:13px;font-weight:700;color:#7C7469;font-variant-numeric:tabular-nums;
+}
+.match-count .num{color:var(--brand-charcoal);font-size:15px}
+.match-count.is-low .num,.match-count.is-low{color:var(--status-live)}
+.sheet.milky .respline.is-low i{background:var(--status-live)}
+
+/* accepted — the same surface, waiting for the other side */
+.match-waiting{
+  display:flex;flex-direction:column;align-items:center;gap:12px;margin-top:20px;
+  padding-top:18px;border-top:1px solid rgba(55,50,48,.12);
+}
+.match-waiting .mw-line{font-size:15px;font-weight:600;color:#544f49;text-align:center}
+.match-waiting .loadline{background:rgba(55,50,48,.12)}
+.match-waiting .loadline::after{background:linear-gradient(90deg,transparent,rgba(55,50,48,.62),transparent)}
+.match-card.is-waiting .match-photo{opacity:.72}
+
+
+/* =========================================================================
+   5 · SESSION AGREEMENT
+   Shown only after both sides accepted. Four principles, one acknowledgement.
+   They are statements, not tasks: no ticks, no per-item state.
+   ========================================================================= */
+.agree-intro{font-size:15px;font-weight:400;line-height:1.5;color:#544f49;margin-bottom:4px}
+.agree-list{list-style:none;margin:14px 0 20px}
+.agree-list li{
+  display:flex;align-items:flex-start;gap:12px;padding:13px 0;
+  border-top:1px solid rgba(55,50,48,.12);
+  font-size:15.5px;font-weight:500;line-height:1.4;color:var(--brand-charcoal);
+}
+.agree-list li:last-child{border-bottom:1px solid rgba(55,50,48,.12)}
+.agree-list .bullet{
+  width:7px;height:7px;flex:none;margin-top:.55em;border-radius:50%;background:var(--brand-yellow);
+  box-shadow:0 0 0 1px rgba(55,50,48,.30);
+}
+
+
+/* =========================================================================
+   6 · LIVE CAFE
+   The Gym Practice Room mobile shell, unchanged. Only the dock content is
+   Cafe: conversation-support tools first, device controls after the divider.
+   ========================================================================= */
+/* the primary conversation tool takes the accent, the way TIP does in Gym */
+.rc-btn.accent svg{color:#FFE300}
+.rc-btn.accent{background:rgba(55,50,48,.52)}
+
+/* The top participant label clears the leave control.
+   Upstream note: Practice Rooms mobile moved the leave X to the top-left in a
+   later polish pass without moving the top tile's label, so the two overlap
+   there. Cafe does not inherit the collision; it does not change the label's
+   material, size or the fact that it has exactly one position. */
+.rhalf.top .who{left:56px}
+
+/* ephemeral activity / text panel — a tool sheet, never the Main Room chat.
+   Dark glass so the live video keeps the eye; it does not fill the screen. */
+.text-sheet{padding-bottom:20px}
+.text-sheet .ts-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
+.text-sheet .ts-kicker{font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:rgba(247,246,239,.52)}
+.text-sheet .ts-close{
+  width:26px;height:26px;flex:none;border-radius:50%;border:none;cursor:pointer;padding:0;
+  background:rgba(255,255,255,.10);color:#fff;display:grid;place-items:center;
+}
+.text-sheet .ts-close svg{width:12px;height:12px}
+.text-sheet .ts-activity{
+  padding:14px 15px;border-radius:var(--r-lg);
+  background:rgba(247,246,239,.10);border:1px solid rgba(247,246,239,.18);
+}
+.text-sheet .ts-activity .ts-title{font-size:16px;font-weight:700;line-height:1.3;color:#fff}
+.text-sheet .ts-activity .ts-body{font-size:14px;font-weight:500;line-height:1.45;color:rgba(247,246,239,.78);margin-top:5px}
+.text-sheet .ts-log{display:flex;flex-direction:column;gap:7px;margin-top:12px;max-height:104px;overflow-y:auto}
+.text-sheet .ts-msg{
+  align-self:flex-start;max-width:82%;padding:7px 12px;border-radius:14px;
+  background:rgba(247,246,239,.12);font-size:14px;font-weight:500;line-height:1.35;color:#fff;
+}
+.text-sheet .ts-msg.own{align-self:flex-end;background:var(--brand-yellow);color:var(--brand-charcoal);font-weight:600}
+.text-sheet .ts-input{display:flex;align-items:center;gap:9px;margin-top:12px}
+.text-sheet .ts-input input{
+  flex:1;min-width:0;height:46px;padding:0 16px;border-radius:var(--pill);
+  background:rgba(247,246,239,.10);border:1px solid rgba(247,246,239,.20);
+  color:#fff;font:inherit;font-size:15px;outline:none;
+}
+.text-sheet .ts-input input::placeholder{color:rgba(247,246,239,.45)}
+.text-sheet .ts-send{
+  width:46px;height:46px;flex:none;border-radius:50%;border:1px solid var(--brand-charcoal);cursor:pointer;padding:0;
+  background:var(--brand-yellow);color:var(--brand-charcoal);display:grid;place-items:center;
+}
+.text-sheet .ts-send svg{width:19px;height:19px}
+.text-sheet .ts-note{margin:11px 0 0;font-size:12px;font-weight:500;color:rgba(247,246,239,.50);text-align:center}
+
+
+/* =========================================================================
+   7 · SESSION ENDING / AUTOMATIC REQUEUE
+   An interstitial, not a decision point. Matching never stopped, so there is
+   no "find someone now" — only the option to stop.
+   ========================================================================= */
+.end-partner{
+  display:inline-flex;align-items:center;gap:10px;margin-top:20px;padding:7px 15px 7px 7px;
+  border-radius:var(--pill);background:rgba(247,246,239,.08);border:1px solid rgba(247,246,239,.16);
+  font-size:14px;font-weight:600;color:rgba(247,246,239,.86);
+}
+.end-partner .av-sm{width:30px;height:30px;flex:none;border-radius:50%;overflow:hidden;background:#EDE8DC}
+.end-partner .av-sm img{width:100%;height:100%;display:block;object-fit:cover;object-position:center 22%}
+.end-again{
+  display:inline-flex;align-items:center;gap:10px;margin-top:26px;
+  font-size:15px;font-weight:600;color:rgba(247,246,239,.72);
+}
+
+
+@media (prefers-reduced-motion:reduce){
+  .search-orb .ring,.match-indicator .mi-dot::after{animation:none}
+}
