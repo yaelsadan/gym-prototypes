@@ -196,8 +196,8 @@ function screenEntry(){
   return '<div class="transition-shell"></div>'
     + cafeLockup()
     + '<main class="cafe-entry">'
-      + '<h2 class="cafe-display">Fancy a coffee chat?</h2>'
-      + '<p class="cafe-sub">Six minutes of Hebrew with someone new. No lesson, no teacher.</p>'
+      + '<h2 class="cafe-display">Fancy a <b>coffee chat</b>?</h2>'
+      + '<p class="cafe-sub">Six minutes of Hebrew with someone new.</p>'
       /* The student's level is said once, by the chip — ringed, marked "you",
          already selected. Naming it again above the chips would be the same
          sentence twice. */

@@ -35,6 +35,8 @@
   font-family:var(--font-brand);font-size:33px;font-weight:400;font-synthesis:none;
   line-height:1.14;letter-spacing:-.2px;text-wrap:balance;
 }
+/* Fedra Bold, the real cut — never a synthesised one. */
+.cafe-display b{font-weight:700;font-synthesis:none}
 .cafe-sub{margin-top:12px;font-size:18px;font-weight:500;line-height:1.45;color:rgba(247,246,239,.82);max-width:310px}
 .cafe-quiet{margin-top:10px;font-size:15px;font-weight:600;color:rgba(247,246,239,.58)}
 .cafe-acts{display:flex;flex-direction:column;align-items:center;gap:12px;margin-top:30px;width:100%}

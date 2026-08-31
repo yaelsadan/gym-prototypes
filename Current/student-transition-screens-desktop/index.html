@@ -968,7 +968,7 @@ body.present .mode-btn:hover{opacity:1}
 }
 .ending.is-close.ending-base .end-copy{
   max-width:650px;
-  padding-top:4px;
+  padding-top:40px;
 }
 .ending.is-close.ending-base .end-eyebrow{
   margin:0 0 8px;
@@ -1083,6 +1083,57 @@ body.present .mode-btn:hover{opacity:1}
   margin-bottom:24px;
   font-size:22px;
 }
+
+/* Recap — session list and framed takeaway left, partners in a hairline-split column. */
+.ending.is-close.ending-base:not(.ending-prompt) .end-copy{
+  max-width:810px;
+}
+.ending.is-close.ending-base:not(.ending-prompt) .end-recap{
+  max-width:800px;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 236px;
+  column-gap:60px;
+  row-gap:28px;
+  align-items:start;
+}
+.ending.is-close.ending-base:not(.ending-prompt) .end-today{
+  grid-column:1;
+  grid-row:1;
+}
+.ending.is-close.ending-base:not(.ending-prompt) .end-stay{
+  grid-column:1;
+  grid-row:2;
+  max-width:none;
+  margin:0;
+  padding:20px 22px 22px;
+  border:1px solid rgba(247,246,239,.22);
+  border-radius:16px;
+  background:rgba(247,246,239,.045);
+}
+.ending.is-close.ending-base:not(.ending-prompt) .end-stay-detail{
+  white-space:normal;
+}
+.ending.is-close.ending-base:not(.ending-prompt) .end-people{
+  grid-column:2;
+  grid-row:1 / span 2;
+  align-self:stretch;
+  margin:0;
+  padding:0 0 0 36px;
+  border-left:1px solid rgba(247,246,239,.16);
+}
+.ending.is-close.ending-base:not(.ending-prompt) .end-people h3{
+  margin-bottom:18px;
+  white-space:nowrap;
+}
+.ending.is-close.ending-base:not(.ending-prompt) .partners{
+  gap:10px;
+}
+.ending.is-close.ending-base:not(.ending-prompt) .end-next-q{
+  display:block;
+}
+.ending.is-close.ending-base:not(.ending-prompt) .end-base-actions{
+  bottom:40px;
+}
 .ending.is-close.ending-base .end-base-actions{
   position:absolute;
   right:72px;bottom:58px;
@@ -1091,7 +1142,8 @@ body.present .mode-btn:hover{opacity:1}
 }
 .ending.is-close.ending-base .end-acts{
   width:304px;
-  margin-left:auto;
+  margin-left:0;
+  margin-right:auto;
 }
 
 /* Optional reflection sits in the right column above the CTAs; the ending screen itself matches Base. */
@@ -2499,7 +2551,7 @@ function endingBaseCtas(){
   return '<button class="btn primary" onclick="oneMore()">Let\u2019s do it!</button>'+home;
 }
 function endingNextCopyHtml(){
-  return '<p class="end-next-copy">There\u2019s another Gym session starting soon. Want to join?</p>';
+  return '<p class="end-next-copy">There\u2019s another Gym session starting soon. <span class="end-next-q">Want to join?</span></p>';
 }
 function dismissReflection(){
   ST.reflectionDismissed=true;
