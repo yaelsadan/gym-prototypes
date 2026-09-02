@@ -111,7 +111,7 @@
     <h3>What is reused, not redrawn</h3>
     <ul>
       <li><b>Live Café is the Practice Room shell.</b> Vertical stacked video split, cream Assistant participant labels in their fixed per-tile positions, the flat top-right room clock with its yellow final-seconds treatment, the floating milky-glass dock, the mic-off flag, the camera-off cream face, and <b>Leave &amp; report</b>. No new video-call layout was designed.</li>
-      <li><b>A/V check is the canonical mobile A/V block</b> — the same card, preview, 52px glass Camera / Mic / Blur controls, mic echo rings and permission helpers. The mic test and the device row are additions in that same glass; the block starts higher up the screen to fit them, which is the only geometry change.</li>
+      <li><b>A/V check is the canonical mobile A/V block</b> — the same card, preview, 52px glass Camera / Mic / Blur controls, live mic echo rings and permission helpers. Device choice and an optional playback test sit in a settings sheet, opened from a quiet <i>Audio &amp; camera settings</i> link. <b>Start matching</b> is the only primary CTA.</li>
       <li><b>Flashcards while waiting are the Solo Room deck</b> — the same flip card, bookmark, replay player and glass nav dock, in a Café waiting shell rather than a room.</li>
       <li><b>Every decision surface is the Gym milky bottom sheet</b>: match found, the agreement, editing levels mid-search, and Leave &amp; report. The depleting <code>.respline</code> carries the response window, as it does for Gym consent.</li>
       <li><b>Text is a dark-glass tool sheet</b>, deliberately not the milky decision material and deliberately not the Main Room chat.</li>
@@ -120,9 +120,9 @@
   <div class="note-card">
     <h3>Product decisions this pass encodes</h3>
     <ul>
-      <li><b>Preferences are levels, not scope presets.</b> The choice is a multi-select set of eligible levels, and it opens with <b>only the student’s own level selected</b>. Select all is an accelerator, not the default. Level data is configurable in <code>LEVEL_DATA</code> and is <b>not</b> a canonical ladder — no ordering, count or above/below relationship is implied anywhere in the UI.</li>
-      <li><b>The pool feedback is a sentence, not a bar.</b> Widening the search is not progress toward completion, so it does not get a progress indicator.</li>
-      <li><b>A/V check runs before matching, on every entry.</b> It is technical readiness — right camera, right mic, right output, and proof the mic works — and personal readiness, a moment to see yourself before a stranger does. The Entry CTA is therefore a continuation, and <b>Start matching</b> lives at the end of the check.</li>
+      <li><b>Preferences are levels, not scope presets.</b> The student’s own level is already selected and fixed. Additional eligible levels can be added to widen the search. Add all is a quiet accelerator beside that group, not the default and not a second row of chrome. Level data is configurable in <code>LEVEL_DATA</code> and is <b>not</b> a canonical ladder — no ordering, count or above/below relationship is implied anywhere in the UI.</li>
+      <li><b>The helper is supportive, not a count.</b> There is no selected-level tally. If the search can still widen, a quiet line offers: <i>Adding more levels may help you match faster.</i></li>
+      <li><b>A/V check runs before matching, on every entry.</b> Live mic feedback is the Gym echo on the Mic control. Device setup is behind a quiet settings affordance. The Entry CTA is a continuation, and <b>Start matching</b> lives at the end of the check.</li>
       <li><b>Searching does not block.</b> “Keep exploring” leaves the screen and matching continues; the persistent indicator carries it. Stop matching is the only exit. Flashcards are offered but never required, and a match interrupts them.</li>
       <li><b>No self-view while searching.</b> The camera is off in the queue — readiness was settled before it, and searching is not a pre-call lobby.</li>
       <li><b>Match found interrupts.</b> 30 seconds, real content — avatar, name, level, location, one onboarding-derived icebreaker. Accepting keeps the same surface and waits for the partner rather than navigating.</li>

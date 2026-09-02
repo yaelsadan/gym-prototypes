@@ -12,14 +12,13 @@
    ========================================================================= */
 
 /* ------------------------------------------------------------- CAFE MARK */
-/* The cup lockup mark. Stroke is heavier than the source artwork so the grid
-   still reads at mobile lockup size. */
+/* Two cups, supplied as artwork. Wider than the old single-cup grid. */
 .cafe-mark{
-  width:38px;height:22px;flex:none;overflow:visible;
-  fill:none;stroke:var(--neutral-100);stroke-width:13;stroke-linejoin:round;
+  width:auto;height:28px;flex:none;display:block;
   filter:drop-shadow(0 1px 3px rgba(55,50,48,.45));
 }
-.cafe-mark .pour{fill:var(--brand-yellow)}
+/* Café wordmark: Fedra Bold, the real cut. */
+.session-lockup .id-main{font-weight:700;font-synthesis:none}
 
 
 /* --------------------------------------------------------- SHARED STAGE */
@@ -52,70 +51,81 @@
   position:absolute;z-index:2;top:112px;right:var(--s16);bottom:18px;left:var(--s16);
   display:flex;flex-direction:column;color:#fff;
 }
-.cafe-entry .cafe-display{text-align:left;margin-top:14px;font-size:42px;line-height:1.08}
+.cafe-entry .cafe-display{text-align:left;margin-top:14px;font-size:52px;line-height:1.06}
 .cafe-entry .cafe-sub{text-align:left;max-width:none;margin-top:14px;font-size:19px;line-height:1.45}
 
-/* The one place the choice is introduced. A readable sentence, not a label.
-   The student's own level is stated here and nowhere else: the chip carries a
-   ring and a marker so it is findable, but does not repeat the level name. */
+/* The question, then two groups: the student's own level, then optional extras.
+   Grouping and spacing do the hierarchy — not a second control surface. */
 .pref-intro{
-  margin:42px 0 18px;font-size:22px;font-weight:600;line-height:1.35;color:#fff;
+  margin:36px 0 14px;font-size:22px;font-weight:600;line-height:1.35;color:#fff;
 }
-.pref-quick{
-  align-self:flex-start;margin-top:16px;padding:0;border:0;background:none;cursor:pointer;
-  font:inherit;font-size:16px;font-weight:700;color:var(--brand-yellow);
-  text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1.5px;
+.pref-own{margin:0 0 28px}
+.pref-more{display:flex;flex-direction:column}
+.pref-more-head{
+  display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:0 0 12px;
 }
+.pref-more-label{
+  font-size:16px;font-weight:600;line-height:1.35;color:rgba(247,246,239,.58);
+}
+.pref-add-all{
+  flex:none;margin:0;padding:0;border:0;background:none;cursor:pointer;font:inherit;
+  font-size:15px;font-weight:600;color:rgba(247,246,239,.50);
+}
+.pref-add-all:hover,.pref-add-all:focus-visible{color:rgba(247,246,239,.82)}
 
-/* the level chips — multi-select, one row-wrapped set, no implied order */
-.lvl-row{display:flex;flex-wrap:wrap;gap:9px}
+/* Three chip states. Unselected is available — never a disabled ghost. */
+.lvl-row{display:flex;flex-wrap:wrap;gap:8px}
 .lvl-chip{
-  display:inline-flex;align-items:center;gap:9px;min-height:48px;padding:0 17px 0 14px;
+  display:inline-flex;align-items:center;gap:8px;min-height:48px;padding:0 16px 0 13px;
   border-radius:var(--pill);cursor:pointer;font:inherit;font-size:17px;font-weight:600;
-  background:rgba(247,246,239,.07);border:1px solid rgba(247,246,239,.22);color:rgba(247,246,239,.80);
+  background:rgba(247,246,239,.12);border:1.5px solid rgba(247,246,239,.42);color:var(--neutral-100);
 }
-.lvl-chip .level-dot{width:13px;height:13px;opacity:.5;transition:opacity .12s ease}
+.lvl-chip .level-dot{width:13px;height:13px;opacity:1}
 .lvl-chip.is-on{
-  background:var(--neutral-100);border-color:var(--neutral-100);color:var(--brand-charcoal);
-  box-shadow:0 2px 10px rgba(55,50,48,.20);
+  background:var(--neutral-100);border-color:rgba(55,50,48,.22);
+  color:var(--brand-charcoal);box-shadow:0 2px 10px rgba(55,50,48,.20);
 }
-.lvl-chip.is-on .level-dot{opacity:1}
-/* your own level: a persistent yellow ring, in both states */
-.lvl-chip.is-me{box-shadow:0 0 0 2px rgba(249,226,76,.60)}
-.lvl-chip.is-me.is-on{box-shadow:0 0 0 2px var(--brand-yellow),0 2px 10px rgba(55,50,48,.20)}
+.lvl-chip.is-fixed{cursor:default;pointer-events:none}
 .lvl-chip .me-tag{font-size:15px;font-weight:600;opacity:.55}
 
-/* How the selection changes the pool. Supportive, and deliberately not a bar:
-   this is not progress toward completion. */
+/* Supportive, not a count, and never a progress bar. */
 .pool-line{
-  margin-top:24px;font-size:17px;font-weight:500;line-height:1.45;color:rgba(247,246,239,.80);
+  margin-top:16px;font-size:16px;font-weight:500;line-height:1.45;color:rgba(247,246,239,.50);
 }
-.pool-line b{font-weight:700;color:#fff}
-.pool-line.is-empty{color:rgba(249,226,76,.92)}
-.cafe-entry .cafe-acts{margin-top:auto;padding-bottom:2px}
+.cafe-entry .cafe-acts{margin-top:auto;padding-bottom:40px}
 
 
 /* =========================================================================
-   2 · A/V CHECK  —  now before matching, and mandatory on every Café entry
-   The Gym mobile A/V block is used unchanged. What is added below is the mic
-   test and the device row, both in the same glass material, sitting in the
-   existing .av-foot. The block starts higher up the screen to make room; that
-   is the only geometry change to the inherited pattern.
+   2 · A/V CHECK  —  before matching, mandatory on every Café entry
+   The Gym mobile A/V block is used unchanged: self-view, Camera / Mic / Blur,
+   live mic echo. Device choice and an optional playback test sit in a sheet.
    ========================================================================= */
-.av-canon.cafe-av{top:106px}
-.av-canon.cafe-av .av-head{margin-bottom:16px}
-.av-canon.cafe-av .av-foot{padding-top:14px;gap:10px}
+.av-canon.cafe-av{top:112px}
+.av-canon.cafe-av .av-head{margin-bottom:20px}
+.av-canon.cafe-av .av-foot{padding-top:20px;padding-bottom:40px;gap:10px}
 .av-canon.cafe-av .av-perm{margin:10px 0 0}
-/* the permission helper is an extra block, so everything else tightens a little */
-.av-canon.cafe-av:has(.av-perm){top:92px}
-.av-canon.cafe-av:has(.av-perm) .av-head{margin-bottom:10px}
+.av-canon.cafe-av:has(.av-perm){top:96px}
+.av-canon.cafe-av:has(.av-perm) .av-head{margin-bottom:14px}
 .av-canon.cafe-av:has(.av-perm) .av-card{width:clamp(212px,58%,224px)}
 .av-canon.cafe-av:has(.av-perm) .av-perm{margin:8px 0 0}
-.av-canon.cafe-av:has(.av-perm) .av-foot{padding-top:8px}
-.av-canon.cafe-av .av-privacy{margin:4px 0 0;font-size:16px}
+.av-canon.cafe-av:has(.av-perm) .av-foot{padding-top:16px}
+.av-canon.cafe-av .av-privacy{margin:2px 0 0;font-size:16px}
 .av-canon.cafe-av .primary-cta{width:auto;min-width:190px;min-height:54px;font-size:17px;margin-top:auto}
 
-/* the readiness rows share the A/V card's glass */
+/* Quiet pill under the self-view — attached to the video, not a second CTA. */
+.av-settings{
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  margin:0;min-height:36px;padding:0 14px 0 16px;cursor:pointer;font:inherit;
+  border-radius:var(--pill);border:1px solid rgba(247,246,239,.28);
+  background:rgba(247,246,239,.1);box-shadow:inset 0 1px 0 rgba(247,246,239,.14);
+  -webkit-backdrop-filter:blur(36px) saturate(1.16);backdrop-filter:blur(36px) saturate(1.16);
+  font-size:14px;font-weight:600;color:rgba(247,246,239,.86);
+}
+.av-settings:hover,.av-settings:focus-visible{color:#fff;border-color:rgba(247,246,239,.42)}
+.av-settings .chev{width:14px;height:14px;flex:none;opacity:.6}
+.av-settings .chev svg{width:14px;height:14px;display:block}
+
+/* Optional playback test — lives in the settings sheet only. */
 .av-row{
   display:flex;align-items:center;gap:12px;width:100%;max-width:330px;padding:10px 13px;text-align:left;
   border:1px solid rgba(247,246,239,.28);border-radius:var(--r-lg);background:rgba(247,246,239,.1);
@@ -127,8 +137,6 @@
 .av-row .av-row-title{display:block;font-size:16px;font-weight:700;line-height:1.25;color:#fff}
 .av-row .av-row-sub{display:block;margin-top:1px;font-size:14px;font-weight:500;line-height:1.3;color:rgba(247,246,239,.68)}
 .av-row .gm-wave{height:26px;max-width:120px}
-
-/* the mic test — the one thing on this screen that is a task */
 .mic-test.is-live .av-row-title{color:var(--brand-yellow)}
 .mic-test .gm-wave.is-rec i{background:var(--brand-yellow);opacity:.72}
 .mic-test .mt-count{
@@ -140,20 +148,12 @@
   text-decoration:underline;text-underline-offset:3px;
 }
 
-/* devices — secondary, one row that opens the picker */
-.av-devices{cursor:pointer}
-.av-devices .av-dev-icon{
-  width:38px;height:38px;flex:none;border-radius:50%;display:grid;place-items:center;
-  background:rgba(247,246,239,.12);color:#fff;
-}
-.av-devices .av-dev-icon svg{width:19px;height:19px}
-.av-devices .chev{width:18px;height:18px;flex:none;opacity:.6}
-.av-devices .chev svg{width:18px;height:18px;display:block}
-
-/* the picker sheet — dark glass, grouped, one current option per group */
+/* the picker sheet — grouped devices, then the optional mic test */
+.dev-sheet{max-height:78%;overflow-y:auto}
 .dev-sheet h4{font-size:20px}
 .dev-group{margin-bottom:16px}
 .dev-group-label{display:block;margin-bottom:7px;font-size:15px;font-weight:600;color:rgba(247,246,239,.62)}
+.dev-sheet .mic-test{max-width:none}
 .dev-opt{
   display:flex;align-items:center;gap:10px;width:100%;min-height:48px;padding:0 14px;margin-bottom:7px;
   border-radius:var(--r-lg);cursor:pointer;text-align:left;font:inherit;font-size:16px;font-weight:600;
@@ -194,8 +194,7 @@
   border:0;background:none;padding:0;cursor:pointer;font:inherit;font-size:16px;font-weight:700;
   color:var(--brand-yellow);text-decoration:underline;text-underline-offset:3px;
 }
-.search-meta{display:flex;align-items:center;gap:12px;margin-top:14px}
-.search-meta .elapsed{font-size:15px;font-weight:600;color:rgba(247,246,239,.55);font-variant-numeric:tabular-nums}
+.search-meta{display:flex;align-items:center;justify-content:center;margin-top:14px}
 
 /* Optional, and framed as optional. Matching does not depend on it and the
    student is never asked to stay here. */
@@ -215,18 +214,23 @@
 .wait-practice .chev{width:18px;height:18px;flex:none;opacity:.6}
 .wait-practice .chev svg{width:18px;height:18px;display:block}
 
-/* the edit-levels sheet reuses the entry chips verbatim */
+/* the edit-levels sheet reuses the entry grouping */
+.levels-sheet .pref-own{margin:4px 0 22px}
+.levels-sheet .pref-more-label{color:#7C7469}
+.levels-sheet .pref-add-all{color:#8B857E}
+.levels-sheet .pref-add-all:hover,
+.levels-sheet .pref-add-all:focus-visible{color:var(--brand-charcoal)}
 .levels-sheet .lvl-chip{
-  background:rgba(55,50,48,.05);border-color:rgba(55,50,48,.18);color:#544f49;
+  background:rgba(55,50,48,.06);border-color:rgba(55,50,48,.32);color:var(--brand-charcoal);
 }
 .levels-sheet .lvl-chip.is-on{
-  background:var(--brand-charcoal);border-color:var(--brand-charcoal);color:#fff;box-shadow:none;
+  background:var(--neutral-100);border-color:rgba(55,50,48,.40);
+  color:var(--brand-charcoal);box-shadow:none;
 }
-.levels-sheet .lvl-chip.is-on .me-tag{opacity:.72}
-.levels-sheet .lvl-chip.is-me{box-shadow:0 0 0 2px rgba(249,226,76,.85)}
-.levels-sheet .lvl-chip.is-me.is-on{box-shadow:0 0 0 2px var(--brand-yellow)}
-.levels-sheet .pool-line{color:#544f49;font-size:16px;margin:14px 0 0}
-.levels-sheet .pool-line b{color:var(--brand-charcoal)}
+.levels-sheet .lvl-chip.is-on .me-tag{opacity:.55}
+.levels-sheet p.pool-line{
+  margin:14px 0 0;font-size:15px;font-weight:500;line-height:1.45;color:#8B857E;
+}
 
 
 /* -------------------------------------------------------------------------

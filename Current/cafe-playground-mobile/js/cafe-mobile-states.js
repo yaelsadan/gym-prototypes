@@ -80,7 +80,7 @@ var ACTIVITY = {
 var DEVICES = {
   camera:{label:'Camera', icon:'cam', options:['FaceTime HD Camera','Continuity Camera'], value:'FaceTime HD Camera'},
   mic:{label:'Microphone', icon:'mic', options:['AirPods Pro','MacBook Pro Microphone'], value:'AirPods Pro'},
-  output:{label:'Audio output', icon:'headphone', options:['AirPods Pro','MacBook Pro Speakers'], value:'AirPods Pro'}
+  output:{label:'Speaker', icon:'headphone', options:['AirPods Pro','MacBook Pro Speakers'], value:'AirPods Pro'}
 };
 /* Headphones are connected in the default mock, so the output row applies.
    Whether the row appears at all when there is no external output is a product
@@ -115,10 +115,8 @@ var ST = {
   bg:'hub',
   /* the Cafe matching session. Survives a chat ending; only stopMatching clears it. */
   matching:false,
-  /* PM CONFIRMATION ITEM: the student's own level starts selected and is
-     currently deselectable. Whether it may be turned off at all — i.e. whether
-     you can ask to meet only people at other levels — is not settled. Flip
-     LOCK_OWN_LEVEL to true if product says it is mandatory. */
+  /* Own level is selected and fixed. Additional eligible levels may be added
+     to widen the search; they cannot replace the student's own level. */
   selected:[LEVEL_DATA.myLevel],
   matchPhase:'offer',     // offer | accepted
   offerLeft:DUR.offer,
@@ -135,19 +133,11 @@ var ST = {
   textLog:[],
   leaveSheet:false
 };
-var LOCK_OWN_LEVEL = false;
 
 /* ---------------------------------------------------------------- helpers */
 function isSelected(id){ return ST.selected.indexOf(id) !== -1; }
 function cafeLockup(sub){
-  /* The cup mark. Colours come from cafe-mobile.css. */
-  var mark = '<svg class="cafe-mark" viewBox="-6 4 386 217" aria-hidden="true">'
-    + '<path d="M60 11.5h250a16 16 0 0 1 16 16v119a65 65 0 0 1-65 65H109a65 65 0 0 1-65-65v-119a16 16 0 0 1 16-16z"/>'
-    + '<path d="M44 61h-2a40 40 0 0 0-40 40v9a40 40 0 0 0 40 40h2"/>'
-    + '<path d="M326 61h2a40 40 0 0 1 40 40v9a40 40 0 0 1-40 40h-2"/>'
-    + '<path d="M44 100.5h282M120.5 11.5v89M250 11.5v89"/>'
-    + '<path class="pour" d="M120.5 100.5v53.5a52 52 0 0 0 52 52h25.5a52 52 0 0 0 52-52v-53.5"/>'
-    + '</svg>';
+  var mark = '<img class="cafe-mark" src="cafe-mark.png" alt="" aria-hidden="true">';
   return GM.lockup(mark, 'Caf\u00e9', sub);
 }
 /* Draw the partner's level from inside the selected set, so the choice is
@@ -162,54 +152,68 @@ function drawPartnerLevel(){
 /* =========================================================================
    1 · ENTRY / MATCHING PREFERENCES
    ========================================================================= */
-/* The chips are the whole preference model, and are reused verbatim by the
-   edit sheet on the searching screen. */
-function levelChips(){
+/* Own level, then the optional extras. Reused by the searching edit sheet. */
+function otherEligible(){
+  return LEVEL_DATA.eligible.filter(function(id){ return id !== LEVEL_DATA.myLevel; });
+}
+function ownLevelChip(){
+  var id = LEVEL_DATA.myLevel;
+  return '<div class="pref-own">'
+    + '<span class="lvl-chip is-on is-me is-fixed" aria-label="' + GM.esc(GM.levelMeta(id).label) + ', your level">'
+      + GM.levelDot(id)
+      + '<span>' + GM.esc(GM.levelMeta(id).label) + '</span>'
+      + '<span class="me-tag">\u00b7 your level</span>'
+    + '</span>'
+    + '</div>';
+}
+function additionalLevelChips(){
   var chips = '';
-  LEVEL_DATA.eligible.forEach(function(id){
-    var isMe = (id === LEVEL_DATA.myLevel);
-    var locked = isMe && LOCK_OWN_LEVEL;
-    chips += '<button type="button" class="lvl-chip' + (isSelected(id)?' is-on':'') + (isMe?' is-me':'') + '"'
-      + ' aria-pressed="' + isSelected(id) + '"' + (locked?' disabled':'')
+  otherEligible().forEach(function(id){
+    chips += '<button type="button" class="lvl-chip' + (isSelected(id)?' is-on':'') + '"'
+      + ' aria-pressed="' + isSelected(id) + '"'
       + ' onclick="toggleLevel(\'' + id + '\')">'
       + GM.levelDot(id) + '<span>' + GM.esc(GM.levelMeta(id).label) + '</span>'
-      + (isMe ? '<span class="me-tag">\u00b7 your level</span>' : '')
       + '</button>';
   });
   return '<div class="lvl-row">' + chips + '</div>';
 }
+function levelPicker(opts){
+  opts = opts || {};
+  var extras = otherEligible();
+  var extraOn = extras.filter(isSelected).length;
+  var allExtra = extras.length > 0 && extraOn === extras.length;
+  var heading = (opts.heading === false)
+    ? ''
+    : '<p class="pref-intro">Who would you like to meet?</p>';
+  var addAll = allExtra
+    ? ''
+    : '<button type="button" class="pref-add-all" onclick="selectAllLevels()">Add all</button>';
+  var helper = allExtra
+    ? ''
+    : '<p class="pool-line">Adding more levels may help you match faster.</p>';
 
-/* Supportive, not technical, and never a progress bar: the number of levels is
-   not progress toward anything. */
-function poolLine(){
-  var n = ST.selected.length;
-  if(n === 0) return '<p class="pool-line is-empty">Pick at least one level to start matching.</p>';
-  var tail = (n === 1)
-    ? 'A narrower search may take longer.'
-    : 'A wider search may help you match faster.';
-  return '<p class="pool-line"><b>' + n + (n === 1 ? ' level' : ' levels') + ' selected</b> \u00b7 ' + tail + '</p>';
+  return heading
+    + ownLevelChip()
+    + '<div class="pref-more">'
+      + '<div class="pref-more-head">'
+        + '<span class="pref-more-label">Open to more levels?</span>'
+        + addAll
+      + '</div>'
+      + additionalLevelChips()
+    + '</div>'
+    + helper;
 }
 
 function screenEntry(){
-  var all = (ST.selected.length === LEVEL_DATA.eligible.length);
-
   return '<div class="transition-shell"></div>'
     + cafeLockup()
     + '<main class="cafe-entry">'
       + '<h2 class="cafe-display">Fancy a <b>coffee chat</b>?</h2>'
       + '<p class="cafe-sub">Six minutes of Hebrew with someone new.</p>'
-      /* The student's level is said once, by the chip — ringed, marked "you",
-         already selected. Naming it again above the chips would be the same
-         sentence twice. */
-      + '<p class="pref-intro">Who would you like to meet?</p>'
-      + levelChips()
-      + (all
-          ? '<button type="button" class="pref-quick" onclick="selectOnlyMine()">Just my own level</button>'
-          : '<button type="button" class="pref-quick" onclick="selectAllLevels()">Select all levels</button>')
-      + poolLine()
+      + levelPicker()
       + '<div class="cafe-acts">'
         + '<button class="primary-cta" type="button" onclick="goAvCheck()"'
-          + (ST.selected.length?'':' disabled') + '>Check camera &amp; mic</button>'
+          + (ST.selected.length?'':' disabled') + '>Continue</button>'
       + '</div>'
     + '</main>';
 }
@@ -217,11 +221,9 @@ function screenEntry(){
 
 /* =========================================================================
    2 · A/V CHECK  —  before matching, on every Café entry
-   Two jobs, and the screen has to serve both: technical readiness (the right
-   camera, mic and output, and proof the mic works) and personal readiness
-   (a moment to see yourself and settle before a stranger does).
-   The Gym mobile A/V block is used as-is; the mic test and the device row are
-   additions in the same glass material.
+   Gym A/V block as-is: self-view, Camera / Mic / Blur, live mic echo rings.
+   Device choice and an optional playback test live in a settings sheet,
+   reached from one quiet affordance — not stacked cards on the happy path.
    ========================================================================= */
 function permHelper(){
   if(ST.perm === 'needed'){
@@ -238,7 +240,7 @@ function permHelper(){
   return '';
 }
 
-/* idle -> recording -> ready -> playing. The point is hearing yourself back. */
+/* idle -> recording -> ready -> playing. Optional, and only inside the sheet. */
 function micTest(){
   var m = ST.mic, title, sub, btn, extra = '';
   if(m.phase === 'recording'){
@@ -268,19 +270,15 @@ function micTest(){
     + '</div>';
 }
 
-function deviceRow(){
-  var out = HEADPHONES ? DEVICES.output.value : DEVICES.mic.value;
-  return '<button type="button" class="av-row av-devices" onclick="openDevices()">'
-    + '<span class="av-dev-icon">' + (HEADPHONES ? GM.I.headphone : GM.I.sliders) + '</span>'
-    + '<span class="av-row-copy"><span class="av-row-title">' + GM.esc(out) + '</span>'
-    + '<span class="av-row-sub">Camera, mic and sound</span></span>'
+function avSettingsLink(){
+  return '<button type="button" class="av-settings" onclick="openDevices()">'
+    + 'Audio &amp; camera settings'
     + '<span class="chev" aria-hidden="true">' + GM.I.chevRt + '</span>'
     + '</button>';
 }
 function devicesSheet(){
-  var body = '<h4>Camera, mic and sound</h4>';
+  var body = '<h4>Audio &amp; camera settings</h4>';
   ['camera','mic','output'].forEach(function(key){
-    if(key === 'output' && !HEADPHONES) return;
     var d = DEVICES[key], opts = '';
     d.options.forEach(function(o){
       opts += '<button type="button" class="dev-opt' + (o === d.value ? ' is-on' : '') + '"'
@@ -289,6 +287,7 @@ function devicesSheet(){
     });
     body += '<div class="dev-group"><span class="dev-group-label">' + GM.esc(d.label) + '</span>' + opts + '</div>';
   });
+  body += '<div class="dev-group"><span class="dev-group-label">Microphone test</span>' + micTest() + '</div>';
   return GM.sheet({
     cls:'dev-sheet',
     onScrim:'closeDevices()',
@@ -298,6 +297,7 @@ function devicesSheet(){
 }
 
 function screenAvCheck(){
+  var liveMic = (ST.perm === 'granted' && !ST.micOff);
   return '<div class="transition-shell"></div>'
     + cafeLockup()
     + '<main class="av-canon cafe-av">'
@@ -305,12 +305,11 @@ function screenAvCheck(){
       + '<section class="av-card" aria-label="Camera and microphone check"><div class="av-stage">'
         + GM.preview({camOff:ST.camOff, blur:ST.blur, img:IMG_YOU, label:'You'})
         + GM.avTools(ST, {cam:'toggleCam()', mic:'toggleMic()', blur:'toggleBlur()',
-                          echo:(ST.mic.phase === 'recording' && !ST.micOff)})
+                          echo:liveMic})
       + '</div></section>'
       + permHelper()
       + '<footer class="av-foot">'
-        + micTest()
-        + deviceRow()
+        + avSettingsLink()
         /* No partner exists yet at this point in the flow, so this cannot name
            one the way the Gym A/V privacy line does. */
         + '<p class="av-privacy">Your partner will see and hear you for the whole chat. Nothing is recorded.</p>'
@@ -332,7 +331,7 @@ function levelsSheet(){
     milky:true,
     cls:'levels-sheet',
     onScrim:'closeLevels()',
-    body:'<h4>Who would you like to meet?</h4>' + levelChips() + poolLine(),
+    body:'<h4>Who would you like to meet?</h4>' + levelPicker({heading:false}),
     acts:'<button class="btn primary" type="button" onclick="closeLevels()"'
       + (ST.selected.length?'':' disabled') + '>Keep searching</button>'
   });
@@ -351,8 +350,7 @@ function screenSearching(){
       + '<p class="search-summary"><span>Searching across ' + n + (n === 1 ? ' level' : ' levels') + '</span>'
         + '<span class="sep">\u00b7</span>'
         + '<button type="button" class="edit" onclick="openLevels()">Edit</button></p>'
-      + '<div class="search-meta">' + GM.loadDots()
-        + '<span class="elapsed" id="searchElapsed">' + GM.mmss(ST.searchElapsed) + '</span></div>'
+      + '<div class="search-meta">' + GM.loadDots() + '</div>'
       + '<button type="button" class="wait-practice" onclick="openFlashcards()">'
         + '<span class="wp-icon">' + GM.I.cards + '</span>'
         + '<span class="wp-copy"><span class="wp-kicker">While you wait</span>'
@@ -587,9 +585,10 @@ function setState(state){
 
 /* ------------------------------------------------------- product actions */
 function toggleLevel(id){
-  if(id === LEVEL_DATA.myLevel && LOCK_OWN_LEVEL) return;
+  if(id === LEVEL_DATA.myLevel) return;
   var i = ST.selected.indexOf(id);
   if(i === -1) ST.selected.push(id); else ST.selected.splice(i, 1);
+  if(ST.selected.indexOf(LEVEL_DATA.myLevel) === -1) ST.selected.unshift(LEVEL_DATA.myLevel);
   render();
 }
 function selectAllLevels(){ ST.selected = LEVEL_DATA.eligible.slice(); render(); }
@@ -754,8 +753,6 @@ function syncClock(){
     return;
   }
   if(ST.state === 'searching'){
-    var e = document.getElementById('searchElapsed');
-    if(e) e.textContent = GM.mmss(ST.searchElapsed);
     updateNote();
     return;
   }
