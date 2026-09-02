@@ -168,68 +168,165 @@
 /* =========================================================================
    3 · ACTIVE SEARCHING
    Not a waiting room. The student may stay here, or leave and let matching run.
+   Hero is the Citizen Café dotted world — ambient matching, not a locator.
    ========================================================================= */
-.search-orb{position:relative;width:140px;height:140px;display:grid;place-items:center;margin-bottom:20px}
-.search-orb .core{
-  width:60px;height:60px;border-radius:50%;background:var(--brand-yellow);z-index:2;
-  display:grid;place-items:center;
-  box-shadow:0 0 0 1.5px var(--brand-charcoal),0 10px 26px rgba(18,14,12,.34);
+.searching-stage{
+  top:118px;bottom:20px;justify-content:flex-start;gap:0;overflow:visible;
 }
-.search-orb .core svg{width:25px;height:25px;color:var(--brand-charcoal)}
-.search-orb .ring{
-  position:absolute;inset:0;margin:auto;width:60px;height:60px;border-radius:50%;
-  border:1.5px solid rgba(249,226,76,.42);animation:orbpulse 2.8s cubic-bezier(.25,.5,.35,1) infinite;
+.search-hero{
+  display:flex;flex-direction:column;align-items:center;width:100%;
+  flex:1;min-height:0;justify-content:center;padding:4px 0 12px;overflow:visible;
 }
-.search-orb .ring:nth-child(2){animation-delay:.9s}
-.search-orb .ring:nth-child(3){animation-delay:1.8s}
+.searching-stage .cafe-display{margin-top:8px}
+.searching-stage .cafe-sub{margin-top:10px;max-width:300px}
+
+/* Globe bleeds past the stage so the stipple reads at a larger size.
+   Echo is a thin cream arc: fade in, travel, fade out — never a hard exit. */
+.search-map{
+  position:relative;width:540px;max-width:none;aspect-ratio:616 / 275;height:auto;
+  margin:0;overflow:visible;pointer-events:none;
+}
+.search-map-art{display:block;width:100%;height:auto;opacity:.92}
+.search-echoes{
+  position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none;
+  -webkit-mask-image:radial-gradient(ellipse 84% 90% at 50% 50%,#000 6%,#000 40%,transparent 76%);
+  mask-image:radial-gradient(ellipse 84% 90% at 50% 50%,#000 6%,#000 40%,transparent 76%);
+}
+.search-echo{
+  fill:none;stroke:url(#echoFade);stroke-width:1.15;stroke-linecap:round;
+  filter:blur(1.8px);
+  transform-box:view-box;transform-origin:308px 248px;
+  opacity:0;will-change:transform,opacity;
+  animation:search-echo 6.2s cubic-bezier(.37,.08,.22,1) infinite both;
+}
+.search-echo.e2{animation-delay:1.15s}
+.search-echo.e3{animation-delay:2.3s}
+.search-echo.e4{animation-delay:3.45s}
+.search-echo.e5{animation-delay:4.6s}
+@keyframes search-echo{
+  0%{transform:translateY(6px);opacity:0}
+  14%{opacity:0}
+  28%{opacity:.72}
+  48%{opacity:.4}
+  66%{opacity:.18}
+  80%{opacity:0}
+  100%{transform:translateY(-196px);opacity:0}
+}
+
+/* Presence: yellow pins, one or two at a time. Two of them briefly
+   become a small face medallion, never overlapping each other. */
+.search-pin{
+  position:absolute;z-index:2;width:0;height:0;
+  opacity:0;animation:search-pin 16.8s ease-in-out infinite both;
+}
+.search-pin .pin-dot{
+  position:absolute;left:0;top:0;width:11px;height:11px;margin:-5.5px 0 0 -5.5px;
+  border-radius:50%;background:var(--brand-yellow);
+  box-shadow:0 0 0 4px rgba(249,226,76,.2),0 0 14px rgba(249,226,76,.38);
+}
+.search-pin.p2{animation-delay:2.8s}
+.search-pin.p3{animation-delay:5.6s}
+.search-pin.p4{animation-delay:8.4s}
+.search-pin.p5{animation-delay:11.2s}
+.search-pin.p6{animation-delay:14s}
+@keyframes search-pin{
+  0%,3%,32%,100%{opacity:0}
+  9%,24%{opacity:1}
+  30%{opacity:0}
+}
+.search-pin.has-face{z-index:3}
+.search-pin.has-face .pin-dot,
+.search-pin.has-face .pin-face{
+  animation-duration:16.8s;animation-timing-function:ease-in-out;
+  animation-iteration-count:infinite;animation-delay:inherit;animation-fill-mode:both;
+}
+.search-pin.has-face .pin-dot{animation-name:search-pin-dot-yield}
+.search-pin.has-face .pin-face{
+  position:absolute;left:0;top:0;width:32px;height:32px;margin:-16px 0 0 -16px;
+  border-radius:50%;overflow:hidden;background:#EDE8DC;
+  border:1.5px solid rgba(247,246,239,.94);
+  box-shadow:0 0 0 3px rgba(249,226,76,.32),0 3px 12px rgba(55,50,48,.28);
+  opacity:0;transform:scale(.4);
+  animation-name:search-pin-face;
+}
+.search-pin.has-face .pin-face img{
+  width:100%;height:100%;display:block;object-fit:cover;object-position:center 22%;
+}
+@keyframes search-pin-dot-yield{
+  0%,12%,28%,100%{opacity:1;transform:scale(1)}
+  16%,22%{opacity:0;transform:scale(.55)}
+}
+@keyframes search-pin-face{
+  0%,12%,28%,100%{opacity:0;transform:scale(.4)}
+  16%,22%{opacity:1;transform:scale(1)}
+  26%{opacity:0;transform:scale(.88)}
+}
 @keyframes orbpulse{0%{transform:scale(1);opacity:.7}100%{transform:scale(2.6);opacity:0}}
 
-/* One quiet line instead of a dense row of level pills. */
+/* One compact status line. Edit is inline, not a second control. */
 .search-summary{
-  display:inline-flex;align-items:center;gap:9px;margin-top:16px;
+  display:inline-flex;align-items:center;gap:10px;margin-top:14px;
   font-size:16px;font-weight:500;color:rgba(247,246,239,.72);
 }
-.search-summary .sep{opacity:.4}
 .search-summary .edit{
-  border:0;background:none;padding:0;cursor:pointer;font:inherit;font-size:16px;font-weight:700;
-  color:var(--brand-yellow);text-decoration:underline;text-underline-offset:3px;
+  display:inline-flex;align-items:center;justify-content:center;
+  min-height:32px;padding:0 14px;margin:0;cursor:pointer;
+  border-radius:var(--pill);border:1px solid rgba(247,246,239,.42);
+  background:transparent;font:inherit;font-size:15px;font-weight:700;color:#fff;
 }
-.search-meta{display:flex;align-items:center;justify-content:center;margin-top:14px}
 
-/* Optional, and framed as optional. Matching does not depend on it and the
-   student is never asked to stay here. */
+/* Lower cluster: one optional card, then primary, then a quiet exit. */
+.search-lower{
+  width:100%;flex:none;display:flex;flex-direction:column;align-items:center;
+  gap:26px;padding:12px 0 8px;
+}
+.searching-stage .cafe-acts{margin-top:0;gap:6px}
+.searching-stage .ghost-cta{
+  min-height:44px;padding:8px 16px;border:0;background:none;
+  font-size:16px;font-weight:600;color:rgba(247,246,239,.56);
+  text-decoration:underline;text-underline-offset:3px;
+}
+
+/* Optional, and framed as optional. Matching does not depend on it. */
 .wait-practice{
-  display:flex;align-items:center;gap:13px;width:100%;margin-top:26px;padding:13px 15px;
-  border-radius:var(--r-lg);cursor:pointer;text-align:left;font:inherit;
-  background:rgba(247,246,239,.08);border:1px solid rgba(247,246,239,.20);color:#fff;
+  display:flex;align-items:center;gap:12px;width:100%;margin:0;padding:12px 14px;
+  min-height:56px;border-radius:var(--r-lg);cursor:pointer;text-align:left;font:inherit;
+  background:rgba(247,246,239,.06);border:1px solid rgba(247,246,239,.16);color:#fff;
 }
 .wait-practice .wp-icon{
-  width:42px;height:42px;flex:none;border-radius:50%;display:grid;place-items:center;
-  background:var(--brand-yellow);color:var(--brand-charcoal);
+  width:32px;height:35px;flex:none;display:grid;place-items:center;
+  background:none;border:0;
 }
-.wait-practice .wp-icon svg{width:21px;height:21px}
+.wait-practice .wp-icon svg{width:32px;height:35px;display:block}
 .wait-practice .wp-copy{flex:1;min-width:0}
-.wait-practice .wp-kicker{display:block;font-size:14px;font-weight:500;color:rgba(247,246,239,.66)}
-.wait-practice .wp-title{display:block;margin-top:1px;font-size:17px;font-weight:700;line-height:1.25;color:#fff}
-.wait-practice .chev{width:18px;height:18px;flex:none;opacity:.6}
+.wait-practice .wp-kicker{display:block;font-size:15px;font-weight:500;color:rgba(247,246,239,.62)}
+.wait-practice .wp-title{display:block;margin-top:1px;font-size:16px;font-weight:600;line-height:1.3;color:rgba(247,246,239,.92)}
+.wait-practice .chev{width:18px;height:18px;flex:none;opacity:.45}
 .wait-practice .chev svg{width:18px;height:18px;display:block}
 
-/* the edit-levels sheet reuses the entry grouping */
-.levels-sheet .pref-own{margin:4px 0 22px}
-.levels-sheet .pref-more-label{color:#7C7469}
-.levels-sheet .pref-add-all{color:#8B857E}
+/* Edit-levels: the Gym milky sheet, chips as tappable — never disabled ghosts. */
+.levels-sheet{padding-bottom:32px}
+.levels-sheet h4{margin-bottom:16px}
+.levels-sheet .pref-own{margin:4px 0 26px}
+.levels-sheet .pref-more-head{margin:0 0 14px}
+.levels-sheet .pref-more-label{color:#716C66;font-size:16px}
+.levels-sheet .pref-add-all{color:#716C66;font-size:15px}
 .levels-sheet .pref-add-all:hover,
 .levels-sheet .pref-add-all:focus-visible{color:var(--brand-charcoal)}
+.levels-sheet .lvl-row{gap:10px}
 .levels-sheet .lvl-chip{
-  background:rgba(55,50,48,.06);border-color:rgba(55,50,48,.32);color:var(--brand-charcoal);
+  background:#fff;border-color:rgba(55,50,48,.34);color:var(--brand-charcoal);
 }
 .levels-sheet .lvl-chip.is-on{
-  background:var(--neutral-100);border-color:rgba(55,50,48,.40);
-  color:var(--brand-charcoal);box-shadow:none;
+  background:var(--brand-charcoal);border-color:var(--brand-charcoal);
+  color:var(--neutral-100);box-shadow:0 2px 8px rgba(55,50,48,.16);
 }
-.levels-sheet .lvl-chip.is-on .me-tag{opacity:.55}
+.levels-sheet .lvl-chip.is-me{
+  box-shadow:0 0 0 2px var(--brand-yellow),0 2px 8px rgba(55,50,48,.16);
+}
+.levels-sheet .lvl-chip.is-on .me-tag{opacity:.8;color:var(--brand-yellow)}
 .levels-sheet p.pool-line{
-  margin:14px 0 0;font-size:15px;font-weight:500;line-height:1.45;color:#8B857E;
+  margin:16px 0 0;font-size:15px;font-weight:500;line-height:1.45;color:#716C66;
 }
 
 
@@ -239,24 +336,31 @@
    at the top so it is obvious it did not pause, and a match interrupts this
    screen the same way it interrupts the Hub.
    ------------------------------------------------------------------------- */
-.fc-screen{position:absolute;inset:0;z-index:2;display:flex;flex-direction:column;padding:48px 0 0;color:#fff}
-.fc-top{display:flex;align-items:center;gap:10px;flex:none;padding:6px 12px 2px;min-height:44px;z-index:2}
+.fc-screen{position:absolute;inset:0;z-index:2;display:flex;flex-direction:column;padding:52px 0 0;color:#fff}
+.fc-top{
+  display:flex;align-items:center;gap:10px;flex:none;z-index:2;
+  margin:0 14px 4px;padding:6px 14px 6px 6px;min-height:48px;
+  border-radius:var(--pill);background:rgba(55,50,48,.46);
+  border:1px solid rgba(247,246,239,.14);
+  -webkit-backdrop-filter:blur(16px) saturate(1.1);backdrop-filter:blur(16px) saturate(1.1);
+}
 .fc-top .icon-btn{
-  position:static;width:34px;height:34px;flex:none;padding:0;border-radius:var(--pill);cursor:pointer;
+  position:static;width:36px;height:36px;flex:none;padding:0;border-radius:var(--pill);cursor:pointer;
   display:grid;place-items:center;color:#fff;
-  background:rgba(55,50,48,.32);border:1px solid rgba(255,246,236,.16);
-  -webkit-backdrop-filter:blur(12px) saturate(1.1);backdrop-filter:blur(12px) saturate(1.1);
+  background:rgba(247,246,239,.10);border:1px solid rgba(255,246,236,.16);
 }
 .fc-top .icon-btn svg{width:17px;height:17px}
 .fc-status{
   flex:1;min-width:0;display:inline-flex;align-items:center;gap:9px;
-  font-size:15px;font-weight:600;color:rgba(247,246,239,.82);
+  font-size:16px;font-weight:600;color:rgba(247,246,239,.92);
 }
 .fc-status .mi-dot{position:relative;width:9px;height:9px;flex:none;border-radius:50%;background:var(--brand-yellow)}
 .fc-status .mi-dot::after{
   content:"";position:absolute;inset:-5px;border-radius:50%;border:1.5px solid rgba(249,226,76,.5);
   animation:orbpulse 2.2s cubic-bezier(.25,.5,.35,1) infinite;
 }
+.fc-screen .fc-stage{margin:10px 28px 14px}
+.fc-screen .fc-face{background:var(--neutral-100);box-shadow:0 10px 28px rgba(18,14,12,.20)}
 
 
 /* =========================================================================
@@ -308,39 +412,42 @@
    A time-sensitive interrupt over whatever the student was doing. It is the
    Gym milky decision sheet, carrying a partner card instead of body copy.
    ========================================================================= */
+.match-sheet{padding-bottom:32px}
+.match-sheet h4{margin-bottom:16px;font-size:22px}
 .match-card{display:flex;flex-direction:column;align-items:center;text-align:center}
 .match-photo{
-  width:96px;height:96px;border-radius:50%;overflow:hidden;flex:none;
+  width:108px;height:108px;border-radius:50%;overflow:hidden;flex:none;
   border:2px solid #fff;background:#EDE8DC;box-shadow:0 8px 22px rgba(55,50,48,.22);
 }
 .match-photo img{width:100%;height:100%;display:block;object-fit:cover;object-position:center 22%}
 .sheet.milky .match-name{
-  margin-top:14px;font-family:var(--font-brand);font-size:28px;font-weight:400;font-synthesis:none;
+  margin-top:16px;font-family:var(--font-brand);font-size:32px;font-weight:400;font-synthesis:none;
   line-height:1.1;letter-spacing:-.2px;color:var(--brand-charcoal);
 }
-.match-facts{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px;margin-top:10px}
+.match-facts{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px;margin-top:12px}
 .fact{
-  display:inline-flex;align-items:center;gap:7px;padding:5px 12px;border-radius:var(--pill);
+  display:inline-flex;align-items:center;gap:7px;padding:7px 14px;border-radius:var(--pill);
   background:rgba(55,50,48,.06);border:1px solid rgba(55,50,48,.10);
-  font-size:13px;font-weight:600;color:#544f49;
+  font-size:15px;font-weight:600;color:#544f49;
 }
-.fact svg{width:14px;height:14px;color:#8B857E}
+.fact svg{width:15px;height:15px;color:#8B857E}
 
 /* the one onboarding-derived detail — the reason to say yes.
    A quiet warm panel, not a badge: it carries content, not status. */
 .ice{
-  display:block;margin-top:18px;padding:13px 16px;width:100%;text-align:left;
+  display:block;margin-top:18px;padding:14px 16px;width:100%;text-align:left;
   border-radius:var(--r-lg);background:rgba(249,226,76,.20);border:1px solid rgba(249,226,76,.55);
 }
-.ice .ice-label{display:block;font-size:11px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:#7C7469}
-.ice .ice-text{display:block;font-size:15.5px;font-weight:600;line-height:1.35;color:var(--brand-charcoal);margin-top:3px}
+.ice .ice-label{display:block;font-size:13px;font-weight:600;color:#716C66}
+.ice .ice-text{display:block;font-size:17px;font-weight:600;line-height:1.35;color:var(--brand-charcoal);margin-top:3px}
 
-/* the response window — the depleting Gym respline plus a readable count */
+/* Countdown is the interrupt cue; the Gym respline still sits under the acts. */
 .match-count{
-  display:flex;align-items:center;justify-content:center;gap:7px;margin-top:16px;
-  font-size:13px;font-weight:700;color:#7C7469;font-variant-numeric:tabular-nums;
+  display:flex;align-items:baseline;justify-content:center;gap:6px;margin-top:20px;
+  font-size:16px;font-weight:600;color:#716C66;font-variant-numeric:tabular-nums;
 }
-.match-count .num{color:var(--brand-charcoal);font-size:15px}
+.match-count .num{color:var(--brand-charcoal);font-size:26px;font-weight:700;line-height:1}
+.match-count .unit{font-size:16px;font-weight:600}
 .match-count.is-low .num,.match-count.is-low{color:var(--status-live)}
 .sheet.milky .respline.is-low i{background:var(--status-live)}
 
@@ -446,5 +553,10 @@
 
 
 @media (prefers-reduced-motion:reduce){
-  .search-orb .ring,.match-indicator .mi-dot::after{animation:none}
+  .search-pin,.search-echo,.search-pin.has-face .pin-dot,.search-pin.has-face .pin-face,
+  .match-indicator .mi-dot::after,.fc-status .mi-dot::after{animation:none}
+  .search-echo{opacity:0}
+  .search-pin{opacity:0}
+  .search-pin.p1{opacity:.9}
+  .search-pin.has-face .pin-face{opacity:0}
 }

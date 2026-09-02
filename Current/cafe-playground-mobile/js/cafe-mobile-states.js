@@ -26,7 +26,7 @@ var IMG_YOU     = '../student-main-classroom-desktop/assets/pip-you.png';
 /* Playground durations. The session is the real 6 minutes so the clock reads
    truthfully; everything else is shortened so a loop is reviewable. */
 var DUR = {
-  searchTo:12,        // searching -> a match is offered
+  searchTo:22,        // searching -> a match is offered. Long enough to see two avatar blooms.
   offer:30,           // the response window. Product value.
   partnerConfirm:4,   // the partner answers this long after you accept
   session:360,        // 6:00
@@ -139,6 +139,12 @@ function isSelected(id){ return ST.selected.indexOf(id) !== -1; }
 function cafeLockup(sub){
   var mark = '<img class="cafe-mark" src="cafe-mark.png" alt="" aria-hidden="true">';
   return GM.lockup(mark, 'Caf\u00e9', sub);
+}
+function cafeCardsIcon(){
+  return '<svg viewBox="0 0 51 56" fill="none" aria-hidden="true">'
+    + '<path d="M22.3808 7.78128L46.026 11.7121C48.6139 12.1423 50.3567 14.5878 49.9187 17.1743L44.186 51.0293C43.7478 53.6156 41.295 55.3639 38.7073 54.9337L15.0621 51.0029C12.4744 50.5728 10.7317 48.127 11.1694 45.5407L16.9021 11.6857C17.3401 9.09913 19.793 7.35108 22.3808 7.78128Z" stroke="#F7F6EF" stroke-width="1"/>'
+    + '<path d="M4.94493 6.21876L28.3942 1.27471C30.9612 0.733506 33.4886 2.37401 34.0394 4.93888L41.2505 38.5161C41.8013 41.0809 40.1669 43.5989 37.6 44.1401L14.1507 49.0842C11.5838 49.6254 9.05634 47.9849 8.50551 45.42L1.29448 11.8428C0.760843 9.358 2.27805 6.9169 4.70727 6.27486L4.94493 6.21876Z" stroke="#F7F6EF" stroke-width="1"/>'
+    + '</svg>';
 }
 /* Draw the partner's level from inside the selected set, so the choice is
    visible in the match card. */
@@ -336,30 +342,68 @@ function levelsSheet(){
       + (ST.selected.length?'':' disabled') + '>Keep searching</button>'
   });
 }
+/* Ambient dotted globe — the Citizen Café map. Presence is yellow pins;
+   a couple of them briefly bloom into a face, then recede. Scan is thin
+   cream arcs that fade in and out as they travel, never a hard line. */
+function searchMap(){
+  var faces = {
+    2:'../student-main-classroom-desktop/assets/dana.png',
+    5:'../student-main-classroom-desktop/assets/teacher-yael.png'
+  };
+  var pins = [
+    [18, 48], [24, 42], [36, 70], [50, 28], [48, 42], [72, 30]
+  ];
+  var pinHtml = pins.map(function(p, i){
+    var n = i + 1;
+    var face = faces[n];
+    return '<span class="search-pin p' + n + (face ? ' has-face' : '')
+      + '" style="left:' + p[0] + '%;top:' + p[1] + '%">'
+      + '<span class="pin-dot"></span>'
+      + (face ? '<span class="pin-face"><img src="' + face + '" alt=""></span>' : '')
+      + '</span>';
+  }).join('');
+  return '<div class="search-map" aria-hidden="true">'
+    + '<img class="search-map-art" src="World map.svg" alt="">'
+    + '<svg class="search-echoes" viewBox="0 0 616 275" focusable="false">'
+      + '<defs><linearGradient id="echoFade" x1="0" y1="0" x2="1" y2="0">'
+        + '<stop offset="0" stop-color="#F7F6EF" stop-opacity="0"/>'
+        + '<stop offset=".16" stop-color="#F7F6EF" stop-opacity=".5"/>'
+        + '<stop offset=".5" stop-color="#F7F6EF" stop-opacity=".85"/>'
+        + '<stop offset=".84" stop-color="#F7F6EF" stop-opacity=".5"/>'
+        + '<stop offset="1" stop-color="#F7F6EF" stop-opacity="0"/>'
+      + '</linearGradient></defs>'
+      + '<path class="search-echo" d="M36 232 A 290 78 0 0 1 580 232"/>'
+      + '<path class="search-echo e2" d="M22 236 A 298 102 0 0 1 594 236"/>'
+      + '<path class="search-echo e3" d="M48 228 A 284 62 0 0 1 568 228"/>'
+      + '<path class="search-echo e4" d="M16 240 A 302 118 0 0 1 600 240"/>'
+      + '<path class="search-echo e5" d="M42 234 A 288 88 0 0 1 574 234"/>'
+    + '</svg>'
+    + pinHtml
+  + '</div>';
+}
 function screenSearching(){
   var n = ST.selected.length;
   return '<div class="transition-shell"></div>'
     + cafeLockup()
-    + '<main class="cafe-stage">'
-      + '<div class="search-orb" aria-hidden="true">'
-        + '<span class="ring"></span><span class="ring"></span><span class="ring"></span>'
-        + '<span class="core">' + GM.I.search + '</span>'
+    + '<main class="cafe-stage searching-stage">'
+      + '<div class="search-hero">'
+        + searchMap()
+        + '<h2 class="cafe-display">Looking for a partner\u2026</h2>'
+        + '<p class="cafe-sub">We\u2019ll tell you the moment someone\u2019s free. You don\u2019t have to wait here.</p>'
+        + '<p class="search-summary"><span>Searching across ' + n + (n === 1 ? ' level' : ' levels') + '</span>'
+          + '<button type="button" class="edit" onclick="openLevels()">Edit</button></p>'
       + '</div>'
-      + '<h2 class="cafe-display">Looking for a partner\u2026</h2>'
-      + '<p class="cafe-sub">We\u2019ll tell you the moment someone\u2019s free. You don\u2019t have to wait here.</p>'
-      + '<p class="search-summary"><span>Searching across ' + n + (n === 1 ? ' level' : ' levels') + '</span>'
-        + '<span class="sep">\u00b7</span>'
-        + '<button type="button" class="edit" onclick="openLevels()">Edit</button></p>'
-      + '<div class="search-meta">' + GM.loadDots() + '</div>'
-      + '<button type="button" class="wait-practice" onclick="openFlashcards()">'
-        + '<span class="wp-icon">' + GM.I.cards + '</span>'
-        + '<span class="wp-copy"><span class="wp-kicker">While you wait</span>'
-        + '<span class="wp-title">Practice a few flashcards</span></span>'
-        + '<span class="chev" aria-hidden="true">' + GM.I.chevRt + '</span>'
-      + '</button>'
-      + '<div class="cafe-acts">'
-        + '<button class="primary-cta" type="button" onclick="keepExploring()">Keep exploring</button>'
-        + '<button class="ghost-cta" type="button" onclick="stopMatching()">Stop matching</button>'
+      + '<div class="search-lower">'
+        + '<button type="button" class="wait-practice" onclick="openFlashcards()">'
+          + '<span class="wp-icon">' + cafeCardsIcon() + '</span>'
+          + '<span class="wp-copy"><span class="wp-kicker">While you wait</span>'
+          + '<span class="wp-title">Practice a few flashcards</span></span>'
+          + '<span class="chev" aria-hidden="true">' + GM.I.chevRt + '</span>'
+        + '</button>'
+        + '<div class="cafe-acts">'
+          + '<button class="primary-cta" type="button" onclick="keepExploring()">Keep exploring</button>'
+          + '<button class="ghost-cta" type="button" onclick="stopMatching()">Stop matching</button>'
+        + '</div>'
       + '</div>'
     + '</main>'
     + (ST.levelsSheet ? levelsSheet() : '');
@@ -427,8 +471,8 @@ function matchSheet(){
           + '<p class="mw-line">Waiting for ' + GM.esc(PARTNER.name) + ' to confirm\u2026</p>'
           + GM.loadLine()
           + '</div>'
-        : '<div class="match-count' + (low?' is-low':'') + '"><span class="num" id="offerNum">'
-          + ST.offerLeft + 's</span><span>to answer</span></div>')
+        : '<p class="match-count' + (low?' is-low':'') + '"><span class="num" id="offerNum">'
+          + ST.offerLeft + 's</span><span class="unit">to answer</span></p>')
     + '</div>';
 
   var acts = accepted
