@@ -183,6 +183,7 @@ body.present .mode-btn:hover{opacity:1}
   display:flex;flex-direction:column;align-items:flex-start;
 }
 .w-stack .w-icon{width:84px;height:64px;display:block;object-fit:contain;margin:0 0 52px}
+.welcome-canon:not(.is-late) .w-stack .w-icon{width:69.4px;height:64px;object-fit:unset}
 .w-stack h2{
   font-family:var(--font-brand);font-style:normal;font-synthesis:none;
   font-size:72px;line-height:1.12;letter-spacing:-.3px;margin:0 0 8px;color:#fff;
@@ -196,11 +197,21 @@ body.present .mode-btn:hover{opacity:1}
 }
 .w-stack .acts{display:flex;justify-content:flex-start}
 .w-stack .btn.primary{min-width:260px;min-height:58px;border-color:transparent;font-size:18px}
-.welcome-canon.is-late .explain{
-  font-weight:500;
-  color:rgba(247,246,239,.78);
-  margin-bottom:48px;
+.w-stack .w-late-status{margin:0 0 48px;display:flex;justify-content:flex-start}
+.session-status-notice{
+  display:inline-flex;align-items:center;gap:10px;
+  padding:10px 16px;
+  background:rgba(247,246,239,.08);border:1px solid rgba(247,246,239,.16);border-radius:var(--pill);
+  font-size:15px;font-weight:600;line-height:1.35;color:var(--ink-cream);text-align:left;
 }
+.session-status-dot{width:8px;height:8px;border-radius:50%;background:var(--brand-yellow);flex:none}
+.session-status-notice.session-status-countdown{
+  gap:6px;font-size:20px;font-weight:500;color:rgba(247,246,239,.72);text-align:center;
+}
+.session-status-notice.session-status-countdown .av-session-countdown-num{
+  font-size:22px;font-weight:800;color:var(--brand-yellow);font-variant-numeric:tabular-nums;
+}
+.av-session-status{flex:none;margin:0 0 22px;width:100%;display:flex;justify-content:center}
 
 /* ---------- Welcome Late (previous composition — unchanged this pass) ---------- */
 .welcome{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:48px 56px}
@@ -224,11 +235,11 @@ body.present .mode-btn:hover{opacity:1}
 .av-canon{
   position:absolute;inset:0;z-index:1;
   display:flex;flex-direction:column;align-items:center;justify-content:center;
-  text-align:center;padding:56px 48px 52px;
+  text-align:center;padding:72px 48px 40px;
 }
 .av-canon .av-head,.av-canon .av-foot{display:flex;flex-direction:column;align-items:center;flex:none}
-.av-canon .av-head{margin-bottom:24px}
-.av-canon .av-foot{margin-top:26px}
+.av-canon .av-head{margin-top:18px;margin-bottom:24px}
+.av-canon .av-foot{margin-top:18px}
 .av-canon h2{
   font-family:var(--font-brand);font-weight:400;font-synthesis:none;
   font-size:36px;line-height:1.16;letter-spacing:-.2px;margin:0;color:#fff;
@@ -359,38 +370,33 @@ body.present .mode-btn:hover{opacity:1}
   text-align:center;cursor:pointer;
 }
 .av-canon .av-perm-needed:focus-visible{outline:2px solid #fff;outline-offset:4px}
-/* Wider than the other helpers so the long blocked-permission copy wraps to
-   two lines instead of three. This screen has no vertical room to spare. */
+/* Permission helpers stay plain — no frame. Session-timing notices keep .session-status-notice. */
 .av-canon .av-perm-blocked,.av-canon .err{
-  display:flex;align-items:flex-start;gap:10px;
-  width:min(700px,100%);margin:14px 0 0;padding:12px 14px;border-radius:12px;text-align:left;
-  background:rgba(247,246,239,.10);border:1px solid rgba(247,246,239,.28);color:#F7F6EF;
-  -webkit-backdrop-filter:blur(36px) saturate(1.16);
-  backdrop-filter:blur(36px) saturate(1.16);
-  box-shadow:inset 0 1px 0 rgba(247,246,239,.14);
-  font-size:18px;font-weight:500;line-height:1.4;
+  display:flex;align-items:flex-start;gap:0;
+  width:min(700px,100%);margin:12px 0 0;padding:0;border:0;border-radius:0;text-align:center;
+  background:none;box-shadow:none;
+  -webkit-backdrop-filter:none;
+  backdrop-filter:none;
+  font-size:18px;font-weight:500;line-height:1.4;color:rgba(247,246,239,.82);
+  justify-content:center;
 }
-.av-canon .av-perm-mark{
-  flex:none;width:8px;height:8px;margin-top:.55em;border-radius:50%;background:#FFE300;
-}
+.av-canon .av-perm-mark{display:none}
 .av-canon .av-perm-copy{min-width:0;flex:1}
-.av-canon .av-perm-blocked p{margin:0;color:#F7F6EF}
+.av-canon .av-perm-blocked p{margin:0;color:rgba(247,246,239,.82)}
 .av-canon .av-perm-retry{
   appearance:none;-webkit-appearance:none;display:inline-block;margin:8px 0 0;padding:0;border:0;background:none;
-  color:#FFE300;font:inherit;font-size:18px;font-weight:700;cursor:pointer;
+  color:var(--brand-yellow);font:inherit;font-size:18px;font-weight:700;cursor:pointer;
 }
 .av-canon .av-perm-blocked p .av-perm-retry{
   display:inline;margin:0;text-decoration:underline;text-underline-offset:2px;
 }
 .av-canon .av-perm-retry:focus-visible{outline:2px solid #fff;outline-offset:3px}
-/* "Can request again" only — message and action share one row so the helper
-   reads as a compact status bar. The blocked state keeps its stacked wrap. */
-.av-canon .av-perm-inline{align-items:center}
-.av-canon .av-perm-inline .av-perm-mark{margin-top:0}
+.av-canon .av-perm-inline{align-items:center;justify-content:center}
 .av-canon .av-perm-inline .av-perm-copy{
-  display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px 28px;
+  display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:6px 14px;
+  flex:none;max-width:100%;
 }
-.av-canon .av-perm-inline .av-perm-copy > p{flex:1 1 auto;min-width:0}
+.av-canon .av-perm-inline .av-perm-copy > p{flex:0 1 auto;min-width:0;margin:0}
 .av-canon .av-perm-inline .av-perm-retry{flex:none;margin:0}
 /* Copy is fixed by the product spec, and it is set on a single line by
    intent — do not reintroduce a max-width that would wrap it. */
@@ -820,32 +826,137 @@ body.present .mode-btn:hover{opacity:1}
   color:#fff;margin:0 0 12px;
 }
 .ending.is-close .end-recap{margin-top:4px}
+.ending.is-close .end-today{position:relative}
 .ending.is-close .end-today h3{font-size:21px}
 .ending.is-close .end-today li{font-size:23px;line-height:1.55}
-.ending.is-close .end-stay{
-  max-width:none;padding-top:24px;border-top:none;margin:0;
+.ending.is-close .end-tools-onboarding{
+  position:absolute;z-index:8;
+  left:0;top:calc(100% + 48px);bottom:auto;
+  width:470px;min-height:0;
+  display:grid;grid-template-columns:68px minmax(0,1fr) auto;align-items:center;gap:12px;
+  padding:10px 14px 10px 12px;
+  border:1px solid rgba(247,246,239,.24);
+  border-radius:14px;
+  background:rgba(55,50,48,.76);
+  box-shadow:0 12px 26px rgba(18,14,12,.18),inset 0 1px 0 rgba(247,246,239,.07);
+  color:var(--ink-cream);
+  backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  opacity:0;visibility:hidden;pointer-events:none;
+  transform:translateX(-18px);
 }
-.ending.is-close .end-stay p{
-  font-size:21px;line-height:1.5;color:rgba(247,246,239,.78);margin:0;
+.ending.is-close .end-tools-onboarding.is-visible{
+  visibility:visible;pointer-events:auto;
+  animation:endToolsCardIn .4s cubic-bezier(.22,.68,.24,1) both;
 }
-.ending.is-close .end-stay-lead{
-  display:block;
-  color:rgba(247,246,239,.94);
-  font-weight:600;
+.ending.is-close .end-tools-onboarding.is-second.is-visible{animation-duration:.32s}
+.ending.is-close .end-tools-onboarding.is-dismissing{
+  pointer-events:none;
+  animation:endToolsCardOut .24s ease both;
 }
-.ending.is-close .end-stay-detail{
-  display:block;
-  font-size:18px;
-  font-weight:500;
-  white-space:nowrap;
+.end-tools-visual{width:68px;height:72px;display:grid;place-items:center;align-self:center;margin-top:-4px}
+.end-tools-visual svg{display:block;width:68px;height:72px;overflow:visible}
+.end-tools-pouch-settle,.end-tools-pouch-react{transform-box:fill-box;transform-origin:50% 82%}
+.end-tools-drawstring{stroke-dasharray:50;stroke-dashoffset:50}
+.end-tools-bow{stroke-dasharray:48;stroke-dashoffset:48}
+.end-tools-coin{transform-box:fill-box;transform-origin:center}
+.end-tools-onboarding.is-visible .end-tools-coin-1{
+  animation:endToolsCoinDrop1 .38s cubic-bezier(.42,0,.42,1) .12s both;
 }
-.ending.is-close .end-stay a{
-  color:rgba(247,246,239,.92);font-weight:700;
-  text-decoration:underline;text-decoration-thickness:1px;
-  text-underline-offset:3px;text-decoration-color:rgba(247,246,239,.5);
+.end-tools-onboarding.is-visible .end-tools-coin-2{
+  animation:endToolsCoinDrop2 .38s cubic-bezier(.42,0,.42,1) .34s both;
 }
-.ending.is-close .end-stay a:hover{
-  color:#fff;text-decoration-color:rgba(247,246,239,.78);
+.end-tools-onboarding.is-visible .end-tools-coin-3{
+  animation:endToolsCoinDrop3 .38s cubic-bezier(.42,0,.42,1) .56s both;
+}
+.end-tools-onboarding.is-visible .end-tools-pouch-react{
+  animation:endToolsPouchLand .76s ease .28s both;
+}
+.end-tools-onboarding.is-visible .end-tools-pouch-body{
+  animation:endToolsPouchGather .48s cubic-bezier(.4,0,.2,1) 1.02s both;
+}
+.end-tools-onboarding.is-visible .end-tools-pouch-top{
+  animation:endToolsTopGather .48s cubic-bezier(.4,0,.2,1) 1.02s both;
+}
+.end-tools-onboarding.is-visible .end-tools-pouch-cinch{
+  animation:endToolsCinchGather .48s cubic-bezier(.4,0,.2,1) 1.02s both;
+}
+.end-tools-onboarding.is-visible .end-tools-drawstring{
+  animation:endToolsStringPull .44s ease .98s both;
+}
+.end-tools-onboarding.is-visible .end-tools-bow{
+  animation:endToolsBowTie .3s ease 1.3s both;
+}
+.end-tools-onboarding.is-visible .end-tools-pouch-settle{
+  animation:endToolsPouchSettle .28s cubic-bezier(.22,.68,.24,1) 1.56s both;
+}
+.end-tools-onboarding-copy h3{
+  margin:0 0 3px!important;
+  color:#fff!important;
+  font-size:20px!important;font-weight:700!important;line-height:1.2!important;
+}
+.end-tools-onboarding-copy p{
+  margin:0;color:rgba(247,246,239,.7);font-size:18px;font-weight:500;line-height:1.38;
+}
+.end-tools-got-it{
+  min-height:38px;margin:0;padding:8px 16px;
+  border:1px solid rgba(247,246,239,.48);border-radius:999px;
+  background:transparent;color:var(--ink-cream);
+  font:700 15px/1 var(--font-ui);cursor:pointer;
+}
+.end-tools-got-it:hover{background:rgba(247,246,239,.09)}
+@keyframes endToolsCardIn{
+  from{opacity:0;transform:translateX(-18px)}
+  to{opacity:1;transform:none}
+}
+@keyframes endToolsCardOut{
+  from{opacity:1;visibility:visible;transform:none}
+  to{opacity:0;visibility:visible;transform:translateX(-8px)}
+}
+@keyframes endToolsCoinDrop1{
+  0%{opacity:0;transform:translate(-6px,-18px) rotate(-16deg)}
+  12%{opacity:1}
+  82%{opacity:1;transform:translate(-4px,31px) rotate(8deg)}
+  100%{opacity:0;transform:translate(-4px,35px) rotate(10deg)}
+}
+@keyframes endToolsCoinDrop2{
+  0%{opacity:0;transform:translate(5px,-20px) rotate(18deg)}
+  12%{opacity:1}
+  82%{opacity:1;transform:translate(3px,31px) rotate(-7deg)}
+  100%{opacity:0;transform:translate(3px,35px) rotate(-9deg)}
+}
+@keyframes endToolsCoinDrop3{
+  0%{opacity:0;transform:translate(-1px,-22px) rotate(-7deg)}
+  12%{opacity:1}
+  82%{opacity:1;transform:translate(0,31px) rotate(13deg)}
+  100%{opacity:0;transform:translate(0,35px) rotate(15deg)}
+}
+@keyframes endToolsPouchLand{
+  0%,20%,42%,68%,100%{transform:none}
+  14%,36%,62%{transform:translateY(1px) scale(1.012,.989)}
+}
+@keyframes endToolsPouchGather{
+  from{d:path("M16 31 C15 42 13 56 12 68 C11 76 18 82 27 82 H49 C58 82 65 76 64 68 C63 56 61 42 60 31 C52 34 24 34 16 31 Z")}
+  to{d:path("M27 39 C24 48 17 59 15 68 C13 76 19 82 27 82 H49 C57 82 63 76 61 68 C59 59 52 48 49 39 C45 42 31 42 27 39 Z")}
+}
+@keyframes endToolsTopGather{
+  from{d:path("M16 31 C22 27 30 25 38 26 C46 25 54 27 60 31 C54 34 46 35 38 35 C30 35 22 34 16 31 Z")}
+  to{d:path("M27 39 C29 35 30 31 28 28 C33 31 35 25 38 29 C41 25 43 31 48 28 C46 32 47 36 49 39 Z")}
+}
+@keyframes endToolsCinchGather{
+  from{d:path("M17 32 C27 37 49 37 59 32")}
+  to{d:path("M27 39 C33 42 43 42 49 39")}
+}
+@keyframes endToolsStringPull{
+  from{stroke-dashoffset:50;opacity:.35}
+  to{stroke-dashoffset:0;opacity:1}
+}
+@keyframes endToolsBowTie{
+  from{stroke-dashoffset:48;opacity:0}
+  to{stroke-dashoffset:0;opacity:1}
+}
+@keyframes endToolsPouchSettle{
+  0%,100%{transform:none}
+  42%{transform:translateY(2px)}
 }
 .ending.is-close .end-people{margin-top:52px}
 .ending.is-close .partner{font-size:15px}
@@ -884,9 +995,20 @@ body.present .mode-btn:hover{opacity:1}
 }
 .ending.is-close .end-fb .end-send:hover{filter:brightness(.97)}
 .ending.is-close .end-fb .end-acts{
-  margin-top:auto;padding:28px 4px 0 28px;width:max-content;align-self:flex-start;gap:12px;
+  margin-top:auto;padding:28px 4px 0 28px;width:max-content;align-self:flex-start;gap:16px;align-items:center;
 }
-.ending.is-close .end-fb .end-acts .btn{width:100%;min-width:220px;min-height:54px;padding:14px 26px}
+.ending.is-close .end-fb .end-acts .btn.primary{
+  width:100%;min-width:242px;min-height:58px;padding:16px 28px;
+}
+.ending.is-close .end-home-link{
+  display:inline-block;margin:0;padding:0;border:0;background:none;
+  color:var(--brand-yellow);font-family:var(--font-ui);font-size:17px;font-weight:600;
+  text-decoration:underline;text-decoration-color:rgba(249,226,76,.42);text-underline-offset:3px;
+  cursor:pointer;align-self:center;
+}
+.ending.is-close .end-home-link:hover{
+  color:#fff;text-decoration-color:rgba(249,226,76,.72);
+}
 .ending.is-close .btn.end-home{
   background:transparent;color:var(--brand-yellow);border:1.5px solid var(--brand-yellow);
 }
@@ -918,7 +1040,6 @@ body.present .mode-btn:hover{opacity:1}
   column-gap:38px;row-gap:4px;
 }
 .ending.is-close.ending-base .end-today li{padding-right:12px}
-.ending.is-close.ending-base .end-stay{max-width:680px}
 .ending.is-close.ending-base .end-people{margin-top:46px}
 .ending.is-close.ending-base .end-seal{
   top:28px;right:42px;
@@ -940,9 +1061,12 @@ body.present .mode-btn:hover{opacity:1}
   white-space:nowrap;
 }
 .ending.is-close.ending-base .end-acts{
-  margin:0;gap:12px;
+  margin:0;gap:16px;align-items:center;
 }
-.ending.is-close.ending-base .end-acts .btn{
+.ending.is-close.ending-base .end-acts .btn.primary{
+  width:100%;min-height:58px;padding:16px 28px;font-size:18px;
+}
+.ending.is-close.ending-base .end-acts .btn:not(.primary){
   width:100%;min-height:54px;padding:14px 26px;
 }
 .ending.is-close.ending-base .btn.end-home{
@@ -968,7 +1092,7 @@ body.present .mode-btn:hover{opacity:1}
 }
 .ending.is-close.ending-base .end-copy{
   max-width:650px;
-  padding-top:40px;
+  padding-top:44px;
 }
 .ending.is-close.ending-base .end-eyebrow{
   margin:0 0 8px;
@@ -980,7 +1104,7 @@ body.present .mode-btn:hover{opacity:1}
   color:rgba(247,246,239,.48);
 }
 .ending.is-close.ending-base h2{
-  margin-bottom:36px;
+  margin-bottom:40px;
   font-size:56px;
   white-space:nowrap;
 }
@@ -1001,7 +1125,7 @@ body.present .mode-btn:hover{opacity:1}
   display:flex;
   flex-direction:column;
 }
-.ending.is-close.ending-base .end-today h3{font-size:22px}
+.ending.is-close.ending-base .end-today h3{font-size:22px;margin-bottom:22px}
 .ending.is-close.ending-base .end-today ul{
   display:block;
   padding-left:0;
@@ -1013,6 +1137,9 @@ body.present .mode-btn:hover{opacity:1}
   padding:0 0 0 50px;
   font-size:25px;
   line-height:1.62;
+}
+.ending.is-close.ending-base .end-today li + li{
+  margin-top:20px;
 }
 .ending.is-close.ending-base .end-today li::before{
   content:"";
@@ -1064,75 +1191,44 @@ body.present .mode-btn:hover{opacity:1}
   20%,30%,70%,80%{opacity:.72}
   25%,75%{opacity:1}
 }
-.ending.is-close.ending-base .end-stay{
-  max-width:620px;
-  padding-top:32px;
-}
-.ending.is-close.ending-base .end-stay p{
-  font-size:22px;
-  line-height:1.58;
-}
-.ending.is-close.ending-base .end-tools-link{
-  display:inline-block;
-  margin-top:12px;
-  font-size:18px;
-  font-weight:600;
-}
 .ending.is-close.ending-base .end-people{margin-top:48px}
 .ending.is-close.ending-base .end-people h3{
-  margin-bottom:24px;
+  margin-bottom:30px;
   font-size:22px;
 }
 
-/* Recap — session list and framed takeaway left, partners in a hairline-split column. */
-.ending.is-close.ending-base:not(.ending-prompt) .end-copy{
+/* Recap — session list and its quiet Practice Tools nudge left, partners in a hairline-split column. */
+.ending.is-close.ending-base .end-copy{
   max-width:810px;
 }
-.ending.is-close.ending-base:not(.ending-prompt) .end-recap{
+.ending.is-close.ending-base .end-recap{
   max-width:800px;
   display:grid;
   grid-template-columns:minmax(0,1fr) 236px;
   column-gap:60px;
-  row-gap:28px;
   align-items:start;
 }
-.ending.is-close.ending-base:not(.ending-prompt) .end-today{
+.ending.is-close.ending-base .end-today{
   grid-column:1;
   grid-row:1;
 }
-.ending.is-close.ending-base:not(.ending-prompt) .end-stay{
-  grid-column:1;
-  grid-row:2;
-  max-width:none;
-  margin:0;
-  padding:20px 22px 22px;
-  border:1px solid rgba(247,246,239,.22);
-  border-radius:16px;
-  background:rgba(247,246,239,.045);
-}
-.ending.is-close.ending-base:not(.ending-prompt) .end-stay-detail{
-  white-space:normal;
-}
-.ending.is-close.ending-base:not(.ending-prompt) .end-people{
+.ending.is-close.ending-base .end-people{
   grid-column:2;
-  grid-row:1 / span 2;
+  grid-row:1;
   align-self:stretch;
   margin:0;
   padding:0 0 0 36px;
   border-left:1px solid rgba(247,246,239,.16);
 }
-.ending.is-close.ending-base:not(.ending-prompt) .end-people h3{
-  margin-bottom:18px;
+.ending.is-close.ending-base .end-people h3{
+  margin-bottom:24px;
   white-space:nowrap;
 }
-.ending.is-close.ending-base:not(.ending-prompt) .partners{
+.ending.is-close.ending-base .partners{
   gap:10px;
 }
-.ending.is-close.ending-base:not(.ending-prompt) .end-next-q{
+.ending.is-close.ending-base .end-next-q{
   display:block;
-}
-.ending.is-close.ending-base:not(.ending-prompt) .end-base-actions{
-  bottom:40px;
 }
 .ending.is-close.ending-base .end-base-actions{
   position:absolute;
@@ -1141,16 +1237,23 @@ body.present .mode-btn:hover{opacity:1}
   padding:0;
 }
 .ending.is-close.ending-base .end-acts{
-  width:304px;
+  width:334px;
   margin-left:0;
   margin-right:auto;
 }
 
-/* Optional reflection sits in the right column above the CTAs; the ending screen itself matches Base. */
+/* Optional reflection sits in the right column above the CTAs; recap matches Ending 1/2/3. */
+.ending.is-close.ending-prompt .end-copy{
+  max-width:690px;
+}
+.ending.is-close.ending-prompt .end-recap{
+  max-width:670px;
+  column-gap:36px;
+}
 .ending.is-close.ending-prompt .end-reflection{
   position:absolute;z-index:5;
-  top:168px;right:56px;width:508px;
-  padding:16px 18px 14px;
+  top:188px;right:56px;width:428px;
+  padding:20px;
   border:1px solid rgba(247,246,239,.26);
   border-radius:16px;
   background:rgba(55,50,48,.46);
@@ -1167,7 +1270,7 @@ body.present .mode-btn:hover{opacity:1}
 }
 .ending.is-close.ending-prompt .end-reflection-head{
   display:flex;align-items:flex-start;justify-content:space-between;gap:16px;
-  margin:0 0 8px;
+  margin:0 0 16px;
 }
 .ending.is-close.ending-prompt .end-reflection-title{
   margin:0;color:#fff;font-size:20px;font-weight:700;line-height:1.25;
@@ -1186,13 +1289,16 @@ body.present .mode-btn:hover{opacity:1}
   color:#fff;background:rgba(247,246,239,.10);
 }
 .ending.is-close.ending-prompt .end-reflection .fb-q{
-  margin:10px 0 7px;font-size:16px;font-weight:600;
+  margin:0 0 8px;font-size:16px;font-weight:600;
 }
 .ending.is-close.ending-prompt .end-reflection .fb-opts{
   display:flex;
   flex-wrap:nowrap;
   gap:6px;
-  margin-bottom:6px;
+  margin-bottom:0;
+}
+.ending.is-close.ending-prompt .end-reflection .fb-opts + .fb-q{
+  margin-top:24px;
 }
 .ending.is-close.ending-prompt .end-reflection .fb-opt{
   flex:none;
@@ -1201,8 +1307,11 @@ body.present .mode-btn:hover{opacity:1}
   font-size:14px;
 }
 .ending.is-close.ending-prompt .end-reflection-saved{
-  min-height:17px;margin:3px 0 0;
+  margin:12px 0 0;
   color:rgba(247,246,239,.56);font-size:13px;font-weight:600;
+}
+.ending.is-close.ending-prompt .end-reflection-saved:empty{
+  display:none;
 }
 @keyframes endReflectionIn{
   from{opacity:0;transform:translateX(36px)}
@@ -1455,8 +1564,8 @@ body.present .mode-btn:hover{opacity:1}
     radial-gradient(circle at 50% 40%,rgba(146,143,125,.72),rgba(55,50,48,.96) 66%),
     var(--brand-charcoal);
 }
-.practice-transition .t-hero{display:grid;place-items:center;margin:0 0 12px}
-.practice-transition .t-lottie{width:440px;height:248px;max-width:62vw}
+.practice-transition .t-hero{display:grid;place-items:center;margin:0 0 12px;transform:translateY(-28px);overflow:visible}
+.practice-transition .t-lottie{width:384px;height:216px;max-width:54vw}
 .practice-transition h2{
   max-width:760px;margin:0;
   font-family:var(--font-brand);font-size:48px;font-weight:400;font-synthesis:none;
@@ -1466,14 +1575,14 @@ body.present .mode-btn:hover{opacity:1}
   max-width:560px;margin:18px 0 0;color:rgba(247,246,239,.84);
   font-size:20px;font-weight:500;line-height:1.45;white-space:pre-line;
 }
-.practice-transition.is-return .t-lottie{width:440px;height:248px}
+.practice-transition.is-return .t-lottie{width:384px;height:216px}
 .practice-transition.is-return h2{max-width:700px;font-size:44px}
 .practice-transition.is-waiting{
   justify-content:center;
   padding:80px 56px 40px;
 }
-.practice-transition.is-waiting .t-hero{margin-bottom:0}
-.practice-transition.is-waiting .t-lottie{width:310px;height:174px}
+.practice-transition.is-waiting .t-hero{margin-bottom:0;transform:translateY(-22px);overflow:visible}
+.practice-transition.is-waiting .t-lottie{width:268px;height:150px}
 .practice-transition.is-waiting h2{font-size:42px}
 .practice-transition.is-waiting .practice-support{max-width:650px;margin-top:12px;font-size:18px}
 .practice-room-countdown{
@@ -1484,6 +1593,57 @@ body.present .mode-btn:hover{opacity:1}
 .practice-wait-reassurance{
   margin:12px 0 0;color:rgba(247,246,239,.66);
   font-size:15px;font-weight:600;
+}
+
+/* Room-to-room rally — two separate paddles, yellow ball passed between them.
+   The assembled Welcome lens is not used here.
+   Pivot is the handle, not the head: same stance translate, rotate-only snaps. */
+.practice-transition .t-lottie.room-mark-host{overflow:visible}
+.room-mark{width:100%;height:100%;display:block;overflow:visible}
+.room-mark .pad,.room-mark .room-ball{transform-box:view-box}
+.room-mark .pad-l{
+  transform-origin:26px 191px;
+  animation:room-hit-l 1.1s linear infinite;
+}
+.room-mark .pad-r{
+  transform-origin:205px 191px;
+  animation:room-hit-r 1.1s linear infinite;
+}
+.room-mark .room-ball{
+  transform-origin:115.25px 76px;
+  animation:room-rally-ball 1.1s linear infinite;
+}
+@keyframes room-hit-l{
+  0%{transform:translate(-12px,6px) rotate(-52deg);animation-timing-function:cubic-bezier(.3,.5,.45,1)}
+  42%{transform:translate(-12px,6px) rotate(-58deg)}
+  92%{transform:translate(-12px,6px) rotate(-58deg);animation-timing-function:cubic-bezier(.28,.55,.4,1)}
+  100%{transform:translate(-12px,6px) rotate(-52deg)}
+}
+@keyframes room-hit-r{
+  0%{transform:translate(12px,6px) rotate(58deg)}
+  42%{transform:translate(12px,6px) rotate(58deg);animation-timing-function:cubic-bezier(.28,.55,.4,1)}
+  50%{transform:translate(12px,6px) rotate(52deg);animation-timing-function:cubic-bezier(.3,.5,.45,1)}
+  92%{transform:translate(12px,6px) rotate(58deg)}
+  100%{transform:translate(12px,6px) rotate(58deg)}
+}
+@keyframes room-rally-ball{
+  0%{transform:translate(-92px,14px)}
+  6.25%{transform:translate(-69px,4px)}
+  12.5%{transform:translate(-46px,-4px)}
+  18.75%{transform:translate(-23px,-8px)}
+  25%{transform:translate(0,-10px)}
+  31.25%{transform:translate(23px,-8px)}
+  37.5%{transform:translate(46px,-4px)}
+  43.75%{transform:translate(69px,4px)}
+  50%{transform:translate(92px,14px)}
+  56.25%{transform:translate(69px,4px)}
+  62.5%{transform:translate(46px,-4px)}
+  68.75%{transform:translate(23px,-8px)}
+  75%{transform:translate(0,-10px)}
+  81.25%{transform:translate(-23px,-8px)}
+  87.5%{transform:translate(-46px,-4px)}
+  93.75%{transform:translate(-69px,4px)}
+  100%{transform:translate(-92px,14px)}
 }
 
 /* Same-space loading keeps the rendered space visible beneath it. */
@@ -1503,6 +1663,9 @@ body.present .mode-btn:hover{opacity:1}
 .soft-control.on{background:var(--brand-yellow);color:var(--brand-charcoal);border-color:var(--brand-charcoal)}
 
 @media (prefers-reduced-motion:reduce){
+  .room-mark .pad-l{animation:none!important;transform:translate(-12px,6px) rotate(-58deg)!important}
+  .room-mark .pad-r{animation:none!important;transform:translate(12px,6px) rotate(58deg)!important}
+  .room-mark .room-ball{animation:none!important;transform:translate(-92px,14px)!important}
   .t-loadline::after,.preview.mic-on .lvl i{animation:none}
   .soft-loading-ball{animation:soft-ball-breathe 1.4s ease-in-out infinite}
   .chat-drawer,.wait.is-t10 .wait-grid,.wait .start-layer{transition:none}
@@ -1524,6 +1687,209 @@ body.present .mode-btn:hover{opacity:1}
   .ending.is-close .ending-panel::before{animation:none!important;opacity:1!important}
   .ending.is-close.ending-prompt .end-reflection{animation:none!important;opacity:1!important;transform:none!important}
   .ending.is-close.ending-base .end-today li::before{animation:none!important}
+  .ending.is-close .end-tools-onboarding.is-visible{animation:none!important;opacity:1;transform:none!important}
+  .ending.is-close .end-tools-onboarding.is-visible .end-tools-coin{animation:none!important;opacity:0}
+  .ending.is-close .end-tools-onboarding.is-visible .end-tools-pouch-settle,
+  .ending.is-close .end-tools-onboarding.is-visible .end-tools-pouch-react{animation:none!important}
+  .ending.is-close .end-tools-onboarding.is-visible .end-tools-pouch-body{
+    animation:none!important;d:path("M27 39 C24 48 17 59 15 68 C13 76 19 82 27 82 H49 C57 82 63 76 61 68 C59 59 52 48 49 39 C45 42 31 42 27 39 Z")
+  }
+  .ending.is-close .end-tools-onboarding.is-visible .end-tools-pouch-top{
+    animation:none!important;d:path("M27 39 C29 35 30 31 28 28 C33 31 35 25 38 29 C41 25 43 31 48 28 C46 32 47 36 49 39 Z")
+  }
+  .ending.is-close .end-tools-onboarding.is-visible .end-tools-pouch-cinch{
+    animation:none!important;d:path("M27 39 C33 42 43 42 49 39")
+  }
+  .ending.is-close .end-tools-onboarding.is-visible .end-tools-drawstring,
+  .ending.is-close .end-tools-onboarding.is-visible .end-tools-bow{animation:none!important;opacity:1;stroke-dashoffset:0}
+}
+/* ============================================================
+   WELCOME MOTION — ported from the Welcome animation playground.
+   Prototype/demo only. Resolves to the Static Welcome composition.
+   Every variant is one-shot and lands on transform:none / opacity:1,
+   i.e. the exact Static baseline. .is-playing is removed when the
+   sequence ends, so the resting DOM carries no animation state.
+
+   The Welcome icon is itself the rig — see .pg-mark below — so no variant
+   swaps artwork. JS measures the live layout and publishes it as --mark-*
+   (splash transform for the mark) and --gym-* (splash transform for the Gym
+   word), so the same keyframes work at desktop and mobile scale. The two
+   ball tracks and the circle-to-lens morph are generated in JS.
+   ============================================================ */
+
+.pg-stage{position:absolute;inset:0;z-index:4;pointer-events:none}
+.pg-stage > *{opacity:0}
+
+/* Mobile stand-in for the raster line art while it is being drawn. */
+.pg-trace{position:absolute;transform:scaleX(-1)}
+
+/* ---------- the mark is the rig ----------
+   .pg-mark is an inline copy of welcome-paddles.svg, kept in that file's own
+   document order. It draws the resting Welcome icon and every animated frame,
+   so no variant ever swaps artwork: the rally paddles are the final paddles,
+   and the travelling ball is the final yellow lens path. Every track below
+   resolves to transform:none, which is the untouched file.
+
+   Origins are measured off that geometry: the two head circles sit at
+   (74.797, 75.725) and (155.703, 75.729) with r=73.803, and the lens centre
+   is (115.249, 74.638). transform-box:view-box makes px mean user units, and
+   the ball's path is centred on its own origin so scale() stays in place. */
+.pg-mark{overflow:visible}
+/* while a variant runs the ball leaves the mark's box and crosses the
+   headline, so the mark has to sit above its siblings */
+.is-playing[data-v] .pg-mark{position:relative;z-index:5}
+.pg-mark .pad,.pg-mark .lens{transform-box:view-box}
+.pg-mark .pad-l{transform-origin:74.797px 75.725px}
+.pg-mark .pad-r{transform-origin:155.703px 75.729px}
+.pg-mark .lens{transform-origin:115.249px 74.638px}
+
+/* ---------- shared entrances ---------- */
+
+/* Soft staggered slide from the left. Short travel, long-ish ease. */
+@keyframes pg-slide-in{
+  from{opacity:0;transform:translateX(-24px)}
+  to  {opacity:1;transform:translateX(0)}
+}
+.is-playing[data-v] [data-st]{
+  animation:pg-slide-in 520ms cubic-bezier(.22,.72,.16,1) both;
+  animation-delay:calc(var(--seq,0ms) + var(--st,0ms));
+}
+.is-playing[data-v] [data-st="1"]{--st:0ms}
+.is-playing[data-v] [data-st="3"]{--st:90ms}
+.is-playing[data-v] [data-st="4"]{--st:180ms}
+.is-playing[data-v] [data-st="5"]{--st:255ms}
+.is-playing[data-v] [data-st="6"]{--st:330ms}
+/* the icon is never part of the stagger — each variant delivers it itself */
+.is-playing[data-v] [data-st="2"]{animation:none}
+
+/* ============================================================
+   A — Paddle rally -> final icon   (2600ms)
+   One object from first frame to last. The mark opens large and centred with
+   its two paddles carried out into the rally stance; the lens path drops in
+   as a ball and bounces on the baseline below them; the paddles swing back
+   in as it rises, closing around it; the ball stretches into the lens exactly
+   as they land; the finished mark then travels down into its slot.
+
+   The stance is measured off the between-rooms transition artwork: head
+   centres 3.67 radii apart instead of the final 1.10, and each paddle tilted
+   to +/-35.2deg instead of its final +/-25.2deg. In this geometry that is
+   95 units of outward travel and 60.3deg of roll per paddle.
+
+     0.00-0.15s  rally stance, ball above the panel
+     0.15-0.64s  ball falls between the heads
+     0.64-0.80s  squash against the baseline, then launch
+     0.70-1.45s  paddles roll and close as the ball rises
+     1.23-1.45s  ball stretches into the lens as they land
+     1.45-1.80s  mark travels into its slot
+     1.62-2.47s  headline, copy, CTA and progress slide in from the left
+   ============================================================ */
+
+@keyframes pg-a-pad-l{
+  0%,48%{transform:translate(-95px,0) rotate(-60.3deg);animation-timing-function:cubic-bezier(.4,0,.22,1)}
+  100%  {transform:none}
+}
+@keyframes pg-a-pad-r{
+  0%,48%{transform:translate(95px,0) rotate(60.3deg);animation-timing-function:cubic-bezier(.4,0,.22,1)}
+  100%  {transform:none}
+}
+/* splash -> slot: the whole mark rides one track */
+@keyframes pg-a-mark{
+  0%,80.6%{transform:translate(var(--mark-dx),var(--mark-dy)) scale(var(--mark-s));animation-timing-function:cubic-bezier(.5,0,.16,1)}
+  100%    {transform:none}
+}
+
+.is-playing[data-v="a"] .pg-mark{animation:pg-a-mark 1800ms both}
+.is-playing[data-v="a"] .pg-mark .pad-l{animation:pg-a-pad-l 1450ms both}
+.is-playing[data-v="a"] .pg-mark .pad-r{animation:pg-a-pad-r 1450ms both}
+.is-playing[data-v="a"] .pg-mark .lens{
+  animation:pg-a-ball 1300ms 150ms both, pg-mark-catch 220ms 1230ms both;
+}
+.is-playing[data-v="a"] [data-st]{--seq:1620ms}
+
+/* ============================================================
+   Shared
+   pg-a-ball, pg-c-ball and pg-mark-catch are generated in JS: the two ball
+   tracks from live layout geometry, and the catch as a morph from a circle
+   into the lens path itself. Both ends of that morph are real path data with
+   matching segment structure, so the ball becomes the yellow centre without
+   a cross-fade or a second element.
+   ============================================================ */
+
+@keyframes pg-hold-visible{from{opacity:1}to{opacity:1}}
+@keyframes pg-late-in{from{opacity:0}to{opacity:1}}
+
+/* ============================================================
+   C — "Gym" splash + bouncing ball   (2600ms)
+   Opens on the word alone. The lens path drops in as a ball, taps once under
+   the y like a piece of punctuation, then leaves the floor on a real parabola
+   — fast off the bounce, slow across the apex — that lands in the paddles'
+   overlap. The same word travels into "Welcome to Gym" while the two paddles
+   swing in from either side like closing blades and interlock around the
+   arriving ball, which stretches into the lens as they land.
+
+     0.00-0.57s  "Gym" alone; ball falls
+     0.57-0.78s  hits a lower floor, squashes, then launches
+     0.78-1.65s  parabola up, across and down into the overlap
+     0.80-1.50s  "Gym" travels into the headline
+     0.90-1.65s  paddles swing in and interlock
+     1.45-1.65s  ball stretches into the lens as they land
+     1.50-1.75s  "Welcome to" arrives around the word
+     1.65-2.50s  copy, CTA and progress slide in from the left
+   ============================================================ */
+
+@keyframes pg-c-gym{
+  0%,53.3%{transform:translate(var(--gym-dx),var(--gym-dy)) scale(var(--gym-s));animation-timing-function:cubic-bezier(.5,0,.16,1)}
+  100%    {transform:none}
+}
+/* two blades closing into the X */
+@keyframes pg-c-pad-l{
+  0%,54.5%{opacity:0;transform:translate(-176px,16px) rotate(-74deg);animation-timing-function:cubic-bezier(.34,0,.2,1)}
+  62%     {opacity:1}
+  100%    {opacity:1;transform:none}
+}
+@keyframes pg-c-pad-r{
+  0%,54.5%{opacity:0;transform:translate(176px,16px) rotate(74deg);animation-timing-function:cubic-bezier(.34,0,.2,1)}
+  62%     {opacity:1}
+  100%    {opacity:1;transform:none}
+}
+@keyframes pg-c-to{
+  0%,58%{opacity:0;transform:translateX(-24px);animation-timing-function:cubic-bezier(.22,.72,.16,1)}
+  78%,100%{opacity:1;transform:none}
+}
+
+.is-playing[data-v="c"] [data-splash="gym"]{animation:pg-c-gym 1500ms both;display:inline-block}
+.is-playing[data-v="c"] [data-splash="to"]{animation:pg-c-to 2600ms both}
+.is-playing[data-v="c"] .pg-mark .pad-l{animation:pg-c-pad-l 1650ms both}
+.is-playing[data-v="c"] .pg-mark .pad-r{animation:pg-c-pad-r 1650ms both}
+.is-playing[data-v="c"] .pg-mark .lens{
+  animation:pg-c-ball 1500ms 150ms both, pg-mark-catch 200ms 1450ms both;
+}
+/* butt caps while the dash grows: a round cap on a zero-length dash paints a
+   stray dot at the path's start point. Both paths are closed or replaced, so
+   nothing depends on their caps. */
+.is-playing[data-v="c"] .w-deco path,
+.is-playing[data-v="c"] .pg-trace path{stroke-linecap:butt}
+.is-playing[data-v="c"] .w-deco path{animation:pg-draw-all 900ms 1250ms cubic-bezier(.3,.7,.2,1) both}
+.is-playing[data-v="c"] .pg-trace{animation:pg-hold-visible 2350ms both, pg-draw-all 900ms 1250ms cubic-bezier(.3,.7,.2,1) both}
+.is-playing[data-v="c"] .welcome-shape{animation:pg-late-in 240ms 2280ms both}
+.is-playing[data-v="c"] [data-st]{--seq:1650ms}
+/* the headline hosts the splash word, so it cannot be faded as a block */
+.is-playing[data-v="c"] [data-st="3"]{animation:none;opacity:1}
+
+@media (prefers-reduced-motion:reduce){
+  .is-playing .pg-mark,
+  .is-playing .pg-mark .pad,
+  .is-playing .pg-mark .lens,
+  .is-playing .w-deco path,
+  .is-playing .welcome-shape,
+  .is-playing [data-splash],
+  .is-playing [data-st]{
+    animation:none!important;
+    opacity:1!important;
+    transform:none!important;
+  }
+  .is-playing .pg-stage{display:none!important}
+  .is-playing .welcome-shape img{transform:scaleX(-1)!important}
 }
 @keyframes soft-ball-breathe{0%,100%{opacity:.7}50%{opacity:1}}
 </style>
@@ -1546,10 +1912,23 @@ body.present .mode-btn:hover{opacity:1}
       <button type="button" data-av-perm="blocked" onclick="setAvPermPreview('blocked')">Permission blocked</button>
       <button type="button" data-av-perm="granted" onclick="setAvPermPreview('granted')">Permission granted</button>
       <span class="sep"></span>
+      <span class="grp-lbl">A/V timing</span>
+      <button type="button" data-av-timing="default" onclick="setAvTimingPreview('default')">Default</button>
+      <button type="button" data-av-timing="t10" onclick="setAvTimingPreview('t10')">T−10</button>
+      <button type="button" data-av-timing="late" onclick="setAvTimingPreview('late')">Late</button>
+      <span class="sep"></span>
       <span class="grp-lbl">Waiting / start</span>
       <button class="sc" data-sc="waiting">Waiting Room</button>
       <button class="sc" data-sc="waiting-t20">Waiting — 20s</button>
       <button class="sc" data-sc="waiting-t10">Waiting — 10s</button>
+    </div>
+    <div class="row" id="welcomeMotionRow">
+      <span class="grp-lbl">Welcome motion</span>
+      <button type="button" class="on" data-welcome-motion="static">Static</button>
+      <button type="button" data-welcome-motion="a">Rally</button>
+      <button type="button" data-welcome-motion="c">Gym Splash</button>
+      <span class="sep"></span>
+      <button type="button" class="play" id="welcomeReplayBtn">Replay</button>
     </div>
     <div class="row">
       <span class="grp-lbl">Blocked</span>
@@ -1568,6 +1947,11 @@ body.present .mode-btn:hover{opacity:1}
       <span class="grp-lbl">Availability</span>
       <button type="button" class="end-avail" data-avail="1" onclick="setEndingAvailable(true)">Next session available</button>
       <button type="button" class="end-avail" data-avail="0" onclick="setEndingAvailable(false)">No next session available</button>
+      <span class="sep"></span>
+      <span class="grp-lbl">Practice Tools nudge</span>
+      <button type="button" class="end-tools-preview" data-tools-exposure="1" onclick="setEndingToolsExposure(1)">1st exposure</button>
+      <button type="button" class="end-tools-preview" data-tools-exposure="2" onclick="setEndingToolsExposure(2)">2nd exposure</button>
+      <button type="button" class="end-tools-preview" data-tools-exposure="3" onclick="setEndingToolsExposure(3)">Returning student</button>
     </div>
     <div class="row">
       <span class="grp-lbl">Clock</span>
@@ -1663,7 +2047,7 @@ var CHAT_MSGS=[
 var NOTES={
   'welcome':'WELCOME — Gym is open (from 10 min before the first session). Editorial, spacious. CTA into A/V Check.',
   'welcome-late':'WELCOME LATE — same canonical Welcome layout. Copy only: arrived-late greeting, shorter body, session-already-started note. After A/V, skip Waiting Room → Main Room.',
-  'av-check':'VIDEO & AUDIO CHECK — inline permission helper: native prompt if not requested, Try again if the browser can ask again, settings recovery if blocked. Privacy copy stays visible.',
+  'av-check':'VIDEO & AUDIO CHECK — inline permission helper: native prompt if not requested, Try again if the browser can ask again, settings recovery if blocked. T−10 secondary countdown; session-started notice at T=0 or late entry. Privacy copy stays visible.',
   'waiting':'WAITING ROOM — canonical pre-session wait. Countdown, self-view, chat, optional Flashcards. Not Waiting/Return.',
   'waiting-t20':'WAITING ROOM · T−20 — countdown turns brand yellow. Still on Waiting Room (not matkot yet).',
   'waiting-t10':'T−10 — waiting UI recedes; rackets + yellow countdown. At 0 → loading line + “Entering the Main Room” on the same screen.',
@@ -1722,13 +2106,17 @@ var ST={
   fb1:'', fb2:'', fbNote:'',
   fbSent:false,
   endingRested:false,
+  endingToolsExposure:1,   /* dev preview only: 1 | 2 | 3 (3 = hidden) */
+  endingToolsDismissed:false,
   reflectionDismissed:false,
   endSessions:1,            /* 1 | 2 | 3 (3 = 3+) */
   endMoreAvailable:true,    /* independent of session count */
   path:'on-time',          /* on-time | late | last-minute */
+  avTimingPreview:'', /* '' = live flow; default | t10 | late = frozen prototype preview */
   entering:false,          /* countdown done → loading line + entering copy */
   practiceWaitReason:'',   /* declined-timeout | left-early */
-  softLoading:false
+  softLoading:false,
+  welcomeMotion:'static'
 };
 
 function fmt(sec){
@@ -1766,6 +2154,20 @@ function mountLottie(){
 }
 function rackets(cls){
   return '<div class="'+(cls||'t-hero')+'"><div id="matkot-lottie" class="t-lottie">'+MATKOT_SVG+'</div></div>';
+}
+function roomRallySvg(){
+  var out='<svg class="room-mark" viewBox="'+MARK.vb+'" aria-hidden="true"'
+    +' fill="none" stroke="'+MARK.stroke+'" stroke-width="'+MARK.sw+'"'
+    +' stroke-linecap="round" stroke-linejoin="round">',i,p;
+  for(i=0;i<MARK.paths.length;i++){
+    p=MARK.paths[i];
+    if(p[0]==="lens") continue;
+    out+='<path class="'+p[0]+'" d="'+p[1]+'"/>';
+  }
+  return out+'<circle class="room-ball" cx="115.25" cy="76" r="11" fill="'+MARK.fill+'" stroke="'+MARK.stroke+'"/></svg>';
+}
+function roomPaddles(){
+  return '<div class="t-hero"><div class="t-lottie room-mark-host">'+roomRallySvg()+'</div></div>';
 }
 
 function lockup(){
@@ -1914,6 +2316,359 @@ function startLayer(){
   return '<div class="start start-layer">'+transitionBeat()+'</div>';
 }
 
+var SESSION_STARTED_MSG='Please note that the session has already started.';
+function isSessionStarted(){
+  return ST.late || ST.path==='late' || ST.left<=0;
+}
+function sessionStartedNotice(){
+  return '<div class="session-status-notice" role="status">'
+    +'<span class="session-status-dot" aria-hidden="true"></span>'
+    +'<span>'+SESSION_STARTED_MSG+'</span>'
+    +'</div>';
+}
+function avSessionStatus(){
+  if(isSessionStarted()) return '<div class="av-session-status">'+sessionStartedNotice()+'</div>';
+  if(ST.left<=DUR.t10){
+    return '<div class="av-session-status">'
+      +'<div class="session-status-notice session-status-countdown" aria-live="polite" role="status">'
+      +'<span class="av-session-countdown-label">Session starts in</span> '
+      +'<strong class="av-session-countdown-num" id="avSessionCountdown">'+ST.left+'</strong>'
+      +'</div></div>';
+  }
+  return '';
+}
+function applyAvTimingPreview(){
+  if(ST.avTimingPreview==='t10'){
+    ST.late=false; ST.path='on-time';
+    ST.left=DUR.t10; ST.clockOn=false;
+  } else if(ST.avTimingPreview==='late'){
+    ST.late=true; ST.path='late';
+    ST.left=0; ST.clockOn=false;
+  } else {
+    ST.late=false; ST.path='on-time';
+    ST.left=15; ST.clockOn=false;
+  }
+}
+function avTimingPreviewActive(){
+  if(ST.scene!=='av-check') return '';
+  if(ST.avTimingPreview==='t10'||ST.avTimingPreview==='late'||ST.avTimingPreview==='default') return ST.avTimingPreview;
+  return '';
+}
+function setAvTimingPreview(mode){
+  ST.avTimingPreview=mode;
+  setScene('av-check', {keepAvTimingPreview:true});
+}
+
+/* ---------- The mark ----------
+   Path data below is welcome-paddles.svg verbatim, in that file's document
+   order, each path tagged with the paddle it belongs to. Nothing is redrawn
+   or refitted: the animation only puts transforms on these exact paths, and
+   the last path is the yellow lens, which doubles as the travelling ball.
+
+   Numbers under `head`, `lens` and `rally` are measured off this same data:
+     head circles   (74.797, 75.725) / (155.703, 75.729), r 73.803
+     lens           centre (115.249, 74.638), 64.64 x 124.25
+     rally stance   95 units out and 60.3deg of roll per paddle, which spans
+                    419.53 x 201.18 — 1.82 viewBox widths, so the splash has
+                    to be scaled to the open stance, not the resting mark */
+var MARK={
+  vb:"0 0 231 213", w:231, h:213, sw:2.5, stroke:"white", fill:"#FFE300",
+  paths:[
+    ["pad pad-r","M221.77 45.8234C203.988 7.98343 160.173 -9.07657 123.903 7.71343C87.6337 24.5034 72.6322 68.7834 90.4042 106.623C103.109 133.663 129.102 150.073 156.143 151.123C171.839 151.733 185.511 161.993 190.931 176.633L200.976 204.723C202.628 209.353 207.535 212.143 212.35 210.993C216.531 209.993 220.39 208.043 223.957 205.273C227.805 202.293 228.742 196.893 226.274 192.723L211.192 167.263C203.374 153.733 204.24 136.743 213.862 124.423C230.435 103.193 234.475 72.8734 221.78 45.8334L221.77 45.8234Z"],
+    ["pad pad-l","M140.094 106.623C157.866 68.7834 142.874 24.5034 106.595 7.71343C70.3151 -9.07657 26.4995 7.98343 8.72746 45.8234C-3.97693 72.8534 0.0630855 103.173 16.6362 124.413C26.2577 136.743 27.1242 153.723 19.3061 167.253L4.08295 192.943C1.57431 197.183 2.57173 202.703 6.55129 205.613C10.007 208.143 13.9966 209.823 18.4295 210.763C23.205 211.773 27.9704 209.013 29.6026 204.453L39.5565 176.613C44.9768 161.973 58.6383 151.713 74.345 151.103C101.386 150.063 127.379 133.643 140.083 106.603L140.094 106.623Z"],
+    ["pad pad-r","M188.725 128.383L175.366 134.563L200.956 204.783C202.628 209.383 207.515 212.143 212.31 210.993C216.521 209.993 220.4 208.033 223.997 205.233C227.825 202.263 228.772 196.893 226.344 192.733L188.735 128.383H188.725Z"],
+    ["pad pad-r","M143.31 149.394L220.75 113.553"],
+    ["pad pad-l","M55.1323 134.563L41.7731 128.383L4.0226 192.973C1.54419 197.203 2.56175 202.683 6.52117 205.593C9.99699 208.153 14.0068 209.843 18.48 210.783C23.2354 211.783 27.9907 209.063 29.6329 204.523L55.1223 134.563H55.1323Z"],
+    ["lens","M140.094 106.623C156.375 71.9634 145.141 31.9034 115.249 12.5134C85.357 31.9034 74.1235 71.9634 90.4045 106.623C96.2579 119.083 104.942 129.283 115.249 136.763C125.556 129.283 134.24 119.083 140.094 106.623Z"],
+    ["pad pad-l","M10.25 113.252L87.25 149.252"]
+  ],
+  head:{lx:74.797, rx:155.703, y:75.727, r:73.803},
+  lens:{cx:115.249, cy:74.638, r:32.318, corners:[52.16,-90,127.84,90], spans:[-142.16,-142.16,-37.84,-37.84]},
+  rally:{out:95, rot:60.3, w:419.53, h:201.18, cx:115.25, cy:100.84, floor:196}
+};
+
+/* One inline copy per screen: the static icon and the rig are the same node. */
+function markSvg(cls,st){
+  var out='<svg class="pg-mark '+cls+'" data-st="'+st+'" viewBox="'+MARK.vb+'" aria-hidden="true"'
+    +' fill="none" stroke="'+MARK.stroke+'" stroke-width="'+MARK.sw+'"'
+    +' stroke-linecap="round" stroke-linejoin="round">',i,p;
+  for(i=0;i<MARK.paths.length;i++){
+    p=MARK.paths[i];
+    out+='<path class="'+p[0]+'"'+(p[0]==="lens"?' fill="'+MARK.fill+'"':'')+' d="'+p[1]+'"/>';
+  }
+  return out+'</svg>';
+}
+
+/* Traced centreline of the mobile line-art asset, normalised to its own box.
+   The mobile artwork is a raster, so the ball follows this trace and a
+   matching stroke is drawn in its place, then handed back to the real
+   asset once the frame is complete. */
+var MOBILE_TRACE={"main":[[0.5076,0.0],[0.5334,0.0],[0.5592,0.0],[0.585,0.0],[0.6107,0.0],[0.6365,0.0],[0.6623,0.0],[0.6881,0.0],[0.7139,0.0],[0.7397,0.0],[0.7654,0.0],[0.7912,0.0],[0.817,0.0],[0.8428,0.0],[0.8686,0.0],[0.8944,0.0],[0.9202,0.0],[0.9459,0.0],[0.9703,0.0029],[0.9862,0.0122],[0.9938,0.0233],[0.9938,0.0355],[0.9938,0.0477],[0.9938,0.0599],[0.9938,0.072],[0.9938,0.0842],[0.9938,0.0964],[0.9938,0.1086],[0.9938,0.1207],[0.9938,0.1329],[0.9938,0.1451],[0.9938,0.1573],[0.9938,0.1694],[0.9938,0.1816],[0.9938,0.1938],[0.9938,0.2059],[0.9938,0.2181],[0.9938,0.2303],[0.9938,0.2425],[0.9938,0.2546],[0.9938,0.2668],[0.9938,0.279],[0.9938,0.2912],[0.9938,0.3033],[0.9938,0.3155],[0.9938,0.3277],[0.9938,0.3399],[0.9938,0.352],[0.9938,0.3642],[0.9938,0.3764],[0.9938,0.3886],[0.9938,0.4007],[0.9938,0.4129],[0.9938,0.4251],[0.9938,0.4373],[0.9938,0.4494],[0.9938,0.4616],[0.9938,0.4738],[0.9938,0.4859],[0.9938,0.4981],[0.9938,0.5103],[0.9938,0.5225],[0.9938,0.5346],[0.9938,0.5468],[0.9938,0.559],[0.9938,0.5712],[0.9938,0.5833],[0.9938,0.5955],[0.9938,0.6077],[0.9938,0.6199],[0.9938,0.632],[0.9938,0.6442],[0.9938,0.6564],[0.9938,0.6686],[0.9938,0.6807],[0.9938,0.6929],[0.982,0.7034],[0.9608,0.7103],[0.9378,0.7146],[0.9163,0.7213],[0.8927,0.7251],[0.8707,0.7313],[0.8477,0.7356],[0.8251,0.7413],[0.8035,0.7478],[0.7799,0.7516],[0.758,0.758],[0.7361,0.7639],[0.7126,0.7681],[0.691,0.7747],[0.6679,0.779],[0.6453,0.7847],[0.6232,0.7903],[0.5998,0.7947],[0.5748,0.7953],[0.5504,0.7914],[0.5259,0.7876],[0.501,0.7851],[0.4765,0.7812],[0.452,0.7774],[0.4274,0.7742],[0.4026,0.7711],[0.3782,0.7672],[0.3537,0.7634],[0.3306,0.7583],[0.3078,0.7528],[0.2843,0.7481],[0.2626,0.7415],[0.2411,0.7347],[0.2197,0.728],[0.2013,0.7198],[0.181,0.7125],[0.1636,0.7038],[0.1462,0.6952],[0.1288,0.6865],[0.1145,0.6764],[0.0975,0.6675],[0.0839,0.6574],[0.0736,0.6467],[0.0593,0.6366],[0.0513,0.6255],[0.0405,0.6145],[0.0323,0.603],[0.0242,0.5914],[0.019,0.5797],[0.0124,0.568],[0.0086,0.5561],[0.0062,0.5441],[0.0031,0.5322],[0.0031,0.52],[0.0031,0.5078],[0.0031,0.4957],[0.0031,0.4835],[0.0031,0.4713],[0.0031,0.4591],[0.0031,0.447],[0.0031,0.4348],[0.0031,0.4226],[0.0031,0.4104],[0.0031,0.3983],[0.0031,0.3861],[0.0031,0.3739],[0.0031,0.3617],[0.0031,0.3496],[0.0031,0.3374],[0.0031,0.3252],[0.0031,0.313],[0.0031,0.3009],[0.0031,0.2887],[0.0031,0.2765],[0.0031,0.2643],[0.0031,0.2522],[0.0031,0.24],[0.0031,0.2278],[0.0031,0.2157],[0.0031,0.2035],[0.0031,0.1913],[0.0031,0.1791],[0.0031,0.167],[0.0031,0.1548],[0.0031,0.1426],[0.0031,0.1304],[0.0031,0.1183],[0.0031,0.1061],[0.0031,0.0939],[0.0031,0.0817],[0.0031,0.0696],[0.0031,0.0574],[0.0031,0.0452],[0.0031,0.033],[0.0031,0.0209],[0.0111,0.0102],[0.0311,0.0044],[0.0693,0.0],[0.095,0.0],[0.1208,0.0],[0.1466,0.0],[0.1724,0.0],[0.1982,0.0],[0.224,0.0],[0.2498,0.0],[0.2755,0.0],[0.3013,0.0],[0.3271,0.0],[0.3529,0.0],[0.3787,0.0],[0.4045,0.0],[0.4302,0.0],[0.456,0.0],[0.4818,0.0],[0.5076,0.0]],"band":[[0.0528,0.9985],[0.08,0.9985],[0.1071,0.9985],[0.1343,0.9985],[0.1615,0.9985],[0.1887,0.9985],[0.2158,0.9985],[0.243,0.9985],[0.2702,0.9985],[0.2974,0.9985],[0.3245,0.9985],[0.3517,0.9985],[0.3789,0.9985],[0.4061,0.9985],[0.4332,0.9985],[0.4604,0.9985],[0.4876,0.9985],[0.5148,0.9985],[0.5419,0.9985],[0.5691,0.9985],[0.5963,0.9985],[0.6235,0.9985],[0.6506,0.9985],[0.6778,0.9985],[0.705,0.9985],[0.7322,0.9985],[0.7593,0.9985],[0.7865,0.9985],[0.8137,0.9985],[0.8408,0.9985],[0.868,0.9985],[0.8952,0.9985],[0.9224,0.9985],[0.949,0.9971],[0.9741,0.993],[0.9912,0.9832],[0.9938,0.9706],[0.9938,0.9578],[0.9938,0.9449],[0.9938,0.9321],[0.9938,0.9193],[0.9938,0.9064],[0.9938,0.8936],[0.9938,0.8808],[0.9938,0.8679],[0.9863,0.8559],[0.9637,0.8488],[0.938,0.8456],[0.9122,0.8415],[0.8865,0.8375],[0.8602,0.8348],[0.8344,0.8307],[0.8086,0.8267],[0.7824,0.824],[0.7566,0.82],[0.7308,0.8159],[0.7046,0.8132],[0.6788,0.8092],[0.653,0.8051],[0.6267,0.8024],[0.6008,0.7994],[0.5739,0.8008],[0.5501,0.8068],[0.5264,0.8128],[0.5038,0.8199],[0.4793,0.8244],[0.4558,0.8306],[0.4317,0.8353],[0.4079,0.8413],[0.3847,0.8475],[0.3611,0.8531],[0.3368,0.8585],[0.3136,0.8651],[0.2887,0.87],[0.2647,0.8757],[0.2412,0.882],[0.217,0.8876],[0.1937,0.8941],[0.1688,0.899],[0.1449,0.9049],[0.1213,0.911],[0.0964,0.9159],[0.0728,0.9221],[0.0489,0.9279],[0.0251,0.9339],[0.0068,0.9431],[0.0031,0.9554],[0.0031,0.9682],[0.0033,0.981],[0.0197,0.9911],[0.0435,0.9971]]};
+
+function reducedMotion(){
+  return window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+
+function rectIn(el,base){
+  var r=el.getBoundingClientRect();
+  return {l:r.left-base.left,t:r.top-base.top,w:r.width,h:r.height};
+}
+function px(n){return Math.round(n*100)/100;}
+
+/* A polyline in rendered (panel) pixels plus its cumulative length, so the
+   ball's position and the stroke's dash offset share one arc-length clock —
+   the line can only ever appear exactly where the ball has already been. */
+function polyline(points){
+  var cum=[0],i;
+  for(i=1;i<points.length;i++){
+    cum.push(cum[i-1]+Math.hypot(points[i][0]-points[i-1][0],points[i][1]-points[i-1][1]));
+  }
+  return {pts:points,cum:cum,len:cum[cum.length-1]};
+}
+function samplePath(path,base){
+  var raw=path.getTotalLength(),m=path.getScreenCTM(),N=760,out=[],i,p;
+  for(i=0;i<=N;i++){
+    p=path.getPointAtLength(raw*i/N);
+    out.push([m.a*p.x+m.c*p.y+m.e-base.left, m.b*p.x+m.d*p.y+m.f-base.top]);
+  }
+  return polyline(out);
+}
+/* index of the point on the frame that sits most directly above the icon */
+function startIndex(P,homeX,ceiling){
+  var best=0,bd=1e9,i,p,d;
+  for(i=0;i<P.pts.length;i++){
+    p=P.pts[i];
+    if(p[1]>ceiling) continue;
+    d=Math.abs(p[0]-homeX);
+    if(d<bd){bd=d;best=i;}
+  }
+  return best;
+}
+
+function keyframes(name,frames){
+  return "@keyframes "+name+"{"+frames.join("")+"}";
+}
+/* Ball frames are written in the mark's own user units: transform-box is the
+   view-box, and the ball's path is centred on its transform-origin, so
+   scale() squashes it in place instead of sliding it. */
+function ballFrame(pct,dx,dy,sx,sy,ease){
+  return px(pct)+"%{transform:translate("+px(dx)+"px,"+px(dy)+"px) scale("+(sx||1)+","+(sy||1)+")"
+    +(ease?";animation-timing-function:"+ease:"")+"}";
+}
+
+/* ----- the ball, as a circle sharing the lens path's segment structure -----
+   Four cubics broken at the lens's own corner angles, so `d` interpolates
+   segment for segment and the morph needs no resampling. */
+function ballPath(r){
+  var L=MARK.lens,out="",i,a0,a1,s,h,p0,p3,c1,c2,D=Math.PI/180;
+  for(i=0;i<4;i++){
+    a0=L.corners[i]*D; s=L.spans[i]*D; a1=a0+s;
+    h=r*(4/3)*Math.tan(s/4);
+    p0=[L.cx+r*Math.cos(a0), L.cy+r*Math.sin(a0)];
+    p3=[L.cx+r*Math.cos(a1), L.cy+r*Math.sin(a1)];
+    c1=[p0[0]-h*Math.sin(a0), p0[1]+h*Math.cos(a0)];
+    c2=[p3[0]+h*Math.sin(a1), p3[1]-h*Math.cos(a1)];
+    if(!i) out+="M"+px(p0[0])+" "+px(p0[1]);
+    out+="C"+px(c1[0])+" "+px(c1[1])+" "+px(c2[0])+" "+px(c2[1])+" "+px(p3[0])+" "+px(p3[1]);
+  }
+  return out+"Z";
+}
+function catchFrames(){
+  return ['from{d:path("'+ballPath(MARK.lens.r)+'")}',
+          'to{d:path("'+MARK.paths[5][1]+'")}'];
+}
+
+/* Plant a Y-squash against the floor so the ball compresses down instead of
+   shrinking around its centre. `rest` is the uniform scale at contact. */
+function plantY(floor,sy,rest){
+  return floor+MARK.lens.r*((rest||1)-sy);
+}
+
+/* Contact samples: time 0–1 inside the squash window, then sx/sy relative to
+   the ball's rest scale. Peak is a restrained flatten, not cartoon squash. */
+function squashFrames(start,span,dx,floor,rest,amp){
+  var a=amp||1,i,s,sx,sy,f=[];
+  var curve=[
+    [0,    1,           1],
+    [0.22, 1+0.14*a,    1-0.14*a],
+    [0.45, 1+0.22*a,    1-0.24*a],
+    [0.68, 1+0.08*a,    1-0.10*a],
+    [1,    1,           1]
+  ];
+  for(i=0;i<curve.length;i++){
+    s=curve[i]; sx=rest*s[1]; sy=rest*s[2];
+    f.push(ballFrame(start+span*s[0],dx,plantY(floor,sy,rest),sx,sy,"linear"));
+  }
+  return f;
+}
+
+/* ----- A: fall, squash on the baseline, then a continuous ease-out rise -----
+   Positions are sampled so the lift is one quadratic, not a pair of CSS
+   easings fighting at a keyframe. The paddles start closing as it leaves
+   the floor. Percentages are of a 1300ms track that starts at 150ms. */
+function buildRallyDrop(ceil,floor){
+  var f=[],i,u,n;
+  n=12;
+  for(i=0;i<=n;i++){
+    u=i/n;
+    f.push(ballFrame(38*u,0,ceil+(floor-ceil)*u*u,1,1,"linear"));
+  }
+  f=f.concat(squashFrames(38,12,0,floor,1,1));
+  n=20;
+  for(i=1;i<=n;i++){
+    u=i/n;
+    f.push(ballFrame(50+50*u,0,floor*(1-u)*(1-u),1,1,i===n?null:"linear"));
+  }
+  return f;
+}
+
+/* ----- C: fall, a lower tap under the y, squash, then a real parabola -----
+   Horizontal speed is constant and vertical is quadratic, so the arc reads as
+   one throw: quick off the bounce, slow across the apex, then down into the
+   paddles. `apex` is how far above the lens the top of the flight sits.
+   At the icon's resting size the lens is only ~19px across, so the ball is
+   carried at `mag` while it is a punctuation mark under the word and eases
+   back to its own size as it arrives to be caught. */
+function buildSplashArc(ceil,drop,side,apex,mag){
+  var i,u,m,f=[],K=24,n,
+      q=drop+2*apex,
+      A=q+Math.sqrt(Math.max(q*q-drop*drop,0)),
+      B=-(A+drop);
+  n=10;
+  for(i=0;i<=n;i++){
+    u=i/n;
+    f.push(ballFrame(26*u,side,ceil+(drop-ceil)*u*u,mag,mag,"linear"));
+  }
+  f=f.concat(squashFrames(26,18,side,drop,mag,1.15));
+  for(i=1;i<=K;i++){
+    u=i/K;
+    m=1+(mag-1)*(1-u)*(1-u);
+    f.push(ballFrame(44+56*u, side*(1-u), A*u*u+B*u+drop, m, m,
+                     i===K?null:"linear"));
+  }
+  return f;
+}
+
+/* The stroke's dash pattern repeats over `period`, so the line can only be
+   drawn in path order. On mobile the artwork carries a second, lower subpath
+   appended to the same stroke. */
+function dashFrame(pct,drawn,period,s0){
+  return px(pct)+"%{stroke-dasharray:"+px(drawn)+"px "+px(period-drawn)+"px;stroke-dashoffset:"+px(-s0)+"px}";
+}
+/* the frame only has to arrive, it does not chase the ball */
+function buildFullDraw(period,s0){
+  return [dashFrame(0,0,period,s0),dashFrame(100,period,period,s0)];
+}
+
+var WELCOME_MOTION={static:{total:0},a:{total:2600},c:{total:2600}};
+var welcomePlayTimer=null;
+var welcomeKfSheet=document.createElement("style");
+document.head.appendChild(welcomeKfSheet);
+
+function reducedMotion(){
+  return window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+function welcomeAnimStage(){
+  return '<div class="pg-stage" aria-hidden="true">'
+    +'<svg class="pg-trace" preserveAspectRatio="none" viewBox="0 0 322 682"><path d="" fill="none" stroke="rgba(210,210,196,.235)" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"/></svg>'
+  +'</div>';
+}
+
+function playWelcomeMotion(opts){
+  opts=opts||{};
+  var variant=opts.variant||"static";
+  var desktop=!!opts.desktop;
+  var surface=opts.surface;
+  if(welcomePlayTimer){ clearTimeout(welcomePlayTimer); welcomePlayTimer=null; }
+  if(!surface) return;
+  surface.classList.remove("is-playing");
+  surface.removeAttribute("data-v");
+  if(variant==="static" || opts.play===false) return;
+  if(reducedMotion()) return;
+
+  var panel=surface;
+  var icon=surface.querySelector(".pg-mark");
+  var gym=surface.querySelector('[data-splash="gym"]');
+  if(!icon||!gym) return;
+  var base=panel.getBoundingClientRect();
+  var art=rectIn(icon,base), k=art.w/MARK.w;
+  var R=MARK.rally;
+  var scale=Math.min((base.height*0.46)/(R.h*k),(base.width*0.84)/(R.w*k));
+  scale=Math.max(1.5,Math.min(scale,7));
+  var ox=art.l+art.w/2, oy=art.t+art.h/2;
+  var rcx=art.l+R.cx*k,  rcy=art.t+R.cy*k;
+  surface.style.setProperty("--mark-s",px(scale));
+  surface.style.setProperty("--mark-dx",px(base.width/2-ox-scale*(rcx-ox))+"px");
+  surface.style.setProperty("--mark-dy",px(base.height*0.47-oy-scale*(rcy-oy))+"px");
+
+  var g=rectIn(gym,base);
+  var gs=Math.min((base.height*0.30)/g.h,(base.width*0.74)/g.w);
+  gs=Math.max(1.4,Math.min(gs,6));
+  var splash={x:base.width/2,y:base.height*0.44,h:g.h*gs,w:g.w*gs};
+  splash.bounce=splash.y+splash.h*0.78;
+  surface.style.setProperty("--gym-s",px(gs));
+  surface.style.setProperty("--gym-dx",px(splash.x-(g.l+g.w/2))+"px");
+  surface.style.setProperty("--gym-dy",px(splash.y-(g.t+g.h/2))+"px");
+
+  var lensAt={x:art.l+MARK.lens.cx*k, y:art.t+MARK.lens.cy*k};
+  function unitsA(y){ return ((y-parseFloat(surface.style.getPropertyValue("--mark-dy"))-oy)/scale+oy-lensAt.y)/k; }
+  function unitsC(x,y){ return [(x-lensAt.x)/k,(y-lensAt.y)/k]; }
+
+  var P=null,drawTarget=null,bandLen=0,i;
+  if(desktop){
+    drawTarget=surface.querySelector(".w-deco path");
+    P=samplePath(drawTarget,base);
+  }else{
+    var shapeEl=surface.querySelector(".welcome-shape");
+    var trace=surface.querySelector(".pg-trace");
+    if(shapeEl&&trace){
+      var s=rectIn(shapeEl,base),d=[];
+      trace.style.left=s.l+"px"; trace.style.top=s.t+"px";
+      trace.style.width=s.w+"px"; trace.style.height=s.h+"px";
+      var mapped=[];
+      for(i=0;i<MOBILE_TRACE.main.length;i++){
+        var n=MOBILE_TRACE.main[i];
+        mapped.push([s.l+(1-n[0])*s.w, s.t+n[1]*s.h]);
+        d.push((i?"L":"M")+px(n[0]*322)+" "+px(n[1]*682));
+      }
+      var prev=null;
+      for(i=0;i<MOBILE_TRACE.band.length;i++){
+        var b=MOBILE_TRACE.band[i],bp=[s.l+(1-b[0])*s.w, s.t+b[1]*s.h];
+        if(prev) bandLen+=Math.hypot(bp[0]-prev[0],bp[1]-prev[1]);
+        prev=bp;
+        d.push((i?"L":"M")+px(b[0]*322)+" "+px(b[1]*682));
+      }
+      drawTarget=trace.querySelector("path");
+      drawTarget.setAttribute("d",d.join(" "));
+      P=polyline(mapped);
+    }
+  }
+
+  var s0=0, period=1;
+  if(P&&P.len){
+    s0=desktop?P.cum[startIndex(P,lensAt.x,art.t-art.h*0.15)]:0;
+    period=P.len+bandLen;
+  }
+  var bounce=unitsC(splash.x-splash.w*0.055, splash.bounce);
+  welcomeKfSheet.textContent=[
+    keyframes("pg-a-ball",buildRallyDrop(unitsA(-base.height*0.12), MARK.rally.floor-MARK.lens.cy)),
+    keyframes("pg-c-ball",buildSplashArc(unitsC(0,-base.height*0.10)[1], bounce[1], bounce[0], base.height*0.11/k, 1.55)),
+    keyframes("pg-mark-catch",catchFrames()),
+    keyframes("pg-draw-all",buildFullDraw(period,s0))
+  ].join("\n");
+
+  /* Class is set before the first paint of these nodes, so the animations'
+     backwards fill covers frame zero — no flash of the settled state. */
+  surface.setAttribute("data-v",variant);
+  surface.classList.add("is-playing");
+  welcomePlayTimer=setTimeout(function(){
+    surface.classList.remove("is-playing");
+    surface.removeAttribute("data-v");
+    welcomePlayTimer=null;
+  }, (WELCOME_MOTION[variant]||{total:0}).total+80);
+}
+
+
 /* ---------- Screens ---------- */
 function screenWelcome(late){
   var dots='';
@@ -1922,32 +2677,36 @@ function screenWelcome(late){
   }
   var title=late
     ? '<h2><span class="w-to">Good, you made it.</span></h2>'
-    : '<h2><span class="w-to">Welcome to</span> <span class="w-gym">Gym</span></h2>';
+    : '<h2 data-st="3"><span class="w-to" data-splash="to">Welcome to</span> <span class="w-gym" data-splash="gym">Gym</span></h2>';
   var sub=late
     ? 'Get ready to work out your Hebrew muscles and get exposed to new words and phrases!'
     : 'Get ready to work out your Hebrew muscles.';
-  var explain=late
-    ? 'Please note that the session has already started.'
-    : 'Practice new words and phrases with fellow Citizens around the world';
+  var bodyCopy=late
+    ? '<div class="w-late-status">'+sessionStartedNotice()+'</div>'
+    : '<p class="explain" data-st="5">Practice new words and phrases with fellow Citizens around the world</p>';
+  var icon=late
+    ? '<img class="w-icon" src="welcome-icon.png" alt="">'
+    : markSvg("w-icon",2);
   return lockupWelcome()
     +'<div class="welcome-canon'+(late?' is-late':'')+'">'
-    +'<div class="w-panel">'
+    +'<div class="w-panel" id="welcomeMotionHost">'
       +'<div class="w-deco" aria-hidden="true"><svg viewBox="0 0 1023 469" preserveAspectRatio="none">'
         +'<path d="M14 2H709Q718 2 723 12L963 456Q968 466 978 466H1008Q1021 466 1021 453V16Q1021 2 1008 2H887Q877 2 873 13L758 377Q744 424 708 446Q681 466 635 466H14Q2 466 2 454V15Q2 2 14 2Z"/>'
       +'</svg></div>'
-      +'<div class="w-progress">'
+      +'<div class="w-progress"'+(late?'':' data-st="1"')+'>'
         +'<div class="w-progress-lbl">Session 2 of 3</div>'
         +'<div class="w-dots" aria-label="Session 2 of 3">'+dots+'</div>'
       +'</div>'
       +'<div class="w-stack">'
         +'<div class="w-copy">'
-        +'<img class="w-icon" src="welcome-icon.png" alt="">'
+        +icon
         +title
-        +'<p class="sub">'+sub+'</p>'
-        +'<p class="explain">'+explain+'</p>'
-        +'<div class="acts"><button class="btn primary" onclick="goAv()">Check camera &amp; mic</button></div>'
+        +'<p class="sub"'+(late?'':' data-st="4"')+'>'+sub+'</p>'
+        +bodyCopy
+        +'<div class="acts"'+(late?'':' data-st="6"')+'><button class="btn primary" onclick="goAv()">Continue</button></div>'
         +'</div>'
       +'</div>'
+      +(late?'':welcomeAnimStage())
     +'</div>'
     +'</div>';
 }
@@ -2114,6 +2873,7 @@ function screenAV(){
     +'<div class="av-head">'
     +'<h2>Video &amp; audio check</h2>'
     +'</div>'
+    +avSessionStatus()
     +'<div class="av-card">'
     +'<div class="av-stage">'
     +avPreview()
@@ -2182,14 +2942,14 @@ function screenArrive(){
 
 function screenPracticeGoing(){
   return '<main class="practice-transition is-going" aria-labelledby="practice-going-title">'
-    +rackets()
+    +roomPaddles()
     +'<h2 id="practice-going-title">Yalla - let’s practice together</h2>'
     +'<p class="practice-support">Practice Hebrew out loud with classmates.\nMistakes are welcome.</p>'
     +'</main>';
 }
 function screenPracticeWaiting(){
   return '<main class="practice-transition is-waiting" aria-labelledby="practice-wait-title">'
-    +rackets()
+    +roomPaddles()
     +'<h2 id="practice-wait-title">You’ll rejoin the main room shortly</h2>'
     +'<p class="practice-support">Camera and mic are needed for room practice. You’ll wait here until the class regroups.</p>'
     +'<div class="practice-room-countdown" id="clockNum" role="timer" aria-live="off">'+fmt(ST.left)+'</div>'
@@ -2198,7 +2958,7 @@ function screenPracticeWaiting(){
 }
 function screenPracticeReturn(){
   return '<main class="practice-transition is-return" aria-labelledby="practice-return-title">'
-    +rackets()
+    +roomPaddles()
     +'<h2 id="practice-return-title">Time\'s up!</h2>'
     +'<p class="practice-support">Heading back to the main room</p>'
     +'</main>';
@@ -2393,11 +3153,62 @@ function canonicalEnding(scene){
 function openPracticeTools(){
   alert('Practice Tools \u2014 destination placeholder');
 }
+var END_TOOLS_TIMER=0;
+function clearEndingToolsTimer(){
+  clearTimeout(END_TOOLS_TIMER);
+  END_TOOLS_TIMER=0;
+}
+function endingToolsIllustration(){
+  return '<div class="end-tools-visual" aria-hidden="true"><svg viewBox="0 0 76 86" fill="none">'
+    +'<g class="end-tools-coin end-tools-coin-1"><circle cx="38" cy="12" r="8" fill="#F9E24C" stroke="#373230" stroke-width="1.35"/><path d="M35.5 12h5M38 9.5v5" stroke="#373230" stroke-width="1" stroke-linecap="round"/></g>'
+    +'<g class="end-tools-coin end-tools-coin-2"><circle cx="38" cy="12" r="8" fill="#F9E24C" stroke="#373230" stroke-width="1.35"/><path d="M35.5 12h5M38 9.5v5" stroke="#373230" stroke-width="1" stroke-linecap="round"/></g>'
+    +'<g class="end-tools-coin end-tools-coin-3"><circle cx="38" cy="12" r="8" fill="#F9E24C" stroke="#373230" stroke-width="1.35"/><path d="M35.5 12h5M38 9.5v5" stroke="#373230" stroke-width="1" stroke-linecap="round"/></g>'
+    +'<g class="end-tools-pouch-settle"><g class="end-tools-pouch-react">'
+      +'<path class="end-tools-pouch-body" d="M16 31 C15 42 13 56 12 68 C11 76 18 82 27 82 H49 C58 82 65 76 64 68 C63 56 61 42 60 31 C52 34 24 34 16 31 Z" fill="#373230" stroke="#F7F6EF" stroke-width="1.35" stroke-linejoin="round"/>'
+      +'<path class="end-tools-pouch-top" d="M16 31 C22 27 30 25 38 26 C46 25 54 27 60 31 C54 34 46 35 38 35 C30 35 22 34 16 31 Z" fill="#373230" stroke="#F7F6EF" stroke-width="1.25" stroke-linejoin="round"/>'
+      +'<path class="end-tools-pouch-cinch" d="M17 32 C27 37 49 37 59 32" stroke="#F7F6EF" stroke-width="1.2" stroke-linecap="round"/>'
+      +'<path class="end-tools-drawstring" d="M24 39 C30 41 38 42 46 41 C52 40 56 39 56 39" stroke="#F7F6EF" stroke-width="1.3" stroke-linecap="round"/>'
+      +'<path class="end-tools-bow" d="M33 39.5 C31 42.5 29 45.5 30 48.5 M43 39.5 C45 42.5 47 45.5 46 48.5 M35.5 39.5 C38 40.5 40.5 39.5" stroke="#F7F6EF" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>'
+    +'</g></g>'
+  +'</svg></div>';
+}
+function endingToolsOnboarding(){
+  if(ST.endingToolsExposure>=3||ST.endingToolsDismissed) return '';
+  return '<aside class="end-tools-onboarding'+(ST.endingToolsExposure===2?' is-second':'')+'" role="status" aria-label="Practice Tools tip">'
+    +endingToolsIllustration()
+    +'<div class="end-tools-onboarding-copy"><h3>Your Gym phrases are saved.</h3><p>Find them anytime in Practice Tools.</p></div>'
+    +'<button type="button" class="end-tools-got-it" onclick="dismissEndingToolsOnboarding()">Got it</button>'
+  +'</aside>';
+}
+function scheduleEndingToolsOnboarding(){
+  clearEndingToolsTimer();
+  if(ST.endingToolsExposure>=3||ST.endingToolsDismissed) return;
+  END_TOOLS_TIMER=setTimeout(function(){
+    var card=document.querySelector('.end-tools-onboarding');
+    if(card) card.classList.add('is-visible');
+  },ST.endingToolsExposure===2?700:850);
+}
+function dismissEndingToolsOnboarding(){
+  clearEndingToolsTimer();
+  var card=document.querySelector('.end-tools-onboarding');
+  if(!card) return;
+  card.classList.add('is-dismissing');
+  setTimeout(function(){
+    ST.endingToolsDismissed=true;
+    if(card.parentNode) card.parentNode.removeChild(card);
+  },250);
+}
+function setEndingToolsExposure(exposure){
+  ST.endingToolsExposure=Number(exposure);
+  ST.endingToolsDismissed=false;
+  if(!isEndingScene(ST.scene)) setScene('ending-base');
+  else render();
+}
 function endingCtas(){
   var primary=ST.endMoreAvailable
     ? '<button class="btn primary" onclick="oneMore()">One more session</button>'
     : '<button class="btn primary" onclick="openPracticeTools()">Open Practice Tools</button>';
-  return primary+'<button class="btn end-home" onclick="goHome()">Back to homepage</button>';
+  return primary+'<a href="#" class="end-home-link" onclick="goHome();return false;">Back to homepage</a>';
 }
 function hasEndingFeedback(){
   var note=endingDepth()>=3 && ST.fbNote && String(ST.fbNote).trim();
@@ -2421,21 +3232,8 @@ function syncEndingAvailability(){
   var acts=root.querySelector('.end-acts');
   if(!acts) return false;
   if(root.classList.contains('ending-base')){
-    var stay=root.querySelector('.end-stay');
     var actions=root.querySelector('.end-base-actions');
-    if(!stay||!actions) return false;
-    var link=stay.querySelector('.end-tools-link');
-    var next=actions.querySelector('.end-next-copy');
-    if(!link){
-      stay.insertAdjacentHTML('beforeend','<a href="#" class="end-tools-link" onclick="openPracticeTools();return false;">Open Practice Tools \u2192</a>');
-    }
-    if(ST.endMoreAvailable){
-      if(!next){
-        acts.insertAdjacentHTML('beforebegin',endingNextCopyHtml());
-      }
-    }else if(next){
-      next.remove();
-    }
+    if(!actions) return false;
     acts.innerHTML=endingBaseCtas();
     return true;
   }
@@ -2461,11 +3259,13 @@ function playEndingCelebration(){
   if(!root || !seal || !stage) return;
   if(ST.endingRested){
     root.classList.add('is-rested');
+    scheduleEndingToolsOnboarding();
     return;
   }
   if(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches){
     ST.endingRested=true;
     root.classList.add('is-rested');
+    scheduleEndingToolsOnboarding();
     return;
   }
   var pr=stage.getBoundingClientRect();
@@ -2488,6 +3288,7 @@ function playEndingCelebration(){
     if(e.animationName!=='endDoneTravel') return;
     ST.endingRested=true;
     root.classList.add('is-rested');
+    scheduleEndingToolsOnboarding();
   });
 }
 function playEnding(){ playEndingCelebration(); }
@@ -2516,9 +3317,7 @@ function screenEndingFull(){
         +'<div class="end-today">'
           +'<h3>Here\u2019s what you did in this session:</h3>'
           +'<ul>'+today+'</ul>'
-        +'</div>'
-        +'<div class="end-stay">'
-          +'<p><span class="end-stay-lead">Gym phrases stay with you.</span><span class="end-stay-detail">This session\u2019s vocabulary is waiting whenever you want another pass.</span></p>'
+          +endingToolsOnboarding()
         +'</div>'
         +'<div class="end-people">'
           +'<h3>Your Gym partners:</h3>'
@@ -2543,15 +3342,11 @@ function screenEndingFull(){
     +'</aside>'
     +'</div></div>';
 }
-/* With no next session the tools link carries practice, so the screen closes on a single action. */
 function endingBaseCtas(){
   var solo=!ST.endMoreAvailable;
-  var home='<button class="btn end-home'+(solo?' is-solo':'')+'" onclick="goHome()">Back to homepage</button>';
-  if(solo) return home;
-  return '<button class="btn primary" onclick="oneMore()">Let\u2019s do it!</button>'+home;
-}
-function endingNextCopyHtml(){
-  return '<p class="end-next-copy">There\u2019s another Gym session starting soon. <span class="end-next-q">Want to join?</span></p>';
+  if(solo) return '<button class="btn end-home is-solo" onclick="goHome()">Back to homepage</button>';
+  return '<button class="btn primary" onclick="oneMore()">Another one!</button>'
+    +'<a href="#" class="end-home-link" onclick="goHome();return false;">Back to homepage</a>';
 }
 function dismissReflection(){
   ST.reflectionDismissed=true;
@@ -2578,8 +3373,6 @@ function screenEndingBase(withPrompt){
   var today=recap.today.map(function(item){ return '<li>'+item+'</li>'; }).join('');
   var headline=endingHeadline();
   var eyebrow='<div class="end-eyebrow">Session complete</div>';
-  var toolsLink='<a href="#" class="end-tools-link" onclick="openPracticeTools();return false;">Open Practice Tools \u2192</a>';
-  var nextCopy=ST.endMoreAvailable ? endingNextCopyHtml() : '';
   var acts=endingBaseCtas();
   var streak=withPrompt?'':' ending-streak-'+endingDepth();
   return lockupWelcome()
@@ -2591,10 +3384,7 @@ function screenEndingBase(withPrompt){
         +'<div class="end-today">'
           +'<h3>Here\u2019s what you did in this session:</h3>'
           +'<ul>'+today+'</ul>'
-        +'</div>'
-        +'<div class="end-stay">'
-          +'<p><span class="end-stay-lead">Gym phrases stay with you.</span><span class="end-stay-detail">This session\u2019s vocabulary is waiting whenever you want another pass.</span></p>'
-          +toolsLink
+          +endingToolsOnboarding()
         +'</div>'
         +'<div class="end-people">'
           +'<h3>Your Gym partners:</h3>'
@@ -2603,7 +3393,6 @@ function screenEndingBase(withPrompt){
       +'</div>'
     +'</div>'
     +'<div class="end-base-actions">'
-      +nextCopy
       +'<div class="end-acts">'+acts+'</div>'
     +'</div>'
     +endingCelebrateMarkup()
@@ -2636,6 +3425,21 @@ function syncClockUI(){
 }
 function clockTick(){
   if(!ST.clockOn) return;
+  if(ST.scene==='av-check'){
+    if(ST.left<=0){ ST.clockOn=false; return; }
+    ST.left--;
+    if(ST.left<=0){
+      ST.clockOn=false;
+      render();
+      return;
+    }
+    if(ST.left<=DUR.t10){
+      var avNum=document.getElementById('avSessionCountdown');
+      if(avNum) avNum.textContent=ST.left;
+      else render();
+    }
+    return;
+  }
   var timed={'waiting':1,'waiting-t20':1,'waiting-t10':1,'starting':1,'blocked-next':1,'practice-wait-declined':1,'practice-wait-left':1};
   if(!timed[ST.scene]) return;
   if(ST.left>0){
@@ -2664,7 +3468,17 @@ function clockTick(){
 setInterval(clockTick,1000);
 
 /* ---------- Flow ---------- */
-function goAv(){ ST.scene='av-check'; render(); }
+function goAv(){
+  ST.avTimingPreview='';
+  ST.scene='av-check';
+  if(ST.late || ST.path==='late'){
+    ST.left=0; ST.clockOn=false;
+  }else{
+    if(ST.left<=0) ST.left=15;
+    ST.clockOn=true;
+  }
+  render();
+}
 function proceedFinishAv(){
   if(ST.late || ST.path==='late'){ setScene('arrive'); return; }
   if(ST.path==='last-minute' || ST.left<60){
@@ -2846,8 +3660,17 @@ function seedFor(scene){
   ST.late=(scene==='welcome-late');
   ST.flashOpen=false; ST.chatOpen=false; ST.flashRevealed=false; ST.flashPlaying=false;
   ST.entering=(scene==='arrive');
-  if(scene==='welcome'||scene==='welcome-late'){ ST.left=(scene==='welcome-late')?12*60:DUR.welcomeLead; ST.clockOn=false; }
-  if(scene==='av-check'){ ST.clockOn=false; }
+  if(scene==='welcome'||scene==='welcome-late'){ ST.left=(scene==='welcome-late')?0:DUR.welcomeLead; ST.clockOn=false; }
+  if(scene==='av-check'){
+    if(ST.avTimingPreview==='t10'||ST.avTimingPreview==='late'||ST.avTimingPreview==='default'){
+      applyAvTimingPreview();
+    }else if(ST.late || ST.path==='late'){
+      ST.left=0; ST.clockOn=false;
+    }else{
+      if(ST.left<=0) ST.left=15;
+      ST.clockOn=true;
+    }
+  }
   if(scene==='waiting'){ ST.left=DUR.waiting; ST.clockOn=true; ST.path='on-time'; }
   if(scene==='waiting-t20'){ ST.left=DUR.t20; ST.clockOn=true; ST.path='on-time'; }
   if(scene==='waiting-t10'){ ST.left=DUR.t10; ST.clockOn=true; ST.entering=false; }
@@ -2856,6 +3679,7 @@ function seedFor(scene){
   if(scene==='blocked-none'){ ST.clockOn=false; }
   if(scene.indexOf('ending')===0){
     ST.clockOn=false; ST.endingRested=false; ST.fbSent=false;
+    ST.endingToolsDismissed=false;
     ST.reflectionDismissed=false;
     if(scene==='ending-prompt'){ ST.fb1=''; ST.fb2=''; }
   }
@@ -2869,10 +3693,13 @@ function seedFor(scene){
   }
 }
 
-function setScene(scene){
+function setScene(scene, opts){
+  opts=opts||{};
   scene=canonicalEnding(scene);
   ST.scene=scene;
   ST.softLoading=false;
+  if(scene!=='av-check') ST.avTimingPreview='';
+  else if(!opts.keepAvTimingPreview) ST.avTimingPreview='default';
   seedFor(scene);
   if(location.hash.replace(/^#/,'')!==scene){
     try{ history.replaceState(null,'','#'+scene); }catch(e){}
@@ -2880,7 +3707,14 @@ function setScene(scene){
   render();
 }
 function setClock(sec){
-  ST.left=sec; ST.clockOn=true;
+  ST.left=sec;
+  if(ST.scene==='av-check'){
+    ST.avTimingPreview='';
+    ST.clockOn=!(ST.late||ST.path==='late') && sec>0;
+    render();
+    return;
+  }
+  ST.clockOn=true;
   if(sec<=DUR.t10 && (ST.scene==='waiting'||ST.scene==='waiting-t20'||ST.scene==='waiting-t10')) ST.scene='waiting-t10';
   else if(sec<60 && ST.scene==='waiting') ST.scene='starting';
   render();
@@ -2894,6 +3728,7 @@ function playFlow(kind){
 }
 
 function render(){
+  clearEndingToolsTimer();
   var f=document.getElementById('frame');
   var scene=ST.scene, html='';
   if(scene==='welcome') html=screenWelcome(false);
@@ -2912,13 +3747,21 @@ function render(){
   else html=screenWelcome(false);
 
   f.innerHTML=html+softLoadingOverlay();
-  var needsLottie=(scene==='waiting'||scene==='waiting-t20'||scene==='waiting-t10'||scene==='starting'||scene==='blocked-next'||scene==='arrive'||scene.indexOf('practice-')===0);
+  var needsLottie=(scene==='waiting'||scene==='waiting-t20'||scene==='waiting-t10'||scene==='starting'||scene==='blocked-next'||scene==='arrive');
   if(needsLottie) mountLottie();
   else { destroyLottie(); lottieFrame=0; }
   if(isEndingScene(scene)) playEndingCelebration();
   syncSwitcher();
   syncAvMicMeter();
   if(scene==='av-check') refreshAvPermission();
+  if(scene==='welcome'){
+    playWelcomeMotion({
+      desktop:true,
+      variant:ST.welcomeMotion||'static',
+      surface:document.getElementById('welcomeMotionHost'),
+      play:true
+    });
+  }
 }
 
 function syncSwitcher(){
@@ -2927,8 +3770,18 @@ function syncSwitcher(){
   document.querySelectorAll('.end-avail').forEach(function(b){
     b.classList.toggle('on', (b.getAttribute('data-avail')==='1')===!!ST.endMoreAvailable);
   });
+  document.querySelectorAll('.end-tools-preview').forEach(function(b){
+    b.classList.toggle('on', Number(b.getAttribute('data-tools-exposure'))===ST.endingToolsExposure);
+  });
   document.querySelectorAll('[data-av-perm]').forEach(function(b){
     b.classList.toggle('on', b.getAttribute('data-av-perm')===avPermState());
+  });
+  document.querySelectorAll('[data-welcome-motion]').forEach(function(b){
+    b.classList.toggle('on', b.getAttribute('data-welcome-motion')===(ST.welcomeMotion||'static'));
+  });
+  document.querySelectorAll('[data-av-timing]').forEach(function(b){
+    var active=avTimingPreviewActive();
+    b.classList.toggle('on', active!=='' && b.getAttribute('data-av-timing')===active);
   });
   var note=document.getElementById('stateNote');
   if(note){
@@ -2936,6 +3789,9 @@ function syncSwitcher(){
       ? ' · '+(isEndingBaseScene()?ST.endSessions+' session'+(ST.endSessions===1?'':'s')+' · ':'')
         +(ST.endMoreAvailable?'next session available':'no next session available')
       : '';
+    if(ST.scene==='welcome' && ST.welcomeMotion && ST.welcomeMotion!=='static'){
+      extra+=' · Welcome motion '+(ST.welcomeMotion==='a'?'Rally':'Gym Splash');
+    }
     var permNote=ST.scene==='av-check'?' · permission '+avPermState():'';
     note.innerHTML='<b>'+ST.scene+'</b>'+extra+(ST.entering?' · entering':'')+' — '+(NOTES[ST.scene]||'')+' · clock '+(ST.clockOn?'on':'paused')+' · '+fmt(ST.left)+permNote;
   }
@@ -2945,6 +3801,18 @@ function togglePresent(){
   var on=document.body.classList.toggle('present');
   document.getElementById('modeBtn').textContent=on?'Exit presentation':'Presentation mode';
 }
+
+document.getElementById('welcomeMotionRow').addEventListener('click',function(e){
+  var btn=e.target.closest('[data-welcome-motion]');
+  if(!btn) return;
+  ST.welcomeMotion=btn.getAttribute('data-welcome-motion');
+  if(ST.scene!=='welcome') setScene('welcome');
+  else render();
+});
+document.getElementById('welcomeReplayBtn').addEventListener('click',function(){
+  if(ST.scene!=='welcome') setScene('welcome');
+  else render();
+});
 
 document.querySelectorAll('.sc').forEach(function(b){
   b.onclick=function(){ setScene(b.dataset.sc); };
