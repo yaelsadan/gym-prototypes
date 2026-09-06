@@ -401,7 +401,7 @@ function screenSearching(){
           + '<span class="chev" aria-hidden="true">' + GM.I.chevRt + '</span>'
         + '</button>'
         + '<div class="cafe-acts">'
-          + '<button class="primary-cta" type="button" onclick="keepExploring()">Keep exploring</button>'
+          + '<button class="primary-cta" type="button" onclick="keepExploring()">Keep exploring the Hub</button>'
           + '<button class="ghost-cta" type="button" onclick="stopMatching()">Stop matching</button>'
         + '</div>'
       + '</div>'

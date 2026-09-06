@@ -242,7 +242,7 @@
 }
 .search-pin.has-face .pin-dot{animation-name:search-pin-dot-yield}
 .search-pin.has-face .pin-face{
-  position:absolute;left:0;top:0;width:32px;height:32px;margin:-16px 0 0 -16px;
+  position:absolute;left:0;top:0;width:42px;height:42px;margin:-21px 0 0 -21px;
   border-radius:50%;overflow:hidden;background:#EDE8DC;
   border:1.5px solid rgba(247,246,239,.94);
   box-shadow:0 0 0 3px rgba(249,226,76,.32),0 3px 12px rgba(55,50,48,.28);
@@ -281,6 +281,7 @@
   gap:26px;padding:12px 0 8px;
 }
 .searching-stage .cafe-acts{margin-top:0;gap:6px}
+.searching-stage .primary-cta{width:auto;min-width:210px;padding:12px 26px}
 .searching-stage .ghost-cta{
   min-height:44px;padding:8px 16px;border:0;background:none;
   font-size:16px;font-weight:600;color:rgba(247,246,239,.56);
