@@ -465,20 +465,146 @@
 
 /* =========================================================================
    5 · SESSION AGREEMENT
-   Shown only after both sides accepted. Four principles, one acknowledgement.
-   They are statements, not tasks: no ticks, no per-item state.
+   Shown only after both sides accepted. Four principles to scan, then one
+   personal acknowledgement. Principles are statements, not tasks — the marks
+   are icons, never checkboxes. Compact so the sheet stays in the viewport.
    ========================================================================= */
-.agree-intro{font-size:15px;font-weight:400;line-height:1.5;color:#544f49;margin-bottom:4px}
-.agree-list{list-style:none;margin:14px 0 20px}
-.agree-list li{
-  display:flex;align-items:flex-start;gap:12px;padding:13px 0;
-  border-top:1px solid rgba(55,50,48,.12);
-  font-size:15.5px;font-weight:500;line-height:1.4;color:var(--brand-charcoal);
+.sheet.milky.agree-sheet{padding:18px 20px 30px}
+.sheet.milky.agree-sheet .grab{margin:4px auto 16px}
+.sheet.milky.agree-sheet h4{margin-bottom:10px}
+.sheet.milky.agree-sheet .agree-intro{
+  font-size:15px;font-weight:400;line-height:1.45;color:#544f49;margin:0 0 16px;
 }
-.agree-list li:last-child{border-bottom:1px solid rgba(55,50,48,.12)}
-.agree-list .bullet{
-  width:7px;height:7px;flex:none;margin-top:.55em;border-radius:50%;background:var(--brand-yellow);
-  box-shadow:0 0 0 1px rgba(55,50,48,.30);
+.agree-list{
+  list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px;
+}
+.agree-list li{
+  display:flex;align-items:flex-start;gap:12px;padding:12px 12px;
+  border-radius:14px;background:rgba(55,50,48,.035);
+}
+.agree-mark{
+  width:28px;height:28px;flex:none;margin-top:1px;border-radius:50%;
+  display:grid;place-items:center;
+  background:var(--brand-yellow);color:var(--brand-charcoal);
+  box-shadow:0 0 0 1px rgba(55,50,48,.22);
+}
+.agree-mark svg{width:15px;height:15px;display:block}
+.agree-copy{min-width:0;padding-top:1px}
+.agree-lead{
+  display:block;font-size:15px;font-weight:700;line-height:1.25;color:var(--brand-charcoal);
+}
+.agree-support{
+  display:block;margin-top:1px;font-size:13px;font-weight:500;line-height:1.35;color:#716C66;
+}
+
+/* One commitment, not terms. The whole row is the hit target. */
+.agree-ack{
+  display:flex;align-items:center;gap:4px;width:100%;margin-top:16px;
+  min-height:44px;padding:4px 10px 4px 4px;border-radius:14px;cursor:pointer;
+  background:rgba(55,50,48,.04);border:1.5px solid rgba(55,50,48,.16);
+  color:var(--brand-charcoal);text-align:left;font:inherit;user-select:none;
+}
+.agree-ack:hover{background:rgba(55,50,48,.07);border-color:rgba(55,50,48,.28)}
+.agree-ack:active{background:rgba(55,50,48,.10)}
+.agree-ack.is-on,.agree-ack:has(input:checked){
+  background:rgba(249,226,76,.28);border-color:var(--brand-charcoal);
+}
+.agree-ack.is-on:hover,.agree-ack:has(input:checked):hover{
+  background:rgba(249,226,76,.38);
+}
+.agree-ack:has(input:focus-visible){
+  outline:3px solid var(--brand-charcoal);outline-offset:3px;
+}
+.agree-check{
+  position:relative;width:44px;height:44px;flex:none;
+  display:grid;place-items:center;
+}
+.agree-check input{
+  position:absolute;inset:0;width:44px;height:44px;margin:0;opacity:0;cursor:pointer;
+  appearance:none;-webkit-appearance:none;
+}
+.agree-box{
+  width:20px;height:20px;border-radius:6px;background:#fff;
+  border:1.5px solid var(--brand-charcoal);display:grid;place-items:center;
+  pointer-events:none;
+}
+.agree-ack:active .agree-box{transform:scale(.94)}
+.agree-ack input:checked + .agree-box{
+  background:var(--brand-yellow);border-color:var(--brand-charcoal);
+}
+/* Checkmark is a shape, so checked is not colour-only. */
+.agree-ack input:checked + .agree-box::after{
+  content:"";width:5px;height:9px;margin-top:-1px;
+  border:solid var(--brand-charcoal);border-width:0 2px 2px 0;
+  transform:rotate(45deg);
+}
+.agree-ack-copy{
+  flex:1;min-width:0;padding-right:6px;
+  font-size:15px;font-weight:600;line-height:1.3;color:var(--brand-charcoal);
+}
+
+.sheet.milky.agree-sheet .acts{margin-top:16px;gap:0}
+.sheet.milky.agree-sheet .btn.primary:focus-visible{
+  outline:3px solid var(--brand-charcoal);outline-offset:3px;
+}
+.sheet.milky.agree-sheet .btn.primary:hover:not(:disabled){filter:brightness(.97)}
+.sheet.milky.agree-sheet .btn.primary:active:not(:disabled){transform:scale(.99)}
+/* Disabled is faded yellow plus a dashed edge — not colour-only. */
+.sheet.milky.agree-sheet .btn.primary:disabled{
+  opacity:1;cursor:default;background:rgba(249,226,76,.38);
+  color:rgba(55,50,48,.42);border:1.5px dashed rgba(55,50,48,.32);
+}
+.sheet.milky.keep-on-sheet .keep-on-q{
+  font-size:19px;font-weight:600;line-height:1.35;color:var(--brand-charcoal);margin-bottom:20px;
+}
+
+/* Partner connection issue — a passive status sheet, not a decision. */
+.sheet-scrim:has(+ .partner-off-sheet){
+  background:rgba(43,39,36,.26);
+  -webkit-backdrop-filter:blur(3.5px) saturate(.92);
+  backdrop-filter:blur(3.5px) saturate(.92);
+}
+.sheet.milky.partner-off-sheet{
+  padding:24px 24px 32px;
+}
+.sheet.milky.partner-off-sheet .grab{display:none;margin:0;height:0}
+.sheet.milky.partner-off-sheet h4{
+  font-size:19px;font-weight:700;letter-spacing:-.55px;line-height:1.2;
+  margin:0 0 12px;white-space:nowrap;
+}
+.sheet.milky.partner-off-sheet p{
+  font-size:16px;font-weight:400;line-height:1.45;color:#544f49;margin:0;
+}
+.po-status{
+  display:flex;align-items:center;gap:10px;margin-top:16px;
+  color:#716C66;
+}
+.po-spin{
+  width:14px;height:14px;flex:none;border-radius:50%;
+  border:1.5px solid rgba(55,50,48,.16);
+  border-top-color:rgba(55,50,48,.55);
+  animation:pospin .9s linear infinite;
+}
+@keyframes pospin{to{transform:rotate(360deg)}}
+.po-status-copy{font-size:14px;font-weight:600;line-height:1.3}
+.po-acts{
+  max-height:0;opacity:0;overflow:hidden;margin:0;
+  pointer-events:none;visibility:hidden;
+  transition:max-height .4s ease,opacity .3s ease,margin-top .4s ease;
+}
+.partner-off-sheet.is-wait .po-acts{
+  max-height:64px;opacity:1;margin-top:16px;
+  pointer-events:auto;visibility:visible;
+}
+.sheet.milky.partner-off-sheet .po-find{
+  min-height:48px;background:transparent;color:var(--brand-charcoal);
+  border:1.5px solid rgba(55,50,48,.22);
+}
+.sheet.milky.partner-off-sheet .po-find:hover{
+  background:rgba(55,50,48,.04);border-color:rgba(55,50,48,.34);
+}
+.sheet.milky.partner-off-sheet .po-find:focus-visible{
+  outline:3px solid var(--brand-charcoal);outline-offset:3px;
 }
 
 
@@ -555,7 +681,8 @@
 
 @media (prefers-reduced-motion:reduce){
   .search-pin,.search-echo,.search-pin.has-face .pin-dot,.search-pin.has-face .pin-face,
-  .match-indicator .mi-dot::after,.fc-status .mi-dot::after{animation:none}
+  .match-indicator .mi-dot::after,.fc-status .mi-dot::after,.po-spin,.po-acts{animation:none;transition:none}
+  .po-spin{border-top-color:rgba(55,50,48,.4)}
   .search-echo{opacity:0}
   .search-pin{opacity:0}
   .search-pin.p1{opacity:.9}

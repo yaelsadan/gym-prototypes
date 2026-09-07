@@ -31,7 +31,8 @@ var DUR = {
   partnerConfirm:4,   // the partner answers this long after you accept
   session:360,        // 6:00
   sessionFinal:30,    // the clock warms to yellow below this
-  ending:7            // ending -> back to the Hub, still matching
+  ending:7,           // ending -> back to the Hub, still matching
+  partnerOffWait:9    // connection-issue sheet, then "Find me a new partner"
 };
 
 /* =========================================================================
@@ -58,15 +59,16 @@ var PARTNER = {
   level:'lightblue',
   location:'Berlin, Germany',
   img:IMG_PARTNER,
-  ice:{label:'How they drink coffee', text:'Double espresso with almond milk'}
+  ice:{label:'how they drink their coffee', text:'Double espresso with almond milk'}
 };
 
-/* Content of the agreement is product-specified. This is the only copy of it. */
+/* Content of the agreement is product-specified. This is the only copy of it.
+   Four principles to scan, then one acknowledgement. No per-item ticks. */
 var AGREEMENT_TERMS = [
-  'Be respectful and welcoming.',
-  'Keep your camera on throughout the session.',
-  'Make your best effort to speak in Hebrew.',
-  'Create a safe and supportive environment for your partner.'
+  {icon:'welcome', lead:'Mistakes are welcome',          support:'Everyone here is learning.'},
+  {icon:'hebrew',  lead:'Give Hebrew your best shot',    support:'Even a few words count.'},
+  {icon:'present', lead:'Stay present for six minutes',  support:'Keep your camera and mic on.'},
+  {icon:'kind',    lead:'Be kind to your partner',       support:'Help make the conversation feel safe and supportive.'}
 ];
 
 /* The activity the text panel shows by default. Placeholder content. */
@@ -103,7 +105,7 @@ var NOTES = {
   hub:'3b \u00b7 Placeholder Hub carrying the persistent matching indicator. The Hub itself is not designed in this pass.',
   flashcards:'3c \u00b7 Optional practice while waiting. The Gym Solo deck. A match interrupts it; declining returns here.',
   matched:'4 \u00b7 Match found. A 30s interrupt over whatever you were doing. Accept keeps the same surface and waits for the partner.',
-  agreement:'5 \u00b7 Session agreement. Only after both accepted. Four principles, one acknowledgement, no decline.',
+  agreement:'5 \u00b7 Session agreement. Only after both accepted. Four principles to scan, one acknowledgement that enables the CTA. No decline.',
   live:'6 \u00b7 Live Cafe. The Gym Practice Room shell. Dock: Wheel \u00b7 Challenge \u00b7 Text, then Camera \u00b7 Mic.',
   ending:'7 \u00b7 Ending. Matching never stopped, so there is no "find someone now" \u2014 it requeues on its own.'
 };
@@ -131,7 +133,13 @@ var ST = {
   card:0, cardRevealed:false, cardMarked:false, cardPlaying:false,
   textOpen:false,
   textLog:[],
-  leaveSheet:false
+  leaveSheet:false,
+  keepOnSheet:false,
+  partnerOffSheet:false,
+  partnerCamOff:false,
+  partnerMicOff:false,
+  partnerOffFind:false,
+  agreed:false
 };
 
 /* ---------------------------------------------------------------- helpers */
@@ -214,12 +222,12 @@ function screenEntry(){
   return '<div class="transition-shell"></div>'
     + cafeLockup()
     + '<main class="cafe-entry">'
-      + '<h2 class="cafe-display">Fancy a <b>coffee chat</b>?</h2>'
-      + '<p class="cafe-sub">Six minutes of Hebrew with someone new.</p>'
+      + '<h2 class="cafe-display">Welcome to the <b>Caf\u00e9</b>!</h2>'
+      + '<p class="cafe-sub">Grab a coffee and chat with a Hebrew partner, wherever they are in the world. Mistakes are welcome, this is all about having fun. Stuck? Lean on the toolbar for topics and exercises.</p>'
       + levelPicker()
       + '<div class="cafe-acts">'
         + '<button class="primary-cta" type="button" onclick="goAvCheck()"'
-          + (ST.selected.length?'':' disabled') + '>Continue</button>'
+          + (ST.selected.length?'':' disabled') + '>Find a partner</button>'
       + '</div>'
     + '</main>';
 }
@@ -397,11 +405,11 @@ function screenSearching(){
         + '<button type="button" class="wait-practice" onclick="openFlashcards()">'
           + '<span class="wp-icon">' + cafeCardsIcon() + '</span>'
           + '<span class="wp-copy"><span class="wp-kicker">While you wait</span>'
-          + '<span class="wp-title">Practice a few flashcards</span></span>'
+          + '<span class="wp-title">Practice flashcards</span></span>'
           + '<span class="chev" aria-hidden="true">' + GM.I.chevRt + '</span>'
         + '</button>'
         + '<div class="cafe-acts">'
-          + '<button class="primary-cta" type="button" onclick="keepExploring()">Keep exploring the Hub</button>'
+          + '<button class="primary-cta" type="button" onclick="keepExploring()">Explore Hub</button>'
           + '<button class="ghost-cta" type="button" onclick="stopMatching()">Stop matching</button>'
         + '</div>'
       + '</div>'
@@ -433,9 +441,9 @@ function matchIndicator(){
     + '<span class="mi-dot" aria-hidden="true"></span>'
     + '<span class="mi-copy">'
       + '<span class="mi-title">Caf\u00e9</span>'
-      + '<span class="mi-line">Looking for a partner\u2026</span>'
+      + '<span class="mi-line">Finding your Caf\u00e9 partner...</span>'
     + '</span>'
-    + '<span class="mi-chev" aria-hidden="true">' + GM.I.chevUp + '</span>'
+    + '<span class="mi-chev" aria-hidden="true">' + GM.I.chevRt + '</span>'
     + '</button>';
 }
 function screenHub(){
@@ -483,7 +491,7 @@ function matchSheet(){
   return GM.sheet({
     milky:true,
     cls:'match-sheet',
-    body:'<h4>Someone\u2019s free to talk</h4>' + card,
+    body:'<h4>We found you a Caf\u00e9 partner!</h4>' + card,
     acts:acts,
     resp:ST.offerLeft
   });
@@ -501,21 +509,46 @@ function screenMatched(){
 /* =========================================================================
    5 · SESSION AGREEMENT  —  both sides accepted
    A/V was settled before matching, so this leads straight into the chat.
+   Principles are statements, not tasks. One acknowledgement enables the CTA.
    ========================================================================= */
+function agreeIcon(kind){
+  var paths = {
+    welcome:'<path d="M12 3.6v2.4M12 18v2.4M3.6 12h2.4M18 12h2.4M6.2 6.2l1.7 1.7M16.1 16.1l1.7 1.7M17.8 6.2l-1.7 1.7M7.9 16.1l-1.7 1.7"/><circle cx="12" cy="12" r="2.8"/>',
+    hebrew:'<path d="M5.5 8.2h10a2.8 2.8 0 010 5.6h-4.2L7.2 17.2v-3.4H5.5a2.8 2.8 0 010-5.6z"/>',
+    present:'<circle cx="12" cy="12" r="7.4"/><path d="M12 8.2v4.1l2.5 1.5"/>',
+    kind:'<path d="M12 18.2S6 14.2 6 10.4A3.2 3.2 0 0112 8.6a3.2 3.2 0 016 1.8c0 3.8-6 7.8-6 7.8z"/>'
+  };
+  return '<span class="agree-mark" aria-hidden="true">'
+    + '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'
+    + (paths[kind] || '') + '</svg></span>';
+}
 function screenAgreement(){
   var list = '';
   AGREEMENT_TERMS.forEach(function(t){
-    list += '<li><span class="bullet" aria-hidden="true"></span><span>' + GM.esc(t) + '</span></li>';
+    list += '<li>'
+      + agreeIcon(t.icon)
+      + '<span class="agree-copy"><span class="agree-lead">' + GM.esc(t.lead) + '</span>'
+      + '<span class="agree-support">' + GM.esc(t.support) + '</span></span>'
+    + '</li>';
   });
+  var ack = '<label class="agree-ack' + (ST.agreed?' is-on':'') + '">'
+      + '<span class="agree-check">'
+        + '<input id="agreeAck" type="checkbox"' + (ST.agreed?' checked':'') + ' onchange="onAgreeAck(this)">'
+        + '<span class="agree-box" aria-hidden="true"></span>'
+      + '</span>'
+      + '<span class="agree-ack-copy">I\u2019m ready to show up for my partner.</span>'
+    + '</label>';
   return '<div class="transition-shell"></div>'
     + cafeLockup('with ' + PARTNER.name)
     + GM.sheet({
         milky:true,
         cls:'agree-sheet',
         body:'<h4>Before you sit down</h4>'
-          + '<p class="agree-intro">You\u2019re about to talk with ' + GM.esc(PARTNER.name) + '. In Caf\u00e9 we all agree to:</p>'
-          + '<ul class="agree-list">' + list + '</ul>',
-        acts:'<button class="btn primary" type="button" onclick="enterCafe()">Got it \u2014 let\u2019s talk</button>'
+          + '<p class="agree-intro">Before jumping into the Caf\u00e9, here\u2019s what we\u2019re both agreeing to:</p>'
+          + '<ul class="agree-list">' + list + '</ul>'
+          + ack,
+        acts:'<button class="btn primary" id="agreeCta" type="button" onclick="enterCafe()"'
+          + (ST.agreed?'':' disabled') + '>Caf\u00e9 time!</button>'
       });
 }
 
@@ -549,11 +582,37 @@ function leaveSheet(){
   return GM.sheet({
     milky:true,
     onScrim:'closeLeave()',
-    body:'<h4>Leave this chat?</h4>'
+    body:'<h4>End this Caf\u00e9?</h4>'
       + '<p>If something feels wrong or uncomfortable, you can leave right away \u2014 and let the team know what happened.</p>',
-    acts:'<button class="btn danger-soft" type="button" onclick="endSession()">Leave chat</button>'
+    acts:'<button class="btn danger-soft" type="button" onclick="endSession()">End session</button>'
       + '<button class="btn" type="button" onclick="endSession()">Report an issue</button>'
-      + '<button class="btn" type="button" onclick="closeLeave()">Cancel \u2014 stay in the chat</button>'
+      + '<button class="btn" type="button" onclick="closeLeave()">Stay</button>'
+  });
+}
+function keepOnSheet(){
+  return GM.sheet({
+    milky:true,
+    cls:'keep-on-sheet',
+    onScrim:'closeKeepOn()',
+    body:'<h4>Caf\u00e9 needs the camera and mic on to keep going.</h4>'
+      + '<p class="keep-on-q">Want to leave the session?</p>',
+    acts:'<button class="btn primary" type="button" onclick="closeKeepOn()">Stay</button>'
+      + '<button class="btn" type="button" onclick="endSession()">Leave</button>'
+  });
+}
+function partnerOffSheet(){
+  return GM.sheet({
+    milky:true,
+    cls:'partner-off-sheet' + (ST.partnerOffFind?' is-wait':''),
+    body:'<h4>' + GM.esc(PARTNER.name) + '\u2019s camera or mic seems to be off.</h4>'
+      + '<p>We\u2019ll find you a new partner if they don\u2019t come back soon.</p>'
+      + '<div class="po-status" role="status" aria-live="polite">'
+        + '<span class="po-spin" aria-hidden="true"></span>'
+        + '<span class="po-status-copy">Trying to reconnect\u2026</span>'
+      + '</div>'
+      + '<div class="po-acts" aria-hidden="' + (ST.partnerOffFind?'false':'true') + '">'
+        + '<button class="btn po-find" type="button" onclick="findNewPartner()">Find me a new partner</button>'
+      + '</div>'
   });
 }
 function screenLive(){
@@ -571,12 +630,14 @@ function screenLive(){
       'openLeave()'
     )
     + '<div class="rstage">'
-      + GM.half('top', PARTNER.name, {img:PARTNER.img})
+      + GM.half('top', PARTNER.name, {img:PARTNER.img, camOff:ST.partnerCamOff, micOff:ST.partnerMicOff})
       + GM.half('bottom', 'You', {img:IMG_YOU, camOff:ST.camOff, micOff:ST.micOff})
     + '</div>'
     + dock
     + (ST.textOpen ? textSheet() : '')
-    + (ST.leaveSheet ? leaveSheet() : '');
+    + (ST.leaveSheet ? leaveSheet() : '')
+    + (ST.keepOnSheet ? keepOnSheet() : '')
+    + (ST.partnerOffSheet ? partnerOffSheet() : '');
 }
 
 
@@ -605,10 +666,15 @@ function seedFor(state){
   if(state === 'entry'){
     ST.matching = false; ST.searchElapsed = 0; ST.textOpen = false;
     ST.textLog = []; ST.leaveSheet = false; ST.left = 0; ST.levelsSheet = false;
+    ST.agreed = false; ST.keepOnSheet = false;
+    clearPartnerOff();
   }
   /* every Café entry runs the check, so it always starts from scratch */
   if(state === 'avcheck'){ ST.left = 0; ST.devSheet = false; micReset(); }
-  if(state === 'searching'){ ST.matching = true; ST.left = DUR.searchTo; ST.levelsSheet = false; }
+  if(state === 'searching'){
+    ST.matching = true; ST.left = DUR.searchTo; ST.levelsSheet = false;
+    clearPartnerOff();
+  }
   if(state === 'hub'){ if(!ST.matching){ ST.matching = true; ST.left = DUR.searchTo; } }
   if(state === 'flashcards'){ if(!ST.matching){ ST.matching = true; ST.left = DUR.searchTo; } }
   if(state === 'matched'){
@@ -616,8 +682,16 @@ function seedFor(state){
     ST.offerLeft = DUR.offer;
     PARTNER.level = drawPartnerLevel();
   }
-  if(state === 'live'){ ST.left = DUR.session; ST.textLog = []; ST.textOpen = false; ST.leaveSheet = false; }
-  if(state === 'ending'){ ST.left = DUR.ending; ST.textOpen = false; ST.leaveSheet = false; }
+  if(state === 'agreement'){ ST.agreed = false; }
+  if(state === 'live'){
+    ST.left = DUR.session; ST.textLog = []; ST.textOpen = false;
+    ST.leaveSheet = false; ST.keepOnSheet = false;
+    clearPartnerOff();
+  }
+  if(state === 'ending'){
+    ST.left = DUR.ending; ST.textOpen = false; ST.leaveSheet = false;
+    ST.keepOnSheet = false; clearPartnerOff();
+  }
 }
 function setState(state){
   if(ORDER.indexOf(state) === -1) state = 'entry';
@@ -676,15 +750,34 @@ function partnerDeclines(){
 }
 function bothAccepted(){ setState('agreement'); }
 
+function onAgreeAck(el){
+  ST.agreed = !!(el && el.checked);
+  var btn = document.getElementById('agreeCta');
+  if(btn) btn.disabled = !ST.agreed;
+  var row = el && el.closest('.agree-ack');
+  if(row) row.classList.toggle('is-on', ST.agreed);
+}
+function enterCafe(){ if(!ST.agreed) return; setState('live'); }
+
 function setPerm(p){ ST.perm = p; render(); }
-function toggleCam(){ ST.camOff = !ST.camOff; render(); }
+function toggleCam(){
+  if(ST.state === 'live' && !ST.camOff){
+    ST.keepOnSheet = true;
+    ST.leaveSheet = false;
+    ST.partnerOffSheet = false;
+    clearTimeout(partnerOffT);
+    render();
+    return;
+  }
+  ST.camOff = !ST.camOff;
+  render();
+}
 function toggleMic(){
   ST.micOff = !ST.micOff;
   if(ST.micOff) micReset();
   render();
 }
 function toggleBlur(){ ST.blur = !ST.blur; render(); }
-function enterCafe(){ setState('live'); }
 
 /* the mic test — record a few seconds, then hear it back */
 var MIC_LEN = 4;
@@ -728,10 +821,58 @@ function sendText(){
   el.value = '';
   render();
 }
-function openLeave(){ ST.leaveSheet = true; render(); }
+function openLeave(){ ST.leaveSheet = true; ST.keepOnSheet = false; ST.partnerOffSheet = false; clearTimeout(partnerOffT); render(); }
 function closeLeave(){ ST.leaveSheet = false; render(); }
+function closeKeepOn(){ ST.keepOnSheet = false; render(); }
+var partnerOffT = null;
+function clearPartnerOff(){
+  clearTimeout(partnerOffT);
+  partnerOffT = null;
+  ST.partnerOffSheet = false;
+  ST.partnerOffFind = false;
+  ST.partnerCamOff = false;
+  ST.partnerMicOff = false;
+}
+function schedulePartnerOffFind(){
+  clearTimeout(partnerOffT);
+  partnerOffT = setTimeout(function(){
+    partnerOffT = null;
+    if(!ST.partnerOffSheet) return;
+    ST.partnerOffFind = true;
+    var el = document.querySelector('.partner-off-sheet');
+    if(el){
+      el.classList.add('is-wait');
+      var acts = el.querySelector('.po-acts');
+      if(acts) acts.setAttribute('aria-hidden','false');
+    }
+  }, DUR.partnerOffWait * 1000);
+}
+function partnerDropped(){
+  if(ST.state !== 'live'){
+    ST.state = 'live';
+    seedFor('live');
+    try{ history.replaceState(null, '', '#live'); }catch(e){}
+  }
+  ST.partnerCamOff = true;
+  ST.partnerMicOff = true;
+  ST.partnerOffSheet = true;
+  ST.partnerOffFind = false;
+  ST.leaveSheet = false;
+  ST.keepOnSheet = false;
+  schedulePartnerOffFind();
+  render();
+}
+function partnerReconnected(){
+  if(!ST.partnerOffSheet && !ST.partnerCamOff && !ST.partnerMicOff) return;
+  clearPartnerOff();
+  render();
+}
+function findNewPartner(){
+  clearPartnerOff();
+  setState('searching');
+}
 /* Ends this chat. Matching stays live and picks up again on its own. */
-function endSession(){ ST.leaveSheet = false; setState('ending'); }
+function endSession(){ ST.leaveSheet = false; ST.keepOnSheet = false; clearPartnerOff(); setState('ending'); }
 
 
 /* --------------------------------------------------------------- the clock */
