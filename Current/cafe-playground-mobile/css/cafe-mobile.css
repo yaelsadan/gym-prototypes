@@ -306,7 +306,7 @@
 .wait-practice .chev svg{width:18px;height:18px;display:block}
 
 /* Edit-levels: the Gym milky sheet, chips as tappable — never disabled ghosts. */
-.levels-sheet{padding-bottom:32px}
+.levels-sheet{padding-bottom:44px}
 .levels-sheet h4{margin-bottom:16px}
 .levels-sheet .pref-own{margin:4px 0 26px}
 .levels-sheet .pref-more-head{margin:0 0 14px}
@@ -327,7 +327,7 @@
 }
 .levels-sheet .lvl-chip.is-on .me-tag{opacity:.8;color:var(--brand-yellow)}
 .levels-sheet p.pool-line{
-  margin:16px 0 0;font-size:15px;font-weight:500;line-height:1.45;color:#716C66;
+  margin:22px 0 18px;font-size:16px;font-weight:500;line-height:1.45;color:#716C66;
 }
 
 
@@ -413,11 +413,19 @@
    A time-sensitive interrupt over whatever the student was doing. It is the
    Gym milky decision sheet, carrying a partner card instead of body copy.
    ========================================================================= */
-.match-sheet{padding-bottom:32px}
-.match-sheet h4{margin-bottom:16px;font-size:22px}
-.match-card{display:flex;flex-direction:column;align-items:center;text-align:center}
+.sheet.milky.match-sheet{
+  display:flex;flex-direction:column;
+  min-height:84%;padding:26px 22px 44px;
+}
+.match-sheet .grab{margin:8px auto 22px}
+.match-sheet h4{margin:0;font-size:22px}
+.match-card{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  flex:1;min-height:0;text-align:center;
+}
 .match-photo{
-  width:108px;height:108px;border-radius:50%;overflow:hidden;flex:none;
+  width:120px;height:120px;border-radius:50%;overflow:hidden;flex:none;
+  margin-top:28px;
   border:2px solid #fff;background:#EDE8DC;box-shadow:0 8px 22px rgba(55,50,48,.22);
 }
 .match-photo img{width:100%;height:100%;display:block;object-fit:cover;object-position:center 22%}
@@ -436,7 +444,7 @@
 /* the one onboarding-derived detail — the reason to say yes.
    A quiet warm panel, not a badge: it carries content, not status. */
 .ice{
-  display:block;margin-top:18px;padding:14px 16px;width:100%;text-align:left;
+  display:block;margin-top:26px;padding:16px 18px;width:100%;text-align:left;
   border-radius:var(--r-lg);background:rgba(249,226,76,.20);border:1px solid rgba(249,226,76,.55);
 }
 .ice .ice-label{display:block;font-size:13px;font-weight:600;color:#716C66}
@@ -444,18 +452,20 @@
 
 /* Countdown is the interrupt cue; the Gym respline still sits under the acts. */
 .match-count{
-  display:flex;align-items:baseline;justify-content:center;gap:6px;margin-top:20px;
+  display:flex;align-items:baseline;justify-content:center;gap:6px;margin-top:26px;
   font-size:16px;font-weight:600;color:#716C66;font-variant-numeric:tabular-nums;
 }
 .match-count .num{color:var(--brand-charcoal);font-size:26px;font-weight:700;line-height:1}
 .match-count .unit{font-size:16px;font-weight:600}
 .match-count.is-low .num,.match-count.is-low{color:var(--status-live)}
 .sheet.milky .respline.is-low i{background:var(--status-live)}
+.match-sheet .acts{margin-top:24px;gap:12px}
+.match-sheet .respline{margin-top:18px}
 
 /* accepted — the same surface, waiting for the other side */
 .match-waiting{
-  display:flex;flex-direction:column;align-items:center;gap:12px;margin-top:20px;
-  padding-top:18px;border-top:1px solid rgba(55,50,48,.12);
+  display:flex;flex-direction:column;align-items:center;gap:12px;margin-top:26px;
+  padding-top:22px;border-top:1px solid rgba(55,50,48,.12);
 }
 .match-waiting .mw-line{font-size:15px;font-weight:600;color:#544f49;text-align:center}
 .match-waiting .loadline{background:rgba(55,50,48,.12)}
@@ -613,6 +623,35 @@
    The Gym Practice Room mobile shell, unchanged. Only the dock content is
    Cafe: conversation-support tools first, device controls after the divider.
    ========================================================================= */
+/* First-visit helper. Cream bubble, yellow caret into the dock. */
+.dock-tip{
+  pointer-events:auto;position:relative;z-index:2;
+  max-width:268px;margin:0 0 -2px;padding:12px 14px 13px;
+  border:0;border-radius:14px;cursor:pointer;text-align:left;font:inherit;
+  background:var(--neutral-100);color:var(--brand-charcoal);
+  box-shadow:0 8px 22px rgba(18,14,12,.28),0 0 0 1px rgba(55,50,48,.12);
+  animation:docktipin .38s cubic-bezier(.2,.9,.25,1) both;
+}
+.dock-tip-copy{
+  display:block;font-size:14.5px;font-weight:600;line-height:1.35;letter-spacing:-.1px;
+}
+.dock-tip-arrow{
+  position:absolute;left:50%;bottom:-7px;width:14px;height:8px;
+  transform:translateX(-50%);pointer-events:none;
+  background:var(--brand-yellow);
+  clip-path:polygon(0 0, 100% 0, 50% 100%);
+  filter:drop-shadow(0 1px 1px rgba(55,50,48,.18));
+}
+.dock-tip.is-out{animation:docktipout .2s ease both;pointer-events:none}
+@keyframes docktipin{
+  0%{opacity:0;transform:translateY(8px)}
+  100%{opacity:1;transform:translateY(0)}
+}
+@keyframes docktipout{
+  0%{opacity:1;transform:translateY(0)}
+  100%{opacity:0;transform:translateY(6px)}
+}
+
 /* the primary conversation tool takes the accent, the way TIP does in Gym */
 .rc-btn.accent svg{color:#FFE300}
 .rc-btn.accent{background:rgba(55,50,48,.52)}
@@ -681,7 +720,7 @@
 
 @media (prefers-reduced-motion:reduce){
   .search-pin,.search-echo,.search-pin.has-face .pin-dot,.search-pin.has-face .pin-face,
-  .match-indicator .mi-dot::after,.fc-status .mi-dot::after,.po-spin,.po-acts{animation:none;transition:none}
+  .match-indicator .mi-dot::after,.fc-status .mi-dot::after,.po-spin,.po-acts,.dock-tip{animation:none;transition:none}
   .po-spin{border-top-color:rgba(55,50,48,.4)}
   .search-echo{opacity:0}
   .search-pin{opacity:0}

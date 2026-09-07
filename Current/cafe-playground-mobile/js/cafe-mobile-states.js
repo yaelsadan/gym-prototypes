@@ -48,15 +48,15 @@ var DUR = {
    ========================================================================= */
 var LEVEL_DATA = {
   source:'placeholder',
-  myLevel:'yellow',
-  eligible:['red','orange','pink','yellow','lightblue','blue','lime']
+  myLevel:'darkgreen',
+  eligible:['blue','lime','green','darkgreen','turquoise','indigo']
 };
 
 /* -------------------------------------------------------------- partner */
 /* One personal, onboarding-derived detail. Sample content from the brief. */
 var PARTNER = {
   name:'Daniel',
-  level:'lightblue',
+  level:'turquoise',
   location:'Berlin, Germany',
   img:IMG_PARTNER,
   ice:{label:'how they drink their coffee', text:'Double espresso with almond milk'}
@@ -139,7 +139,9 @@ var ST = {
   partnerCamOff:false,
   partnerMicOff:false,
   partnerOffFind:false,
-  agreed:false
+  agreed:false,
+  dockTip:false,
+  dockTipSeen:false
 };
 
 /* ---------------------------------------------------------------- helpers */
@@ -223,7 +225,7 @@ function screenEntry(){
     + cafeLockup()
     + '<main class="cafe-entry">'
       + '<h2 class="cafe-display">Welcome to the <b>Caf\u00e9</b>!</h2>'
-      + '<p class="cafe-sub">Grab a coffee and chat with a Hebrew partner, wherever they are in the world. Mistakes are welcome, this is all about having fun. Stuck? Lean on the toolbar for topics and exercises.</p>'
+      + '<p class="cafe-sub">Grab a coffee and chat with a Hebrew partner, wherever they are in the world. Mistakes are welcome, this is all about having fun.</p>'
       + levelPicker()
       + '<div class="cafe-acts">'
         + '<button class="primary-cta" type="button" onclick="goAvCheck()"'
@@ -615,6 +617,12 @@ function partnerOffSheet(){
       + '</div>'
   });
 }
+function dockTipHtml(){
+  return '<button class="dock-tip" type="button" onclick="dismissDockTip()">'
+    + '<span class="dock-tip-copy">Stuck? Lean on the toolbar for topics and exercises.</span>'
+    + '<span class="dock-tip-arrow" aria-hidden="true"></span>'
+    + '</button>';
+}
 function screenLive(){
   var dock = GM.dock([
     {icon:GM.I.wheel, cap:'Wheel',     cls:' accent', onclick:'openWheel()',    aria:'Spin the Wheel'},
@@ -624,6 +632,10 @@ function screenLive(){
     {icon:GM.I.cam,   cap:'Camera',    slash:ST.camOff, onclick:'toggleCam()',  aria:ST.camOff?'Turn camera on':'Turn camera off'},
     {icon:GM.I.mic,   cap:'Mic',       slash:ST.micOff, onclick:'toggleMic()',  aria:ST.micOff?'Unmute':'Mute'}
   ], {label:'Leave & report', onclick:'openLeave()'});
+  var sheetOpen = ST.textOpen || ST.leaveSheet || ST.keepOnSheet || ST.partnerOffSheet;
+  if(ST.dockTip && !sheetOpen){
+    dock = dock.replace('<div class="rfooter">', '<div class="rfooter">' + dockTipHtml());
+  }
 
   return GM.roomHeader(
       GM.roomTime(ST.left, {cap:'Chat', final:ST.left <= DUR.sessionFinal}),
@@ -667,7 +679,9 @@ function seedFor(state){
     ST.matching = false; ST.searchElapsed = 0; ST.textOpen = false;
     ST.textLog = []; ST.leaveSheet = false; ST.left = 0; ST.levelsSheet = false;
     ST.agreed = false; ST.keepOnSheet = false;
+    ST.dockTip = false; ST.dockTipSeen = false;
     clearPartnerOff();
+    clearTimeout(dockTipT); dockTipT = null;
   }
   /* every Café entry runs the check, so it always starts from scratch */
   if(state === 'avcheck'){ ST.left = 0; ST.devSheet = false; micReset(); }
@@ -687,6 +701,8 @@ function seedFor(state){
     ST.left = DUR.session; ST.textLog = []; ST.textOpen = false;
     ST.leaveSheet = false; ST.keepOnSheet = false;
     clearPartnerOff();
+    if(!ST.dockTipSeen) armDockTip();
+    else ST.dockTip = false;
   }
   if(state === 'ending'){
     ST.left = DUR.ending; ST.textOpen = false; ST.leaveSheet = false;
@@ -761,6 +777,7 @@ function enterCafe(){ if(!ST.agreed) return; setState('live'); }
 
 function setPerm(p){ ST.perm = p; render(); }
 function toggleCam(){
+  dismissDockTip();
   if(ST.state === 'live' && !ST.camOff){
     ST.keepOnSheet = true;
     ST.leaveSheet = false;
@@ -773,6 +790,7 @@ function toggleCam(){
   render();
 }
 function toggleMic(){
+  dismissDockTip();
   ST.micOff = !ST.micOff;
   if(ST.micOff) micReset();
   render();
@@ -807,10 +825,10 @@ function cardPrev(){ cardStep(-1); }
 function cardNext(){ cardStep(1); }
 
 /* Entry points only in this pass — the experiences themselves are not designed. */
-function openWheel(){ GM.toast('Spin the Wheel \u2014 entry point only in this pass'); }
-function openChallenge(){ GM.toast('Challenge mode \u2014 entry point only in this pass'); }
+function openWheel(){ dismissDockTip(); GM.toast('Spin the Wheel \u2014 entry point only in this pass'); }
+function openChallenge(){ dismissDockTip(); GM.toast('Challenge mode \u2014 entry point only in this pass'); }
 
-function toggleText(){ ST.textOpen = !ST.textOpen; render(); }
+function toggleText(){ dismissDockTip(); ST.textOpen = !ST.textOpen; render(); }
 function closeText(){ ST.textOpen = false; render(); }
 function sendText(){
   var el = document.getElementById('tsInput');
@@ -821,10 +839,37 @@ function sendText(){
   el.value = '';
   render();
 }
-function openLeave(){ ST.leaveSheet = true; ST.keepOnSheet = false; ST.partnerOffSheet = false; clearTimeout(partnerOffT); render(); }
+function openLeave(){ dismissDockTip(); ST.leaveSheet = true; ST.keepOnSheet = false; ST.partnerOffSheet = false; clearTimeout(partnerOffT); render(); }
 function closeLeave(){ ST.leaveSheet = false; render(); }
 function closeKeepOn(){ ST.keepOnSheet = false; render(); }
 var partnerOffT = null;
+var dockTipT = null;
+function armDockTip(){
+  ST.dockTip = true;
+  clearTimeout(dockTipT);
+  dockTipT = setTimeout(function(){
+    dockTipT = null;
+    dismissDockTip();
+  }, 8000);
+}
+function dismissDockTip(){
+  clearTimeout(dockTipT);
+  dockTipT = null;
+  if(!ST.dockTip) return;
+  ST.dockTip = false;
+  ST.dockTipSeen = true;
+  var el = document.querySelector('.dock-tip');
+  if(!el) return;
+  el.classList.add('is-out');
+  el.setAttribute('disabled','');
+  setTimeout(function(){ if(el.parentNode) el.remove(); }, 220);
+}
+function replayDockTip(){
+  ST.dockTipSeen = false;
+  if(ST.state !== 'live'){ setState('live'); return; }
+  armDockTip();
+  render();
+}
 function clearPartnerOff(){
   clearTimeout(partnerOffT);
   partnerOffT = null;
@@ -848,6 +893,7 @@ function schedulePartnerOffFind(){
   }, DUR.partnerOffWait * 1000);
 }
 function partnerDropped(){
+  dismissDockTip();
   if(ST.state !== 'live'){
     ST.state = 'live';
     seedFor('live');
