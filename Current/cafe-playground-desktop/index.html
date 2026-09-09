@@ -20,24 +20,38 @@
 
 <h1>Citizen Cafe <span style="font-weight:400;color:var(--text-muted);font-size:14px">desktop &middot; design playground</span></h1>
 <p class="lead">
-  Source of truth for Cafe states. Cafe is a sibling of Gym: same tokens, same buttons, same tiles,
-  same modal and tooltip language — but a lighter, more spontaneous posture. Shared primitives live in
-  <code>css/gym-primitives.css</code> and <code>js/gym-primitives.js</code>; everything Cafe-specific is in
-  <code>css/cafe.css</code> and <code>js/cafe-states.js</code>. First pass: structure, hierarchy and
-  transitions. No onboarding, no Hub integration.
+  Desktop Café playground. Shared primitives live in
+  <code>css/gym-primitives.css</code> and <code>js/gym-primitives.js</code>; everything Café-specific is in
+  <code>css/cafe.css</code> and <code>js/cafe-states.js</code>. States 2–7 follow the settled mobile Café
+  product behaviour, adapted to desktop layouts. Entry / Preferences is unchanged in this pass.
 </p>
 
 <!-- Prototype tooling. Never part of the product viewport. -->
 <div class="controls">
   <div class="row">
+    <span class="grp-lbl">Match card</span>
+    <button type="button" data-match-layout="open" onclick="setMatchLayout('open')">Name outside</button>
+    <button type="button" data-match-layout="framed" onclick="setMatchLayout('framed')">Name inside</button>
+  </div>
+  <div class="row">
     <span class="grp-lbl">Happy path</span>
     <button class="sc" data-sc="entry">1 &middot; Entry</button>
-    <button class="sc" data-sc="searching">2 &middot; Searching</button>
-    <button class="sc" data-sc="matched">3 &middot; Match found</button>
-    <button class="sc" data-sc="agreement">4 &middot; Agreement</button>
-    <button class="sc" data-sc="avcheck">5 &middot; A/V check</button>
-    <button class="sc" data-sc="live">6 &middot; Live session</button>
+    <button class="sc" data-sc="avcheck">2 &middot; A/V check</button>
+    <button class="sc" data-sc="searching">3 &middot; Active searching</button>
+    <button class="sc" data-sc="hub">3b &middot; Hub indicator</button>
+    <button class="sc" data-sc="flashcards">3c &middot; Flashcards while waiting</button>
+    <button class="sc" data-sc="matched">4 &middot; Match found</button>
+    <button class="sc" data-sc="agreement">5 &middot; Session agreement</button>
+    <button class="sc" data-sc="live">6 &middot; Live Café</button>
     <button class="sc" data-sc="ending">7 &middot; Ending</button>
+  </div>
+  <div class="row">
+    <span class="grp-lbl">Search review</span>
+    <button type="button" onclick="reviewSearchInitial()">Searching · initial</button>
+    <button type="button" onclick="reviewSearchExplore()">Searching · Explore visible</button>
+    <button type="button" onclick="reviewSearchClose()">Searching · close decision</button>
+    <button type="button" onclick="reviewHubMatching()">Hub · matching indicator</button>
+    <button type="button" onclick="reviewMatchingStopped()">Matching stopped</button>
   </div>
   <div class="row">
     <span class="grp-lbl">Run</span>
@@ -48,9 +62,29 @@
     <button onclick="toggleCam()">Toggle camera</button>
     <button onclick="toggleMic()">Toggle mic</button>
     <button onclick="toggleBlur()">Toggle blur</button>
-    <span class="sep"></span>
-    <span class="grp-lbl">Chat</span>
-    <button onclick="toggleChat()">Toggle chat</button>
+  </div>
+  <div class="row">
+    <span class="grp-lbl">Matching (simulated)</span>
+    <button onclick="offerMatch()">Offer a match now</button>
+    <button onclick="acceptMatch()">You accept</button>
+    <button onclick="bothAccepted()">Partner confirms → Agreement</button>
+    <button onclick="partnerDeclines()">Partner declines → keep matching</button>
+  </div>
+  <div class="row">
+    <span class="grp-lbl">Live session</span>
+    <button onclick="toggleText()">Toggle activity / text sheet</button>
+    <button onclick="openLeave()">Leave &amp; report</button>
+    <button onclick="partnerDropped()">Partner camera / mic off</button>
+    <button onclick="partnerReconnected()">Partner reconnects</button>
+    <button onclick="jumpFinal()">Jump to final 20s</button>
+    <button onclick="replayDockTip()">Show toolbar tip</button>
+  </div>
+  <div class="row">
+    <span class="grp-lbl">A/V check</span>
+    <button onclick="micRecord()">Mic test: record</button>
+    <button onclick="micStop()">Mic test: recorded</button>
+    <button onclick="micPlay()">Mic test: play back</button>
+    <button onclick="openDevices()">Open device picker</button>
   </div>
   <div class="row">
     <span class="grp-lbl">A/V permission</span>

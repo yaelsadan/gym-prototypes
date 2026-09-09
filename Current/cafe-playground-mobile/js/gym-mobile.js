@@ -206,7 +206,7 @@ var GM = (function(){
   }
 
   /* ------------------------------------------------------ bottom sheets */
-  /* o: {milky, cls, body, acts, resp, bare} — body is raw markup so a product
+  /* o: {milky, cls, body, acts, footer, resp, bare} — body is raw markup so a product
      can put a rich card inside without a new primitive.
      `bare` drops the scrim: a tool panel over live video must not dim or blur
      the people in it. Decision sheets always keep the scrim. */
@@ -217,6 +217,7 @@ var GM = (function(){
         + '<div class="grab"></div>'
         + (o.body || '')
         + (o.acts ? '<div class="acts">' + o.acts + '</div>' : '')
+        + (o.footer || '')
         + (o.resp ? '<div class="respline"><i style="animation-duration:' + o.resp + 's"></i></div>' : '')
       + '</div>';
   }

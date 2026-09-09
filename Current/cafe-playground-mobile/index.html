@@ -28,6 +28,13 @@
   font-style:normal;
   font-display:swap;
 }
+@font-face{
+  font-family:"FedraSerifPro";
+  src:url("../FedraSerifPRO_HL-DemiItalic.otf") format("opentype");
+  font-weight:600;
+  font-style:italic;
+  font-display:swap;
+}
 </style>
 
 <!-- Shared Gym mobile design system. Do not add Café rules to these files. -->
@@ -56,6 +63,10 @@
 
   <!-- Prototype tooling. Never part of the product viewport. -->
   <div class="controls">
+    <div class="grp">Match card</div>
+    <button type="button" data-match-layout="open" onclick="setMatchLayout('open')">Name outside</button>
+    <button type="button" data-match-layout="framed" onclick="setMatchLayout('framed')">Name inside</button>
+
     <div class="grp">Canonical states</div>
     <button class="sc" data-sc="entry">1 · Entry / preferences</button>
     <button class="sc" data-sc="avcheck">2 · A/V check</button>
@@ -66,6 +77,29 @@
     <button class="sc" data-sc="agreement">5 · Session agreement</button>
     <button class="sc" data-sc="live">6 · Live Café</button>
     <button class="sc" data-sc="ending">7 · Ending / requeue</button>
+
+    <div class="grp">Search review</div>
+    <button type="button" onclick="reviewSearchInitial()">Searching · initial</button>
+    <button type="button" onclick="reviewSearchExplore()">Searching · Explore visible</button>
+    <button type="button" onclick="reviewSearchClose()">Searching · close decision</button>
+    <button type="button" onclick="reviewHubMatching()">Hub · matching indicator</button>
+    <button type="button" onclick="reviewMatchingStopped()">Matching stopped</button>
+
+    <div class="grp">Welcome cups (debug playground)</div>
+    <button type="button" onclick="location.href='../cafe-welcome-cups-animation-playground/index.html'">Open cups motion playground</button>
+    <div class="anim-debug-tools">
+    <div class="grp">Animation debug (saved reference)</div>
+    <button type="button" onclick="animDebugPrev()">Previous frame</button>
+    <button type="button" onclick="animDebugNext()">Next frame</button>
+    <div class="state" id="animDebugNote">Frame 1 / 6 — Two separate empty cups</div>
+    </div>
+
+    <div class="grp">Level Spectrum (presets)</div>
+    <button type="button" data-spec-preview="full" onclick="specPreview('full')">A · Full range</button>
+    <button type="button" data-spec-preview="narrow" onclick="specPreview('narrow')">B · Narrowed range</button>
+    <button type="button" data-spec-preview="handle" onclick="specPreview('handle')">C · Active handle</button>
+    <div class="grp">Inner shadow Off / On</div>
+    <button type="button" id="specInsetToggle" class="on" onclick="toggleSpecInset()">Inner shadow On</button>
 
     <div class="grp">Run</div>
     <button class="play" onclick="runPath()">&#9654; Run the path</button>
@@ -109,6 +143,12 @@
   </div>
 </div>
 
+<div class="anim-debug-tools">
+<h2>Animation debug — six static frames</h2>
+<p class="lead" style="margin-bottom:12px">Saved development reference. Not product UI. Hidden unless <code>?animdebug=1</code>. The moving-cups refinement lives in <a href="../cafe-welcome-cups-animation-playground/index.html">cafe-welcome-cups-animation-playground</a> — canonical Welcome is unchanged.</p>
+<div id="animDebugGrid" class="anim-debug-grid"></div>
+</div>
+
 <div class="notes">
   <div class="note-card">
     <h3>What is reused, not redrawn</h3>
@@ -123,10 +163,10 @@
   <div class="note-card">
     <h3>Product decisions this pass encodes</h3>
     <ul>
-      <li><b>Preferences are levels, not scope presets.</b> The student’s own level is already selected and fixed. Additional eligible levels can be added to widen the search. Add all is a quiet accelerator beside that group, not the default and not a second row of chrome. Level data is configurable in <code>LEVEL_DATA</code> and is <b>not</b> a canonical ladder — no ordering, count or above/below relationship is implied anywhere in the UI.</li>
-      <li><b>The helper is supportive, not a count.</b> There is no selected-level tally. If the search can still widen, a quiet line offers: <i>Adding more levels may help you match faster.</i></li>
+      <li><b>Preferences are a continuous level range.</b> All eligible levels are selected by default — the recommended matching state. The student may narrow or widen a single spectrum; there are no gaps, and their own level always stays inside the range. Level names and order come from <code>LEVEL_DATA.eligible</code> (placeholder data).</li>
+      <li><b>The helper is supportive, not a count.</b> The default line is <i>All levels selected — your best chance of meeting someone</i>. A narrower range names the ends, and a very tight range adds that widening may help.</li>
       <li><b>A/V check runs before matching, on every entry.</b> Live mic feedback is the Gym echo on the Mic control. Device setup is behind a quiet settings affordance. The Entry CTA is a continuation, and <b>Start matching</b> lives at the end of the check.</li>
-      <li><b>Searching does not block.</b> “Keep exploring” leaves the screen and matching continues; the persistent indicator carries it. Stop matching is the only exit. Flashcards are offered but never required, and a match interrupts them.</li>
+      <li><b>Searching does not block.</b> Matching is felt first. After ~14s, “Explore while we match” leaves the screen and matching continues; the persistent indicator carries it. Close (X) opens a keep-or-stop decision. Stop matching is never a silent exit. Flashcards are offered but never required, and a match interrupts them.</li>
       <li><b>No self-view while searching.</b> The camera is off in the queue — readiness was settled before it, and searching is not a pre-call lobby.</li>
       <li><b>Match found interrupts.</b> 30 seconds, real content — avatar, name, level, location, one onboarding-derived icebreaker. Accepting keeps the same surface and waits for the partner rather than navigating.</li>
       <li><b>The agreement is not a checklist.</b> Four principles to scan, then one personal acknowledgement that enables <i>Café time!</i> No per-item ticks, no decline — it only ever appears after both sides accepted.</li>
