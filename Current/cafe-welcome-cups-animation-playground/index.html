@@ -114,6 +114,10 @@ h1{font-size:20px;line-height:1.25}
 .blob-path{fill:#FFE300}
 .debug-arcs{display:none}
 body.is-debug .debug-arcs{display:block}
+.active-runtime{
+  margin:0 0 8px;text-align:center;font:800 11px/1.2 var(--font-ui);
+  letter-spacing:.7px;color:var(--brand-yellow);
+}
 .cafe-display{
   font-family:var(--font-brand);font-size:44px;font-weight:400;font-synthesis:none;
   line-height:1.08;letter-spacing:-.2px;text-wrap:balance;max-width:18ch;margin:18px 0 0;
@@ -147,6 +151,9 @@ body.is-shot .zoom-stage{width:800px;height:500px;border-radius:0;box-shadow:non
   Isolated debug surface for the Welcome cups gesture. Canonical Desktop and Mobile Welcome screens are not loaded or modified.
   Replay plays the full sequence. The scrubber and pause buttons inspect frames on that same continuous timeline.
   Newest approved fallback — 15:05 (cups locked): <code>?restore=1505</code>.
+  Current choreography snapshot (16:20): <code>?restore=1620</code>.
+  First motion-polish snapshot (16:41): <code>?restore=1641</code>.
+  Motion-polish review: <code>?motion=polished</code>.
   Pre-handoff snapshot (15:39): <code>?restore=1539</code>.
   Earlier: <code>?restore=1437</code>
 </p>
@@ -174,6 +181,12 @@ body.is-shot .zoom-stage{width:800px;height:500px;border-radius:0;box-shadow:non
     <button type="button" class="pose-btn" data-pose="10">Pause 11 — Final settled fill</button>
 
     <div class="grp">Compare</div>
+    <button type="button" onclick="location.search='?restore=1620'">16:20 current choreography</button>
+    <button type="button" onclick="location.search='?restore=1641'">16:41 first polish</button>
+    <button type="button" onclick="location.search='?motion=polished'">Polished motion</button>
+    <button type="button" onclick="location.search='?restore=1641&rate=0.25'">16:41 · 0.25×</button>
+    <button type="button" onclick="location.search='?motion=polished&rate=0.25'">Polished · 0.25×</button>
+    <button type="button" onclick="location.search='?motion=polished&strength=exaggerated'">Polished · exaggerated diagnostic</button>
     <button type="button" onclick="location.search='?restore=1505'">15:05 approved fallback</button>
     <button type="button" onclick="location.search='?restore=1539'">15:39 pre-handoff snapshot</button>
     <button type="button" onclick="location.search='?restore=1437'">14:37 approved fallback</button>
@@ -244,6 +257,12 @@ var SHAPE_R_KIND = 'counterpart';
 /* 'refine' = liquid character + locked cup Bézier + contained droplet→fill.
    '1437' / '1505' = recoverable approved fallbacks (cups + prior fill behavior). */
 var MOTION_MODE = 'refine';
+/* Review-only secondary motion. The default choreography remains byte-for-byte in
+   the existing sampling functions; this flag selects an isolated sampler. */
+var POLISHED_MOTION = false;
+var POLISHED_VARIANT = 'none';
+var POLISH_STRENGTH = 1;
+var ACTIVE_RUNTIME = 'CURRENT';
 /* Contained entry: clip droplets to overlap; morph into pool; front cup above yellow. */
 var ENTRY_CLIP = true;
 var RIM_Y = 9.55;
@@ -460,6 +479,10 @@ var BASELINE_1539 = {
     {left: {x: 0, y: 6.695, rot: 0}, right: {x: 49.105, y: 0, rot: 0}}
   ]
 };
+/* Exact current choreography at the start of the motion-polish pass. Its behavior
+   is the default sampler; ?motion=polished never mutates this restore point. */
+var BASELINE_1620 = BASELINE_1539;
+var BASELINE_1641 = BASELINE_1620;
 var YELLOW_D = 'M68.3937 9.42969C68.3937 10.3411 61.0946 11.1261 50.6445 11.4721C51.1765 13.9088 51.902 16.2525 52.7985 18.4772C54.8037 23.4362 58.1222 27.5879 62.2516 30.631C63.416 28.9495 64.4093 27.1229 65.198 25.1735C67.1288 20.4005 68.2635 15.0658 68.39 9.42969H68.3937Z';
 
 var PATH_LEFT_DROP = 'M6.70482 2.02419C6.08623 0.605855 4.61691 -0.339272 3.13821 0.116545C2.69594 0.252877 2.27738 0.427169 1.9621 0.648746C0.284165 1.82801 -0.463518 3.97784 0.300233 5.88121L1.93225 9.9484C2.00059 10.1743 2.33577 10.1698 2.40372 9.94383C2.68783 8.99903 3.20201 7.54161 3.72716 7.31257C3.92809 7.22494 4.31664 7.05801 4.78393 6.85799C6.65389 6.05756 7.51798 3.88864 6.70482 2.02419Z';
@@ -659,7 +682,7 @@ function cubicBezierEase(x1, y1, x2, y2, t){
 }
 /* Subtle travel stretch: body elongates along velocity, tail lags a few pixels. */
 function liquidDeform(pts, vx, vy, amp){
-  amp = clamp(amp, 0, 0.08);
+  amp = clamp(amp, 0, 0.16);
   if(amp < 0.002) return pts;
   var spd = Math.hypot(vx, vy) || 1;
   var dx = vx / spd, dy = vy / spd;
@@ -695,6 +718,102 @@ function matchMass(pts, area0){
   var a = Math.abs(ringArea(pts));
   if(a < 1e-4 || area0 < 1e-4) return pts;
   return scalePts(pts, Math.sqrt(area0 / a));
+}
+function softenRing(pts, passes, area0){
+  var out = pts.map(function(p){ return [p[0], p[1]]; });
+  passes = passes == null ? 1 : passes;
+  for(var pass = 0; pass < passes; pass++){
+    var prev = out, n = prev.length;
+    out = prev.map(function(p, i){
+      var a = prev[(i + n - 1) % n];
+      var b = prev[(i + 1) % n];
+      return [
+        a[0] * 0.2 + p[0] * 0.6 + b[0] * 0.2,
+        a[1] * 0.2 + p[1] * 0.6 + b[1] * 0.2
+      ];
+    });
+  }
+  return matchMass(out, area0 == null ? Math.abs(ringArea(pts)) : area0);
+}
+/* Closed Catmull–Rom contour converted to cubic Béziers. This keeps G1/C1
+   continuity through every interpolated frame instead of exposing polygon cusps. */
+function ptsToSmoothD(pts){
+  var n = pts.length;
+  if(n < 4) return ptsToD(pts);
+  var d = 'M' + pts[0][0].toFixed(2) + ' ' + pts[0][1].toFixed(2);
+  for(var i = 0; i < n; i++){
+    var p0 = pts[(i + n - 1) % n];
+    var p1 = pts[i];
+    var p2 = pts[(i + 1) % n];
+    var p3 = pts[(i + 2) % n];
+    var c1 = [p1[0] + (p2[0] - p0[0]) / 8, p1[1] + (p2[1] - p0[1]) / 8];
+    var c2 = [p2[0] - (p3[0] - p1[0]) / 8, p2[1] - (p3[1] - p1[1]) / 8];
+    d += 'C' + c1[0].toFixed(2) + ' ' + c1[1].toFixed(2)
+      + ' ' + c2[0].toFixed(2) + ' ' + c2[1].toFixed(2)
+      + ' ' + p2[0].toFixed(2) + ' ' + p2[1].toFixed(2);
+  }
+  return d + 'Z';
+}
+function redrawLiquidTail(pts, radius, area0){
+  var out = pts.map(function(p){ return [p[0], p[1]]; });
+  var n = out.length;
+  if(n < 10) return out;
+  area0 = area0 == null ? Math.abs(ringArea(out)) : area0;
+
+  /* Remove the hard body→tail shoulder anchor on whichever contour side carries
+     the largest local turn, distributing that turn across its two neighbors. */
+  function turnAt(i){
+    var a = out[(i + n - 1) % n], b = out[i], c = out[(i + 1) % n];
+    var u = [a[0] - b[0], a[1] - b[1]], v = [c[0] - b[0], c[1] - b[1]];
+    var lu = Math.hypot(u[0], u[1]) || 1, lv = Math.hypot(v[0], v[1]) || 1;
+    return 1 - clamp((u[0] * v[0] + u[1] * v[1]) / (lu * lv), -1, 1);
+  }
+  var candidates = [];
+  var shoulderSpan = Math.max(8, Math.round(n * 0.18));
+  for(var ci = 3; ci <= shoulderSpan; ci++){
+    candidates.push(ci, n - ci);
+  }
+  var cusp = candidates[0];
+  candidates.forEach(function(i){ if(turnAt(i) > turnAt(cusp)) cusp = i; });
+  /* Give the shoulder a visible radius, not merely a softened mathematical
+     corner. The turn is shared by five anchors so it survives phone scaling. */
+  for(var pass = 0; pass < 2; pass++){
+    var before = out.map(function(p){ return [p[0], p[1]]; });
+    [-2, -1, 0, 1, 2].forEach(function(offset){
+      var i = (cusp + offset + n) % n;
+      var prev = before[(i + n - 1) % n], cur = before[i], next = before[(i + 1) % n];
+      var weight = offset === 0 ? 0.34 : Math.abs(offset) === 1 ? 0.25 : 0.12;
+      out[i] = [
+        prev[0] * weight + cur[0] * (1 - weight * 2) + next[0] * weight,
+        prev[1] * weight + cur[1] * (1 - weight * 2) + next[1] * weight
+      ];
+    });
+  }
+
+  /* Replace the mathematical terminal point with a five-anchor semicircle.
+     Spreading the return curve across five anchors keeps the nose visibly blunt
+     after antialiasing instead of producing a technically smooth needle tip. */
+  radius = radius == null ? 0.46 : radius;
+  var tip = out[0];
+  var bridge = [(out[2][0] + out[n - 2][0]) * 0.5, (out[2][1] + out[n - 2][1]) * 0.5];
+  var ax = tip[0] - bridge[0], ay = tip[1] - bridge[1];
+  var al = Math.hypot(ax, ay) || 1;
+  ax /= al; ay /= al;
+  var px = -ay, py = ax;
+  if((out[1][0] - tip[0]) * px + (out[1][1] - tip[1]) * py < 0){ px *= -1; py *= -1; }
+  var leftBase = out[n - 3], rightBase = out[3];
+  function sidePoint(base, progress, side, bulge){
+    return [
+      lerp(base[0], tip[0], progress) + px * radius * bulge * side,
+      lerp(base[1], tip[1], progress) + py * radius * bulge * side
+    ];
+  }
+  out[n - 2] = sidePoint(leftBase, 0.34, -1, 0.18);
+  out[n - 1] = sidePoint(leftBase, 0.69, -1, 0.12);
+  out[0] = tip;
+  out[1] = sidePoint(rightBase, 0.69, 1, 0.12);
+  out[2] = sidePoint(rightBase, 0.34, 1, 0.18);
+  return matchMass(out, area0);
 }
 function deformBubble(chat, k){
   k = clamp(k, 0, 1);
@@ -770,6 +889,10 @@ function prepMotion(){
       chat: c,
       mid: m,
       fall: f,
+      dropSoft: redrawLiquidTail(softenRing(d, 2), 1.5),
+      chatSoft: redrawLiquidTail(softenRing(c, 2), 1.7),
+      midSoft: redrawLiquidTail(softenRing(m, 2), 1.6),
+      fallSoft: redrawLiquidTail(softenRing(f, 2), 1.55),
       stream: stream,
       poolPart: poolPartial,
       poolFull: poolFull,
@@ -804,6 +927,11 @@ function prepMotion(){
     b.uLeave = (b.leaveT - b.launch) / dur;
     b.progress = makePassProgress(b.uChat, b.uLeave);
     b.riseB = hermiteBez(b.start, b.T0, b.chat, b.Tchat);
+    /* Polish-only monotonic rise: no vertical segment and no downward retrace
+       before the chat destination. End tangent is shallow and forward. */
+    b.polishRiseB = side === 'L'
+      ? [b.start, [b.start[0] + 5, b.chat[1] + 2], [b.chat[0] - 3.5, b.chat[1] + 0.5], b.chat]
+      : [b.start, [b.start[0] - 4, b.chat[1] + 5], [b.chat[0] + 2.2, b.chat[1] + 0.5], b.chat];
     b.pairB = hermiteBez(b.chat, b.Tchat, b.pairEnd, b.Tpair);
     b.diveP1 = [
       b.pairEnd[0] + b.Tpair[0] / 3,
@@ -861,6 +989,10 @@ function cafeCupsSvg(vb){
         + '<g class="debug-arcs" fill="none" pointer-events="none" aria-hidden="true">'
           + '<path class="debug-arc debug-arc-l" stroke="#7ec8e3" stroke-width="0.7" stroke-dasharray="2 1.5" opacity="0.85"/>'
           + '<path class="debug-arc debug-arc-r" stroke="#e3a07e" stroke-width="0.7" stroke-dasharray="2 1.5" opacity="0.85"/>'
+          + '<line class="debug-tangent debug-tangent-l" stroke="#7ec8e3" stroke-width="0.8"/>'
+          + '<line class="debug-tangent debug-tangent-r" stroke="#e3a07e" stroke-width="0.8"/>'
+          + '<circle class="debug-head debug-head-l" r="1.35" fill="#7ec8e3" stroke="none"/>'
+          + '<circle class="debug-head debug-head-r" r="1.35" fill="#e3a07e" stroke="none"/>'
         + '</g>'
       + '</g>'
       + '<g class="cafe-icon-final"><path d="M108.946 6.45248L110.467 6.18835C114.139 5.54848 117.502 8.37582 117.502 12.1034C117.502 14.5364 116.033 16.7276 113.782 17.6577L104.854 21.3332" stroke="white" stroke-linecap="round" stroke-linejoin="round"/><path d="M9.0565 13.1497L7.53493 12.8856C3.86308 12.2457 0.5 15.0731 0.5 18.8007C0.5 21.2337 1.96949 23.4249 4.22022 24.3549L13.1487 28.0305" stroke="white" stroke-linecap="round" stroke-linejoin="round"/><path d="M52.7994 18.4772C51.8991 16.2562 51.1774 13.9125 50.6454 11.4721C46.9698 11.5948 42.9074 11.6618 38.6328 11.6618C22.1969 11.6618 8.87109 10.6611 8.87109 9.42969C8.99758 15.062 10.1322 20.3968 12.063 25.1735C16.4269 35.9621 26.9923 42.9486 38.6328 42.9486C48.1677 42.9486 56.9772 38.2574 62.2525 30.631C58.123 27.5879 54.8046 23.4362 52.7994 18.4772Z" stroke="white" stroke-linecap="round" stroke-linejoin="round"/><path d="M79.3672 4.96453C62.9313 4.96453 49.6055 3.9638 49.6055 2.73242C49.6724 5.74577 50.0333 8.66984 50.6434 11.4711C61.0935 11.1252 68.3926 10.3402 68.3926 9.42876C68.2661 15.0611 67.1314 20.3959 65.2006 25.1726C64.4119 27.122 63.4186 28.9449 62.2542 30.6301C67.1091 34.2089 73.08 36.2513 79.3709 36.2513C91.0078 36.2513 101.573 29.2648 105.941 18.4762C107.871 13.7033 109.006 8.3685 109.133 2.73242C109.133 3.9638 95.8068 4.96453 79.3709 4.96453H79.3672Z" stroke="white" stroke-linecap="round" stroke-linejoin="round"/><path d="M68.3937 9.42969C68.3937 10.3411 61.0946 11.1261 50.6445 11.4721C51.1765 13.9088 51.902 16.2525 52.7985 18.4772C54.8037 23.4362 58.1222 27.5879 62.2516 30.631C63.416 28.9495 64.4093 27.1229 65.198 25.1735C67.1288 20.4005 68.2635 15.0658 68.39 9.42969H68.3937Z" fill="#FFE300" stroke="white" stroke-linecap="round" stroke-linejoin="round"/><path d="M79.3672 4.96422C95.8041 4.96422 109.129 3.96487 109.129 2.73211C109.129 1.49935 95.8041 0.5 79.3672 0.5C62.9302 0.5 49.6055 1.49935 49.6055 2.73211C49.6055 3.96487 62.9302 4.96422 79.3672 4.96422Z" stroke="white" stroke-linecap="round" stroke-linejoin="round"/><path d="M38.6328 11.6595C55.0698 11.6595 68.3946 10.6602 68.3946 9.42742C68.3946 8.19466 55.0698 7.19531 38.6328 7.19531C22.1959 7.19531 8.87109 8.19466 8.87109 9.42742C8.87109 10.6602 22.1959 11.6595 38.6328 11.6595Z" fill="#373230" stroke="white" stroke-linecap="round" stroke-linejoin="round"/></g>'
@@ -983,7 +1115,380 @@ function morphFromMid(shapes, u){
   return matchMass(pts, lerp(shapes.midMass, shapes.dropMass, k));
 }
 
+function polishPulse(t){
+  t = clamp(t, 0, 1);
+  return Math.sin(Math.PI * t);
+}
+
+function polishedTakeoffShape(shapes, anticipation, release){
+  var n = shapes.drop.length;
+  var pts = shapes.drop.map(function(p, i){
+    var head = Math.min(i, n - i) / (n * 0.5);
+    var tail = 1 - head;
+    var compress = anticipation * (1 - release);
+    var pull = release * (0.35 + 0.65 * head);
+    return [
+      p[0] * (1 + 0.035 * compress - 0.012 * pull),
+      p[1] * (1 - 0.045 * compress + 0.035 * pull) - 0.7 * pull * head + 0.25 * compress * tail
+    ];
+  });
+  return matchMass(pts, Math.abs(ringArea(shapes.drop)));
+}
+
+function polishedGravityYield(pts, amount, sideDelay){
+  if(amount <= 0) return pts;
+  var n = pts.length;
+  return pts.map(function(p, i){
+    var head = Math.min(i, n - i) / (n * 0.5);
+    var tail = 1 - head;
+    var local = smooth(clamp((amount - sideDelay * tail) / Math.max(0.01, 1 - sideDelay), 0, 1));
+    return [
+      p[0] * (1 - 0.025 * local * tail),
+      p[1] + 1.35 * local * head - 0.2 * local * tail
+    ];
+  });
+}
+
+function polishedAbsorbTail(pts, amount){
+  amount = clamp(amount, 0, 1);
+  if(amount <= 0) return pts;
+  var n = pts.length;
+  var span = Math.max(3, Math.round(n * 0.14));
+  var bridge = [
+    (pts[span][0] + pts[n - span][0]) * 0.5,
+    (pts[span][1] + pts[n - span][1]) * 0.5
+  ];
+  return pts.map(function(p, i){
+    var edge = Math.min(i, n - i);
+    var w = 1 - clamp(edge / span, 0, 1);
+    w = smooth(w) * amount;
+    return [lerp(p[0], bridge[0], w), lerp(p[1], bridge[1], w)];
+  });
+}
+
+function polishedPairParam(spec, ms){
+  if(ms <= spec.leaveT) return 0;
+  if(ms >= spec.pairT) return 1;
+  var u = u01(ms, spec.leaveT, spec.pairT);
+  var pairDur = spec.pairT - spec.leaveT;
+  var diveDur = spec.land - spec.pairT;
+  /* Match the pair-end speed to the gravity-led dive start for C1 continuity. */
+  var desiredEndSlope = 0.72 * pairDur / Math.max(1, diveDur);
+  var x2 = 0.70;
+  var y2 = clamp(1 - (1 - x2) * desiredEndSlope, 0.72, 0.9);
+  return cubicBezierEase(0.42, 0, x2, y2, u);
+}
+
+function polishedDiveParam(spec, ms){
+  if(ms <= spec.pairT) return 0;
+  if(ms >= spec.land) return 1;
+  var u = u01(ms, spec.pairT, spec.land);
+  return 0.72 * u + 0.28 * u * u;
+}
+
+function polishedBubbleAtV1(spec, shapes, ms){
+  var isLeft = spec === BUBBLE.L;
+  var anticipateDur = isLeft ? 90 : 76;
+  var anticipateStart = spec.launch - anticipateDur;
+  if(ms < anticipateStart){
+    return {op: 0, cx: spec.start[0], cy: spec.start[1], rot: spec.rot0, sx: 1, sy: 1, d: ptsToD(shapes.drop), clipped: false, merge: 0};
+  }
+  if(ms < spec.launch){
+    var a = smooth(u01(ms, anticipateStart, spec.launch));
+    var anticipPts = polishedTakeoffShape(shapes, a, 0);
+    return {
+      op: smooth(u01(ms, anticipateStart, anticipateStart + 24)),
+      cx: spec.start[0], cy: spec.start[1], rot: spec.rot0,
+      sx: 1, sy: 1, d: ptsToD(anticipPts), clipped: false, merge: 0
+    };
+  }
+  if(ms >= spec.fadeEnd){
+    return {op: 0, cx: POOL_CX, cy: POOL_BOTTOM_Y, rot: 0, sx: 1, sy: 1, d: ptsToD(shapes.poolFull || shapes.fall), clipped: true, merge: 1};
+  }
+  if(ms >= spec.land){
+    var impact = bubblePour(spec, shapes, ms);
+    var impactT = u01(ms, spec.land, spec.land + (isLeft ? 82 : 96));
+    var impactPulse = polishPulse(impactT);
+    impact.sx *= 1 + 0.025 * impactPulse;
+    impact.sy *= 1 - 0.035 * impactPulse;
+    return impact;
+  }
+
+  var bez, t, phase;
+  if(ms <= spec.chatT){
+    phase = 'rise';
+    bez = spec.riseB;
+    var riseU = u01(ms, spec.launch, spec.chatT);
+    /* Quick buoyant release, then a long ease toward the crest. */
+    t = cubicBezierEase(0.18, 0.52, 0.22, 1, riseU);
+  } else if(ms <= spec.leaveT){
+    phase = 'hold';
+    bez = spec.riseB;
+    t = 1;
+  } else if(ms <= spec.pairT){
+    phase = 'release';
+    bez = spec.pairB;
+    t = polishedPairParam(spec, ms);
+  } else {
+    phase = 'descent';
+    bez = spec.diveB;
+    t = polishedDiveParam(spec, ms);
+  }
+
+  var p = cubic3(bez[0], bez[1], bez[2], bez[3], t);
+  var v = cubic3d(bez[0], bez[1], bez[2], bez[3], t);
+  var pts, rot = spec.rotChat, sx = 1, sy = 1;
+
+  if(phase === 'rise'){
+    var riseShape = cubicBezierEase(0.16, 0.58, 0.24, 1, u01(ms, spec.launch, spec.chatT));
+    pts = lerpPtsStagger(shapes.drop, shapes.chat, riseShape, isLeft ? 0.12 : 0.15);
+    pts = matchMass(pts, lerp(Math.abs(ringArea(shapes.drop)), shapes.mass, smooth(riseShape)));
+
+    var releaseU = u01(ms, spec.launch, spec.launch + (isLeft ? 105 : 128));
+    if(releaseU < 1){
+      pts = polishedTakeoffShape({drop: pts}, 1, smooth(releaseU));
+    }
+
+    var settleDur = isLeft ? 220 : 190;
+    var settleU = u01(ms, spec.chatT - settleDur, spec.chatT);
+    var settlePulse = polishPulse(settleU);
+    sx = 1 + 0.04 * settlePulse;
+    sy = 1 + 0.024 * settlePulse;
+
+    var riseAmp = clamp(Math.hypot(v[0], v[1]) / 66, 0, 1) * 0.055;
+    riseAmp *= 1 - smooth(u01(ms, spec.chatT - 150, spec.chatT));
+    pts = liquidDeform(pts, v[0], v[1], riseAmp);
+    rot = lerp(spec.rot0, spec.rotChat, smooth(riseShape));
+  } else if(phase === 'hold'){
+    /* A literal hold: exact path, position, scale, and rotation. */
+    p = spec.chat;
+    pts = shapes.chat;
+    rot = spec.rotChat;
+  } else if(phase === 'release'){
+    var releaseShape = smooth(t);
+    pts = lerpPtsStagger(shapes.chat, shapes.mid, releaseShape, isLeft ? 0.13 : 0.17);
+    pts = matchMass(pts, lerp(shapes.mass, shapes.midMass, releaseShape));
+    var yieldDur = isLeft ? 105 : 145;
+    var yieldAmount = polishPulse(u01(ms, spec.leaveT, spec.leaveT + yieldDur));
+    pts = polishedGravityYield(pts, yieldAmount, isLeft ? 0.12 : 0.16);
+    var releaseAmp = clamp(Math.hypot(v[0], v[1]) / 72, 0, 1) * 0.045;
+    pts = liquidDeform(pts, v[0], v[1], releaseAmp);
+  } else {
+    var diveShape = polishedDiveParam(spec, ms);
+    pts = lerpPtsStagger(shapes.mid, shapes.fall, 1 - Math.pow(1 - diveShape, 1.45), isLeft ? 0.09 : 0.13);
+    pts = matchMass(pts, lerp(shapes.midMass, shapes.dropMass, diveShape));
+    var descentAmp = clamp(Math.hypot(v[0], v[1]) / 62, 0, 1) * (isLeft ? 0.062 : 0.057);
+    descentAmp *= 1 - 0.42 * smooth(u01(ms, spec.land - (isLeft ? 105 : 140), spec.land));
+    pts = liquidDeform(pts, v[0], v[1], descentAmp);
+    if(ms > spec.land - (isLeft ? 92 : 126)){
+      /* Stretch peaks before contact, then resolves to the impact shape at the boundary. */
+      var pre = polishPulse(u01(ms, spec.land - (isLeft ? 92 : 126), spec.land));
+      pts = pts.map(function(q){ return [q[0] * (1 - 0.018 * pre), q[1] * (1 + 0.055 * pre)]; });
+      pts = matchMass(pts, shapes.dropMass);
+    }
+  }
+
+  var clipped = ENTRY_CLIP && (p[1] >= RIM_Y + 0.8 || ms >= spec.land);
+  return {op: 1, cx: p[0], cy: p[1], rot: rot, sx: sx, sy: sy, d: ptsToD(pts), clipped: clipped, merge: 0};
+}
+
+function polishedTakeoffShapeV2(shapes, anticipation, release){
+  var base = shapes.dropSoft || shapes.drop;
+  var n = base.length;
+  var pts = base.map(function(p, i){
+    var head = Math.min(i, n - i) / (n * 0.5);
+    var tail = 1 - head;
+    var held = anticipation * (1 - release);
+    var lead = smooth(release) * head;
+    return [
+      p[0] * (1 + 0.045 * held - 0.018 * lead),
+      p[1] * (1 - 0.065 * held + 0.085 * lead) - 0.8 * lead + 0.3 * held * tail
+    ];
+  });
+  pts = softenRing(pts, 1, Math.abs(ringArea(base)));
+  return redrawLiquidTail(pts, 1.5 * Math.min(POLISH_STRENGTH, 1.6), Math.abs(ringArea(base)));
+}
+
+function tangentUnit(v){
+  var len = Math.hypot(v[0], v[1]) || 1;
+  return [v[0] / len, v[1] / len];
+}
+
+function logAreaLerp(a, b, t){
+  a = Math.max(0.001, a);
+  b = Math.max(0.001, b);
+  return Math.exp(lerp(Math.log(a), Math.log(b), clamp(t, 0, 1)));
+}
+
+function polishedBubbleAtV2(spec, shapes, ms){
+  var isLeft = spec === BUBBLE.L;
+  var softDrop = shapes.dropSoft || shapes.drop;
+  var softChat = shapes.chatSoft || shapes.chat;
+  var softMid = shapes.midSoft || shapes.mid;
+  var softFall = shapes.fallSoft || shapes.fall;
+  var anticipateDur = isLeft ? 104 : 116;
+  var anticipateStart = spec.launch - anticipateDur;
+  var initialV = cubic3d(spec.polishRiseB[0], spec.polishRiseB[1], spec.polishRiseB[2], spec.polishRiseB[3], 0);
+  var releaseRot = Math.atan2(initialV[1], initialV[0]) * 180 / Math.PI + 90;
+
+  if(ms < anticipateStart){
+    return {op: 0, cx: spec.start[0], cy: spec.start[1], rot: releaseRot, sx: 1, sy: 1, d: ptsToSmoothD(softDrop), clipped: false, merge: 0};
+  }
+  if(ms < spec.launch){
+    var anticipation = smooth(u01(ms, anticipateStart, spec.launch));
+    var anticipPts = polishedTakeoffShapeV2(shapes, anticipation, 0);
+    return {
+      op: smooth(u01(ms, anticipateStart, anticipateStart + 22)),
+      cx: spec.start[0], cy: spec.start[1], rot: releaseRot,
+      sx: 1, sy: 1, d: ptsToSmoothD(anticipPts), clipped: false, merge: 0,
+      tangent: isLeft ? [0.18, -1] : [-0.22, -1]
+    };
+  }
+  if(ms >= spec.fadeEnd){
+    return {op: 0, cx: POOL_CX, cy: POOL_BOTTOM_Y, rot: 0, sx: 1, sy: 1, d: ptsToSmoothD(softFall), clipped: true, merge: 1};
+  }
+  if(ms >= spec.land){
+    var impact = bubblePour(spec, shapes, ms);
+    var impactU = u01(ms, spec.land, spec.land + (isLeft ? 78 : 94));
+    var compression = polishPulse(impactU);
+    impact.sx *= 1 + 0.028 * compression;
+    impact.sy *= 1 - 0.042 * compression;
+    if(impact.pts){
+      var impactPts = softenRing(impact.pts, 2, Math.abs(ringArea(impact.pts)));
+      impactPts = redrawLiquidTail(impactPts, 1.55 * Math.min(POLISH_STRENGTH, 1.6), Math.abs(ringArea(impact.pts)));
+      impact.d = ptsToSmoothD(impactPts);
+    }
+    impact.tangent = [0, 1];
+    return impact;
+  }
+
+  var bez, t, phase;
+  if(ms < spec.chatT){
+    phase = 'rise';
+    bez = spec.polishRiseB;
+    var riseU = u01(ms, spec.launch, spec.chatT);
+    t = cubicBezierEase(0.16, 0.5, 0.28, 1, riseU);
+  } else if(ms <= spec.leaveT){
+    phase = 'hold';
+    bez = spec.polishRiseB;
+    t = 1;
+  } else if(ms <= spec.pairT){
+    phase = 'release';
+    bez = spec.pairB;
+    t = polishedPairParam(spec, ms);
+  } else {
+    phase = 'descent';
+    bez = spec.diveB;
+    t = polishedDiveParam(spec, ms);
+  }
+
+  var p = cubic3(bez[0], bez[1], bez[2], bez[3], t);
+  var v = cubic3d(bez[0], bez[1], bez[2], bez[3], t);
+  var tangent = tangentUnit(v);
+  var pts, rot = spec.rotChat, sx = 1, sy = 1;
+
+  if(phase === 'rise'){
+    /* Body growth starts almost immediately: midway it is already broader than
+       tall, and by 70% only contour refinement remains. */
+    var morphEnd = lerp(0.78, 0.64, clamp(POLISH_STRENGTH - 1, 0, 1));
+    var morphLinear = clamp((riseU - 0.01) / morphEnd, 0, 1);
+    var morphU = 1 - Math.pow(1 - morphLinear, lerp(3.0, 4.2, clamp(POLISH_STRENGTH - 1, 0, 1)));
+    var riseMass = logAreaLerp(Math.abs(ringArea(softDrop)), shapes.mass, morphU);
+    pts = lerpPtsStagger(softDrop, softChat, morphU, isLeft ? 0.17 : 0.21);
+    pts = matchMass(pts, riseMass);
+    /* The body opens broadside while the head pulls it through mid-arc. This
+       preserves area and resolves completely before the exact chat hold. */
+    var broadside = Math.sin(Math.PI * clamp((riseU - 0.08) / 0.78, 0, 1));
+    var broadScale = 1 + 0.16 * POLISH_STRENGTH * broadside;
+    pts = pts.map(function(q){ return [q[0] * broadScale, q[1] / broadScale]; });
+    pts = matchMass(pts, riseMass);
+
+    var releaseDur = isLeft ? 118 : 158;
+    var releaseU = u01(ms, spec.launch, spec.launch + releaseDur);
+    if(releaseU < 1) pts = polishedTakeoffShapeV2({dropSoft: pts}, 1, smooth(releaseU));
+
+    /* Arrival boop follows the shallow endpoint tangent—never vertical. */
+    var settleU = u01(ms, spec.chatT - (isLeft ? 226 : 208), spec.chatT);
+    var boop = polishPulse(settleU);
+    var endV = cubic3d(bez[0], bez[1], bez[2], bez[3], 1);
+    var endTangent = tangentUnit(endV);
+    p[0] += endTangent[0] * 4.2 * POLISH_STRENGTH * boop;
+    p[1] += endTangent[1] * 4.2 * POLISH_STRENGTH * boop;
+    sx = 1 + 0.06 * POLISH_STRENGTH * boop;
+    sy = 1 + 0.035 * POLISH_STRENGTH * boop;
+    pts = pts.map(function(q){ return [q[0] * (1 + 0.018 * POLISH_STRENGTH * boop), q[1] * (1 - 0.01 * POLISH_STRENGTH * boop)]; });
+
+    var speedStretch = clamp(Math.hypot(v[0], v[1]) / 58, 0, 1) * 0.085 * POLISH_STRENGTH;
+    speedStretch *= 1 - smooth(u01(ms, spec.chatT - 155, spec.chatT));
+    pts = liquidDeform(pts, v[0], v[1], speedStretch);
+    pts = matchMass(pts, riseMass);
+
+    /* The visual head direction equals atan2(dy,dx). As the native contour
+       morphs from up-facing droplet to side-facing bubble, this calibrated
+       local heading removes only that built-in orientation. */
+    var tangentAngle = Math.atan2(v[1], v[0]) * 180 / Math.PI;
+    var nativeHeading = isLeft
+      ? lerp(-90, 0, morphU)
+      : lerp(-90, -180, morphU);
+    var tangentRot = tangentAngle - nativeHeading;
+    while(tangentRot > 180) tangentRot -= 360;
+    while(tangentRot < -180) tangentRot += 360;
+    var finishStart = lerp(0.65, 0.52, clamp(POLISH_STRENGTH - 1, 0, 1));
+    var horizontalFinish = smooth(clamp((riseU - finishStart) / (1 - finishStart), 0, 1));
+    rot = lerpAngle(tangentRot, spec.rotChat, horizontalFinish);
+  } else if(phase === 'hold'){
+    p = spec.chat;
+    pts = softChat;
+    rot = spec.rotChat;
+    tangent = tangentUnit(cubic3d(spec.polishRiseB[0], spec.polishRiseB[1], spec.polishRiseB[2], spec.polishRiseB[3], 1));
+  } else if(phase === 'release'){
+    var releaseShape = smooth(t);
+    var materialU = smooth(u01(ms, spec.leaveT, spec.land));
+    var releaseMassFlow = logAreaLerp(shapes.mass, shapes.dropMass, materialU);
+    var releaseMass = lerp(lerp(shapes.mass, shapes.midMass, releaseShape), releaseMassFlow, 0.35);
+    pts = lerpPtsStagger(softChat, softMid, releaseShape, isLeft ? 0.16 : 0.21);
+    pts = matchMass(pts, releaseMass);
+    var yieldDur = isLeft ? 112 : 168;
+    var yield = polishPulse(u01(ms, spec.leaveT, spec.leaveT + yieldDur));
+    pts = polishedGravityYield(pts, yield, isLeft ? 0.16 : 0.22);
+    pts = liquidDeform(pts, v[0], v[1], clamp(Math.hypot(v[0], v[1]) / 62, 0, 1) * 0.075);
+    pts = matchMass(pts, releaseMass);
+    rot = lerp(spec.rotChat, spec.rotChat + (isLeft ? -3 : 3), smooth(releaseShape));
+  } else {
+    var diveShape = polishedDiveParam(spec, ms);
+    var liquidU = 1 - Math.pow(1 - diveShape, 1.5);
+    var descentMaterialU = smooth(u01(ms, spec.leaveT, spec.land));
+    var descentMassFlow = logAreaLerp(shapes.mass, shapes.dropMass, descentMaterialU);
+    var descentMass = lerp(lerp(shapes.midMass, shapes.dropMass, liquidU), descentMassFlow, 0.35);
+    pts = lerpPtsStagger(softMid, softFall, liquidU, isLeft ? 0.12 : 0.17);
+    pts = matchMass(pts, descentMass);
+    var descentStretch = clamp(Math.hypot(v[0], v[1]) / 55, 0, 1) * (isLeft ? 0.095 : 0.087);
+    descentStretch *= 1 - 0.45 * smooth(u01(ms, spec.land - (isLeft ? 100 : 138), spec.land));
+    pts = liquidDeform(pts, v[0], v[1], descentStretch);
+    var preEntry = polishPulse(u01(ms, spec.land - (isLeft ? 96 : 134), spec.land));
+    if(preEntry > 0){
+      var preEntryMass = Math.abs(ringArea(pts));
+      pts = pts.map(function(q){ return [q[0] * (1 - 0.022 * preEntry), q[1] * (1 + 0.075 * preEntry)]; });
+      pts = matchMass(pts, preEntryMass);
+    }
+    pts = matchMass(pts, descentMass);
+    rot = lerp(spec.rotChat + (isLeft ? -3 : 3), 0, smooth(clamp((diveShape - 0.7) / 0.3, 0, 1)));
+  }
+
+  var areaBeforeCap = Math.abs(ringArea(pts));
+  pts = softenRing(pts, 1, areaBeforeCap);
+  var capRadius = phase === 'hold' ? 1.7 : phase === 'rise' ? 1.6 : 1.55;
+  pts = redrawLiquidTail(pts, capRadius * Math.min(POLISH_STRENGTH, 1.6), areaBeforeCap);
+  var clipped = ENTRY_CLIP && (p[1] >= RIM_Y + 0.8 || ms >= spec.land);
+  return {
+    op: 1, cx: p[0], cy: p[1], rot: rot, sx: sx, sy: sy,
+    d: ptsToSmoothD(pts), pts: pts, clipped: clipped, merge: 0, tangent: tangent
+  };
+}
+
 function bubbleAt(spec, shapes, ms){
+  if(POLISHED_VARIANT === 'v1') return polishedBubbleAtV1(spec, shapes, ms);
+  if(POLISHED_VARIANT === 'v2') return polishedBubbleAtV2(spec, shapes, ms);
   var cx = spec.start[0], cy = spec.start[1], rot = spec.rot0, op = 0;
   var sx = 1, sy = 1, d = ptsToD(shapes.drop);
   if(ms < spec.launch){
@@ -1074,6 +1579,10 @@ function bubblePour(spec, shapes, ms){
   });
   var mid = lerpPtsStagger(neck, shapes.stream, toBottom * 0.28, 0.16);
   var pts = lerpPtsStagger(mid, poolTarget, toPool, 0.16);
+  if(POLISHED_MOTION){
+    /* The narrow trailing end folds into the mass instead of becoming an impact spike. */
+    pts = polishedAbsorbTail(pts, smooth(clamp(pour / 0.28, 0, 1)) * 0.92);
+  }
   pts = matchMass(pts, lerp(shapes.dropMass, poolMass, toPool));
   /* Keep the morph center inside the overlap; never climb above the rim. */
   var cx = lerp(spec.landPt[0], POOL_CX, smooth(toBottom * 0.4 + toPool * 0.6));
@@ -1082,7 +1591,7 @@ function bubblePour(spec, shapes, ms){
   cy = Math.max(cy, RIM_Y + 1.2);
   var rot = lerp(spec.rotChat, 0, toPool);
   var op = 1 - smooth(clamp((pour - 0.8) / 0.2, 0, 1));
-  return {op: op, cx: cx, cy: cy, rot: rot, sx: 1, sy: 1, d: ptsToD(pts), clipped: true, merge: pour};
+  return {op: op, cx: cx, cy: cy, rot: rot, sx: 1, sy: 1, d: ptsToD(pts), pts: pts, clipped: true, merge: pour};
 }
 
 function bubblePourLegacy(spec, shapes, ms){
@@ -1325,6 +1834,46 @@ function paintLiquid(svg, ms, finT){
   }
 }
 
+function paintMotionDebug(svg, ms){
+  if(!DEBUG_MOTION) return;
+  ['L', 'R'].forEach(function(side){
+    var spec = BUBBLE[side];
+    var shapes = SHAPE[side];
+    var key = side.toLowerCase();
+    var arc = svg.querySelector('.debug-arc-' + key);
+    var line = svg.querySelector('.debug-tangent-' + key);
+    var head = svg.querySelector('.debug-head-' + key);
+    var rise = POLISHED_VARIANT === 'v2' ? spec.polishRiseB : spec.riseB;
+    if(arc){
+      arc.setAttribute('d',
+        bezD(rise[0], rise[1], rise[2], rise[3])
+        + bezD(spec.pairB[0], spec.pairB[1], spec.pairB[2], spec.pairB[3])
+        + bezD(spec.diveB[0], spec.diveB[1], spec.diveB[2], spec.diveB[3]));
+    }
+    var sample = bubbleAt(spec, shapes, ms);
+    if(!sample || !sample.tangent || sample.op <= 0.01){
+      if(line) line.setAttribute('opacity', '0');
+      if(head) head.setAttribute('opacity', '0');
+      return;
+    }
+    var tangent = tangentUnit(sample.tangent);
+    var hx = sample.cx + tangent[0] * 7;
+    var hy = sample.cy + tangent[1] * 7;
+    if(line){
+      line.setAttribute('x1', (sample.cx - tangent[0] * 5).toFixed(2));
+      line.setAttribute('y1', (sample.cy - tangent[1] * 5).toFixed(2));
+      line.setAttribute('x2', (sample.cx + tangent[0] * 10).toFixed(2));
+      line.setAttribute('y2', (sample.cy + tangent[1] * 10).toFixed(2));
+      line.setAttribute('opacity', '1');
+    }
+    if(head){
+      head.setAttribute('cx', hx.toFixed(2));
+      head.setAttribute('cy', hy.toFixed(2));
+      head.setAttribute('opacity', '1');
+    }
+  });
+}
+
 function applyFrame(root, ms){
   var svg = root.querySelector('.cafe-cups');
   if(!svg) return;
@@ -1352,12 +1901,7 @@ function applyFrame(root, ms){
     paintLiquid(svg, ms >= TOTAL_MS ? TOTAL_MS : ms, 0);
     paintBubbleLayers(svg, 'left', bubbleAt(BUBBLE.L, SHAPE.L, ms >= TOTAL_MS ? TOTAL_MS : ms));
     paintBubbleLayers(svg, 'right', bubbleAt(BUBBLE.R, SHAPE.R, ms >= TOTAL_MS ? TOTAL_MS : ms));
-    if(DEBUG_MOTION){
-      var dlC = svg.querySelector('.debug-arc-l');
-      var drC = svg.querySelector('.debug-arc-r');
-      if(dlC) dlC.setAttribute('d', BUBBLE.L.debugD);
-      if(drC) drC.setAttribute('d', BUBBLE.R.debugD);
-    }
+    paintMotionDebug(svg, ms >= TOTAL_MS ? TOTAL_MS : ms);
     return;
   }
 
@@ -1378,12 +1922,7 @@ function applyFrame(root, ms){
   paintLiquid(svg, ms, finT);
   paintBubbleLayers(svg, 'left', bubbleAt(BUBBLE.L, SHAPE.L, ms));
   paintBubbleLayers(svg, 'right', bubbleAt(BUBBLE.R, SHAPE.R, ms));
-  if(DEBUG_MOTION){
-    var dl = svg.querySelector('.debug-arc-l');
-    var dr = svg.querySelector('.debug-arc-r');
-    if(dl) dl.setAttribute('d', BUBBLE.L.debugD);
-    if(dr) dr.setAttribute('d', BUBBLE.R.debugD);
-  }
+  paintMotionDebug(svg, ms);
 }
 
 function paint(){
@@ -1398,6 +1937,7 @@ function paint(){
   var t = (ST.ms / 1000).toFixed(2);
   var mode = ST.playing ? 'Playing' : (ST.ms >= TOTAL_MS ? 'Complete' : 'Paused');
   note.innerHTML = '<b>' + pose.label + '</b><br>' + mode + ' · ' + t + 's'
+    + '<br>Motion: ' + (POLISHED_VARIANT === 'v2' ? 'polished' : POLISHED_VARIANT === 'v1' ? 'first polish' : 'current')
     + (prefersReduced() ? '<br>Reduced motion: final icon only' : '');
   var scrub = document.getElementById('scrub');
   if(scrub && document.activeElement !== scrub) scrub.value = String(Math.round(ST.ms));
@@ -1448,9 +1988,10 @@ function renderStages(){
   document.body.classList.toggle('is-reduced', prefersReduced());
   document.body.classList.toggle('is-shot', new URLSearchParams(location.search).get('shot') === '1');
   document.body.classList.toggle('is-debug', DEBUG_MOTION);
+  var runtimeLabel = '<div class="active-runtime">' + ACTIVE_RUNTIME + '</div>';
   wrap.innerHTML =
-    '<div class="zoom-block"><div class="phone-label">Close-up</div><div class="zoom-stage" id="zoomRefine">' + zoomHTML() + '</div></div>'
-    + '<div class="phone-block"><div class="phone-label">Welcome</div><div class="phone"><div class="screen" id="stageRefine">' + welcomeHTML() + '</div></div></div>';
+    '<div class="zoom-block"><div class="phone-label">Close-up</div>' + runtimeLabel + '<div class="zoom-stage" id="zoomRefine">' + zoomHTML() + '</div></div>'
+    + '<div class="phone-block"><div class="phone-label">Welcome</div>' + runtimeLabel + '<div class="phone"><div class="screen" id="stageRefine">' + welcomeHTML() + '</div></div></div>';
   paint();
 }
 
@@ -1492,6 +2033,16 @@ function applyStoredBaseline(b){
   else if(restoreQ === '1437' || restoreQ === 'liquid') applyStoredBaseline(BASELINE_1437);
   else if(restoreQ === '1505') applyStoredBaseline(BASELINE_1505);
   else if(restoreQ === '1539') applyStoredBaseline(BASELINE_1539);
+  else if(restoreQ === '1620') applyStoredBaseline(BASELINE_1620);
+  else if(restoreQ === '1641') applyStoredBaseline(BASELINE_1641);
+  POLISHED_VARIANT = restoreQ === '1641' ? 'v1' : (params.get('motion') === 'polished' ? 'v2' : 'none');
+  POLISHED_MOTION = POLISHED_VARIANT !== 'none';
+  POLISH_STRENGTH = POLISHED_VARIANT === 'v2' && params.get('strength') === 'exaggerated' ? 2 : 1;
+  ACTIVE_RUNTIME = POLISHED_VARIANT === 'v1'
+    ? 'ACTIVE: RESTORE 1641'
+    : POLISHED_VARIANT === 'v2'
+      ? 'ACTIVE: POLISHED' + (POLISH_STRENGTH > 1 ? ' — EXAGGERATED' : '')
+      : 'ACTIVE: ' + (restoreQ ? 'RESTORE ' + restoreQ.toUpperCase() : 'CURRENT');
   DEBUG_MOTION = params.get('debug') === '1';
   ST.rate = (!isNaN(rateQ) && rateQ > 0) ? rateQ : 1;
   document.querySelectorAll('.pose-btn').forEach(function(b){

@@ -42,20 +42,19 @@ var DUR = {
 };
 
 var SEARCH_COPY = 'We\u2019ll tell you the moment someone\u2019s free.';
-var SEARCH_COPY_LATE = 'Still looking. You can practice or explore while we keep matching you.';
 
 var INTERVIEW = false;
 
 var NOTES = {
   entry:'1 · Cafe entry / matching preferences. Welcome + continuous level spectrum. All eligible levels selected by default. Nothing is matching yet.',
   avcheck:'2 · A/V check, before matching and mandatory on every entry. Its CTA is the real "Start matching".',
-  searching:'3 · Active search. Matching is felt first. After ~14s, Flashcards shifts left and Explore joins the same rail.',
+  searching:'3 · Active search. Matching is felt first. Flashcards stay optional; the first search line holds for the whole wait.',
   hub:'3b · Placeholder Hub carrying the persistent matching indicator. The Hub itself is not designed in this pass.',
   flashcards:'3c · Optional practice while waiting. Matching stays visible. A match interrupts it; declining returns here.',
   matched:'4 · Match found. A 30s interrupt over whatever you were doing. Accept keeps the same surface and waits for the partner.',
-  agreement:'5 · Session agreement. Only after both accepted. Four principles to scan, one acknowledgement that enables the CTA. No decline.',
-  live:'6 · Live Cafe. Two-person desktop tiles. Dock: Wheel · Challenge · Text, then Camera · Mic.',
-  ending:'7 · Ending. Matching never stopped, so there is no "find someone now" — it requeues on its own.'
+  agreement:'5 · Session agreement. Only after both accepted. Three principles to scan, one acknowledgement that enables the CTA. No decline.',
+  live:'6 · Live Cafe. Two-person desktop tiles. Dock: Topics · Practice · Text, then Camera · Mic.',
+  ending:'7 · Ending. Time flies, then Find me another partner, or Go back to homepage.'
 };
 
 /* ------------------------------------------------------- matching scope */
@@ -139,23 +138,22 @@ var PARTNER = {
 };
 
 var LEVEL_ICONS = {
-  red:'../cafe-playground-mobile/assets/level-red.png',
-  orange:'../cafe-playground-mobile/assets/level-orange.png',
-  pink:'../cafe-playground-mobile/assets/level-pink.png',
-  yellow:'../cafe-playground-mobile/assets/level-yellow.png',
-  lightblue:'../cafe-playground-mobile/assets/level-lightblue.png',
-  blue:'../cafe-playground-mobile/assets/level-blue.png',
-  lime:'../cafe-playground-mobile/assets/level-lime.png'
+  red:'assets/level-icons/level-red.svg',
+  orange:'assets/level-icons/level-orange.svg',
+  pink:'assets/level-icons/level-pink.svg',
+  yellow:'assets/level-icons/level-yellow.svg',
+  lightblue:'assets/level-icons/level-lightblue.svg',
+  blue:'assets/level-icons/level-blue.svg',
+  lime:'assets/level-icons/level-lime.svg'
 };
 var IMG_PIN = 'assets/location-pin.png';
 
 /* Content of the agreement is product-specified. This is the only copy of it.
-   Four principles to scan, then one acknowledgement. No per-item ticks. */
+   Three principles to scan, then one acknowledgement. No per-item ticks. */
 var AGREEMENT_TERMS = [
-  {icon:'welcome', lead:'Mistakes are welcome',          support:'Everyone here is learning.'},
-  {icon:'hebrew',  lead:'Give Hebrew your best shot',    support:'Even a few words count.'},
-  {icon:'present', lead:'Stay present for six minutes',  support:'Keep your camera and mic on.'},
-  {icon:'kind',    lead:'Be kind to your partner',       support:'Help make the conversation feel safe and supportive.'}
+  {icon:'hebrew',  lead:'Give Hebrew your best shot', support:'Mistakes are welcome!'},
+  {icon:'present', lead:'Stay present',               support:'The session is just 6 minutes'},
+  {icon:'kind',    lead:'Be kind to your partner',    support:'This is a safe space'}
 ];
 
 var ACTIVITY = {
@@ -223,6 +221,7 @@ var ST = {
   perm:'granted',
   mic:{phase:'idle', left:0, pos:0},
   devSheet:false,
+  devMenu:null,
   levelsSheet:false,
   card:0, cardRevealed:false, cardMarked:false, cardPlaying:false,
   textOpen:false,
@@ -236,6 +235,7 @@ var ST = {
   agreed:false,
   dockTip:false,
   dockTipSeen:false,
+  welcomeEntranceSeen:false,
   softLoading:false
 };
 
@@ -812,20 +812,24 @@ function layoutSpecLabels(root){
   if(!board || !host) return;
   var boardBox = board.getBoundingClientRect();
   var hostBox = host.getBoundingClientRect();
-  var pad = 8;
+  var pad = 12;
   var me = myLevelIndex();
   var hot = ST.specHot;
   var lo = ST.rangeLo, hi = ST.rangeHi;
+  var visible = {};
+  visible[me] = 'you';
+  if(hot >= 0 && hot !== me) visible[hot] = 'hot';
   var placed = [];
   root.querySelectorAll('.spec-tip').forEach(function(tip){
     var i = parseInt(tip.getAttribute('data-idx'), 10);
-    var kind = i === me ? 'you' : (i === hot ? 'hot' : (i === lo || i === hi ? 'bound' : 'level'));
-    tip.classList.add('is-on');
+    var kind = visible[i];
+    tip.classList.toggle('is-on', !!kind);
     tip.classList.toggle('is-you', kind === 'you');
-    tip.classList.toggle('is-hot', kind === 'hot' || i === hot);
+    tip.classList.toggle('is-hot', kind === 'hot' || (kind && i === hot));
     tip.classList.toggle('is-bound', kind === 'bound');
     tip.style.setProperty('--tip-shift', '0px');
     tip.style.setProperty('--tip-lift', '0px');
+    if(!kind) return;
     var node = root.querySelector('.spec-node[data-idx="' + i + '"]');
     if(!node) return;
     var nb = node.getBoundingClientRect();
@@ -834,7 +838,7 @@ function layoutSpecLabels(root){
     placed.push({
       el: tip,
       i: i,
-      pri: kind === 'you' ? 1 : kind === 'hot' ? 2 : kind === 'bound' ? 3 : 4
+      pri: kind === 'you' ? 1 : kind === 'hot' || i === hot ? 2 : 3
     });
   });
   function applyShift(el, extra){
@@ -850,28 +854,36 @@ function layoutSpecLabels(root){
   placed.sort(function(a, b){ return a.pri - b.pri; });
   var kept = [];
   placed.forEach(function(p){
+    if(!p.el.classList.contains('is-on')) return;
     var extra = 0;
     var lift = 0;
     var tries;
-    for(tries = 0; tries < 6; tries++){
+    for(tries = 0; tries < 5; tries++){
       applyShift(p.el, extra);
       p.el.style.setProperty('--tip-lift', lift + 'px');
       var ra = p.el.getBoundingClientRect();
       var hit = null;
       kept.some(function(k){
-        if(specTipsOverlap(ra, k.el.getBoundingClientRect(), 6, 2)){
+        if(specTipsOverlap(ra, k.el.getBoundingClientRect(), 8, 4)){
           hit = k;
           return true;
         }
         return false;
       });
-      if(!hit) break;
+      if(!hit || p.pri === 1) break;
       var hb = hit.el.getBoundingClientRect();
-      lift = Math.min(56, lift + Math.max(18, Math.ceil(ra.bottom - hb.top) + 4));
-      extra += (ra.left + ra.width / 2 < hb.left + hb.width / 2) ? -14 : 14;
+      lift = Math.min(64, lift + Math.max(22, Math.ceil(ra.bottom - hb.top) + 6));
+      extra += (ra.left + ra.width / 2 < hb.left + hb.width / 2) ? -18 : 18;
     }
     applyShift(p.el, extra);
     p.el.style.setProperty('--tip-lift', lift + 'px');
+    var still = kept.some(function(k){
+      return specTipsOverlap(p.el.getBoundingClientRect(), k.el.getBoundingClientRect(), 8, 4);
+    });
+    if(still && p.pri === 2 && p.i !== lo && p.i !== hi && p.i !== me){
+      p.el.classList.remove('is-on', 'is-hot', 'is-bound');
+      return;
+    }
     kept.push(p);
   });
 }
@@ -1229,31 +1241,178 @@ function bindSpectrum(host){
   }
 }
 
+var DESKTOP_WELCOME_HOLD_MS = 1600;
+var DESKTOP_WELCOME_REVEAL_MS = 800;
+var DESKTOP_WELCOME_SHORT_MS = 420;
+var DESKTOP_WELCOME_EASE = 'cubic-bezier(0.22, 1, 0.36, 1)';
+var DESKTOP_WELCOME_SLIDE = {
+  hero: {delay:0, duration:680},
+  title:{delay:110, duration:660},
+  copy: {delay:230, duration:580}
+};
+var DESKTOP_WELCOME_SLIDE_SHORT = {
+  hero: {delay:0, duration:400},
+  title:{delay:62, duration:358},
+  copy: {delay:124, duration:296}
+};
+var desktopWelcomeAdvancing = false;
+
+function welcomeFlyItems(main){
+  return [
+    {el: main.querySelector('.cafe-welcome-fly-hero'), key:'hero', scale:true},
+    {el: main.querySelector('.cafe-welcome-fly-title'), key:'title', scale:false},
+    {el: main.querySelector('.cafe-welcome-fly-copy'), key:'copy', scale:false}
+  ];
+}
+
+function clearWelcomeSlide(main){
+  if(!main) return;
+  welcomeFlyItems(main).forEach(function(item){
+    if(!item.el) return;
+    item.el.style.transition = '';
+    item.el.style.transform = '';
+    item.el.style.transformOrigin = '';
+    item.el.style.willChange = '';
+  });
+}
+
+function welcomeRect(el){
+  var r = el.getBoundingClientRect();
+  return {left:r.left, top:r.top, width:r.width, height:r.height};
+}
+
+function playWelcomeSlide(main, shortened){
+  var items = welcomeFlyItems(main).filter(function(item){ return item.el; });
+  if(!items.length) return shortened ? DESKTOP_WELCOME_SHORT_MS : DESKTOP_WELCOME_REVEAL_MS;
+  var first = items.map(function(item){ return welcomeRect(item.el); });
+  main.classList.remove('is-intro');
+  main.classList.add('is-revealing');
+  if(shortened) main.classList.add('is-accelerated');
+  if(typeof layoutSpectrum === 'function') layoutSpectrum();
+  void main.offsetWidth;
+  var times = shortened ? DESKTOP_WELCOME_SLIDE_SHORT : DESKTOP_WELCOME_SLIDE;
+  var maxEnd = 0;
+  items.forEach(function(item, i){
+    var last = welcomeRect(item.el);
+    var dx = first[i].left - last.left;
+    var dy = first[i].top - last.top;
+    var sx = item.scale && last.width ? first[i].width / last.width : 1;
+    var sy = item.scale && last.height ? first[i].height / last.height : 1;
+    var t = times[item.key];
+    maxEnd = Math.max(maxEnd, t.delay + t.duration);
+    item.el.style.transition = 'none';
+    item.el.style.transformOrigin = '0 0';
+    item.el.style.willChange = 'transform';
+    item.el.style.transform = 'translate(' + dx.toFixed(2) + 'px,' + dy.toFixed(2) + 'px) scale(' + sx.toFixed(4) + ',' + sy.toFixed(4) + ')';
+  });
+  window.requestAnimationFrame(function(){
+    window.requestAnimationFrame(function(){
+      if(!main.isConnected || !desktopWelcomeAdvancing) return;
+      items.forEach(function(item){
+        var t = times[item.key];
+        item.el.style.transition = 'transform ' + t.duration + 'ms ' + DESKTOP_WELCOME_EASE + ' ' + t.delay + 'ms';
+        item.el.style.transform = 'translate(0,0) scale(1)';
+      });
+    });
+  });
+  return maxEnd || (shortened ? DESKTOP_WELCOME_SHORT_MS : DESKTOP_WELCOME_REVEAL_MS);
+}
+
+function finishDesktopWelcomeEntrance(main){
+  if(!main || !main.isConnected) return;
+  var prefs = main.querySelector('.cafe-entry-prefs');
+  clearWelcomeSlide(main);
+  main.classList.remove('is-intro','is-revealing','is-accelerated');
+  main.classList.add('is-ready');
+  if(prefs){
+    prefs.removeAttribute('aria-hidden');
+    prefs.inert = false;
+  }
+  desktopWelcomeAdvancing = false;
+}
+
+function advanceDesktopWelcomeEntrance(shortened){
+  var main = document.querySelector('.cafe-entry.is-intro');
+  if(!main || desktopWelcomeAdvancing) return;
+  desktopWelcomeAdvancing = true;
+  ST.welcomeEntranceSeen = true;
+  var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var duration;
+  if(reduced){
+    if(shortened) main.classList.add('is-accelerated');
+    main.classList.remove('is-intro');
+    main.classList.add('is-revealing');
+    duration = 220;
+  } else {
+    duration = playWelcomeSlide(main, !!shortened);
+  }
+  var done = window.setTimeout(function(){ finishDesktopWelcomeEntrance(main); }, duration + 80);
+  entryCleanup.push(function(){
+    window.clearTimeout(done);
+    clearWelcomeSlide(main);
+    desktopWelcomeAdvancing = false;
+  });
+}
+
+function bindDesktopWelcomeEntrance(){
+  var main = document.querySelector('.cafe-entry');
+  if(!main || ST.welcomeEntranceSeen){
+    if(main) finishDesktopWelcomeEntrance(main);
+    return;
+  }
+  var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var autoTimer = window.setTimeout(function(){
+    advanceDesktopWelcomeEntrance(false);
+  }, reduced ? 520 : DESKTOP_WELCOME_HOLD_MS);
+  function interruptPointer(){
+    window.clearTimeout(autoTimer);
+    advanceDesktopWelcomeEntrance(true);
+  }
+  function interruptKeyboard(ev){
+    if(ev.key !== 'Tab' || !main.classList.contains('is-intro')) return;
+    ev.preventDefault();
+    window.clearTimeout(autoTimer);
+    advanceDesktopWelcomeEntrance(true);
+  }
+  main.addEventListener('pointerdown', interruptPointer, {once:true});
+  document.addEventListener('keydown', interruptKeyboard, true);
+  entryCleanup.push(function(){
+    window.clearTimeout(autoTimer);
+    main.removeEventListener('pointerdown', interruptPointer);
+    document.removeEventListener('keydown', interruptKeyboard, true);
+  });
+}
+
 function screenEntry(){
+  var entranceClass = ST.welcomeEntranceSeen ? ' is-ready' : ' is-intro';
   return lockupSolo()
     + '<div class="cafe-shell cafe-shell-entry"></div>'
-    + '<main class="cafe-entry" aria-label="Caf\u00e9 entry">'
+    + '<main class="cafe-entry' + entranceClass + '" aria-label="Caf\u00e9 entry">'
       + '<div class="cafe-entry-compose">'
         + '<section class="cafe-entry-welcome" aria-label="Welcome">'
           + '<div class="cafe-entry-welcome-lockup">'
-            + '<div class="cafe-entry-hero" aria-hidden="true">' + cafeCupsSvg('is-static') + '</div>'
-            + '<h2 class="cafe-display cafe-welcome-title">Welcome to the <b>Caf\u00e9</b>!</h2>'
-            + '<p class="cafe-sub cafe-welcome-sub">Grab a coffee and chat with a Hebrew partner from anywhere in the world.</p>'
+            + '<div class="cafe-welcome-fly cafe-welcome-fly-hero">'
+              + '<div class="cafe-entry-hero" aria-hidden="true">' + cafeCupsSvg('is-static') + '</div>'
+            + '</div>'
+            + '<div class="cafe-welcome-fly cafe-welcome-fly-title">'
+              + '<h2 class="cafe-display cafe-welcome-title">Welcome<br><span class="cafe-welcome-line">to the <b>Caf\u00e9</b>!</span></h2>'
+            + '</div>'
+            + '<div class="cafe-welcome-fly cafe-welcome-fly-copy">'
+              + '<p class="cafe-sub cafe-welcome-sub">Grab a coffee and chat with a Hebrew partner from anywhere in the world.</p>'
+            + '</div>'
           + '</div>'
         + '</section>'
         + '<div class="cafe-entry-divider" aria-hidden="true"></div>'
-        + '<section class="cafe-entry-prefs" aria-labelledby="cafeLevelsHeading">'
+        + '<section class="cafe-entry-prefs" aria-labelledby="cafeLevelsHeading"'
+          + (ST.welcomeEntranceSeen ? '' : ' aria-hidden="true" inert') + '>'
           + '<div class="pref-copy">'
             + '<h2 class="pref-intro" id="cafeLevelsHeading">Choose partner levels</h2>'
             + '<p class="pref-lead">Wider range, better odds of finding someone.</p>'
           + '</div>'
           + levelSpectrum()
-          + '<div class="spec-feedback-row">'
-            + '<p class="spec-feedback" id="specFeedback" aria-live="polite">' + GP.esc(rangeFeedbackCopy()) + '</p>'
-          + '</div>'
           + '<div class="cafe-entry-acts">'
             + '<button class="btn primary cafe-entry-cta" type="button" onclick="startSearch()"'
-              + (ST.selected.length ? '' : ' disabled') + '>Find someone</button>'
+              + (ST.selected.length ? '' : ' disabled') + '>Continue</button>'
           + '</div>'
         + '</section>'
       + '</div>'
@@ -1312,18 +1471,36 @@ function avSettingsLink(){
     + '</button>';
 }
 
-function devicesSheet(){
-  var groups = '';
-  ['camera','mic','output'].forEach(function(key){
-    var d = DEVICES[key], opts = '';
-    d.options.forEach(function(o){
-      opts += '<button type="button" class="dev-opt' + (o === d.value ? ' is-on' : '') + '"'
-        + ' onclick="pickDevice(\'' + key + '\',\'' + o.replace(/'/g,"\\'") + '\')">'
-        + '<span>' + GP.esc(o) + '</span><span class="tick">' + GP.I.check + '</span></button>';
-    });
-    groups += '<div class="dev-group"><span class="dev-group-label">' + GP.esc(d.label) + '</span>' + opts + '</div>';
+function deviceDropdown(key){
+  var d = DEVICES[key];
+  var open = ST.devMenu === key;
+  var opts = '';
+  d.options.forEach(function(o){
+    opts += '<button type="button" class="dev-dd-opt' + (o === d.value ? ' is-on' : '') + '"'
+      + ' role="option" aria-selected="' + (o === d.value ? 'true' : 'false') + '"'
+      + ' onclick="pickDevice(\'' + key + '\',\'' + o.replace(/'/g,"\\'") + '\')">'
+      + GP.esc(o) + '</button>';
   });
-  var body = '<div class="dev-grid">' + groups
+  return '<div class="dev-group">'
+    + '<span class="dev-group-label" id="devLbl-' + key + '">' + GP.esc(d.label) + '</span>'
+    + '<div class="dev-dd' + (open ? ' is-open' : '') + '">'
+      + '<button type="button" class="dev-dd-btn" aria-haspopup="listbox"'
+      + ' aria-expanded="' + (open ? 'true' : 'false') + '"'
+      + ' aria-labelledby="devLbl-' + key + '"'
+      + ' onclick="toggleDevMenu(\'' + key + '\')">'
+      + '<span>' + GP.esc(d.value) + '</span>'
+      + '<span class="chev" aria-hidden="true">' + CI.chevRt + '</span>'
+      + '</button>'
+      + (open ? '<div class="dev-dd-menu" role="listbox">' + opts + '</div>' : '')
+    + '</div>'
+  + '</div>';
+}
+
+function devicesSheet(){
+  var body = '<div class="dev-grid">'
+    + deviceDropdown('camera')
+    + deviceDropdown('mic')
+    + deviceDropdown('output')
     + '<div class="dev-group dev-test"><span class="dev-group-label">Microphone test</span>' + micTest() + '</div>'
     + '</div>';
   return cafeDialog({
@@ -1340,7 +1517,7 @@ function screenAvCheck(){
   return lockupSolo()
     + '<div class="cafe-shell"></div>'
     + '<main class="av-canon cafe-av">'
-      + '<header class="av-head"><h2>Ready to be seen?</h2></header>'
+      + '<header class="av-head"><h2>Check your setup</h2></header>'
       + '<section class="g-card av-card" aria-label="Camera and microphone check"><div class="av-stage">'
         + cafePreview()
         + cafeAvTools()
@@ -1348,7 +1525,6 @@ function screenAvCheck(){
       + permHelper()
       + '<footer class="av-foot">'
         + avSettingsLink()
-        + '<p class="av-privacy">Your partner will see and hear you for the whole chat. Nothing is recorded.</p>'
         + '<div class="acts"><button class="btn primary" type="button" onclick="startMatching()"'
           + (ST.perm === 'granted' ? '' : ' disabled') + '>Start matching</button></div>'
       + '</footer>'
@@ -1381,8 +1557,9 @@ function levelsSheet(){
     milky:true,
     cls:'levels-dialog',
     onScrim:'closeLevels()',
-    title:'Who would you like to meet?',
-    body:'<div class="pref-row">' + row + '</div>' + prefEdgeLine(),
+    title:'Choose partner levels',
+    body:'<p class="pool-line">Adding more levels may help you match faster.</p>'
+      + '<div class="pref-row">' + row + '</div>' + prefEdgeLine(),
     acts:'<button class="btn primary" type="button" onclick="closeLevels()">Keep searching</button>'
   });
 }
@@ -1420,10 +1597,6 @@ function searchMap(uid){
   + '</div>';
 }
 
-function searchExploreReady(){
-  return !!(ST.exploreShown || ST.searchElapsed >= DUR.exploreAfter);
-}
-
 function searchScopeLine(){
   var b = eligibleBand();
   var n = b.renderableHi - b.lo + 1;
@@ -1446,24 +1619,13 @@ function searchPracticeBtn(){
     + '</button>';
 }
 
-function searchSupportCopy(late){
-  return '<div class="search-support" aria-live="polite">'
-    + '<p class="search-support-msg' + (late ? '' : ' is-on') + '" id="searchSupportA">' + SEARCH_COPY + '</p>'
-    + '<p class="search-support-msg' + (late ? ' is-on' : '') + '" id="searchSupportB">' + SEARCH_COPY_LATE + '</p>'
-    + '</div>';
-}
-
-function searchExploreBtn(late){
-  return '<button type="button" class="search-explore" id="searchExplore" onclick="keepExploring()"'
-    + (late ? '' : ' tabindex="-1" aria-hidden="true"')
-    + '>Explore while we match</button>';
+function searchSupportCopy(){
+  return '<p class="search-support" aria-live="polite">' + SEARCH_COPY + '</p>';
 }
 
 function searchActionRail(){
-  var late = searchExploreReady();
   return '<div class="search-actions" id="searchActions">'
     + searchPracticeBtn()
-    + searchExploreBtn(late)
     + '</div>';
 }
 
@@ -1483,7 +1645,7 @@ function closeDecisionMarkup(){
       + '<h4 id="searchCloseTitle">What would you like to do?</h4>'
       + '<p id="searchCloseBody">We can keep looking while you explore the Hub, or stop matching altogether.</p>'
       + '<div class="acts">'
-        + '<button class="btn primary" type="button" onclick="keepMatchingExplore()">Keep matching &amp; explore</button>'
+        + '<button class="btn primary" type="button" onclick="keepMatchingExplore()">Keep matching</button>'
         + '<button class="btn cream" type="button" onclick="stopMatching()">Stop matching</button>'
         + '<button class="btn ghost-ink search-close-cancel" type="button" onclick="dismissCloseDecision()">Cancel</button>'
       + '</div>'
@@ -1491,20 +1653,19 @@ function closeDecisionMarkup(){
 }
 
 function screenSearching(){
-  var late = searchExploreReady();
   return lockupSolo()
     + searchCloseBtn(GP.I.x)
     + '<div class="cafe-shell"></div>'
-    + '<main class="cafe-stage searching-stage' + (late ? ' is-late is-ready' : '') + '">'
+    + '<main class="cafe-stage searching-stage">'
       + '<div class="search-hero">'
         + '<div class="search-stack">'
           + searchMap('echoFade')
           + '<div class="search-status">'
             + '<h2 class="g-display">Looking for a partner\u2026</h2>'
-            + searchSupportCopy(late)
+            + searchSupportCopy()
           + '</div>'
-          + searchActionRail()
           + searchScopeLine()
+          + searchActionRail()
         + '</div>'
       + '</div>'
     + '</main>'
@@ -1727,7 +1888,7 @@ function matchSheet(){
   return '<div class="match-takeover' + enter + '" id="matchTakeover" role="dialog" aria-modal="true" aria-labelledby="matchHeadline">'
     + '<div class="match-scrim"></div>'
     + '<div class="match-stage">'
-      + '<h4 class="match-headline" id="matchHeadline"><span class="match-kicker">Congratulations!</span>We found you a Caf\u00e9 partner</h4>'
+      + '<h4 class="match-headline" id="matchHeadline"><span class="match-kicker">Congratulations!</span>We found you a <i>Caf\u00e9</i> partner</h4>'
       + '<div class="match-card-wrap">'
         + (ST.matchEnter ? matchConfetti() : '')
         + card
@@ -1772,19 +1933,19 @@ function screenAgreement(){
         + '<input id="agreeAck" type="checkbox"' + (ST.agreed?' checked':'') + ' onchange="onAgreeAck(this)">'
         + '<span class="agree-box" aria-hidden="true"></span>'
       + '</span>'
-      + '<span class="agree-ack-copy">I\u2019m ready to show up for my partner.</span>'
+      + '<span class="agree-ack-copy">100% agree</span>'
     + '</label>';
   return lockup()
     + '<div class="cafe-shell"></div>'
     + cafeDialog({
         milky:true,
         cls:'agree-dialog',
-        title:'Before you sit down',
-        body:'<p class="agree-intro">Before jumping into the Caf\u00e9, here\u2019s what we\u2019re both agreeing to:</p>'
+        title:'Before jumping into the Caf\u00e9\u2026',
+        body:'<p class="agree-intro">Here\u2019s what we\u2019re both agreeing to:</p>'
           + '<ul class="agree-list">' + list + '</ul>'
           + ack,
         acts:'<button class="btn primary" id="agreeCta" type="button" onclick="enterCafe()"'
-          + (ST.agreed?'':' disabled') + '>Caf\u00e9 time!</button>'
+          + (ST.agreed?'':' disabled') + '>Yalla, Caf\u00e9 time!</button>'
       });
 }
 
@@ -1852,16 +2013,16 @@ function partnerOffSheet(){
 
 function dockTipHtml(){
   return '<button class="dock-tip" type="button" onclick="dismissDockTip()">'
-    + '<span class="dock-tip-copy">Stuck? Lean on the toolbar for topics and exercises.</span>'
+    + '<span class="dock-tip-copy">Stuck? Lean on the toolbar for topics and exercises</span>'
     + '<span class="dock-tip-arrow" aria-hidden="true"></span>'
     + '</button>';
 }
 
 function screenLive(){
   var controls = [
-    {icon:CI.wheel, label:'Spin the Wheel', accent:true, onclick:'openWheel()'},
-    {icon:CI.bolt,  label:'Challenge mode', onclick:'openChallenge()'},
-    {icon:GP.I.chat, label:'Activity and text', active:ST.textOpen, onclick:'toggleText()'},
+    {icon:CI.wheel, label:'Topics', accent:true, onclick:'openWheel()'},
+    {icon:CI.bolt,  label:'Practice', onclick:'openChallenge()'},
+    {icon:GP.I.chat, label:'Text', active:ST.textOpen, onclick:'toggleText()'},
     {divider:true},
     {icon:GP.I.cam, label:ST.camOff?'Turn camera on':'Turn camera off', slash:ST.camOff, onclick:'toggleCam()'},
     {icon:GP.I.mic, label:ST.micOff?'Unmute':'Mute', slash:ST.micOff, onclick:'toggleMic()'}
@@ -1896,16 +2057,12 @@ function screenEnding(){
     + '<div class="cafe-shell"></div>'
     + '<main class="cafe-stage cafe-ending">'
       + '<div class="ending-copy">'
-        + '<h2 class="g-display">That was a good one</h2>'
-        + '<p class="g-sub">Six minutes of Hebrew, out loud.</p>'
+        + '<h2 class="g-display">Time flies!</h2>'
+        + '<p class="g-sub">You and ' + GP.esc(PARTNER.name) + ' just spoke Hebrew for 6 minutes.</p>'
       + '</div>'
-      + '<div class="ending-row">'
-        + '<span class="end-partner"><span class="av-sm"><img src="' + PARTNER.img + '" alt=""></span>'
-          + 'You talked with ' + GP.esc(PARTNER.name) + '</span>'
-        + '<div class="end-again">' + GP.loadDots() + '<span>Looking for your next partner\u2026</span></div>'
-      + '</div>'
-      + '<div class="cafe-acts">'
-        + '<button class="btn ghost" type="button" onclick="stopMatching()">Stop matching</button>'
+      + '<div class="cafe-acts ending-acts">'
+        + '<button class="btn primary" type="button" onclick="matchAgain()">Find me another partner</button>'
+        + '<button class="text-cta" type="button" onclick="leaveCafeHome()">Go back to homepage</button>'
       + '</div>'
     + '</main>';
 }
@@ -1921,7 +2078,7 @@ function seedFor(state){
     ST.textOpen = false; ST.textLog = [];
     ST.leaveSheet = false; ST.keepOnSheet = false;
     ST.agreed = false; ST.left = 0;
-    ST.levelsSheet = false; ST.devSheet = false;
+    ST.levelsSheet = false; ST.devSheet = false; ST.devMenu = null;
     ST.dockTip = false; ST.dockTipSeen = false;
     ST.rangeHintSeen = false;
     ST.specHot = -1;
@@ -1929,7 +2086,7 @@ function seedFor(state){
     clearPartnerOff();
     clearTimeout(dockTipT); dockTipT = null;
   }
-  if(state === 'avcheck'){ ST.left = 0; ST.devSheet = false; micReset(); }
+  if(state === 'avcheck'){ ST.left = 0; ST.devSheet = false; ST.devMenu = null; micReset(); }
   if(state === 'searching'){
     ST.matching = true; ST.left = DUR.searchTo; ST.levelsSheet = false;
     ST.closeSheet = false;
@@ -2011,6 +2168,12 @@ function keepExploring(){
   render();
 }
 function keepMatchingExplore(){ keepExploring(); }
+function matchAgain(){ startMatching(); }
+function leaveCafeHome(){
+  ST.closeSheet = false;
+  ST.exploreShown = false;
+  setState('entry');
+}
 function openSearch(){
   ST.closeSheet = false;
   ST.state = 'searching';
@@ -2081,19 +2244,6 @@ function bindMatchTakeover(shouldFocus){
 function revealExplore(){
   if(ST.searchElapsed < DUR.exploreAfter) return;
   ST.exploreShown = true;
-  if(ST.state !== 'searching') return;
-  var stage = document.querySelector('.searching-stage');
-  if(!stage || stage.classList.contains('is-late')) return;
-  stage.classList.add('is-late');
-  var a = document.getElementById('searchSupportA');
-  var b = document.getElementById('searchSupportB');
-  if(a) a.classList.remove('is-on');
-  if(b) b.classList.add('is-on');
-  var explore = document.getElementById('searchExplore');
-  if(explore){
-    explore.removeAttribute('aria-hidden');
-    explore.removeAttribute('tabindex');
-  }
 }
 
 function offerMatch(){
@@ -2165,9 +2315,17 @@ function micStop(){ ST.mic.phase = 'ready'; ST.mic.pos = 0; render(); }
 function micPlay(){ ST.mic.phase = 'playing'; ST.mic.pos = 0; render(); }
 function micPause(){ ST.mic.phase = 'ready'; render(); }
 
-function openDevices(){ ST.devSheet = true; render(); }
-function closeDevices(){ ST.devSheet = false; render(); }
-function pickDevice(key, value){ DEVICES[key].value = value; render(); }
+function openDevices(){ ST.devSheet = true; ST.devMenu = null; render(); }
+function closeDevices(){ ST.devSheet = false; ST.devMenu = null; render(); }
+function toggleDevMenu(key){
+  ST.devMenu = ST.devMenu === key ? null : key;
+  render();
+}
+function pickDevice(key, value){
+  DEVICES[key].value = value;
+  ST.devMenu = null;
+  render();
+}
 
 function openFlashcards(){ ST.closeSheet = false; setState('flashcards'); }
 function closeFlashcards(){ ST.state = 'searching'; try{ history.replaceState(null,'','#searching'); }catch(e){} render(); }
@@ -2179,8 +2337,8 @@ function cardStep(d){ ST.card += d; ST.cardRevealed = false; ST.cardMarked = fal
 function cardPrev(){ cardStep(-1); }
 function cardNext(){ cardStep(1); }
 
-function openWheel(){ dismissDockTip(); cafeToast('Spin the Wheel \u2014 entry point only in this pass'); }
-function openChallenge(){ dismissDockTip(); cafeToast('Challenge mode \u2014 entry point only in this pass'); }
+function openWheel(){ dismissDockTip(); cafeToast('Topics \u2014 entry point only in this pass'); }
+function openChallenge(){ dismissDockTip(); cafeToast('Practice \u2014 entry point only in this pass'); }
 
 function toggleText(){ dismissDockTip(); ST.textOpen = !ST.textOpen; render(); }
 function closeText(){ ST.textOpen = false; render(); }
@@ -2329,7 +2487,6 @@ function clockTick(){
   }
   if(s === 'ending'){
     ST.left--;
-    if(ST.left <= 0){ keepExploring(); return; }
   }
 }
 
@@ -2383,7 +2540,10 @@ function render(){
   f.classList.toggle('is-entry', s === 'entry');
 
   unbindEntrySpectrum();
-  if(s === 'entry') bindSpectrum(f);
+  if(s === 'entry'){
+    bindSpectrum(f);
+    bindDesktopWelcomeEntrance();
+  }
 
   if(ST.textOpen){
     var log = document.getElementById('tsLog');
@@ -2441,6 +2601,13 @@ function runHappyPath(){
   setState('entry');
   setTimeout(startSearch, 700);
   setTimeout(startMatching, 2200);
+}
+
+function replayWelcomeEntrance(){
+  if(INTERVIEW) return;
+  ST.welcomeEntranceSeen = false;
+  if(ST.state === 'entry') render();
+  else setState('entry');
 }
 
 function onCafeKey(ev){

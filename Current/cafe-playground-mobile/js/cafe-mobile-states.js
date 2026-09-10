@@ -138,6 +138,7 @@ var ST = {
   perm:'granted',
   mic:{phase:'idle', left:0, pos:0},   // idle | recording | ready | playing
   devSheet:false,
+  devMenu:null,
   levelsSheet:false,
   levelsSaved:null,   // [lo, hi] captured when the edit sheet opens; restored on dismiss
   card:0, cardRevealed:false, cardMarked:false, cardPlaying:false,
@@ -843,6 +844,9 @@ function screenEntry(){
 var entryIo = null;
 var entryOnScroll = null;
 var entryCleanup = [];
+var mobileWelcomeTimer = 0;
+var mobileWelcomeScrollRaf = 0;
+var mobileWelcomeScrollActive = false;
 var specDrag = null;
 var specSettle = 0;
 var specDidDrag = false;
@@ -851,6 +855,7 @@ function prefersReducedMotion(){
 }
 function unbindEntryPage(){
   cancelWelcomeAnim();
+  cancelMobileWelcomeProgression();
   if(entryIo){ entryIo.disconnect(); entryIo = null; }
   if(entryOnScroll){
     var el = document.getElementById('screen');
@@ -863,13 +868,66 @@ function unbindEntryPage(){
   specDrag = null;
   specDidDrag = false;
 }
+function cancelMobileWelcomeProgression(userInterrupted){
+  var screen = document.getElementById('screen');
+  var wasPending = !!mobileWelcomeTimer || mobileWelcomeScrollActive
+    || !!(screen && screen.classList.contains('is-auto-settled'));
+  if(mobileWelcomeTimer){
+    window.clearTimeout(mobileWelcomeTimer);
+    mobileWelcomeTimer = 0;
+  }
+  if(mobileWelcomeScrollRaf){
+    cancelAnimationFrame(mobileWelcomeScrollRaf);
+    mobileWelcomeScrollRaf = 0;
+  }
+  mobileWelcomeScrollActive = false;
+  if(screen){
+    screen.classList.remove('is-auto-scrolling','is-auto-settled');
+    if(userInterrupted && wasPending) screen.classList.add('is-user-controlling');
+    else if(!userInterrupted) screen.classList.remove('is-user-controlling');
+  }
+}
 function sizeEntryWelcome(screen){
   var h = screen.clientHeight;
   var short = h < 680;
-  var peek = short ? 44 : 56;
   screen.classList.toggle('is-short', short);
-  screen.style.setProperty('--cafe-peek', peek + 'px');
-  screen.style.setProperty('--cafe-welcome-h', (h - peek) + 'px');
+  screen.style.setProperty('--cafe-peek', '0px');
+  screen.style.setProperty('--cafe-stage-h', h + 'px');
+  screen.style.setProperty('--cafe-welcome-h', h + 'px');
+  screen.style.setProperty('--cafe-levels-h', h + 'px');
+}
+
+function cafeLevelStageTop(screen, levels){
+  var screenRect = screen.getBoundingClientRect();
+  var levelsRect = levels.getBoundingClientRect();
+  return levelsRect.top - screenRect.top + screen.scrollTop;
+}
+
+function cafeLevelScrollTarget(screen, levels){
+  var maxScroll = Math.max(0, screen.scrollHeight - screen.clientHeight);
+  var levelTop = cafeLevelStageTop(screen, levels);
+  return Math.max(0, Math.min(maxScroll, levelTop));
+}
+
+function afterMobileWelcomeReady(welcome, done){
+  var started = false;
+  function run(){
+    if(started) return;
+    started = true;
+    window.requestAnimationFrame(function(){
+      window.requestAnimationFrame(done);
+    });
+  }
+  var cups = welcome && (welcome.querySelector('.cafe-hero-slot') || welcome.querySelector('.cafe-cups'));
+  var fontsReady = (document.fonts && document.fonts.ready) ? document.fonts.ready : Promise.resolve();
+  fontsReady.then(function(){
+    if(cups && cups.getBoundingClientRect().height < 2){
+      window.setTimeout(run, 40);
+    } else {
+      run();
+    }
+  }, run);
+  window.setTimeout(run, 480);
 }
 function specPoints(svg){
   var path = (svg && svg.querySelector('.spec-hair')) || (svg && svg.querySelector('.spec-track'));
@@ -1502,12 +1560,50 @@ function bindEntryPage(screen){
   if(!cue || !levels || !focus) return;
 
   sizeEntryWelcome(screen);
+  var shouldAutoProgress = !ST.welcomePlayed;
   ST.welcomePlayed = true;
+  var welcome = screen.querySelector('.cafe-welcome');
+  if(shouldAutoProgress && welcome) playCafeWelcomeGesture(welcome);
+
+  function startGuidedScroll(){
+    cancelMobileWelcomeProgression();
+    screen.classList.remove('is-user-controlling');
+    var target = cafeLevelScrollTarget(screen, levels);
+    var start = screen.scrollTop;
+    var distance = target - start;
+    if(Math.abs(distance) < 2) return;
+    var reduced = prefersReducedMotion();
+    var duration = reduced ? 180 : 800;
+    var started = performance.now();
+    mobileWelcomeScrollActive = true;
+    screen.classList.add('is-auto-scrolling');
+    function step(now){
+      if(!mobileWelcomeScrollActive) return;
+      var t = Math.max(0, Math.min(1, (now - started) / duration));
+      var eased = t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+      screen.scrollTop = start + distance * eased;
+      if(t < 1){
+        mobileWelcomeScrollRaf = requestAnimationFrame(step);
+      } else {
+        mobileWelcomeScrollRaf = 0;
+        mobileWelcomeScrollActive = false;
+        screen.scrollTop = target;
+        screen.classList.remove('is-auto-scrolling');
+        screen.classList.add('is-auto-settled');
+        syncEntryChoreography(screen);
+      }
+    }
+    mobileWelcomeScrollRaf = requestAnimationFrame(step);
+  }
+
+  var welcomeHoldCancelled = false;
+  function stopForUserInput(){
+    welcomeHoldCancelled = true;
+    cancelMobileWelcomeProgression(true);
+  }
+
   cue.addEventListener('click', function(){
-    screen.scrollTo({
-      top: levels.offsetTop,
-      behavior: prefersReducedMotion() ? 'auto' : 'smooth'
-    });
+    startGuidedScroll();
   });
 
   bindSpectrum(screen);
@@ -1515,6 +1611,27 @@ function bindEntryPage(screen){
   syncEntryChoreography(screen);
   entryOnScroll = function(){ syncEntryChoreography(screen); };
   screen.addEventListener('scroll', entryOnScroll, {passive:true});
+  screen.addEventListener('touchstart', stopForUserInput, {passive:true});
+  screen.addEventListener('pointerdown', stopForUserInput, {passive:true});
+  screen.addEventListener('wheel', stopForUserInput, {passive:true});
+  document.addEventListener('keydown', stopForUserInput, true);
+  entryCleanup.push(function(){
+    screen.removeEventListener('touchstart', stopForUserInput);
+    screen.removeEventListener('pointerdown', stopForUserInput);
+    screen.removeEventListener('wheel', stopForUserInput);
+    document.removeEventListener('keydown', stopForUserInput, true);
+  });
+  if(shouldAutoProgress && !prefersReducedMotion()){
+    entryCleanup.push(function(){ welcomeHoldCancelled = true; });
+    afterMobileWelcomeReady(welcome, function(){
+      if(welcomeHoldCancelled || !screen.isConnected || !screen.classList.contains('is-entry')) return;
+      mobileWelcomeTimer = window.setTimeout(function(){
+        mobileWelcomeTimer = 0;
+        if(welcomeHoldCancelled) return;
+        startGuidedScroll();
+      }, 2320);
+    });
+  }
   var onWinResize = function(){
     sizeEntryWelcome(screen);
     syncEntryChoreography(screen);
@@ -1585,19 +1702,41 @@ function avSettingsLink(){
     + '<span class="chev" aria-hidden="true">' + GM.I.chevRt + '</span>'
     + '</button>';
 }
-function devicesSheet(){
-  var body = '<h4>Audio &amp; camera settings</h4>';
-  ['camera','mic','output'].forEach(function(key){
-    var d = DEVICES[key], opts = '';
-    d.options.forEach(function(o){
-      opts += '<button type="button" class="dev-opt' + (o === d.value ? ' is-on' : '') + '"'
-        + ' onclick="pickDevice(\'' + key + '\',\'' + o.replace(/'/g,"\\'") + '\')">'
-        + '<span>' + GM.esc(o) + '</span><span class="tick">' + GM.I.check + '</span></button>';
-    });
-    body += '<div class="dev-group"><span class="dev-group-label">' + GM.esc(d.label) + '</span>' + opts + '</div>';
+function deviceDropdown(key){
+  var d = DEVICES[key];
+  var open = ST.devMenu === key;
+  var opts = '';
+  d.options.forEach(function(o){
+    opts += '<button type="button" class="dev-dd-opt' + (o === d.value ? ' is-on' : '') + '"'
+      + ' role="option" aria-selected="' + (o === d.value ? 'true' : 'false') + '"'
+      + ' onclick="pickDevice(\'' + key + '\',\'' + o.replace(/'/g,"\\'") + '\')">'
+      + GM.esc(o) + '</button>';
   });
-  body += '<div class="dev-group"><span class="dev-group-label">Microphone test</span>' + micTest() + '</div>';
+  return '<div class="dev-group">'
+    + '<span class="dev-group-label" id="devLbl-' + key + '">' + GM.esc(d.label) + '</span>'
+    + '<div class="dev-dd' + (open ? ' is-open' : '') + '">'
+      + '<button type="button" class="dev-dd-btn" aria-haspopup="listbox"'
+      + ' aria-expanded="' + (open ? 'true' : 'false') + '"'
+      + ' aria-labelledby="devLbl-' + key + '"'
+      + ' onclick="toggleDevMenu(\'' + key + '\')">'
+      + '<span>' + GM.esc(d.value) + '</span>'
+      + '<span class="chev" aria-hidden="true">' + GM.I.chevRt + '</span>'
+      + '</button>'
+      + (open ? '<div class="dev-dd-menu" role="listbox">' + opts + '</div>' : '')
+    + '</div>'
+  + '</div>';
+}
+
+function devicesSheet(){
+  var body = '<h4>Audio &amp; camera settings</h4>'
+    + '<div class="dev-grid">'
+    + deviceDropdown('camera')
+    + deviceDropdown('mic')
+    + deviceDropdown('output')
+    + '<div class="dev-group dev-test"><span class="dev-group-label">Microphone test</span>' + micTest() + '</div>'
+    + '</div>';
   return GM.sheet({
+    milky:true,
     cls:'dev-sheet',
     onScrim:'closeDevices()',
     body:body,
@@ -2204,7 +2343,6 @@ function seedFor(state){
     ST.agreed = false; ST.keepOnSheet = false;
     ST.dockTip = false; ST.dockTipSeen = false;
     ST.finalNote = false; ST.finalNoteSeen = false;
-    ST.welcomePlayed = false;
     ST.handleCuePlayed = false;
     ST.rangeHintSeen = false;
     clearPartnerOff();
@@ -2212,7 +2350,7 @@ function seedFor(state){
     clearTimeout(finalNoteT); finalNoteT = null;
   }
   /* every Café entry runs the check, so it always starts from scratch */
-  if(state === 'avcheck'){ ST.left = 0; ST.devSheet = false; micReset(); }
+  if(state === 'avcheck'){ ST.left = 0; ST.devSheet = false; ST.devMenu = null; micReset(); }
   if(state === 'searching'){
     ST.matching = true; ST.left = DUR.searchTo; ST.levelsSheet = false;
     restoreLevelsDraft();
@@ -2476,9 +2614,17 @@ function micStop(){ ST.mic.phase = 'ready'; ST.mic.pos = 0; render(); }
 function micPlay(){ ST.mic.phase = 'playing'; ST.mic.pos = 0; render(); }
 function micPause(){ ST.mic.phase = 'ready'; render(); }
 
-function openDevices(){ ST.devSheet = true; render(); }
-function closeDevices(){ ST.devSheet = false; render(); }
-function pickDevice(key, value){ DEVICES[key].value = value; render(); }
+function openDevices(){ ST.devSheet = true; ST.devMenu = null; render(); }
+function closeDevices(){ ST.devSheet = false; ST.devMenu = null; render(); }
+function toggleDevMenu(key){
+  ST.devMenu = ST.devMenu === key ? null : key;
+  render();
+}
+function pickDevice(key, value){
+  DEVICES[key].value = value;
+  ST.devMenu = null;
+  render();
+}
 
 /* optional practice while the queue runs. Not a room, and not a reason to stay. */
 function openFlashcards(){ ST.closeSheet = false; setState('flashcards'); }
@@ -2756,7 +2902,7 @@ function render(){
     if(ST.entryReturnToLevels){
       ST.entryReturnToLevels = false;
       var levelsEl = document.getElementById('cafeLevels');
-      el.scrollTop = levelsEl ? levelsEl.offsetTop : 0;
+      el.scrollTop = levelsEl ? cafeLevelScrollTarget(el, levelsEl) : 0;
     } else {
       el.scrollTop = entryScroll;
     }
@@ -2764,6 +2910,8 @@ function render(){
   } else {
     unbindEntryPage();
     el.style.removeProperty('--cafe-welcome-h');
+    el.style.removeProperty('--cafe-levels-h');
+    el.style.removeProperty('--cafe-stage-h');
     el.style.removeProperty('--cafe-peek');
     el.classList.remove('is-short');
     el.scrollTop = 0;
@@ -2834,6 +2982,18 @@ function runPath(){
   setState('entry');
   setTimeout(goAvCheck, 900);
   setTimeout(startMatching, 2200);
+}
+
+function replayWelcomeEntrance(){
+  if(INTERVIEW) return;
+  ST.welcomePlayed = false;
+  if(ST.state === 'entry') render();
+  else setState('entry');
+  var screen = document.getElementById('screen');
+  if(screen){
+    screen.scrollTop = 0;
+    syncEntryChoreography(screen);
+  }
 }
 
 function onCafeKey(ev){
