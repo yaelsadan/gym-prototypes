@@ -31,7 +31,7 @@
 /* Type is deliberately larger than a default mobile scale. Café is for adults,
    including older learners, and nothing on these screens is metadata. */
 .cafe-display{
-  font-family:var(--font-brand);font-size:33px;font-weight:400;font-synthesis:none;
+  font-family:var(--font-brand);font-size:33px;font-weight:700;font-synthesis:none;
   line-height:1.14;letter-spacing:-.2px;text-wrap:balance;
 }
 /* Fedra Bold, the real cut — never a synthesised one. */
@@ -1021,7 +1021,7 @@ body.present .demo{justify-content:center}
   position:relative;z-index:3;
   margin:0 0 18px;
   font-family:var(--font-brand);
-  font-size:24px;font-weight:400;font-synthesis:none;letter-spacing:-.2px;line-height:1.2;
+  font-size:24px;font-weight:700;font-synthesis:none;letter-spacing:-.2px;line-height:1.2;
   text-align:center;text-wrap:balance;
   color:#F7F6EF;
   text-shadow:0 0 12px rgba(32,28,26,.9),0 1px 14px rgba(18,14,12,.45);
