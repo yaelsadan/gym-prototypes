@@ -147,6 +147,7 @@ body.is-shot .zoom-stage{width:800px;height:500px;border-radius:0;box-shadow:non
   Isolated debug surface for the Welcome cups gesture. Canonical Desktop and Mobile Welcome screens are not loaded or modified.
   Replay plays the full sequence. The scrubber and pause buttons inspect frames on that same continuous timeline.
   Newest approved fallback — 15:05 (cups locked): <code>?restore=1505</code>.
+  Pre-handoff snapshot (15:39): <code>?restore=1539</code>.
   Earlier: <code>?restore=1437</code>
 </p>
 <p class="rm-note">Reduced motion is on, so the playground shows the final static Café icon without animation.</p>
@@ -174,6 +175,7 @@ body.is-shot .zoom-stage{width:800px;height:500px;border-radius:0;box-shadow:non
 
     <div class="grp">Compare</div>
     <button type="button" onclick="location.search='?restore=1505'">15:05 approved fallback</button>
+    <button type="button" onclick="location.search='?restore=1539'">15:39 pre-handoff snapshot</button>
     <button type="button" onclick="location.search='?restore=1437'">14:37 approved fallback</button>
     <button type="button" onclick="location.search=''">Current refinement</button>
 
@@ -405,6 +407,54 @@ var BASELINE_1505 = {
     {left: {x: -15, y: 1.0, rot: 0}, right: {x: 64.5, y: 0, rot: 0}},
     {left: {x: -10.2, y: 3.6, rot: 0}, right: {x: 60.6, y: -0.35, rot: 0}},
     {left: {x: -2.0, y: 5.7, rot: 0}, right: {x: 51.2, y: 0.08, rot: 0}},
+    {left: {x: 0, y: 6.695, rot: 0}, right: {x: 49.105, y: 0, rot: 0}},
+    {left: {x: 0, y: 6.695, rot: 0}, right: {x: 49.105, y: 0, rot: 0}},
+    {left: {x: 0, y: 6.695, rot: 0}, right: {x: 49.105, y: 0, rot: 0}}
+  ]
+};
+
+/*
+  Snapshot — 15:39 (2026-09-10), before final-handoff fix.
+  Contained droplet entry + cups locked. Restore with ?restore=1539
+  (does not overwrite BASELINE_1505).
+*/
+var BASELINE_1539 = {
+  label: 'Snapshot — 15:39 pre-handoff (cups locked, entry clip)',
+  MOTION_MODE: 'refine',
+  ENTRY_CLIP: true,
+  POSE_MS: [0, 820, 1520, 2000, 2380, 2460, 2520, 2600, 2700, 2780, 3200],
+  LAND_L: 2420,
+  LAND_R: 2700,
+  CUP_MS: [0, 540, 900, 1980, 2680, 3000, 3200],
+  CUP_HOLD_MS: 1600,
+  CUP_SETTLE_MS: 2840,
+  CUP_DEPTH_APPROACH: true,
+  SHAPE_R_KIND: 'counterpart',
+  BUBBLE: {
+    L: {
+      launch: 520, chatT: 1500, leaveT: 1600, pairT: 2000, land: 2420, fadeEnd: 2680,
+      start: [38, 3], chat: [49.5, -54], pairEnd: [51.2, -31], landPt: [61.4, 23.5],
+      T0: [14, -56], Tchat: [6, 16], Tpair: [4, 22],
+      rot0: -16, rotChat: -6,
+      diveP2: [55.2, 12], morphDelay: 0, mergeDur: 260, fillShare: 0.43
+    },
+    R: {
+      launch: 680, chatT: 1510, leaveT: 1700, pairT: 2080, land: 2700, fadeEnd: 2940,
+      start: [76, 3], chat: [66.8, -24], pairEnd: [67.4, -6.5], landPt: [58.8, 23.4],
+      T0: [-14, -22], Tchat: [-3, 16], Tpair: [0, 16],
+      rot0: 2, rotChat: 5,
+      diveP2: [66.0, 9.5], morphDelay: 0, mergeDur: 240, fillShare: 0.57
+    }
+  },
+  cups: [
+    {left: {x: -22, y: 1.4, rot: -9}, right: {x: 72, y: 0.6, rot: 9}},
+    {left: {x: -9, y: 1.1, rot: -2.2}, right: {x: 58.4, y: 0.1, rot: 2.2}},
+    {left: {x: -15, y: 1.0, rot: 0}, right: {x: 64.5, y: 0, rot: 0}},
+    {left: {x: -10.2, y: 3.6, rot: 0}, right: {x: 60.6, y: -0.35, rot: 0}},
+    {left: {x: -2.0, y: 5.7, rot: 0}, right: {x: 51.2, y: 0.08, rot: 0}},
+    {left: {x: 0, y: 6.695, rot: 0}, right: {x: 49.105, y: 0, rot: 0}},
+    {left: {x: 0, y: 6.695, rot: 0}, right: {x: 49.105, y: 0, rot: 0}},
+    {left: {x: 0, y: 6.695, rot: 0}, right: {x: 49.105, y: 0, rot: 0}},
     {left: {x: 0, y: 6.695, rot: 0}, right: {x: 49.105, y: 0, rot: 0}},
     {left: {x: 0, y: 6.695, rot: 0}, right: {x: 49.105, y: 0, rot: 0}},
     {left: {x: 0, y: 6.695, rot: 0}, right: {x: 49.105, y: 0, rot: 0}}
@@ -701,14 +751,15 @@ function prepMotion(){
   var poolPartial = matchMass(poolFull.map(function(p, i){
     var n = poolFull.length;
     var head = Math.min(i, n - i) / (n * 0.5);
-    var squash = 0.48 + 0.12 * (1 - head);
-    return [p[0] * (0.72 + 0.08 * head), p[1] * squash + 4.6];
+    var squash = 0.42 + 0.1 * (1 - head);
+    return [p[0] * (0.78 + 0.06 * head), p[1] * squash + 5.2];
   }), Math.abs(ringArea(poolFull)) * 0.43);
+  /* Soft teardrop inside the overlap — round head down, no pointed spike. */
   var stream = matchMass(poolFull.map(function(p, i){
     var n = poolFull.length;
     var head = Math.min(i, n - i) / (n * 0.5);
-    return [p[0] * (0.28 + 0.22 * head), p[1] * (0.85 + 0.2 * (1 - head))];
-  }), Math.abs(ringArea(poolFull)) * 0.2);
+    return [p[0] * (0.55 + 0.25 * head), p[1] * (0.42 + 0.4 * head) + 3.2 * (1 - head)];
+  }), Math.abs(ringArea(poolFull)) * 0.18);
   function pack(drop, chatDense, midDense, fallDense, ds, cs, ms, fs, chatTail, midTail, fallTail){
     var c = ringFromTail(scalePts(chatDense, cs), NPTS, chatTail);
     var m = ringPick(scalePts(midDense, ms), NPTS, midTail);
@@ -797,15 +848,16 @@ function cafeCupsSvg(vb){
       + '<g class="cafe-live">'
         + '<g class="yellow-mark" clip-path="url(#' + u + '-yclip)">'
           + '<g class="yellow-liquid" clip-path="url(#' + u + '-ylevel)">'
-            + '<path fill="#FFE300" d="' + YELLOW_D + '"/>'
+            + '<path class="yellow-fill-path" fill="#FFE300" d="' + YELLOW_D + '"/>'
           + '</g>'
           + '<g class="bubble b-left in"><path class="blob-path" fill="#FFE300"/></g>'
           + '<g class="bubble b-right in"><path class="blob-path" fill="#FFE300"/></g>'
         + '</g>'
-        + '<g class="cup-right-move"><use href="#' + u + '-cup-right" width="69" height="37"/></g>'
-        + '<g class="cup-left-move"><use href="#' + u + '-cup-left" width="69" height="37"/></g>'
         + '<g class="bubble b-left air"><path class="blob-path" fill="#FFE300"/></g>'
         + '<g class="bubble b-right air"><path class="blob-path" fill="#FFE300"/></g>'
+        + '<g class="cup-right-move"><use href="#' + u + '-cup-right" width="69" height="37"/></g>'
+        + '<g class="cup-left-move"><use href="#' + u + '-cup-left" width="69" height="37"/></g>'
+        + '<path class="yellow-edge" d="' + YELLOW_D + '" fill="none" stroke="white" stroke-linecap="round" stroke-linejoin="round" opacity="0"/>'
         + '<g class="debug-arcs" fill="none" pointer-events="none" aria-hidden="true">'
           + '<path class="debug-arc debug-arc-l" stroke="#7ec8e3" stroke-width="0.7" stroke-dasharray="2 1.5" opacity="0.85"/>'
           + '<path class="debug-arc debug-arc-r" stroke="#e3a07e" stroke-width="0.7" stroke-dasharray="2 1.5" opacity="0.85"/>'
@@ -996,9 +1048,9 @@ function bubbleAt(spec, shapes, ms){
       }
     }
   }
-  /* Once the rounded mass reaches the rim opening, render inside the overlap clip
-     (behind both cup outlines). Never keep an air-layer droplet over white strokes. */
-  var clipped = ENTRY_CLIP && (cy + 4.2 >= RIM_Y || ms >= spec.land - 140);
+  /* Stay on the air layer (under both cup strokes) until the droplet center is clearly
+     below the opening; then continue inside the YELLOW_D clip. */
+  var clipped = ENTRY_CLIP && (cy >= RIM_Y + 0.8 || ms >= spec.land);
   return {op: op, cx: cx, cy: cy, rot: rot, sx: 1, sy: 1, d: ptsToD(pts), clipped: clipped, merge: 0};
 }
 
@@ -1009,20 +1061,27 @@ function bubblePour(spec, shapes, ms){
   }
   var dur = spec.mergeDur || 250;
   var pour = clamp((ms - spec.land) / dur, 0, 1);
-  var toBottom = smooth(clamp(pour / 0.42, 0, 1));
+  var toBottom = smooth(clamp(pour / 0.45, 0, 1));
   var toPool = smooth(clamp((pour - 0.28) / 0.72, 0, 1));
   var isFirst = spec === BUBBLE.L;
   var poolTarget = isFirst ? shapes.poolPart : shapes.poolFull;
   var poolMass = isFirst ? shapes.poolPartMass : shapes.poolFullMass;
-  var mid = lerpPtsStagger(shapes.fall, shapes.stream, toBottom, 0.1);
-  var pts = lerpPtsStagger(mid, poolTarget, toPool, 0.08);
+  /* Stay rounded on entry; only gently stretch, then widen into the pool — no spike. */
+  var neck = shapes.fall.map(function(p, i){
+    var n = shapes.fall.length;
+    var head = Math.min(i, n - i) / (n * 0.5);
+    return [p[0] * (0.92 - 0.08 * toBottom * (1 - head)), p[1] * (1 + 0.08 * toBottom * head)];
+  });
+  var mid = lerpPtsStagger(neck, shapes.stream, toBottom * 0.28, 0.16);
+  var pts = lerpPtsStagger(mid, poolTarget, toPool, 0.16);
   pts = matchMass(pts, lerp(shapes.dropMass, poolMass, toPool));
-  var cx = lerp(spec.landPt[0], POOL_CX, smooth(toBottom * 0.55 + toPool * 0.45));
-  var cy = lerp(spec.landPt[1], POOL_BOTTOM_Y - (isFirst ? 1.2 : 0.4), toBottom);
-  cy = lerp(cy, POOL_CY + (isFirst ? 4.2 : 0.6), toPool);
+  /* Keep the morph center inside the overlap; never climb above the rim. */
+  var cx = lerp(spec.landPt[0], POOL_CX, smooth(toBottom * 0.4 + toPool * 0.6));
+  var cy = lerp(spec.landPt[1], POOL_BOTTOM_Y - (isFirst ? 0.6 : 0.15), toBottom);
+  cy = lerp(cy, POOL_CY + (isFirst ? 4.0 : 0.5), toPool);
+  cy = Math.max(cy, RIM_Y + 1.2);
   var rot = lerp(spec.rotChat, 0, toPool);
-  /* Stay fully opaque while morphing; vanish only once mass has become the pool. */
-  var op = 1 - smooth(clamp((pour - 0.72) / 0.28, 0, 1));
+  var op = 1 - smooth(clamp((pour - 0.8) / 0.2, 0, 1));
   return {op: op, cx: cx, cy: cy, rot: rot, sx: 1, sy: 1, d: ptsToD(pts), clipped: true, merge: pour};
 }
 
@@ -1086,7 +1145,8 @@ function paintBubbleLayers(svg, side, sample){
     if(inn){ paintBubble(inn, {op: 0}); inn.style.display = 'none'; }
     return;
   }
-  var useIn = !!(sample && (sample.clipped || sample.cy + 5 >= RIM_Y || ST.ms >= BUBBLE.L.land - 200));
+  /* Per-droplet only — never force the second droplet into the clip while it is still above the rim. */
+  var useIn = !!(sample && sample.clipped);
   if(useIn){
     paintBubble(inn, sample);
     inn.style.display = '';
@@ -1124,6 +1184,23 @@ function fillAmount(ms){
     return smooth(afterBottom) * (spec.fillShare || 0.5);
   }
   return clamp(driven(BUBBLE.L) + driven(BUBBLE.R), 0, 1);
+}
+
+function settleStartMs(){
+  return BUBBLE.R.land + (BUBBLE.R.mergeDur || 240);
+}
+
+/* Cubic ease-out: zero end velocity. 0 = still waving; 1 = exact YELLOW_D resting state. */
+function settleAmount(ms){
+  if(!(ENTRY_CLIP && MOTION_MODE === 'refine')) return ms >= TOTAL_MS ? 1 : 0;
+  var t0 = settleStartMs();
+  var t1 = Math.min(TOTAL_MS, t0 + 220);
+  var u = u01(ms, t0, t1);
+  return 1 - Math.pow(1 - u, 3);
+}
+
+function noLiveFinalSwap(){
+  return ENTRY_CLIP && MOTION_MODE === 'refine';
 }
 
 function swellAmount(ms){
@@ -1174,31 +1251,76 @@ function paintLiquid(svg, ms, finT){
   var mark = svg.querySelector('.yellow-mark');
   var level = svg.querySelector('.yellow-level-path') || svg.querySelector('.yellow-level-rect');
   var liquid = svg.querySelector('.yellow-liquid');
+  var fillPath = svg.querySelector('.yellow-fill-path');
+  var edge = svg.querySelector('.yellow-edge');
   if(!mark || !level) return;
-  var fill = fillAmount(ms) * (1 - finT);
-  /* Keep yellow-mark group visible whenever clipped droplets are inside, so clip applies. */
-  var anyIn = ENTRY_CLIP && (ms >= BUBBLE.L.land - 40 || ms >= BUBBLE.R.land - 40) && ms < TOTAL_MS;
+
+  var continuous = noLiveFinalSwap();
+  var fill = fillAmount(ms) * (continuous ? 1 : (1 - finT));
+  var settle = continuous ? settleAmount(ms) : 0;
+  var anyIn = ENTRY_CLIP && (ms >= BUBBLE.L.land - 40 || ms >= BUBBLE.R.land - 40);
+  if(continuous && settle >= 1) anyIn = true;
+
   if(fill <= 0.001 && !anyIn){
     mark.style.opacity = '0';
     if(liquid) liquid.style.opacity = '0';
+    if(edge){
+      edge.setAttribute('d', YELLOW_D);
+      edge.setAttribute('opacity', '0');
+    }
     return;
   }
+
   mark.style.opacity = '1';
+  if(fillPath) fillPath.setAttribute('d', YELLOW_D);
+  if(edge) edge.setAttribute('d', YELLOW_D);
+
+  /* Progressive edge with the fill — same path/transform for the whole sequence. */
+  if(edge){
+    var edgeOp = clamp(Math.max(fill * 3.2, anyIn ? 0.2 : 0), 0, 1);
+    if(settle > 0) edgeOp = 1;
+    edge.setAttribute('opacity', String(edgeOp));
+  }
+
+  if(continuous && settle >= 0.999){
+    /* Exact resting mark: one persistent YELLOW_D path, no level clip, no transform. */
+    if(liquid){
+      liquid.style.opacity = '1';
+      liquid.removeAttribute('clip-path');
+      liquid.setAttribute('transform', '');
+    }
+    return;
+  }
+
   if(liquid) liquid.style.opacity = fill <= 0.001 ? '0' : '1';
+  if(liquid && !liquid.getAttribute('clip-path')){
+    var yclip = svg.querySelector('clipPath[id$="-ylevel"]');
+    if(yclip) liquid.setAttribute('clip-path', 'url(#' + yclip.id + ')');
+  }
+
   var swell = swellAmount(ms);
+  var fillDraw = continuous ? lerp(fill, 1, settle) : fill;
+  var swellDraw = continuous ? swell * (1 - settle) : swell;
+
   if(level.tagName && level.tagName.toLowerCase() === 'rect'){
-    var y = lerp(30.95, 9.22, fill);
+    var y = lerp(30.95, 9.22, fillDraw);
     level.setAttribute('y', y.toFixed(3));
     level.setAttribute('height', (32.2 - y).toFixed(3));
   } else {
-    level.setAttribute('d', liquidClipD(Math.max(fill, 0.001), swell));
+    level.setAttribute('d', liquidClipD(Math.max(fillDraw, 0.001), swellDraw));
   }
   if(liquid){
     if(MOTION_MODE === 'refine'){
-      liquid.setAttribute('transform',
-        'translate(59.5 30.55) scale(' + (1 + swell * 0.22).toFixed(4) + ' ' + (1 + swell * 0.7).toFixed(4) + ') translate(-59.5 -30.55)');
+      var sx = 1 + swellDraw * 0.22 * (1 - settle);
+      var sy = 1 + swellDraw * 0.7 * (1 - settle);
+      if(settle >= 0.999 || (sx === 1 && sy === 1)){
+        liquid.setAttribute('transform', '');
+      } else {
+        liquid.setAttribute('transform',
+          'translate(59.5 30.55) scale(' + sx.toFixed(4) + ' ' + sy.toFixed(4) + ') translate(-59.5 -30.55)');
+      }
     } else {
-      liquid.setAttribute('transform', 'translate(59.6 28.2) scale(' + (1 + swell).toFixed(4) + ' ' + (1 + swell * 0.55).toFixed(4) + ') translate(-59.6 -28.2)');
+      liquid.setAttribute('transform', 'translate(59.6 28.2) scale(' + (1 + swellDraw).toFixed(4) + ' ' + (1 + swellDraw * 0.55).toFixed(4) + ') translate(-59.6 -28.2)');
     }
   }
 }
@@ -1210,8 +1332,36 @@ function applyFrame(root, ms){
   var fin = svg.querySelector('.cafe-icon-final');
   var left = svg.querySelector('.cup-left-move');
   var right = svg.querySelector('.cup-right-move');
+  var continuous = noLiveFinalSwap();
 
-  if(prefersReduced() || ms >= TOTAL_MS){
+  if(prefersReduced()){
+    svg.classList.add('is-final');
+    if(live) live.style.opacity = '0';
+    if(fin) fin.style.opacity = '1';
+    return;
+  }
+
+  if(continuous){
+    /* Animated liquid is the final mark — never swap to cafe-icon-final. */
+    svg.classList.remove('is-final');
+    if(live) live.style.opacity = '1';
+    if(fin) fin.style.opacity = '0';
+    var cupsC = cupsAt(ms >= TOTAL_MS ? TOTAL_MS : ms);
+    if(left) left.setAttribute('transform', cupTransform(cupsC.left));
+    if(right) right.setAttribute('transform', cupTransform(cupsC.right));
+    paintLiquid(svg, ms >= TOTAL_MS ? TOTAL_MS : ms, 0);
+    paintBubbleLayers(svg, 'left', bubbleAt(BUBBLE.L, SHAPE.L, ms >= TOTAL_MS ? TOTAL_MS : ms));
+    paintBubbleLayers(svg, 'right', bubbleAt(BUBBLE.R, SHAPE.R, ms >= TOTAL_MS ? TOTAL_MS : ms));
+    if(DEBUG_MOTION){
+      var dlC = svg.querySelector('.debug-arc-l');
+      var drC = svg.querySelector('.debug-arc-r');
+      if(dlC) dlC.setAttribute('d', BUBBLE.L.debugD);
+      if(drC) drC.setAttribute('d', BUBBLE.R.debugD);
+    }
+    return;
+  }
+
+  if(ms >= TOTAL_MS){
     svg.classList.add('is-final');
     if(live) live.style.opacity = '0';
     if(fin) fin.style.opacity = '1';
@@ -1341,6 +1491,7 @@ function applyStoredBaseline(b){
   else if(restoreQ === 'latest') applyStoredBaseline(BASELINE_LATEST);
   else if(restoreQ === '1437' || restoreQ === 'liquid') applyStoredBaseline(BASELINE_1437);
   else if(restoreQ === '1505') applyStoredBaseline(BASELINE_1505);
+  else if(restoreQ === '1539') applyStoredBaseline(BASELINE_1539);
   DEBUG_MOTION = params.get('debug') === '1';
   ST.rate = (!isNaN(rateQ) && rateQ > 0) ? rateQ : 1;
   document.querySelectorAll('.pose-btn').forEach(function(b){
