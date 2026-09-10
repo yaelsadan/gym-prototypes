@@ -198,7 +198,7 @@ body.present .mode-btn:hover{opacity:1}
 }
 /* Editorial display type */
 .g-display{
-  font-family:var(--font-brand);font-weight:700;font-synthesis:none;
+  font-family:var(--font-brand);font-weight:400;font-synthesis:none;
   font-size:44px;line-height:1.14;letter-spacing:-.3px;color:#fff;
 }
 .g-display.lg{font-size:64px;line-height:1.1}
@@ -277,7 +277,7 @@ body.present .mode-btn:hover{opacity:1}
 .av-canon .av-head{display:flex;flex-direction:column;align-items:center;flex:none;margin-bottom:26px}
 .av-canon .av-foot{display:flex;flex-direction:column;align-items:center;flex:none;margin-top:20px}
 .av-canon h2{
-  font-family:var(--font-brand);font-weight:700;font-synthesis:none;
+  font-family:var(--font-brand);font-weight:400;font-synthesis:none;
   font-size:36px;line-height:1.16;letter-spacing:-.2px;margin:0;color:#fff;
 }
 .av-canon .av-card{position:relative;width:min(688px,calc(60vw + 28px));max-width:100%;flex:none;padding:14px 14px 26px}

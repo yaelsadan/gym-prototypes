@@ -107,7 +107,7 @@
 .cafe-cups{width:100%;height:100%;display:block;overflow:visible;shape-rendering:geometricPrecision}
 .cafe-cups .cafe-icon-final{opacity:1}
 .cafe-entry-welcome .cafe-display{
-  margin:0;font-family:var(--font-brand);font-weight:700;font-synthesis:none;
+  margin:0;font-family:var(--font-brand);font-weight:400;font-synthesis:none;
   font-size:clamp(36px, 3.4vw, 48px);line-height:1.1;letter-spacing:-.3px;
   color:#fff;text-wrap:balance;max-width:14ch;
 }
