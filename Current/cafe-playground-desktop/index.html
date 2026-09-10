@@ -22,8 +22,9 @@
 <p class="lead">
   Desktop Café playground. Shared primitives live in
   <code>css/gym-primitives.css</code> and <code>js/gym-primitives.js</code>; everything Café-specific is in
-  <code>css/cafe.css</code> and <code>js/cafe-states.js</code>. States 2–7 follow the settled mobile Café
-  product behaviour, adapted to desktop layouts. Entry / Preferences is unchanged in this pass.
+  <code>css/cafe.css</code> and <code>js/cafe-states.js</code>. Entry / Preferences now mirrors the mobile
+  continuous level spectrum in a horizontal Welcome + preferences composition. States 2–7 follow the
+  settled mobile Café product behaviour, adapted to desktop layouts.
 </p>
 
 <!-- Prototype tooling. Never part of the product viewport. -->
@@ -93,13 +94,12 @@
     <button onclick="setPerm('blocked')">Blocked</button>
   </div>
   <div class="row">
-    <!-- Red and Orange are the specified bottom edge, where "up to 3 levels
-         lower" cannot be honoured in full. There is no top edge: the level
-         ladder above Orange is product data we do not have yet. -->
+    <!-- Mock learner level for the Entry spectrum. Yellow is the default so
+         both sides of the eligible range stay visible. -->
     <span class="grp-lbl">Your level</span>
-    <button onclick="setMyLevel('red')">Red — lowest (specified)</button>
-    <button onclick="setMyLevel('orange')">Orange (specified)</button>
-    <button onclick="setMyLevel('yellow')">Yellow — placeholder</button>
+    <button onclick="setMyLevel('red')">Red</button>
+    <button onclick="setMyLevel('orange')">Orange</button>
+    <button onclick="setMyLevel('yellow')">Yellow — default</button>
   </div>
 </div>
 

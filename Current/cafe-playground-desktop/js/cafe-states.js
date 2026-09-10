@@ -15,7 +15,8 @@
    Matching is a background process. It starts at the end of the A/V check and
    stops only on an explicit "Stop matching". One chat ending never stops it.
 
-   Entry / Preferences is unchanged in this pass.
+   Entry / Preferences uses the mobile continuous level spectrum,
+   composed horizontally for desktop (Welcome left, preferences right).
    ========================================================================= */
 
 /* -------------------------------------------------------------- constants */
@@ -46,7 +47,7 @@ var SEARCH_COPY_LATE = 'Still looking. You can practice or explore while we keep
 var INTERVIEW = false;
 
 var NOTES = {
-  entry:'1 · Cafe entry / matching preferences. The three product scope options. Nothing is matching yet.',
+  entry:'1 · Cafe entry / matching preferences. Welcome + continuous level spectrum. All eligible levels selected by default. Nothing is matching yet.',
   avcheck:'2 · A/V check, before matching and mandatory on every entry. Its CTA is the real "Start matching".',
   searching:'3 · Active search. Matching is felt first. After ~14s, Flashcards shifts left and Explore joins the same rail.',
   hub:'3b · Placeholder Hub carrying the persistent matching indicator. The Hub itself is not designed in this pass.',
@@ -58,66 +59,70 @@ var NOTES = {
 };
 
 /* ------------------------------------------------------- matching scope */
-/* Product spec. These three options are exact and are not placeholders.
-   Entry still uses them; searching Edit opens the same set. */
+/* Searching "Edit levels" still uses these three scope chips. Entry uses the
+   continuous spectrum (LEVEL_DATA + range). setScope maps onto the range. */
 var SCOPES = [
   {id:'exact', label:'Exactly my level',    hint:'',                      lower:0, upper:0},
   {id:'below', label:'My level and below',  hint:'up to 3 levels lower',  lower:3, upper:0},
   {id:'above', label:'My level and above',  hint:'up to 3 levels higher', lower:0, upper:3}
 ];
 
-/* ------------------------------------------- LEVEL LADDER — PRODUCT DATA */
-/* TBD. No authoritative level ladder exists in this repo.
-   The only full colour list here is a "sampled" visual palette in a
-   Checkpoints doc that says outright it is "Not in the Design Bible yet", and
-   Docs/gym-functional-flow-contract-v1.md excludes Checkpoints from source of
-   truth. An ordering must not be inferred from a swatch list.
+/* ------------------------------------------- LEVEL DATA — from mobile Café */
+/* Placeholder eligible ladder. Yellow is the mock learner so both sides of
+   the range are visible. Replace wholesale when product data lands. */
+var LEVEL_DATA = {
+  source:'placeholder',
+  myLevel:'yellow',
+  eligible:['red','orange','pink','yellow','lightblue','blue','lime']
+};
 
-   What the Cafe spec DOES define is the bottom edge: Red is the lowest level
-   and Orange sits directly above it, which is what makes "up to 3 levels
-   lower" resolve to a narrower band for those two. That much is real.
-
-   The spec does NOT define how many levels exist, what follows Orange, or
-   what the highest level is. So:
-     - LADDER_BOTTOM is specified and load-bearing.
-     - LADDER_ABOVE is provisional filler that only exists so the playground
-       has something to render. Replace it wholesale when product data lands.
-     - LADDER_TOP_KNOWN is false, and no top-edge behaviour is implemented. */
-var LADDER_BOTTOM = ['red', 'orange'];
-var LADDER_ABOVE = ['pink','yellow','lightblue','blue','lime','green','darkgreen','turquoise','indigo'];
-var LADDER = LADDER_BOTTOM.concat(LADDER_ABOVE);
-var LADDER_TOP_KNOWN = false;
-
-function ladderIndex(id){
-  for(var i=0;i<LADDER.length;i++) if(LADDER[i] === id) return i;
-  return -1;
+function myLevelIndex(){
+  var i = LEVEL_DATA.eligible.indexOf(LEVEL_DATA.myLevel);
+  return i < 0 ? 0 : i;
+}
+function clampLevelRange(lo, hi){
+  var n = LEVEL_DATA.eligible.length;
+  var me = myLevelIndex();
+  if(n < 1) return [0, 0];
+  lo = Math.max(0, Math.min(n - 1, lo|0));
+  hi = Math.max(0, Math.min(n - 1, hi|0));
+  if(lo > hi){ var t = lo; lo = hi; hi = t; }
+  if(lo > me) lo = me;
+  if(hi < me) hi = me;
+  return [lo, hi];
+}
+function selectedFromRange(lo, hi){
+  return LEVEL_DATA.eligible.slice(lo, hi + 1);
+}
+function applyLevelRange(lo, hi, opts){
+  var r = clampLevelRange(lo, hi);
+  ST.rangeLo = r[0];
+  ST.rangeHi = r[1];
+  ST.selected = selectedFromRange(ST.rangeLo, ST.rangeHi);
+  ST.myLevel = LEVEL_DATA.myLevel;
+  if(document.getElementById('levelSpectrum')){
+    updateSpectrumDOM(opts || {});
+    syncSwitcher();
+    return;
+  }
+  render();
 }
 function ladderLabel(i){
-  return GP.esc(GP.levelMeta(LADDER[Math.max(0, Math.min(LADDER.length-1, i))]).label);
+  var ids = LEVEL_DATA.eligible;
+  var id = ids[Math.max(0, Math.min(ids.length - 1, i))];
+  return GP.esc(GP.levelMeta(id).label);
 }
 
-/* The eligible band.
-   The bottom is clamped, because the spec says so: nothing sits below Red.
-   The top is NOT clamped, because we do not know where the ladder ends.
-   `renderableHi` exists only so the playground can draw a band; it is a
-   limitation of the placeholder data, not a product rule. */
+/* Eligible band for searching / partner draw — derived from the spectrum range. */
 function eligibleBand(){
-  var scope = scopeById(ST.prefs.scope);
-  var i = ladderIndex(ST.myLevel);
-  if(i === -1) i = 0;
-  var lo = i - scope.lower;
-  var atBottomEdge = lo < 0;
-  if(atBottomEdge) lo = 0;
-  var hi = i + scope.upper;
+  var i = myLevelIndex();
   return {
     me:i,
-    lo:lo,
-    hi:hi,
-    /* Specified behaviour: the request ran past the bottom of the ladder. */
-    atBottomEdge:atBottomEdge,
-    /* Placeholder data ran out. Never surfaced in product UI. */
-    beyondPlaceholder:hi > LADDER.length - 1,
-    renderableHi:Math.min(hi, LADDER.length - 1)
+    lo:ST.rangeLo,
+    hi:ST.rangeHi,
+    atBottomEdge:ST.rangeLo === 0 && i > 0 && ST.prefs.scope === 'below',
+    beyondPlaceholder:false,
+    renderableHi:ST.rangeHi
   };
 }
 
@@ -136,7 +141,7 @@ var PARTNER = {
 var LEVEL_ICONS = {
   red:'../cafe-playground-mobile/assets/level-red.png',
   orange:'../cafe-playground-mobile/assets/level-orange.png',
-  pink:'assets/level-pink.png',
+  pink:'../cafe-playground-mobile/assets/level-pink.png',
   yellow:'../cafe-playground-mobile/assets/level-yellow.png',
   lightblue:'../cafe-playground-mobile/assets/level-lightblue.png',
   blue:'../cafe-playground-mobile/assets/level-blue.png',
@@ -188,16 +193,24 @@ var CI = {
 /* ------------------------------------------------------------------ state */
 var ST = {
   state:'entry',
-  myLevel:'yellow',
+  myLevel:LEVEL_DATA.myLevel,
   prefs:{scope:'exact'},
+  rangeLo:0,
+  rangeHi:LEVEL_DATA.eligible.length - 1,
+  selected:LEVEL_DATA.eligible.slice(),
+  rangeHintSeen:false,
+  specHot:-1,
+  specActiveHandle:null,
+  specInset:true,
   partner:{name:PARTNER.name, level:PARTNER.level},
   /* what the match interrupt is layered over */
-  bg:'hub',
+  bg:'searching',
   /* True for as long as the Cafe matching session is live. It survives an
      individual chat ending; only an explicit stop or leaving Cafe clears it. */
   matching:false,
   matchPhase:'offer',
   matchLayout:'open',
+  matchEnter:false,
   offerLeft:DUR.offer,
   clockOn:true,
   left:0,
@@ -233,17 +246,20 @@ function scopeById(id){
 }
 function scopeLabel(){ return GP.esc(scopeById(ST.prefs.scope).label); }
 function searchScopeLabel(){
-  var id = ST.prefs.scope;
-  if(id === 'exact') return 'My level only';
-  return GP.esc(scopeById(id).label);
+  var n = ST.rangeHi - ST.rangeLo + 1;
+  if(n <= 1) return 'My level only';
+  return 'Across ' + n + ' levels';
 }
 
 /* Draw a partner from inside the eligible band. Middle of the band, so the
    bottom edge is visible rather than always landing on your own level.
    Bounded by renderableHi because of the placeholder data, not by a rule. */
 function drawPartnerLevel(){
-  var b = eligibleBand();
-  return LADDER[Math.round((b.lo + b.renderableHi) / 2)];
+  if(ST.selected && ST.selected.length){
+    if(ST.selected.indexOf(PARTNER.level) !== -1) return PARTNER.level;
+    return ST.selected[Math.floor(ST.selected.length / 2)];
+  }
+  return LEVEL_DATA.myLevel;
 }
 function levelChip(id, cls){
   return '<span class="schip ' + (cls||'') + '">'
@@ -384,48 +400,864 @@ function cafeToast(text){
 }
 
 /* ------------------------------------------------------- 1. ENTRY / PREFS */
-function screenEntry(){
-  var me = GP.levelMeta(ST.myLevel);
-  var band = eligibleBand();
 
-  var row = '';
-  SCOPES.forEach(function(s){
-    row += '<button class="g-choice stacked' + (ST.prefs.scope===s.id ? ' is-on' : '') + '"'
-      + ' onclick="setScope(\'' + s.id + '\')">'
-      + '<span class="ch-label">' + GP.esc(s.label) + '</span>'
-      + (s.hint ? '<span class="ch-hint">' + GP.esc(s.hint) + '</span>' : '')
-      + '</button>';
-  });
+/* Static Café cups mark — same final artwork as mobile Welcome. */
+var CAFE_ICON_YELLOW_D = 'M269.50 42.50 L270.50 42.50 L270.50 51.50 L269.50 52.50 L269.50 59.50 L268.50 60.50 L268.50 66.50 L267.50 67.50 L267.50 71.50 L266.50 72.50 L266.50 75.50 L265.50 76.50 L265.50 79.50 L264.50 80.50 L264.50 82.50 L263.50 83.50 L263.50 86.50 L262.50 87.50 L262.50 89.50 L261.50 90.50 L261.50 92.50 L259.50 95.50 L259.50 97.50 L258.50 98.50 L258.50 100.50 L257.50 101.50 L257.50 102.50 L256.50 103.50 L256.50 104.50 L255.50 105.50 L255.50 106.50 L254.50 107.50 L254.50 108.50 L253.50 109.50 L253.50 110.50 L252.50 111.50 L251.50 114.50 L249.50 116.50 L249.50 117.50 L248.50 118.50 L247.50 118.50 L243.50 114.50 L242.50 114.50 L233.50 105.50 L233.50 104.50 L228.50 99.50 L228.50 98.50 L225.50 95.50 L225.50 94.50 L221.50 89.50 L221.50 88.50 L220.50 87.50 L219.50 84.50 L217.50 82.50 L217.50 81.50 L216.50 80.50 L216.50 78.50 L215.50 77.50 L215.50 76.50 L213.50 73.50 L213.50 71.50 L211.50 68.50 L211.50 66.50 L210.50 65.50 L210.50 63.50 L209.50 62.50 L209.50 60.50 L208.50 59.50 L208.50 57.50 L207.50 56.50 L207.50 53.50 L206.50 52.50 L206.50 49.50 L205.50 48.50 L216.50 48.50 L217.50 47.50 L234.50 47.50 L235.50 46.50 L246.50 46.50 L247.50 45.50 L256.50 45.50 L257.50 44.50 L263.50 44.50 L264.50 43.50 L268.50 43.50 Z';
+var CAFE_ICON_STROKE_D = 'M268.50 0.50 L367.50 0.50 L368.50 1.50 L389.50 1.50 L390.50 2.50 L404.50 2.50 L405.50 3.50 L415.50 3.50 L416.50 4.50 L423.50 4.50 L424.50 5.50 L429.50 5.50 L430.50 6.50 L433.50 6.50 L437.50 8.50 L438.50 10.50 L438.50 18.50 L437.50 19.50 L437.50 22.50 L438.50 23.50 L440.50 23.50 L441.50 22.50 L450.50 22.50 L451.50 23.50 L454.50 23.50 L458.50 25.50 L460.50 27.50 L461.50 27.50 L467.50 33.50 L470.50 39.50 L470.50 41.50 L471.50 42.50 L471.50 54.50 L466.50 64.50 L461.50 69.50 L460.50 69.50 L456.50 72.50 L454.50 72.50 L444.50 77.50 L442.50 77.50 L439.50 79.50 L437.50 79.50 L434.50 81.50 L432.50 81.50 L427.50 84.50 L425.50 84.50 L422.50 86.50 L420.50 86.50 L418.50 88.50 L418.50 89.50 L416.50 91.50 L416.50 92.50 L414.50 94.50 L414.50 95.50 L412.50 97.50 L410.50 101.50 L406.50 105.50 L406.50 106.50 L394.50 118.50 L393.50 118.50 L385.50 125.50 L384.50 125.50 L379.50 129.50 L376.50 130.50 L374.50 132.50 L364.50 137.50 L362.50 137.50 L359.50 139.50 L357.50 139.50 L356.50 140.50 L354.50 140.50 L350.50 142.50 L347.50 142.50 L346.50 143.50 L343.50 143.50 L342.50 144.50 L338.50 144.50 L337.50 145.50 L331.50 145.50 L330.50 146.50 L303.50 146.50 L302.50 145.50 L296.50 145.50 L295.50 144.50 L292.50 144.50 L291.50 143.50 L284.50 142.50 L283.50 141.50 L281.50 141.50 L280.50 140.50 L275.50 139.50 L272.50 137.50 L270.50 137.50 L260.50 132.50 L258.50 130.50 L255.50 129.50 L253.50 127.50 L249.50 125.50 L241.50 134.50 L241.50 135.50 L226.50 149.50 L225.50 149.50 L219.50 154.50 L216.50 155.50 L214.50 157.50 L198.50 165.50 L196.50 165.50 L195.50 166.50 L193.50 166.50 L192.50 167.50 L190.50 167.50 L189.50 168.50 L187.50 168.50 L183.50 170.50 L179.50 170.50 L178.50 171.50 L174.50 171.50 L173.50 172.50 L167.50 172.50 L166.50 173.50 L142.50 173.50 L141.50 172.50 L135.50 172.50 L134.50 171.50 L125.50 170.50 L124.50 169.50 L122.50 169.50 L121.50 168.50 L119.50 168.50 L118.50 167.50 L116.50 167.50 L115.50 166.50 L110.50 165.50 L94.50 157.50 L92.50 155.50 L91.50 155.50 L89.50 153.50 L85.50 151.50 L82.50 148.50 L81.50 148.50 L67.50 135.50 L67.50 134.50 L62.50 129.50 L62.50 128.50 L59.50 125.50 L59.50 124.50 L51.50 113.50 L47.50 111.50 L45.50 111.50 L42.50 109.50 L40.50 109.50 L37.50 107.50 L35.50 107.50 L25.50 102.50 L23.50 102.50 L20.50 100.50 L18.50 100.50 L12.50 97.50 L10.50 95.50 L9.50 95.50 L3.50 88.50 L1.50 84.50 L1.50 82.50 L0.50 81.50 L0.50 69.50 L1.50 68.50 L2.50 63.50 L4.50 61.50 L4.50 60.50 L11.50 53.50 L17.50 50.50 L19.50 50.50 L20.50 49.50 L31.50 49.50 L33.50 50.50 L34.50 49.50 L34.50 45.50 L33.50 44.50 L33.50 36.50 L35.50 34.50 L37.50 34.50 L38.50 33.50 L41.50 33.50 L42.50 32.50 L46.50 32.50 L47.50 31.50 L54.50 31.50 L55.50 30.50 L64.50 30.50 L65.50 29.50 L78.50 29.50 L79.50 28.50 L98.50 28.50 L99.50 27.50 L143.50 27.50 L144.50 26.50 L164.50 26.50 L165.50 27.50 L196.50 27.50 L197.50 26.50 L197.50 20.50 L196.50 19.50 L196.50 10.50 L197.50 8.50 L201.50 6.50 L205.50 6.50 L206.50 5.50 L211.50 5.50 L212.50 4.50 L219.50 4.50 L220.50 3.50 L230.50 3.50 L231.50 2.50 L244.50 2.50 L245.50 1.50 L267.50 1.50 Z M202.50 15.50 L202.50 14.50 L200.50 15.50 L200.50 23.50 L202.50 27.50 L210.50 27.50 L211.50 28.50 L230.50 28.50 L231.50 29.50 L243.50 29.50 L244.50 30.50 L254.50 30.50 L255.50 31.50 L261.50 31.50 L262.50 32.50 L267.50 32.50 L268.50 33.50 L273.50 34.50 L275.50 36.50 L275.50 46.50 L274.50 47.50 L274.50 56.50 L273.50 57.50 L273.50 63.50 L272.50 64.50 L272.50 69.50 L271.50 70.50 L271.50 73.50 L270.50 74.50 L270.50 77.50 L269.50 78.50 L268.50 85.50 L267.50 86.50 L267.50 88.50 L266.50 89.50 L266.50 91.50 L265.50 92.50 L264.50 97.50 L262.50 100.50 L262.50 102.50 L255.50 116.50 L251.50 121.50 L254.50 124.50 L260.50 127.50 L262.50 129.50 L270.50 133.50 L272.50 133.50 L275.50 135.50 L277.50 135.50 L278.50 136.50 L280.50 136.50 L281.50 137.50 L283.50 137.50 L287.50 139.50 L290.50 139.50 L291.50 140.50 L295.50 140.50 L296.50 141.50 L300.50 141.50 L301.50 142.50 L310.50 142.50 L311.50 143.50 L323.50 143.50 L324.50 142.50 L333.50 142.50 L334.50 141.50 L339.50 141.50 L340.50 140.50 L347.50 139.50 L348.50 138.50 L350.50 138.50 L351.50 137.50 L353.50 137.50 L354.50 136.50 L359.50 135.50 L364.50 132.50 L366.50 132.50 L370.50 130.50 L372.50 128.50 L380.50 124.50 L383.50 121.50 L384.50 121.50 L387.50 118.50 L388.50 118.50 L400.50 107.50 L400.50 106.50 L406.50 100.50 L406.50 99.50 L409.50 96.50 L409.50 95.50 L415.50 87.50 L421.50 75.50 L421.50 73.50 L423.50 70.50 L423.50 68.50 L424.50 67.50 L424.50 65.50 L425.50 64.50 L425.50 62.50 L426.50 61.50 L426.50 59.50 L428.50 55.50 L429.50 48.50 L430.50 47.50 L430.50 43.50 L431.50 42.50 L431.50 38.50 L432.50 37.50 L432.50 32.50 L433.50 31.50 L433.50 23.50 L434.50 22.50 L434.50 15.50 L433.50 14.50 L432.50 15.50 L429.50 15.50 L428.50 16.50 L422.50 16.50 L421.50 17.50 L414.50 17.50 L413.50 18.50 L403.50 18.50 L402.50 19.50 L387.50 19.50 L386.50 20.50 L363.50 20.50 L362.50 21.50 L272.50 21.50 L271.50 20.50 L248.50 20.50 L247.50 19.50 L232.50 19.50 L231.50 18.50 L221.50 18.50 L220.50 17.50 L212.50 17.50 L211.50 16.50 L206.50 16.50 L205.50 15.50 L203.50 15.50 Z M40.50 42.50 L40.50 41.50 L38.50 41.50 L37.50 42.50 L37.50 49.50 L38.50 50.50 L38.50 58.50 L39.50 59.50 L39.50 64.50 L40.50 65.50 L40.50 69.50 L41.50 70.50 L41.50 74.50 L42.50 75.50 L43.50 82.50 L44.50 83.50 L44.50 85.50 L45.50 86.50 L45.50 88.50 L46.50 89.50 L46.50 91.50 L47.50 92.50 L48.50 97.50 L51.50 102.50 L51.50 104.50 L55.50 112.50 L57.50 114.50 L58.50 117.50 L63.50 123.50 L63.50 124.50 L66.50 127.50 L66.50 128.50 L83.50 145.50 L84.50 145.50 L87.50 148.50 L88.50 148.50 L96.50 154.50 L110.50 161.50 L112.50 161.50 L115.50 163.50 L117.50 163.50 L121.50 165.50 L124.50 165.50 L125.50 166.50 L128.50 166.50 L129.50 167.50 L133.50 167.50 L134.50 168.50 L139.50 168.50 L140.50 169.50 L168.50 169.50 L169.50 168.50 L175.50 168.50 L176.50 167.50 L179.50 167.50 L180.50 166.50 L187.50 165.50 L188.50 164.50 L193.50 163.50 L196.50 161.50 L198.50 161.50 L212.50 154.50 L214.50 152.50 L215.50 152.50 L217.50 150.50 L221.50 148.50 L225.50 144.50 L226.50 144.50 L243.50 127.50 L243.50 126.50 L246.50 123.50 L241.50 118.50 L240.50 118.50 L228.50 106.50 L228.50 105.50 L224.50 101.50 L224.50 100.50 L221.50 97.50 L221.50 96.50 L217.50 91.50 L209.50 75.50 L209.50 73.50 L207.50 70.50 L207.50 68.50 L206.50 67.50 L206.50 65.50 L205.50 64.50 L205.50 62.50 L203.50 58.50 L203.50 55.50 L202.50 54.50 L202.50 51.50 L201.50 50.50 L201.50 48.50 L200.50 47.50 L192.50 47.50 L191.50 48.50 L116.50 48.50 L115.50 47.50 L89.50 47.50 L88.50 46.50 L72.50 46.50 L71.50 45.50 L60.50 45.50 L59.50 44.50 L51.50 44.50 L50.50 43.50 L44.50 43.50 L43.50 42.50 L41.50 42.50 Z M206.50 31.50 L206.50 30.50 L102.50 30.50 L101.50 31.50 L81.50 31.50 L80.50 32.50 L67.50 32.50 L66.50 33.50 L56.50 33.50 L55.50 34.50 L48.50 34.50 L47.50 35.50 L43.50 35.50 L42.50 36.50 L39.50 36.50 L38.50 37.50 L41.50 39.50 L45.50 39.50 L46.50 40.50 L52.50 40.50 L53.50 41.50 L61.50 41.50 L62.50 42.50 L74.50 42.50 L75.50 43.50 L92.50 43.50 L93.50 44.50 L122.50 44.50 L123.50 45.50 L185.50 45.50 L186.50 44.50 L216.50 44.50 L217.50 43.50 L234.50 43.50 L235.50 42.50 L246.50 42.50 L247.50 41.50 L255.50 41.50 L256.50 40.50 L262.50 40.50 L263.50 39.50 L267.50 39.50 L270.50 37.50 L269.50 36.50 L266.50 36.50 L265.50 35.50 L260.50 35.50 L259.50 34.50 L252.50 34.50 L251.50 33.50 L242.50 33.50 L241.50 32.50 L228.50 32.50 L227.50 31.50 L207.50 31.50 Z M341.50 4.50 L341.50 3.50 L293.50 3.50 L292.50 4.50 L258.50 4.50 L257.50 5.50 L240.50 5.50 L239.50 6.50 L226.50 6.50 L225.50 7.50 L217.50 7.50 L216.50 8.50 L210.50 8.50 L209.50 9.50 L204.50 9.50 L203.50 10.50 L205.50 12.50 L210.50 12.50 L211.50 13.50 L217.50 13.50 L218.50 14.50 L227.50 14.50 L228.50 15.50 L241.50 15.50 L242.50 16.50 L261.50 16.50 L262.50 17.50 L305.50 17.50 L306.50 18.50 L328.50 18.50 L329.50 17.50 L372.50 17.50 L373.50 16.50 L392.50 16.50 L393.50 15.50 L406.50 15.50 L407.50 14.50 L416.50 14.50 L417.50 13.50 L423.50 13.50 L424.50 12.50 L429.50 12.50 L430.50 11.50 L429.50 9.50 L425.50 9.50 L424.50 8.50 L418.50 8.50 L417.50 7.50 L408.50 7.50 L407.50 6.50 L395.50 6.50 L394.50 5.50 L376.50 5.50 L375.50 4.50 L342.50 4.50 Z M271.50 42.50 L271.50 41.50 L269.50 41.50 L268.50 42.50 L264.50 42.50 L263.50 43.50 L257.50 43.50 L256.50 44.50 L248.50 44.50 L247.50 45.50 L236.50 45.50 L235.50 46.50 L219.50 46.50 L218.50 47.50 L206.50 47.50 L205.50 48.50 L205.50 51.50 L206.50 52.50 L206.50 55.50 L208.50 59.50 L208.50 62.50 L210.50 65.50 L210.50 67.50 L213.50 73.50 L213.50 75.50 L219.50 87.50 L221.50 89.50 L221.50 90.50 L223.50 92.50 L225.50 96.50 L228.50 99.50 L228.50 100.50 L232.50 104.50 L232.50 105.50 L241.50 114.50 L242.50 114.50 L247.50 119.50 L248.50 119.50 L252.50 114.50 L258.50 102.50 L258.50 100.50 L260.50 97.50 L260.50 95.50 L261.50 94.50 L261.50 92.50 L262.50 91.50 L262.50 89.50 L263.50 88.50 L263.50 86.50 L265.50 82.50 L265.50 79.50 L266.50 78.50 L266.50 75.50 L267.50 74.50 L267.50 71.50 L268.50 70.50 L268.50 66.50 L269.50 65.50 L269.50 59.50 L270.50 58.50 L270.50 51.50 L271.50 50.50 L271.50 43.50 Z M452.50 27.50 L452.50 26.50 L440.50 26.50 L437.50 28.50 L436.50 30.50 L436.50 36.50 L435.50 37.50 L435.50 42.50 L434.50 43.50 L434.50 46.50 L433.50 47.50 L433.50 50.50 L432.50 51.50 L431.50 58.50 L430.50 59.50 L430.50 61.50 L429.50 62.50 L429.50 64.50 L428.50 65.50 L427.50 70.50 L425.50 73.50 L425.50 75.50 L422.50 80.50 L423.50 81.50 L427.50 79.50 L429.50 79.50 L432.50 77.50 L434.50 77.50 L437.50 75.50 L439.50 75.50 L444.50 72.50 L446.50 72.50 L449.50 70.50 L451.50 70.50 L457.50 67.50 L459.50 65.50 L460.50 65.50 L465.50 59.50 L467.50 55.50 L467.50 51.50 L468.50 50.50 L467.50 41.50 L465.50 37.50 L463.50 35.50 L463.50 34.50 L459.50 30.50 L453.50 27.50 Z M26.50 53.50 L26.50 52.50 L24.50 53.50 L19.50 53.50 L13.50 56.50 L7.50 62.50 L4.50 68.50 L4.50 72.50 L3.50 73.50 L3.50 77.50 L4.50 78.50 L4.50 81.50 L5.50 82.50 L5.50 84.50 L6.50 86.50 L14.50 94.50 L18.50 96.50 L20.50 96.50 L23.50 98.50 L25.50 98.50 L35.50 103.50 L37.50 103.50 L40.50 105.50 L42.50 105.50 L47.50 108.50 L49.50 107.50 L46.50 102.50 L46.50 100.50 L43.50 94.50 L43.50 92.50 L41.50 88.50 L41.50 85.50 L39.50 81.50 L39.50 78.50 L38.50 77.50 L38.50 74.50 L37.50 73.50 L37.50 69.50 L36.50 68.50 L36.50 63.50 L35.50 62.50 L35.50 56.50 L32.50 53.50 L27.50 53.50 Z';
+function cafeIconFinalMarkup(){
+  return '<g class="cafe-icon-final">'
+    + '<path fill="#F9E24C" d="' + CAFE_ICON_YELLOW_D + '"/>'
+    + '<path fill="#F7F6EF" fill-rule="evenodd" d="' + CAFE_ICON_STROKE_D + '"/>'
+    + '</g>';
+}
+function cafeCupsSvg(cls){
+  return '<svg class="cafe-cups' + (cls?' '+cls:'') + '" viewBox="0 0 472 174" fill="none" overflow="visible" aria-hidden="true">'
+    + cafeIconFinalMarkup()
+    + '</svg>';
+}
 
-  /* Mentioned only at the specified bottom edge, and only because the choice
-     genuinely cannot be honoured in full. There is no top-edge equivalent. */
-  var edge = '';
-  if(band.atBottomEdge){
-    edge = '<p class="pref-edge">'
-      + (band.lo === band.hi
-        ? 'You\u2019re at the lowest level, so this matches you with '
-          + ladderLabel(band.lo) + '.'
-        : 'There aren\u2019t three levels below you, so this matches you with '
-          + ladderLabel(band.lo) + '\u2013' + ladderLabel(band.hi) + '.')
-      + '</p>';
+function rangeFeedbackCopy(){
+  var ids = LEVEL_DATA.eligible;
+  var n = ids.length;
+  var span = ST.rangeHi - ST.rangeLo + 1;
+  if(span >= n){
+    return 'All levels selected - your best chance of meeting someone';
   }
+  if(span === 1){
+    return 'Matching you with other Yellow-level learners';
+  }
+  if(span <= 2){
+    return 'A wider range may help you meet someone faster';
+  }
+  if(span >= Math.ceil(n * 0.6)){
+    return 'Great range - you\u2019re more likely to meet someone quickly';
+  }
+  var lo = GP.levelMeta(ids[ST.rangeLo]).label;
+  var hi = GP.levelMeta(ids[ST.rangeHi]).label;
+  return 'Matching you from ' + lo + ' through ' + hi;
+}
 
-  return lockupSolo()
-    + '<div class="cafe-shell"></div>'
-    + '<div class="g-panel cafe-entry-panel">'
-      + '<h2 class="g-display lg">Fancy a <b>coffee chat</b>?</h2>'
-      + '<p class="g-sub">Drop in, get matched with someone, and talk. No lesson, no teacher.</p>'
-      + '<div class="pref-groups"><div class="pref-group">'
-        + '<span class="pref-label">Who you\u2019d like to meet'
-          + '<span class="pref-me">' + GP.levelDot(ST.myLevel) + 'You\u2019re ' + GP.esc(me.label) + '</span>'
-        + '</span>'
-        + '<div class="pref-row">' + row + '</div>'
-        + edge
-      + '</div></div>'
-      + '<div class="cafe-acts">'
-        + '<button class="btn primary" onclick="startSearch()">Find someone</button>'
-      + '</div>'
+function specRingFor(color){
+  var hex = String(color || '').replace('#','');
+  if(hex.length !== 6) return 'rgba(55,50,48,.26)';
+  var r = parseInt(hex.slice(0,2),16), g = parseInt(hex.slice(2,4),16), b = parseInt(hex.slice(4,6),16);
+  var l = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
+  return l > 0.58 ? 'rgba(55,50,48,.28)' : 'rgba(247,246,239,.34)';
+}
+
+function spectrumNodeHtml(id, index){
+  var meta = GP.levelMeta(id);
+  var mine = id === LEVEL_DATA.myLevel;
+  var on = index >= ST.rangeLo && index <= ST.rangeHi;
+  var label = meta.label + (mine ? ', your level' : '');
+  var icon = LEVEL_ICONS[id]
+    ? '<img class="spec-ico" src="' + LEVEL_ICONS[id] + '" alt="" aria-hidden="true" draggable="false">'
+    : '';
+  return '<button type="button" class="spec-node' + (on?' is-on':'') + (mine?' is-you':'') + '"'
+    + ' data-idx="' + index + '" data-id="' + id + '"'
+    + ' style="--lvl:' + meta.color + ';--spec-ring:' + specRingFor(meta.color) + '"'
+    + ' aria-pressed="' + on + '"'
+    + ' aria-label="' + GP.esc(label) + '"'
+    + ' onclick="tapSpectrumLevel(' + index + ')">'
+    + '<span class="spec-dot" aria-hidden="true">' + icon + '</span>'
+  + '</button>';
+}
+
+/* Inverted arch ∩. Two symmetric cubics (ellipse quarters) so Yellow sits
+   at the geometric apex and path-length midpoint. Handles travel the full
+   path; nodes sit on an inset equal-length span, never under a handle. */
+var SPEC_VB = {
+  w:360,
+  h:248,
+  d:'M30 222 C30 155.77 97.21 102 180 102 C262.79 102 330 155.77 330 222'
+};
+var SPEC_GLASS_CAP = 56;
+function specArcD(){ return SPEC_VB.d; }
+function specRoot(){ return document.getElementById('levelSpectrum'); }
+function specPadT(root){
+  if(root && root._padT != null) return root._padT;
+  return 0.085;
+}
+function specIndexToT(index, n, padT){
+  n = n == null ? LEVEL_DATA.eligible.length : n;
+  if(padT == null) padT = specPadT(specRoot());
+  if(n < 2) return 0.5;
+  return padT + index * (1 - 2 * padT) / (n - 1);
+}
+function specTToIndex(t, n, padT){
+  n = n == null ? LEVEL_DATA.eligible.length : n;
+  if(n < 2) return 0;
+  if(padT == null) padT = specPadT(specRoot());
+  var usable = 1 - 2 * padT;
+  if(usable <= 0) return 0;
+  var u = (t - padT) / usable;
+  return Math.round(Math.max(0, Math.min(1, u)) * (n - 1));
+}
+function specSlotT(side, idx, n, padT){
+  n = n == null ? LEVEL_DATA.eligible.length : n;
+  if(padT == null) padT = specPadT(specRoot());
+  if(side === 'lo'){
+    if(idx <= 0) return 0;
+    return (specIndexToT(idx - 1, n, padT) + specIndexToT(idx, n, padT)) / 2;
+  }
+  if(idx >= n - 1) return 1;
+  return (specIndexToT(idx, n, padT) + specIndexToT(idx + 1, n, padT)) / 2;
+}
+function specYellowGuardT(root, side, n, me, padT){
+  var slot = specSlotT(side, me, n, padT);
+  var path = root && root.querySelector('.spec-hair');
+  var pts = root && root._pts;
+  if(!path || !pts || !pts[me]) return slot;
+  var clear = specPxToVb(root, 20 + 11 + 8);
+  var guarded = specTBeyondNode(path, pts[me], pts[me].t, side === 'lo' ? -1 : 1, clear);
+  if(side === 'lo') return Math.min(slot, guarded);
+  return Math.max(slot, guarded);
+}
+function specClampHandleT(side, t, n, me, padT){
+  if(padT == null) padT = specPadT(specRoot());
+  var root = specRoot();
+  var loMax = specYellowGuardT(root, 'lo', n, me, padT);
+  var hiMin = specYellowGuardT(root, 'hi', n, me, padT);
+  if(side === 'lo') return Math.max(0, Math.min(loMax, t));
+  return Math.max(hiMin, Math.min(1, t));
+}
+function specRangeFromHandles(loT, hiT, n, me, padT){
+  var lo = me, hi = me;
+  var i, nt;
+  for(i = 0; i < n; i++){
+    nt = specIndexToT(i, n, padT);
+    if(nt + 0.0008 >= loT && nt - 0.0008 <= hiT){
+      if(i < lo) lo = i;
+      if(i > hi) hi = i;
+    }
+  }
+  if(lo > me) lo = me;
+  if(hi < me) hi = me;
+  return [lo, hi];
+}
+function specPxToVb(root, px){
+  var stage = root && root.querySelector('.spec-stage');
+  var w = stage ? stage.getBoundingClientRect().width : SPEC_VB.w;
+  return px * SPEC_VB.w / Math.max(1, w);
+}
+function specPathNormalIn(path, t){
+  var len = path.getTotalLength();
+  var along = len * Math.max(0, Math.min(1, t));
+  var p = path.getPointAtLength(along);
+  var p2 = path.getPointAtLength(Math.max(0, Math.min(len, along + 2)));
+  var dx = p2.x - p.x, dy = p2.y - p.y;
+  var L = Math.hypot(dx, dy) || 1;
+  var nx = -dy / L, ny = dx / L;
+  if(nx * (180 - p.x) + ny * (248 - p.y) < 0){ nx = -nx; ny = -ny; }
+  return {x:p.x, y:p.y, nx:nx, ny:ny};
+}
+function specTBeyondNode(path, nodePt, startT, dir, minDist){
+  var len = path.getTotalLength();
+  var t = startT;
+  var step = dir * 0.0035;
+  var i, p, d;
+  for(i = 0; i < 90; i++){
+    t += step;
+    if(t <= 0) return 0;
+    if(t >= 1) return 1;
+    p = path.getPointAtLength(len * t);
+    d = Math.hypot(p.x - nodePt.x, p.y - nodePt.y);
+    if(d >= minDist) return t;
+  }
+  return Math.max(0, Math.min(1, t));
+}
+function specRestHandleT(root, side, idx, n, padT){
+  n = n == null ? LEVEL_DATA.eligible.length : n;
+  if(padT == null) padT = specPadT(root);
+  var me = myLevelIndex();
+  if(idx === me) return specYellowGuardT(root, side, n, me, padT);
+  return specSlotT(side, idx, n, padT);
+}
+function specHandlePoint(root, t, nudge){
+  var path = root.querySelector('.spec-hair');
+  if(!path) return {x:0, y:0};
+  var nrm = specPathNormalIn(path, t);
+  var x = nrm.x, y = nrm.y;
+  if(!nudge) return {x:x, y:y};
+  var knobR = specPxToVb(root, 11);
+  var gap = specPxToVb(root, 4);
+  var need = 0;
+  root.querySelectorAll('.spec-node').forEach(function(node){
+    var pill = node.querySelector('.spec-dot');
+    if(!pill) return;
+    var r = pill.getBoundingClientRect();
+    var stage = root.querySelector('.spec-stage').getBoundingClientRect();
+    var pcx = (r.left + r.width / 2 - stage.left) / stage.width * SPEC_VB.w;
+    var pcy = (r.top + r.height / 2 - stage.top) / stage.height * SPEC_VB.h;
+    var rx = specPxToVb(root, r.width / 2);
+    var ry = specPxToVb(root, r.height / 2);
+    var dx = Math.max(Math.abs(x - pcx) - rx, 0);
+    var dy = Math.max(Math.abs(y - pcy) - ry, 0);
+    var outside = Math.hypot(dx, dy);
+    var overlap = knobR + gap - outside;
+    if(Math.abs(x - pcx) <= rx && Math.abs(y - pcy) <= ry){
+      overlap = knobR + gap + Math.min(rx - Math.abs(x - pcx), ry - Math.abs(y - pcy));
+    }
+    if(overlap > need) need = overlap;
+  });
+  need = Math.min(need, specPxToVb(root, 18));
+  return {x: x + nrm.nx * need, y: y + nrm.ny * need};
+}
+function specNearestSlot(side, t, n, me, padT){
+  var from = side === 'lo' ? 0 : me;
+  var to = side === 'lo' ? me : n - 1;
+  var i, best = from, bestD = Infinity, s, d;
+  for(i = from; i <= to; i++){
+    s = specSlotT(side, i, n, padT);
+    d = Math.abs(s - t);
+    if(d < bestD){ bestD = d; best = i; }
+  }
+  return best;
+}
+function levelSpectrum(){
+  var ids = LEVEL_DATA.eligible;
+  var me = myLevelIndex();
+  var nodes = '';
+  var tips = '';
+  ids.forEach(function(id, i){
+    nodes += spectrumNodeHtml(id, i);
+    var meta = GP.levelMeta(id);
+    var mine = id === LEVEL_DATA.myLevel;
+    tips += '<div class="spec-tip" data-idx="' + i + '" data-id="' + id + '">'
+      + '<span class="spec-tip-card">'
+        + '<span class="spec-tip-name">' + GP.esc(meta.label) + '</span>'
+        + (mine ? '<span class="spec-tip-you">You</span>' : '')
+      + '</span>'
+      + '<span class="spec-tip-anchor" aria-hidden="true"></span>'
     + '</div>';
+  });
+  var loLabel = GP.esc(GP.levelMeta(ids[ST.rangeLo]).label);
+  var hiLabel = GP.esc(GP.levelMeta(ids[ST.rangeHi]).label);
+  return '<div class="level-spectrum" id="levelSpectrum" role="group"'
+    + ' aria-labelledby="cafeLevelsHeading" aria-describedby="specHintSr">'
+    + '<div class="spec-board">'
+      + '<div class="spec-stage">'
+        + '<svg class="spec-svg" viewBox="0 0 ' + SPEC_VB.w + ' ' + SPEC_VB.h + '" overflow="visible" aria-hidden="true" focusable="false">'
+          + '<defs>'
+            + '<filter id="cafeSpecInset" x="-48" y="-48" width="456" height="344" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">'
+              + '<feGaussianBlur in="SourceAlpha" stdDeviation="4.5" result="blur"/>'
+              + '<feComposite in="blur" in2="SourceAlpha" operator="arithmetic" k2="-1" k3="1" result="inner"/>'
+              + '<feFlood flood-color="#000000" flood-opacity="0.32" result="color"/>'
+              + '<feComposite in="color" in2="inner" operator="in" result="shadow"/>'
+              + '<feComposite in="shadow" in2="SourceGraphic" operator="over"/>'
+            + '</filter>'
+          + '</defs>'
+          + '<path class="spec-track" d="' + specArcD() + '"' + (ST.specInset === false ? '' : ' filter="url(#cafeSpecInset)"') + '/>'
+          + '<path class="spec-hair" d="' + specArcD() + '"/>'
+          + '<path class="spec-glass spec-glass-shadow" d="' + specArcD() + '" transform="translate(0 7)"/>'
+          + '<path class="spec-glass spec-glass-contact" d="' + specArcD() + '" transform="translate(0 3)"/>'
+          + '<path class="spec-glass spec-glass-body" d="' + specArcD() + '"/>'
+          + '<path class="spec-glass spec-glass-volume" d="' + specArcD() + '"/>'
+          + '<path class="spec-glass spec-glass-lower" d="' + specArcD() + '" transform="translate(0.8 2.2)"/>'
+          + '<path class="spec-glass spec-glass-rim" d="' + specArcD() + '" transform="translate(-1.4 -2.1)"/>'
+        + '</svg>'
+        + '<div class="spec-nodes">' + nodes + '</div>'
+        + '<button type="button" class="spec-handle spec-handle-lo" id="specHandleLo"'
+          + ' role="slider" aria-label="Lower end of matching range"'
+          + ' aria-valuemin="0" aria-valuemax="' + me + '" aria-valuenow="' + ST.rangeLo + '"'
+          + ' aria-valuetext="' + loLabel + '">'
+          + '<span class="spec-knob" aria-hidden="true"></span>'
+        + '</button>'
+        + '<button type="button" class="spec-handle spec-handle-hi" id="specHandleHi"'
+          + ' role="slider" aria-label="Higher end of matching range"'
+          + ' aria-valuemin="' + me + '" aria-valuemax="' + (ids.length - 1) + '" aria-valuenow="' + ST.rangeHi + '"'
+          + ' aria-valuetext="' + hiLabel + '">'
+          + '<span class="spec-knob" aria-hidden="true"></span>'
+        + '</button>'
+        + '<p class="spec-hint' + (ST.rangeHintSeen ? ' is-faded' : '') + '" id="specHintVis"'
+          + ' aria-hidden="' + (ST.rangeHintSeen ? 'true' : 'false') + '">'
+          + '<span class="spec-hint-arrow spec-hint-arrow-lo" aria-hidden="true">' + CI.chevRt + '</span>'
+          + '<span class="spec-hint-copy">Drag the edges<br>to adjust your range</span>'
+          + '<span class="spec-hint-arrow spec-hint-arrow-hi" aria-hidden="true">' + CI.chevRt + '</span>'
+        + '</p>'
+      + '</div>'
+      + '<div class="spec-labels" id="specLabels" aria-hidden="true">' + tips + '</div>'
+      + '<div class="spec-orient spec-orient-ends" aria-hidden="true">'
+        + '<span><span class="spec-orient-full">Below<br>your level</span><span class="spec-orient-short">Lower<br>levels</span></span>'
+        + '<span><span class="spec-orient-full">Above<br>your level</span><span class="spec-orient-short">Higher<br>levels</span></span>'
+      + '</div>'
+    + '</div>'
+    + '<p class="spec-sr" id="specHintSr">Drag either handle to adjust a continuous matching range. Your level always stays inside it.</p>'
+  + '</div>';
+}
+function applySpecPreviewVisuals(root){
+  if(!root || specDrag) return;
+  root.querySelectorAll('.spec-handle').forEach(function(el){
+    el.classList.toggle('is-active', false);
+    el.classList.toggle('is-pressed', false);
+  });
+  if(ST.specActiveHandle === 'lo'){
+    var lo = document.getElementById('specHandleLo');
+    if(lo) lo.classList.add('is-active');
+  }
+  if(ST.specActiveHandle === 'hi'){
+    var hi = document.getElementById('specHandleHi');
+    if(hi) hi.classList.add('is-active');
+  }
+}
+
+var specDrag = null;
+var specSettle = 0;
+var specDidDrag = false;
+function prefersReducedMotion(){
+  return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+}
+function specPoints(svg){
+  var path = (svg && svg.querySelector('.spec-hair')) || (svg && svg.querySelector('.spec-track'));
+  if(!path || !path.getTotalLength) return [];
+  var len = path.getTotalLength();
+  var n = LEVEL_DATA.eligible.length;
+  var padT = specPadT(specRoot());
+  var pts = [];
+  for(var i = 0; i < n; i++){
+    var t = specIndexToT(i, n, padT);
+    var p = path.getPointAtLength(len * t);
+    pts.push({x:p.x, y:p.y, t:t, len:len * t, total:len});
+  }
+  return pts;
+}
+function layoutSpectrum(){
+  var root = document.getElementById('levelSpectrum');
+  if(!root) return;
+  var svg = root.querySelector('.spec-svg');
+  var path = svg && svg.querySelector('.spec-hair');
+  if(path && path.getTotalLength){
+    var len = path.getTotalLength();
+    root._padT = Math.max(0.078, Math.min(0.12, 48 / len));
+  }
+  var pts = specPoints(svg);
+  root._pts = pts;
+  var vbW = SPEC_VB.w, vbH = SPEC_VB.h;
+  pts.forEach(function(p, i){
+    var node = root.querySelector('.spec-node[data-idx="' + i + '"]');
+    if(!node) return;
+    node.style.left = (p.x / vbW * 100) + '%';
+    node.style.top = (p.y / vbH * 100) + '%';
+  });
+  updateSpectrumDOM();
+}
+function setFeedbackCopy(text, immediate){
+  var live = document.getElementById('specFeedback');
+  if(!live) return;
+  live.setAttribute('data-copy', text);
+  if(live.textContent === text){
+    live.classList.remove('is-swap');
+    return;
+  }
+  live.textContent = text;
+  if(immediate || specDrag || prefersReducedMotion()){
+    live.classList.remove('is-swap');
+    return;
+  }
+  live.classList.remove('is-swap');
+  void live.offsetWidth;
+  live.classList.add('is-swap');
+  window.setTimeout(function(){ live.classList.remove('is-swap'); }, 180);
+}
+function fadeRangeHint(){
+  ST.rangeHintSeen = true;
+  var hint = document.getElementById('specHintVis');
+  if(hint){
+    hint.classList.add('is-faded');
+    hint.setAttribute('aria-hidden', 'true');
+  }
+}
+function updateGlassPath(root, loT, hiT){
+  var path = root.querySelector('.spec-hair');
+  if(!path || !path.getTotalLength) return;
+  var len = path.getTotalLength();
+  var t0 = Math.max(0, Math.min(1, loT));
+  var t1 = Math.max(0, Math.min(1, hiT));
+  if(t1 < t0){ var s = t0; t0 = t1; t1 = s; }
+  var span = Math.max(1, len * (t1 - t0));
+  var cap = Math.min(SPEC_GLASS_CAP, Math.max(0, span - 10));
+  var selected = Math.max(2, span - cap);
+  var start = len * t0 + cap / 2;
+  var dash = selected + ' ' + len;
+  var off = String(-start);
+  root.querySelectorAll('.spec-glass').forEach(function(g){
+    g.setAttribute('stroke-dasharray', dash);
+    g.setAttribute('stroke-dashoffset', off);
+  });
+}
+function specPathPoint(path, t){
+  var len = path.getTotalLength();
+  var along = len * Math.max(0, Math.min(1, t));
+  return path.getPointAtLength(along);
+}
+function placeHandleAt(el, xPct, yPct, snapping){
+  if(!el) return;
+  el.classList.toggle('is-snap', !!snapping);
+  el.style.left = xPct;
+  el.style.top = yPct;
+}
+function syncHandleAria(el, now, min, max, label){
+  if(!el) return;
+  el.setAttribute('aria-valuenow', String(now));
+  el.setAttribute('aria-valuemin', String(min));
+  el.setAttribute('aria-valuemax', String(max));
+  el.setAttribute('aria-valuetext', label);
+}
+function specTipsOverlap(a, b, padX, padY){
+  return !(a.right < b.left + padX || a.left > b.right - padX || a.bottom < b.top + padY || a.top > b.bottom - padY);
+}
+function layoutSpecLabels(root){
+  var board = root.querySelector('.spec-board');
+  var host = document.querySelector('.cafe-entry-prefs') || document.getElementById('frame');
+  if(!board || !host) return;
+  var boardBox = board.getBoundingClientRect();
+  var hostBox = host.getBoundingClientRect();
+  var pad = 8;
+  var me = myLevelIndex();
+  var hot = ST.specHot;
+  var lo = ST.rangeLo, hi = ST.rangeHi;
+  var placed = [];
+  root.querySelectorAll('.spec-tip').forEach(function(tip){
+    var i = parseInt(tip.getAttribute('data-idx'), 10);
+    var kind = i === me ? 'you' : (i === hot ? 'hot' : (i === lo || i === hi ? 'bound' : 'level'));
+    tip.classList.add('is-on');
+    tip.classList.toggle('is-you', kind === 'you');
+    tip.classList.toggle('is-hot', kind === 'hot' || i === hot);
+    tip.classList.toggle('is-bound', kind === 'bound');
+    tip.style.setProperty('--tip-shift', '0px');
+    tip.style.setProperty('--tip-lift', '0px');
+    var node = root.querySelector('.spec-node[data-idx="' + i + '"]');
+    if(!node) return;
+    var nb = node.getBoundingClientRect();
+    tip.style.left = (nb.left + nb.width / 2 - boardBox.left) + 'px';
+    tip.style.top = (nb.top - boardBox.top) + 'px';
+    placed.push({
+      el: tip,
+      i: i,
+      pri: kind === 'you' ? 1 : kind === 'hot' ? 2 : kind === 'bound' ? 3 : 4
+    });
+  });
+  function applyShift(el, extra){
+    el.style.setProperty('--tip-shift', extra + 'px');
+    var r = el.getBoundingClientRect();
+    var shift = extra;
+    if(r.left < hostBox.left + pad) shift += (hostBox.left + pad) - r.left;
+    if(r.right > hostBox.right - pad) shift += (hostBox.right - pad) - r.right;
+    el.style.setProperty('--tip-shift', shift + 'px');
+    return shift;
+  }
+  placed.forEach(function(p){ applyShift(p.el, 0); });
+  placed.sort(function(a, b){ return a.pri - b.pri; });
+  var kept = [];
+  placed.forEach(function(p){
+    var extra = 0;
+    var lift = 0;
+    var tries;
+    for(tries = 0; tries < 6; tries++){
+      applyShift(p.el, extra);
+      p.el.style.setProperty('--tip-lift', lift + 'px');
+      var ra = p.el.getBoundingClientRect();
+      var hit = null;
+      kept.some(function(k){
+        if(specTipsOverlap(ra, k.el.getBoundingClientRect(), 6, 2)){
+          hit = k;
+          return true;
+        }
+        return false;
+      });
+      if(!hit) break;
+      var hb = hit.el.getBoundingClientRect();
+      lift = Math.min(56, lift + Math.max(18, Math.ceil(ra.bottom - hb.top) + 4));
+      extra += (ra.left + ra.width / 2 < hb.left + hb.width / 2) ? -14 : 14;
+    }
+    applyShift(p.el, extra);
+    p.el.style.setProperty('--tip-lift', lift + 'px');
+    kept.push(p);
+  });
+}
+function updateSpectrumDOM(opts){
+  opts = opts || {};
+  var root = document.getElementById('levelSpectrum');
+  if(!root) return;
+  var ids = LEVEL_DATA.eligible;
+  var n = ids.length;
+  var me = myLevelIndex();
+  var hot = ST.specHot;
+  var padT = specPadT(root);
+  var liveT = opts.liveT;
+  root.querySelectorAll('.spec-node').forEach(function(node){
+    var i = parseInt(node.getAttribute('data-idx'), 10);
+    var on = i >= ST.rangeLo && i <= ST.rangeHi;
+    var bound = i === ST.rangeLo || i === ST.rangeHi;
+    node.classList.toggle('is-on', on);
+    node.classList.toggle('is-hot', i === hot);
+    node.classList.toggle('is-bound', bound);
+    node.setAttribute('aria-pressed', on ? 'true' : 'false');
+  });
+  var loT = liveT ? liveT.lo : specRestHandleT(root, 'lo', ST.rangeLo, n, padT);
+  var hiT = liveT ? liveT.hi : specRestHandleT(root, 'hi', ST.rangeHi, n, padT);
+  if(loT > hiT){
+    var mid = (loT + hiT) / 2;
+    loT = Math.min(loT, mid);
+    hiT = Math.max(hiT, mid);
+  }
+  updateGlassPath(root, loT, hiT);
+  function placeHandle(el, t){
+    if(!el) return;
+    var pt = specHandlePoint(root, t, !liveT);
+    placeHandleAt(el, (pt.x / SPEC_VB.w * 100) + '%', (pt.y / SPEC_VB.h * 100) + '%', !!opts.snapping);
+  }
+  var loEl = document.getElementById('specHandleLo');
+  var hiEl = document.getElementById('specHandleHi');
+  placeHandle(loEl, loT);
+  placeHandle(hiEl, hiT);
+  syncHandleAria(loEl, ST.rangeLo, 0, me, GP.levelMeta(ids[ST.rangeLo]).label);
+  syncHandleAria(hiEl, ST.rangeHi, me, n - 1, GP.levelMeta(ids[ST.rangeHi]).label);
+  applySpecPreviewVisuals(root);
+  setFeedbackCopy(rangeFeedbackCopy(), !!liveT);
+  layoutSpecLabels(root);
+}
+function specClientToVb(svg, clientX, clientY){
+  if(!svg || !svg.createSVGPoint || !svg.getScreenCTM) return null;
+  var ctm = svg.getScreenCTM();
+  if(!ctm) return null;
+  var pt = svg.createSVGPoint();
+  pt.x = clientX;
+  pt.y = clientY;
+  return pt.matrixTransform(ctm.inverse());
+}
+function specClosestOnPath(path, x, y){
+  var len = path.getTotalLength();
+  var samples = 60;
+  var bestL = 0, bestD = Infinity, bestP = path.getPointAtLength(0);
+  var i, l, p, d;
+  for(i = 0; i <= samples; i++){
+    l = len * i / samples;
+    p = path.getPointAtLength(l);
+    d = (p.x - x) * (p.x - x) + (p.y - y) * (p.y - y);
+    if(d < bestD){ bestD = d; bestL = l; bestP = p; }
+  }
+  var step = len / samples;
+  for(i = 0; i < 7; i++){
+    step *= 0.5;
+    var left = Math.max(0, bestL - step);
+    var right = Math.min(len, bestL + step);
+    var pl = path.getPointAtLength(left);
+    var pr = path.getPointAtLength(right);
+    var dl = (pl.x - x) * (pl.x - x) + (pl.y - y) * (pl.y - y);
+    var dr = (pr.x - x) * (pr.x - x) + (pr.y - y) * (pr.y - y);
+    if(dl < bestD){ bestD = dl; bestL = left; bestP = pl; }
+    if(dr < bestD){ bestD = dr; bestL = right; bestP = pr; }
+  }
+  return {t: bestL / len, x:bestP.x, y:bestP.y, len:len, along:bestL};
+}
+function specPointFromEvent(root, clientX, clientY){
+  var svg = root && root.querySelector('.spec-svg');
+  var path = svg && svg.querySelector('.spec-hair');
+  if(!path || !path.getTotalLength) return null;
+  var loc = specClientToVb(svg, clientX, clientY);
+  if(!loc) return null;
+  return specClosestOnPath(path, loc.x, loc.y);
+}
+function nearestSpecIndex(root, clientX, clientY){
+  var hit = specPointFromEvent(root, clientX, clientY);
+  if(!hit) return 0;
+  return specTToIndex(hit.t);
+}
+function hapticTick(){
+  try{ if(navigator.vibrate) navigator.vibrate(8); }catch(e){}
+}
+function tapSpectrumLevel(index){
+  var n = LEVEL_DATA.eligible.length;
+  if(index < 0 || index >= n) return;
+  if(specDrag || specDidDrag) return;
+  fadeRangeHint();
+  ST.specPreview = 'live';
+  ST.specActiveHandle = null;
+  ST.specHot = index;
+  var me = myLevelIndex();
+  if(index !== me){
+    if(index < me) applyLevelRange(index, ST.rangeHi);
+    else applyLevelRange(ST.rangeLo, index);
+  } else {
+    updateSpectrumDOM();
+  }
+  window.setTimeout(function(){
+    if(ST.specHot === index && !specDrag){
+      ST.specHot = -1;
+      updateSpectrumDOM();
+    }
+  }, 420);
+}
+function specEaseOutSoftBack(t){
+  var c1 = 0.26;
+  var c3 = c1 + 1;
+  return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2);
+}
+function specLockScroll(on){
+  var screen = document.getElementById('frame');
+  var root = document.getElementById('levelSpectrum');
+  if(screen) screen.classList.toggle('is-spec-dragging', !!on);
+  if(root) root.classList.toggle('is-dragging', !!on);
+}
+function specApplyLiveRange(side, t){
+  var n = LEVEL_DATA.eligible.length;
+  var me = myLevelIndex();
+  var padT = specPadT(specRoot());
+  t = specClampHandleT(side, t, n, me, padT);
+  var loT = side === 'lo' ? t : specRestHandleT(specRoot(), 'lo', ST.rangeLo, n, padT);
+  var hiT = side === 'hi' ? t : specRestHandleT(specRoot(), 'hi', ST.rangeHi, n, padT);
+  if(loT > hiT){
+    if(side === 'lo') loT = hiT;
+    else hiT = loT;
+  }
+  var range = specRangeFromHandles(loT, hiT, n, me, padT);
+  ST.rangeLo = range[0];
+  ST.rangeHi = range[1];
+  ST.selected = selectedFromRange(ST.rangeLo, ST.rangeHi);
+  var hot = specTToIndex(t, n, padT);
+  if(hot !== me && specDrag && specDrag.lastHot !== hot) hapticTick();
+  ST.specHot = hot;
+  if(specDrag){
+    specDrag.lastHot = hot;
+    specDrag.t = t;
+    specDrag.loT = loT;
+    specDrag.hiT = hiT;
+  }
+  updateSpectrumDOM({liveT:{lo:loT, hi:hiT}});
+}
+function specSettleTo(side, fromT, toT){
+  if(specSettle){ cancelAnimationFrame(specSettle); specSettle = 0; }
+  var n = LEVEL_DATA.eligible.length;
+  var padT = specPadT(specRoot());
+  var loT = side === 'lo' ? toT : specRestHandleT(specRoot(), 'lo', ST.rangeLo, n, padT);
+  var hiT = side === 'hi' ? toT : specRestHandleT(specRoot(), 'hi', ST.rangeHi, n, padT);
+  function finish(){
+    ST.specHot = -1;
+    ST.specActiveHandle = null;
+    updateSpectrumDOM();
+    syncSwitcher();
+  }
+  if(prefersReducedMotion() || Math.abs(toT - fromT) < 0.003){
+    finish();
+    return;
+  }
+  var start = performance.now();
+  var dur = 210;
+  function frame(now){
+    var p = Math.min(1, (now - start) / dur);
+    var e = specEaseOutSoftBack(p);
+    var t = fromT + (toT - fromT) * e;
+    var liveLo = side === 'lo' ? t : loT;
+    var liveHi = side === 'hi' ? t : hiT;
+    updateSpectrumDOM({liveT:{lo:liveLo, hi:liveHi}, snapping:p > 0.72});
+    if(p < 1) specSettle = requestAnimationFrame(frame);
+    else {
+      specSettle = 0;
+      finish();
+    }
+  }
+  specSettle = requestAnimationFrame(frame);
+}
+function specOnHandleMove(e){
+  if(!specDrag || e.pointerId !== specDrag.pointerId) return;
+  e.preventDefault();
+  var dx = e.clientX - specDrag.startX;
+  var dy = e.clientY - specDrag.startY;
+  if((dx * dx + dy * dy) > 9) specDidDrag = true;
+  var hit = specPointFromEvent(specDrag.root, e.clientX, e.clientY);
+  if(!hit) return;
+  specApplyLiveRange(specDrag.side, hit.t);
+}
+function specOnHandleUp(e){
+  if(!specDrag || e.pointerId !== specDrag.pointerId) return;
+  e.preventDefault();
+  var drag = specDrag;
+  try{ drag.el.releasePointerCapture(e.pointerId); }catch(ex){}
+  drag.el.removeEventListener('pointermove', specOnHandleMove);
+  drag.el.removeEventListener('pointerup', specOnHandleUp);
+  drag.el.removeEventListener('pointercancel', specOnHandleUp);
+  drag.el.classList.remove('is-pressed', 'is-active');
+  specLockScroll(false);
+  var n = LEVEL_DATA.eligible.length;
+  var me = myLevelIndex();
+  var padT = specPadT(drag.root);
+  var fromT = drag.t;
+  var snapIdx = specNearestSlot(drag.side, fromT, n, me, padT);
+  var next = drag.side === 'lo'
+    ? clampLevelRange(snapIdx, ST.rangeHi)
+    : clampLevelRange(ST.rangeLo, snapIdx);
+  ST.rangeLo = next[0];
+  ST.rangeHi = next[1];
+  ST.selected = selectedFromRange(ST.rangeLo, ST.rangeHi);
+  var toT = specRestHandleT(drag.root, drag.side, drag.side === 'lo' ? ST.rangeLo : ST.rangeHi, n, padT);
+  specDrag = null;
+  specSettleTo(drag.side, fromT, toT);
+  window.setTimeout(function(){ specDidDrag = false; }, 80);
+}
+function specOnHandleDown(e){
+  if(e.button != null && e.button !== 0) return;
+  var el = e.currentTarget;
+  var root = document.getElementById('levelSpectrum');
+  if(!root || !el) return;
+  e.preventDefault();
+  e.stopPropagation();
+  if(specSettle){ cancelAnimationFrame(specSettle); specSettle = 0; }
+  fadeRangeHint();
+  ST.specPreview = 'live';
+  ST.specActiveHandle = el.id === 'specHandleLo' ? 'lo' : 'hi';
+  specDidDrag = false;
+  var n = LEVEL_DATA.eligible.length;
+  var padT = specPadT(root);
+  var t = specRestHandleT(root, ST.specActiveHandle, ST.specActiveHandle === 'lo' ? ST.rangeLo : ST.rangeHi, n, padT);
+  specDrag = {
+    side: ST.specActiveHandle,
+    pointerId: e.pointerId,
+    el: el,
+    root: root,
+    startX: e.clientX,
+    startY: e.clientY,
+    t: t,
+    loT: specRestHandleT(root, 'lo', ST.rangeLo, n, padT),
+    hiT: specRestHandleT(root, 'hi', ST.rangeHi, n, padT),
+    lastHot: ST.specActiveHandle === 'lo' ? ST.rangeLo : ST.rangeHi
+  };
+  el.classList.add('is-pressed', 'is-active');
+  specLockScroll(true);
+  try{ el.setPointerCapture(e.pointerId); }catch(ex){}
+  el.addEventListener('pointermove', specOnHandleMove);
+  el.addEventListener('pointerup', specOnHandleUp);
+  el.addEventListener('pointercancel', specOnHandleUp);
+}
+function specOnHandleKey(e){
+  var side = e.currentTarget.id === 'specHandleLo' ? 'lo' : 'hi';
+  var me = myLevelIndex();
+  var n = LEVEL_DATA.eligible.length;
+  var lo = ST.rangeLo, hi = ST.rangeHi;
+  var key = e.key;
+  if(side === 'lo'){
+    if(key === 'ArrowLeft' || key === 'ArrowDown') lo -= 1;
+    else if(key === 'ArrowRight' || key === 'ArrowUp') lo += 1;
+    else if(key === 'Home') lo = 0;
+    else if(key === 'End') lo = me;
+    else return;
+  } else {
+    if(key === 'ArrowLeft' || key === 'ArrowDown') hi -= 1;
+    else if(key === 'ArrowRight' || key === 'ArrowUp') hi += 1;
+    else if(key === 'Home') hi = me;
+    else if(key === 'End') hi = n - 1;
+    else return;
+  }
+  e.preventDefault();
+  fadeRangeHint();
+  ST.specPreview = 'live';
+  ST.specActiveHandle = null;
+  ST.specHot = -1;
+  applyLevelRange(lo, hi);
+}
+var entryCleanup = [];
+function unbindEntrySpectrum(){
+  if(specSettle){ cancelAnimationFrame(specSettle); specSettle = 0; }
+  specDrag = null;
+  specDidDrag = false;
+  entryCleanup.forEach(function(fn){ try{ fn(); }catch(e){} });
+  entryCleanup = [];
+  specLockScroll(false);
+}
+function bindSpectrum(host){
+  var root = document.getElementById('levelSpectrum');
+  if(!root) return;
+  layoutSpectrum();
+  var lo = document.getElementById('specHandleLo');
+  var hi = document.getElementById('specHandleHi');
+  function bindHandle(el){
+    if(!el) return;
+    el.addEventListener('pointerdown', specOnHandleDown);
+    el.addEventListener('keydown', specOnHandleKey);
+    el.addEventListener('click', function(ev){
+      if(specDidDrag){ ev.preventDefault(); ev.stopPropagation(); }
+    });
+  }
+  bindHandle(lo);
+  bindHandle(hi);
+  function onNodeFocus(ev){
+    var node = ev.target.closest && ev.target.closest('.spec-node');
+    if(!node) return;
+    ST.specHot = parseInt(node.getAttribute('data-idx'), 10);
+    layoutSpecLabels(root);
+  }
+  function onNodeBlur(ev){
+    var node = ev.target.closest && ev.target.closest('.spec-node');
+    if(!node || specDrag) return;
+    if(ST.specHot === parseInt(node.getAttribute('data-idx'), 10)){
+      ST.specHot = -1;
+      layoutSpecLabels(root);
+    }
+  }
+  root.addEventListener('focusin', onNodeFocus);
+  root.addEventListener('focusout', onNodeBlur);
+  function onNodeHover(ev){
+    var node = ev.target.closest && ev.target.closest('.spec-node');
+    if(!node || specDrag) return;
+    ST.specHot = parseInt(node.getAttribute('data-idx'), 10);
+    layoutSpecLabels(root);
+  }
+  function onNodeUnhover(ev){
+    var node = ev.target.closest && ev.target.closest('.spec-node');
+    if(!node || specDrag) return;
+    if(document.activeElement === node) return;
+    if(ST.specHot === parseInt(node.getAttribute('data-idx'), 10)){
+      ST.specHot = -1;
+      layoutSpecLabels(root);
+    }
+  }
+  root.addEventListener('pointerenter', onNodeHover, true);
+  root.addEventListener('pointerleave', onNodeUnhover, true);
+  entryCleanup.push(function(){
+    root.removeEventListener('focusin', onNodeFocus);
+    root.removeEventListener('focusout', onNodeBlur);
+    root.removeEventListener('pointerenter', onNodeHover, true);
+    root.removeEventListener('pointerleave', onNodeUnhover, true);
+  });
+  function onResize(){ if(!specDrag) layoutSpectrum(); }
+  window.addEventListener('resize', onResize);
+  entryCleanup.push(function(){ window.removeEventListener('resize', onResize); });
+  if(typeof ResizeObserver !== 'undefined'){
+    var ro = new ResizeObserver(onResize);
+    ro.observe(root);
+    entryCleanup.push(function(){ ro.disconnect(); });
+  }
+}
+
+function screenEntry(){
+  return lockupSolo()
+    + '<div class="cafe-shell cafe-shell-entry"></div>'
+    + '<main class="cafe-entry" aria-label="Caf\u00e9 entry">'
+      + '<div class="cafe-entry-compose">'
+        + '<section class="cafe-entry-welcome" aria-label="Welcome">'
+          + '<div class="cafe-entry-welcome-lockup">'
+            + '<div class="cafe-entry-hero" aria-hidden="true">' + cafeCupsSvg('is-static') + '</div>'
+            + '<h2 class="cafe-display cafe-welcome-title">Welcome to the <b>Caf\u00e9</b>!</h2>'
+            + '<p class="cafe-sub cafe-welcome-sub">Grab a coffee and chat with a Hebrew partner from anywhere in the world.</p>'
+          + '</div>'
+        + '</section>'
+        + '<div class="cafe-entry-divider" aria-hidden="true"></div>'
+        + '<section class="cafe-entry-prefs" aria-labelledby="cafeLevelsHeading">'
+          + '<div class="pref-copy">'
+            + '<h2 class="pref-intro" id="cafeLevelsHeading">Choose partner levels</h2>'
+            + '<p class="pref-lead">Wider range, better odds of finding someone.</p>'
+          + '</div>'
+          + levelSpectrum()
+          + '<div class="spec-feedback-row">'
+            + '<p class="spec-feedback" id="specFeedback" aria-live="polite">' + GP.esc(rangeFeedbackCopy()) + '</p>'
+          + '</div>'
+          + '<div class="cafe-entry-acts">'
+            + '<button class="btn primary cafe-entry-cta" type="button" onclick="startSearch()"'
+              + (ST.selected.length ? '' : ' disabled') + '>Find someone</button>'
+          + '</div>'
+        + '</section>'
+      + '</div>'
+    + '</main>';
 }
 
 /* --------------------------------------------------------- 2. A/V CHECK */
@@ -746,6 +1578,9 @@ function screenHub(){
 }
 
 /* -------------------------------------------------------- 4. MATCH FOUND */
+function matchCupIcon(){
+  return '<img class="ice-cup" src="../cafe-playground-mobile/assets/cafe-cup-icon.png" alt="" aria-hidden="true">';
+}
 function matchLevelFact(id){
   var meta = GP.levelMeta(id);
   var icon = LEVEL_ICONS[id]
@@ -759,18 +1594,103 @@ function setMatchLayout(id){
   ST.matchLayout = id === 'framed' ? 'framed' : 'open';
   if(ST.state !== 'matched'){
     ST.matching = true;
-    ST.bg = 'hub';
+    ST.bg = 'searching';
     setState('matched');
     return;
   }
   render();
 }
 
+/* Gym Ending confetti, same pieces and fall, originated around the partner card. */
+function matchConfetti(){
+  var C = '#373230';
+  var colors = ['#F9E24C','#FFE300','#F69700','#F9746B','#90C7FC','#449CFC','#DAEF81','#7EE07C','#6D8C58','#6BBFC4','#8B90FF','#CEB1FF'];
+  var nextKind = {stroke:'circ', circ:'dia', dia:'stroke'};
+  function ink(fill){
+    return 'fill="'+fill+'" stroke="'+C+'" stroke-width="0.5" vector-effect="non-scaling-stroke"';
+  }
+  function shape(kind, fill){
+    var a = ink(fill);
+    if(kind === 'stroke') return '<svg viewBox="0 0 16 6" aria-hidden="true"><rect x="1.2" y="1.9" width="13.6" height="2.2" rx="1.1" '+a+'/></svg>';
+    if(kind === 'circ') return '<svg viewBox="0 0 10 10" aria-hidden="true"><circle cx="5" cy="5" r="3.55" '+a+'/></svg>';
+    return '<svg viewBox="0 0 10 10" aria-hidden="true"><path d="M5 1.2 L8.8 5 L5 8.8 L1.2 5 Z" '+a+'/></svg>';
+  }
+  function spin(x,y,deg){
+    var r = deg * Math.PI / 180;
+    return [Math.round(x*Math.cos(r)-y*Math.sin(r)), Math.round(x*Math.sin(r)+y*Math.cos(r))];
+  }
+  var bits = [
+    {k:'stroke',dx:-80,dy:-92,ex:-122,ey:28,rot0:-16,rot:-38,rot2:18,sc:1.08,s:22,d:.22,dur:2.72},
+    {k:'circ',dx:16,dy:-124,ex:48,ey:-40,rot0:8,rot:26,rot2:54,sc:.92,s:13,d:.28,dur:3.08},
+    {k:'dia',dx:98,dy:-68,ex:154,ey:36,rot0:18,rot:42,rot2:78,sc:1,s:14,d:.24,dur:2.58},
+    {k:'circ',dx:-40,dy:-108,ex:-28,ey:52,rot0:-10,rot:16,rot2:50,sc:1.12,s:16,d:.31,dur:3.18},
+    {k:'stroke',dx:114,dy:-30,ex:168,ey:44,rot0:12,rot:34,rot2:14,sc:.95,s:20,d:.26,dur:2.84},
+    {k:'dia',dx:-118,dy:-46,ex:-164,ey:22,rot0:-22,rot:-14,rot2:28,sc:1,s:13,d:.34,dur:2.66},
+    {k:'circ',dx:56,dy:-96,ex:92,ey:-8,rot0:6,rot:-22,rot2:16,sc:.86,s:12,d:.38,dur:2.48},
+    {k:'dia',dx:-12,dy:-120,ex:36,ey:48,rot0:14,rot:32,rot2:64,sc:1.18,s:17,d:.25,dur:3.24},
+    {k:'stroke',dx:44,dy:-36,ex:18,ey:56,rot0:-8,rot:18,rot2:48,sc:1,s:21,d:.4,dur:2.76},
+    {k:'circ',dx:-72,dy:-80,ex:-118,ey:40,rot0:-14,rot:8,rot2:42,sc:.9,s:15,d:.33,dur:2.96},
+    {k:'stroke',dx:8,dy:-62,ex:-42,ey:50,rot0:10,rot:-24,rot2:22,sc:1.05,s:19,d:.29,dur:2.88},
+    {k:'dia',dx:78,dy:-116,ex:126,ey:-22,rot0:20,rot:48,rot2:34,sc:.88,s:13,d:.36,dur:3.02}
+  ];
+  var pieces = [], i, b, p, q;
+  for(i=0;i<bits.length;i++){
+    b = bits[i];
+    pieces.push({k:b.k,dx:b.dx,dy:b.dy,ex:b.ex,ey:b.ey,rot0:b.rot0,rot:b.rot,rot2:b.rot2,sc:b.sc,s:b.s,d:b.d,dur:b.dur,fill:colors[i%colors.length]});
+    p = spin(b.dx,b.dy,i%2?124:-132);
+    q = spin(b.ex,b.ey,i%2?124:-132);
+    pieces.push({
+      k:nextKind[b.k],dx:Math.round(p[0]*.88),dy:Math.round(p[1]*.88),
+      ex:Math.round(q[0]*.9),ey:Math.round(q[1]*.9+22),
+      rot0:b.rot0+(i%2?26:-26),rot:b.rot+(i%2?-22:22),rot2:b.rot2+34,
+      sc:b.sc,s:Math.max(11,b.s-3),d:+(b.d+.07).toFixed(2),dur:+(b.dur+.22).toFixed(2),fill:colors[(i+4)%colors.length]
+    });
+    p = spin(b.dx,b.dy,i%3?228:-214);
+    q = spin(b.ex,b.ey,i%3?228:-214);
+    pieces.push({
+      k:nextKind[nextKind[b.k]],dx:Math.round(p[0]*.78),dy:Math.round(p[1]*.78),
+      ex:Math.round(q[0]*.82),ey:Math.round(q[1]*.82+28),
+      rot0:b.rot0+(i%2?-18:20),rot:b.rot+(i%2?16:-28),rot2:b.rot2-12,
+      sc:+(b.sc*.82).toFixed(2),s:Math.max(10,b.s-5),d:+(b.d+.11).toFixed(2),dur:+(b.dur+.34).toFixed(2),fill:colors[(i+7)%colors.length]
+    });
+  }
+  var origins = [
+    {ox:-28,oy:12},{ox:34,oy:-16},{ox:-10,oy:22},{ox:20,oy:8},
+    {ox:-36,oy:-8},{ox:12,oy:28},{ox:40,oy:6},{ox:-18,oy:-22}
+  ];
+  var html = '<span class="match-confetti" aria-hidden="true">';
+  var burst = 2.7;
+  for(i=0;i<pieces.length;i++){
+    b = pieces[i];
+    var o = origins[i % origins.length];
+    var jx = (i % 5) - 2;
+    var jy = (i % 3) - 1;
+    var ox = o.ox + jx * 9;
+    var oy = o.oy + jy * 11;
+    var dx = Math.round(b.dx*burst), dy = Math.round(b.dy*burst);
+    var ex = Math.round(b.ex*burst), ey = Math.round(b.ey*burst);
+    var mx = Math.round(dx+(ex-dx)*.62), my = Math.round(dy+(ey-dy)*.62);
+    var vx = Math.round(dx+(ex-dx)*.84), vy = Math.round(dy+(ey-dy)*.84);
+    var lx = Math.round(ex+(i%2?20:-28)), ly = Math.round(ey+(i%2?36:-16)+(i%5)*8);
+    var rotm = Math.round(b.rot+(b.rot2-b.rot)*.62), rotv = Math.round(b.rot+(b.rot2-b.rot)*.84);
+    html += '<span class="match-cf" style="'
+      + '--ox:'+ox+'px;--oy:'+oy+'px;'
+      + '--dx:'+dx+'px;--dy:'+dy+'px;--mx:'+mx+'px;--my:'+my+'px;'
+      + '--vx:'+vx+'px;--vy:'+vy+'px;--lx:'+lx+'px;--ly:'+ly+'px;'
+      + '--rot0:'+b.rot0+'deg;--rot:'+b.rot+'deg;--rotm:'+rotm+'deg;--rotv:'+rotv+'deg;'
+      + '--rotl:'+(b.rot2+(i%2?16:-14))+'deg;--sc:'+b.sc+';--s:'+Math.max(9, Math.round(b.s*.78))+'px;--d:'+b.d+'s;--dur:'+b.dur+'s">'
+      + shape(b.k, b.fill) + '</span>';
+  }
+  return html + '</span>';
+}
+
 function matchSheet(){
   var accepted = (ST.matchPhase === 'accepted');
   var low = ST.offerLeft <= 10;
   var framed = ST.matchLayout === 'framed';
+  var enter = ST.matchEnter ? ' is-enter' : '';
   var card = '<div class="match-card' + (accepted?' is-waiting':'') + (framed?' is-framed':'') + '">'
+    + '<img class="match-card-deco" src="../cafe-playground-mobile/assets/match-card-deco.png" alt="" aria-hidden="true">'
     + '<div class="match-intro">'
       + '<span class="match-photo"><img src="' + PARTNER.img + '" alt="' + GP.esc(PARTNER.name) + '"></span>'
       + '<div class="match-who">'
@@ -782,7 +1702,7 @@ function matchSheet(){
       + '</div>'
     + '</div>'
     + '<div class="ice">'
-      + '<span class="ice-label">' + GP.esc(PARTNER.ice.label) + '</span>'
+      + '<span class="ice-label">' + matchCupIcon() + '<span>' + GP.esc(PARTNER.ice.label) + '</span></span>'
       + '<span class="ice-text">' + GP.esc(PARTNER.ice.text) + '</span>'
     + '</div>'
     + (accepted
@@ -794,9 +1714,9 @@ function matchSheet(){
     + '</div>';
 
   var acts = accepted
-    ? '<button class="btn cream" type="button" onclick="declineMatch()">Keep looking instead</button>'
+    ? '<button class="btn match-keep" type="button" onclick="declineMatch()">Keep looking instead</button>'
     : '<button class="btn primary" type="button" onclick="acceptMatch()">Meet ' + GP.esc(PARTNER.name) + '</button>'
-      + '<button class="btn cream" type="button" onclick="declineMatch()">Keep looking</button>';
+      + '<button class="btn match-keep" type="button" onclick="declineMatch()">Keep looking</button>';
 
   var footer = accepted ? ''
     : '<div class="match-timer' + (low?' is-low':'') + '">'
@@ -804,21 +1724,25 @@ function matchSheet(){
       + '<div class="respline"><i style="animation-duration:' + ST.offerLeft + 's"></i></div>'
     + '</div>';
 
-  return cafeDialog({
-    milky:true,
-    cls:'match-dialog',
-    title:'We found you a Caf\u00e9 partner!',
-    body:card,
-    acts:acts,
-    footer:footer
-  });
+  return '<div class="match-takeover' + enter + '" id="matchTakeover" role="dialog" aria-modal="true" aria-labelledby="matchHeadline">'
+    + '<div class="match-scrim"></div>'
+    + '<div class="match-stage">'
+      + '<h4 class="match-headline" id="matchHeadline"><span class="match-kicker">Congratulations!</span>We found you a Caf\u00e9 partner</h4>'
+      + '<div class="match-card-wrap">'
+        + (ST.matchEnter ? matchConfetti() : '')
+        + card
+      + '</div>'
+      + '<div class="match-acts">' + acts + '</div>'
+      + footer
+    + '</div>'
+  + '</div>';
 }
 
 function screenMatched(){
   var behind = screenHub();
   if(ST.bg === 'searching') behind = screenSearching();
   else if(ST.bg === 'flashcards') behind = screenFlashcards();
-  return behind + matchSheet();
+  return '<div class="match-behind" inert aria-hidden="true">' + behind + '</div>' + matchSheet();
 }
 
 /* --------------------------------------------------- 5. SESSION AGREEMENT */
@@ -999,6 +1923,9 @@ function seedFor(state){
     ST.agreed = false; ST.left = 0;
     ST.levelsSheet = false; ST.devSheet = false;
     ST.dockTip = false; ST.dockTipSeen = false;
+    ST.rangeHintSeen = false;
+    ST.specHot = -1;
+    ST.specActiveHandle = null;
     clearPartnerOff();
     clearTimeout(dockTipT); dockTipT = null;
   }
@@ -1011,8 +1938,10 @@ function seedFor(state){
   if(state === 'hub'){ if(!ST.matching){ ST.matching = true; ST.left = DUR.searchTo; } }
   if(state === 'flashcards'){ if(!ST.matching){ ST.matching = true; ST.left = DUR.searchTo; } }
   if(state === 'matched'){
+    ST.matching = true;
     ST.matchPhase = 'offer';
     ST.offerLeft = DUR.offer;
+    ST.matchEnter = true;
     ST.levelsSheet = false;
     ST.partner.name = PARTNER.name;
     ST.partner.level = PARTNER.level;
@@ -1040,8 +1969,21 @@ function setState(state){
 }
 
 /* Product actions */
-function setScope(id){ ST.prefs.scope = id; render(); }
-function setMyLevel(id){ ST.myLevel = id; render(); }
+function setScope(id){
+  ST.prefs.scope = id;
+  var scope = scopeById(id);
+  var me = myLevelIndex();
+  var n = LEVEL_DATA.eligible.length;
+  var lo = Math.max(0, me - (scope.lower || 0));
+  var hi = Math.min(n - 1, me + (scope.upper || 0));
+  applyLevelRange(lo, hi);
+}
+function setMyLevel(id){
+  if(LEVEL_DATA.eligible.indexOf(id) === -1) return;
+  LEVEL_DATA.myLevel = id;
+  ST.myLevel = id;
+  applyLevelRange(0, LEVEL_DATA.eligible.length - 1);
+}
 /* Entry CTA is unchanged. Destination is now A/V check — matching starts there. */
 function startSearch(){ setState('avcheck'); }
 function startMatching(){
@@ -1115,6 +2057,25 @@ function bindCloseDecisionFocus(){
     else if(!e.shiftKey && document.activeElement === last){ e.preventDefault(); first.focus(); }
   };
   pop.addEventListener('keydown', pop._trap);
+}
+
+function bindMatchTakeover(shouldFocus){
+  var root = document.getElementById('matchTakeover');
+  if(!root) return;
+  var nodes = root.querySelectorAll('button:not([disabled])');
+  if(!nodes.length) return;
+  var primary = root.querySelector('.btn.primary');
+  if(shouldFocus) (primary || nodes[0]).focus();
+  if(root._trap) root.removeEventListener('keydown', root._trap);
+  root._trap = function(e){
+    if(e.key !== 'Tab') return;
+    var list = root.querySelectorAll('button:not([disabled])');
+    if(!list.length) return;
+    var first = list[0], last = list[list.length - 1];
+    if(e.shiftKey && document.activeElement === first){ e.preventDefault(); last.focus(); }
+    else if(!e.shiftKey && document.activeElement === last){ e.preventDefault(); first.focus(); }
+  };
+  root.addEventListener('keydown', root._trap);
 }
 
 function revealExplore(){
@@ -1419,6 +2380,10 @@ function render(){
 
   f.innerHTML = html + GP.softLoading(ST.softLoading);
   f.classList.toggle('on-light', s === 'hub' || (s === 'matched' && ST.bg === 'hub'));
+  f.classList.toggle('is-entry', s === 'entry');
+
+  unbindEntrySpectrum();
+  if(s === 'entry') bindSpectrum(f);
 
   if(ST.textOpen){
     var log = document.getElementById('tsLog');
@@ -1430,6 +2395,11 @@ function render(){
     }
   }
   if(ST.closeSheet && ST.state === 'searching') bindCloseDecisionFocus();
+  if(s === 'matched'){
+    var entering = ST.matchEnter;
+    bindMatchTakeover(entering);
+    ST.matchEnter = false;
+  }
   syncSwitcher();
 }
 
@@ -1451,10 +2421,8 @@ function syncSwitcher(){
     var b = eligibleBand();
     note.textContent = (NOTES[ST.state] || '')
       + '  ·  matching ' + (ST.matching?'live':'stopped')
-      + ' · you are ' + GP.levelMeta(ST.myLevel).label
-      + ' · eligible ' + ladderLabel(b.lo) + '\u2013' + ladderLabel(b.renderableHi)
-      + (b.atBottomEdge ? ' (bottom edge — specified)' : '')
-      + (b.beyondPlaceholder ? ' (top open — ladder TBD, placeholder ran out)' : '')
+      + ' · you are ' + GP.levelMeta(LEVEL_DATA.myLevel).label
+      + ' · range ' + ladderLabel(b.lo) + '\u2013' + ladderLabel(b.renderableHi)
       + ' · cam ' + (ST.camOff?'off':'on')
       + ' · mic ' + (ST.micOff?'off':'on')
       + (ST.state === 'matched' ? ' · offer ' + ST.offerLeft + 's (' + ST.matchPhase + ')' : '')
@@ -1548,7 +2516,7 @@ function applyHash(){
     b.onclick = function(){
       if(INTERVIEW) return;
       var v = b.dataset.sc;
-      if(v === 'matched'){ ST.matching = true; ST.bg = 'hub'; }
+      if(v === 'matched'){ ST.matching = true; ST.bg = 'searching'; ST.searchElapsed = DUR.exploreAfter; ST.exploreShown = true; }
       if(v === 'hub' || v === 'flashcards') ST.matching = true;
       if(v === 'searching'){
         ST.matching = true;
