@@ -1,271 +1,30 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta http-equiv="Pragma" content="no-cache">
-<meta http-equiv="Expires" content="0">
-<title>Café Welcome cups — motion playground</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<style>
-@font-face{
-  font-family:"FedraSerifPro";
-  src:url("../FedraSerifPRO_HL-Book.otf") format("opentype");
-  font-weight:400;font-style:normal;font-display:swap;
-}
-@font-face{
-  font-family:"FedraSerifPro";
-  src:url("../FedraSerifPRO_HL-Bold.otf") format("opentype");
-  font-weight:700;font-style:normal;font-display:swap;
-}
-:root{
-  --brand-yellow:#F9E24C; --brand-charcoal:#373230;
-  --surface-base:#F2F1EC; --neutral-100:#F7F6EF;
-  --text-primary:#373230; --text-muted:#716C66; --line-subtle:#D2CEC6;
-  --font-ui:"Assistant",system-ui,-apple-system,sans-serif;
-  --font-brand:"FedraSerifPro",Georgia,"Times New Roman",serif;
-}
-*{box-sizing:border-box;margin:0;padding:0}
-html,body{min-height:100%}
-body{
-  font-family:var(--font-ui);
-  background:var(--surface-base);
-  color:var(--text-primary);
-  -webkit-font-smoothing:antialiased;
-  padding:32px 24px 60px;
-}
-button,input{font:inherit}
-h1{font-size:20px;line-height:1.25}
-.lead{max-width:820px;margin:6px 0 24px;color:var(--text-muted);font-size:13px;line-height:1.55}
-.lead code{font-size:12px;background:#fff;padding:1px 5px;border-radius:5px;border:1px solid var(--line-subtle)}
-.demo{display:flex;align-items:flex-start;gap:32px;flex-wrap:wrap}
-.controls{display:flex;flex-direction:column;gap:6px;width:300px}
-.controls .grp{margin-top:10px;color:var(--text-muted);font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase}
-.controls button{
-  min-height:38px;padding:8px 12px;border:1px solid var(--line-subtle);border-radius:10px;
-  background:#fff;color:var(--text-primary);cursor:pointer;font-size:13px;font-weight:600;text-align:left;
-}
-.controls button:hover{border-color:var(--brand-charcoal)}
-.controls button.on{background:var(--brand-charcoal);border-color:var(--brand-charcoal);color:#fff}
-.controls button.play{background:var(--brand-yellow);border-color:var(--brand-yellow);color:var(--brand-charcoal)}
-.controls input[type="range"]{width:100%;margin:4px 0 2px;accent-color:var(--brand-charcoal)}
-.controls .state{
-  margin-top:10px;padding:9px 10px;border:1px dashed var(--line-subtle);border-radius:8px;
-  background:#fff;color:var(--text-muted);font-size:12px;line-height:1.5;
-}
-.stage-wrap{display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start}
-.zoom-block{display:flex;flex-direction:column;gap:8px;min-width:280px}
-.zoom-stage{
-  width:min(560px, 100%);height:360px;border-radius:22px;overflow:hidden;
-  background:
-    radial-gradient(ellipse 90% 56% at 72% 8%,rgba(126,122,106,.22) 0%,transparent 58%),
-    linear-gradient(180deg,#534E45 0%,#3C3832 100%);
-  box-shadow:0 6px 20px rgba(55,50,48,.18);
-  display:flex;align-items:center;justify-content:center;
-}
-.zoom-stage .cafe-hero-fly{position:relative;inset:auto;width:92%;height:88%}
-.zoom-stage .cafe-cups{width:100%;height:100%}
-.phone-block{display:flex;flex-direction:column;gap:8px}
-.phone-label{font-size:12px;font-weight:700;letter-spacing:.02em;color:var(--text-muted)}
-.phone{
-  position:relative;flex:none;width:390px;height:844px;
-  overflow:hidden;border-radius:44px;background:#000;
-  box-shadow:0 6px 20px rgba(55,50,48,.18);
-}
-.screen{
-  position:absolute;inset:6px;overflow:hidden;border-radius:38px;color:var(--neutral-100);
-  background-color:var(--brand-charcoal);
-  background-image:linear-gradient(148deg, #928F7D -35%, var(--brand-charcoal) 100%);
-}
-.statusbar{
-  position:absolute;z-index:45;top:0;right:0;left:0;height:48px;padding:0 24px;
-  display:flex;align-items:center;justify-content:space-between;
-  color:#fff;font-size:14px;font-weight:600;text-shadow:0 1px 2px rgba(0,0,0,.35);pointer-events:none;
-}
-.statusbar .glyphs{display:flex;gap:6px}
-.statusbar svg{width:16px;height:16px}
-.cafe-welcome{
-  position:absolute;inset:0;display:flex;flex-direction:column;color:#fff;
-  padding:48px 16px 0;
-  background:
-    radial-gradient(ellipse 90% 56% at 72% 8%,rgba(126,122,106,.22) 0%,transparent 58%),
-    linear-gradient(180deg,#534E45 0%,#3C3832 100%);
-  border-bottom-left-radius:48px;border-bottom-right-radius:48px;
-}
-.cafe-welcome-lockup{
-  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
-  text-align:center;transform:translateY(-3.5%);
-  padding:12px 8px 80px;overflow:visible;
-}
-.cafe-hero-slot{
-  width:min(168px, 52%);aspect-ratio:118 / 44;height:auto;margin:0 auto 12px;position:relative;
-  overflow:visible;pointer-events:none;transform:translateY(-16px);
-}
-.cafe-hero-fly{
-  position:absolute;inset:0;transform-origin:center 62%;
-  pointer-events:none;overflow:visible;
-}
-.cafe-cups{width:100%;height:100%;display:block;overflow:visible;shape-rendering:geometricPrecision}
-.cafe-icon-final{opacity:0}
-.cafe-cups.is-final .cafe-icon-final{opacity:1}
-.cafe-cups.is-final .cafe-live{opacity:0}
-.yellow-mark{opacity:0;pointer-events:none}
-.bubble{opacity:0;pointer-events:none}
-.blob-path{fill:#FFE300}
-.debug-arcs{display:none}
-body.is-debug .debug-arcs{display:block}
-.active-runtime{
-  margin:0 0 8px;text-align:center;font:800 11px/1.2 var(--font-ui);
-  letter-spacing:.7px;color:var(--brand-yellow);
-}
-.cafe-display{
-  font-family:var(--font-brand);font-size:44px;font-weight:400;font-synthesis:none;
-  line-height:1.08;letter-spacing:-.2px;text-wrap:balance;max-width:18ch;margin:18px 0 0;
-}
-.cafe-display b{font-weight:700;font-synthesis:none}
-.cafe-sub{
-  text-align:center;max-width:20.5rem;margin:16px auto 0;font-size:20px;font-weight:500;
-  line-height:1.45;color:rgba(247,246,239,.82);
-}
-.rm-note{
-  display:none;max-width:820px;margin:-8px 0 20px;padding:10px 12px;border-radius:10px;
-  background:#fff;border:1px solid var(--line-subtle);color:var(--text-muted);font-size:13px;line-height:1.5;
-}
-body.is-reduced .rm-note{display:block}
-.notes{display:flex;flex-wrap:wrap;gap:16px;margin-top:32px}
-.note-card{background:#fff;border:1px solid var(--line-subtle);border-radius:14px;padding:16px 18px;flex:1 1 420px;min-width:340px}
-.note-card h3{font-size:13px;font-weight:800;letter-spacing:.3px;text-transform:uppercase;margin-bottom:8px}
-.note-card li,.note-card p{font-size:13px;line-height:1.55}
-.note-card ul{padding-left:18px}
-.note-card code{font-size:12px;background:var(--surface-base);padding:1px 5px;border-radius:5px}
-a{color:var(--brand-charcoal)}
-body.is-shot{padding:0;background:#3C3832}
-body.is-shot .controls,body.is-shot .notes,body.is-shot h1,body.is-shot .lead,
-body.is-shot .phone-block,body.is-shot .rm-note,body.is-shot .phone-label{display:none}
-body.is-shot .zoom-stage{width:800px;height:500px;border-radius:0;box-shadow:none}
-</style>
-</head>
-<body>
-<h1>Café Welcome cups — motion playground</h1>
-<p class="lead">
-  Isolated debug surface for the Welcome cups gesture. Desktop is not loaded or modified.
-  Replay plays the full sequence. The scrubber and pause buttons inspect frames on that same continuous timeline.
-  <b>Approved for integration · hybrid-1</b> — the locked approved Café Welcome animation:
-  <code>?restore=cafe-welcome-approved-hybrid-1</code>. This is the version the mobile Welcome hero plays;
-  <code>?motion=current-hybrid-fill</code> is the same pairing kept live for comparison.
-  Preserved polished checkpoint: <code>?restore=polished-0910</code> — the approved polished animation, unchanged by later passes.
-  Fluid refinement (comparison variant): <code>?motion=fluid</code>.
-  Hybrid — checkpoint bubbles and cups with only the continuous liquid: <code>?motion=polished-fluid-fill</code>.
-  Current choreography + Hybrid fill: <code>?motion=current-hybrid-fill</code>.
-  The label above each preview names the active variant and the build. If it does not read <code>BUILD hybrid-1</code>,
-  the browser is showing a cached copy — the Compare buttons below always reload with a fresh <code>&amp;v=</code> stamp.
-  Newest approved fallback — 15:05 (cups locked): <code>?restore=1505</code>.
-  Current choreography snapshot (16:20): <code>?restore=1620</code>.
-  First motion-polish snapshot (16:41): <code>?restore=1641</code>.
-  Motion-polish review: <code>?motion=polished</code>.
-  Pre-handoff snapshot (15:39): <code>?restore=1539</code>.
-  Earlier: <code>?restore=1437</code>
-</p>
-<p class="rm-note">Reduced motion is on, so the playground shows the final static Café icon without animation.</p>
+/* =========================================================================
+   CAFÉ WELCOME CUPS — APPROVED FOR INTEGRATION · hybrid-1
+   -------------------------------------------------------------------------
+   GENERATED FILE. Do not hand-edit.
 
-<div class="demo">
-  <div class="controls">
-    <div class="grp">Transport</div>
-    <button type="button" class="play" id="replayBtn">Replay</button>
+   The engine below is a verbatim copy of the motion playground's inline
+   script (Current/cafe-welcome-cups-animation-playground/index.html), minus
+   its boot/UI tail. The approved animation is the locked checkpoint
+   ?restore=cafe-welcome-approved-hybrid-1: the current-choreography bubbles,
+   morphs, rotations, timings, hold and descent, the current cup
+   choreography, and the continuous liquid fill with its travelling surface
+   wave and settle. Sampler pinned here, once, at the bottom of the file:
+   POLISHED_VARIANT = 'none', LIQUID_VARIANT = 'fluid', baseline
+   BASELINE_APPROVED_HYBRID_1.
 
-    <div class="grp">Scrub</div>
-    <input type="range" id="scrub" min="0" max="3200" step="8" value="0" aria-label="Scrub animation">
+   Regenerate with js/cafe-welcome-anim.build.py after any approved change in
+   the playground. Nothing in here is playground UI: no controls, no
+   compare, no scrubber, no debug labels.
 
-    <div class="grp">Snapshots</div>
-    <button type="button" class="pose-btn" data-pose="0">Pause 1 — Enter separately</button>
-    <button type="button" class="pose-btn" data-pose="1">Pause 2 — First meeting</button>
-    <button type="button" class="pose-btn" data-pose="2">Pause 3 — Conversation opens</button>
-    <button type="button" class="pose-btn" data-pose="3">Pause 4 — Intermediate, downward</button>
-    <button type="button" class="pose-btn" data-pose="4">Pause 5 — First droplet at rim</button>
-    <button type="button" class="pose-btn" data-pose="5">Pause 6 — First partly inside</button>
-    <button type="button" class="pose-btn" data-pose="6">Pause 7 — First at bottom</button>
-    <button type="button" class="pose-btn" data-pose="7">Pause 8 — Partial fill + swell</button>
-    <button type="button" class="pose-btn" data-pose="8">Pause 9 — Second droplet entering</button>
-    <button type="button" class="pose-btn" data-pose="9">Pause 10 — Second level rise</button>
-    <button type="button" class="pose-btn" data-pose="10">Pause 11 — Final settled fill</button>
+   Everything is scoped inside the closure. Only window.CafeWelcomeAnim
+   escapes, so the playground's names (ST, cafeCupsSvg, prefersReduced, …)
+   cannot collide with the Café mobile globals of the same name.
+   ========================================================================= */
+(function(){
+/* Deliberately not strict mode: the playground engine runs non-strict, and the
+   copy below must behave identically. */
 
-    <div class="grp">Approved</div>
-    <button type="button" class="play" onclick="location.search='?restore=cafe-welcome-approved-hybrid-1&v='+Date.now()">Approved for integration · hybrid-1</button>
-    <button type="button" onclick="location.search='?restore=cafe-welcome-approved-hybrid-1&rate=0.25&v='+Date.now()">Approved · hybrid-1 · 0.25×</button>
-
-    <div class="grp">Compare</div>
-    <button type="button" onclick="location.search='?motion=current-hybrid-fill&v='+Date.now()">Current choreography + Hybrid fill</button>
-    <button type="button" onclick="location.search='?motion=current-hybrid-fill&rate=0.25&v='+Date.now()">Current choreography + Hybrid fill · 0.25×</button>
-    <button type="button" onclick="location.search='?motion=polished-fluid-fill&v='+Date.now()">Hybrid — polished bubbles + fluid fill</button>
-    <button type="button" onclick="location.search='?motion=polished-fluid-fill&rate=0.25&v='+Date.now()">Hybrid · 0.25×</button>
-    <button type="button" onclick="location.search='?restore=polished-0910&v='+Date.now()">Polished checkpoint (preserved)</button>
-    <button type="button" onclick="location.search='?motion=fluid&v='+Date.now()">Fluid refinement</button>
-    <button type="button" onclick="location.search='?restore=polished-0910&rate=0.25&v='+Date.now()">Checkpoint · 0.25×</button>
-    <button type="button" onclick="location.search='?motion=fluid&rate=0.25&v='+Date.now()">Fluid refinement · 0.25×</button>
-    <button type="button" onclick="location.search='?restore=1620'">16:20 current choreography</button>
-    <button type="button" onclick="location.search='?restore=1641'">16:41 first polish</button>
-    <button type="button" onclick="location.search='?motion=polished'">Polished motion</button>
-    <button type="button" onclick="location.search='?restore=1641&rate=0.25'">16:41 · 0.25×</button>
-    <button type="button" onclick="location.search='?motion=polished&rate=0.25'">Polished · 0.25×</button>
-    <button type="button" onclick="location.search='?motion=polished&strength=exaggerated'">Polished · exaggerated diagnostic</button>
-    <button type="button" onclick="location.search='?restore=1505'">15:05 approved fallback</button>
-    <button type="button" onclick="location.search='?restore=1539'">15:39 pre-handoff snapshot</button>
-    <button type="button" onclick="location.search='?restore=1437'">14:37 approved fallback</button>
-    <button type="button" onclick="location.search=''">Current refinement</button>
-
-    <div class="state" id="stateNote"></div>
-
-    <div class="grp">Canonical screens</div>
-    <button type="button" onclick="location.href='../cafe-playground-mobile/index.html#entry'">Mobile Welcome (untouched)</button>
-    <button type="button" onclick="location.href='../cafe-playground-desktop/index.html'">Desktop playground</button>
-  </div>
-
-  <div class="stage-wrap" id="stageWrap"></div>
-</div>
-
-<div class="notes">
-  <div class="note-card">
-    <h3>Bubble path</h3>
-    <ul>
-      <li>Each yellow form is one moving vector: its path points, size, and rotation interpolate while it travels a single arc.</li>
-      <li>The stacked chat is a brief moment on that arc. After it, the same shape keeps curving down and deforms into a droplet on the way.</li>
-      <li>The two landings build the yellow fill. They do not reverse, retrace, or return to the original cups.</li>
-    </ul>
-  </div>
-  <div class="note-card">
-    <h3>Approved for integration · hybrid-1</h3>
-    <ul>
-      <li><code>?restore=cafe-welcome-approved-hybrid-1</code> is the locked approved animation: the current-choreography bubbles — their shapes, paths, placement, morphs, timings, rotation, hold and descent — the current cup choreography, the continuous liquid fill with its animated surface wave and settle, the final icon geometry, and the 3.2s total. Its data is written out in full, so nothing later can retime or reinterpret it.</li>
-      <li><code>?motion=current-hybrid-fill</code> stays live and plays the same pairing. Both are labelled <b>APPROVED FOR INTEGRATION · hybrid-1</b>.</li>
-      <li>The mobile Welcome hero (<code>Current/cafe-playground-mobile/</code>) plays this same renderer and sampler at product size. It does not embed the playground.</li>
-    </ul>
-  </div>
-  <div class="note-card">
-    <h3>Independent motion and liquid</h3>
-    <ul>
-      <li>Bubble/droplet/cup motion and liquid rendering are selected separately. <code>?motion=polished-fluid-fill</code> is the checkpoint's bubbles, morphs, rotations, timings, and cup choreography with only the continuous rise and travelling wave taken from the refinement. Nothing else from the refinement is loaded.</li>
-      <li><code>?motion=current-hybrid-fill</code> is the same pairing against the 16:20 current choreography: its bubbles and cups, that same continuous liquid.</li>
-      <li>Before the first rim crossing each pairing is the same picture as the choreography it borrows from; from that moment the liquid behaves as it does in <code>?motion=fluid</code>.</li>
-    </ul>
-  </div>
-  <div class="note-card">
-    <h3>Fluid refinement vs preserved checkpoint</h3>
-    <ul>
-      <li><code>?restore=polished-0910</code> plays the approved polished animation exactly as it was; the refinement never touches it.</li>
-      <li><code>?motion=fluid</code> keeps the same arcs, destinations, landings, cups, and final mark. What changed: the conversation pose itself now has a rounded body-to-tail transition instead of a pointed one; each droplet gathers downward before it launches; the crest arrival floats a few pixels past the pose and eases down onto it; the liquid rises as one continuous fill under a travelling wave that damps out.</li>
-      <li>The only deliberate still moment is the conversation hold. The checkpoint also freezes for about a quarter of a second before that hold and again at the end of the fill; the refinement keeps moving through both.</li>
-    </ul>
-  </div>
-  <div class="note-card">
-    <h3>What this pass does not change</h3>
-    <p>Welcome copy, page layout, and the canonical Mobile / Desktop screens stay untouched. Integrate this motion only after the playground is reviewed.</p>
-  </div>
-</div>
-
-<script>
 /* Shown next to the previews. If this stamp is not visible on screen, the browser
    is serving an older copy of this file and the Compare buttons below reload with
    a fresh cache-busting parameter. */
@@ -2694,104 +2453,125 @@ function applyStoredBaseline(b){
   }
 }
 
-(function boot(){
-  var params = new URLSearchParams(location.search);
-  var poseQ = parseInt(params.get('pose') || '', 10);
-  var tQ = parseFloat(params.get('t') || '');
-  var rateQ = parseFloat(params.get('rate') || '');
-  var restoreQ = params.get('restore');
-  var motionQ = params.get('motion');
-  var isCheckpoint = !!(restoreQ && POLISHED_CHECKPOINT_Q[restoreQ]);
-  var isFluid = motionQ === 'fluid';
-  /* Controlled merge: the checkpoint's bubbles, droplets, and cups, with only the
-     continuous liquid rise and travelling wave taken from the fluid refinement. */
-  var isHybrid = motionQ === 'polished-fluid-fill';
-  /* Same merge against the 16:20 current choreography instead of the checkpoint:
-     its own bubbles, morphs, timings, and cups, with only that same liquid. */
-  var isCurrentFill = motionQ === 'current-hybrid-fill';
-  /* The locked approved animation. Same pairing as ?motion=current-hybrid-fill, but
-     restored from its own written-out data so it can never drift. */
-  var isApprovedHybrid = !!(restoreQ && APPROVED_HYBRID_Q[restoreQ]);
-  if(isApprovedHybrid) applyStoredBaseline(BASELINE_APPROVED_HYBRID_1);
-  else if(restoreQ === 'approved') applyStoredBaseline(BASELINE_APPROVED);
-  else if(restoreQ === 'latest') applyStoredBaseline(BASELINE_LATEST);
-  else if(restoreQ === '1437' || restoreQ === 'liquid') applyStoredBaseline(BASELINE_1437);
-  else if(restoreQ === '1505') applyStoredBaseline(BASELINE_1505);
-  else if(restoreQ === '1539') applyStoredBaseline(BASELINE_1539);
-  else if(restoreQ === '1620' || isCurrentFill) applyStoredBaseline(BASELINE_1620);
-  else if(restoreQ === '1641') applyStoredBaseline(BASELINE_1641);
-  /* The refinement plays against the preserved checkpoint's own data, so the two
-     variants differ only by sampler behaviour. */
-  else if(isCheckpoint || isFluid || isHybrid) applyStoredBaseline(BASELINE_POLISHED_0910);
-  POLISHED_VARIANT = isApprovedHybrid
-    ? 'none'
-    : restoreQ === '1641'
-    ? 'v1'
-    : (isCheckpoint || isHybrid)
-      ? 'v2'
-      : isFluid
-        ? 'v3'
-        : (motionQ === 'polished' ? 'v2' : 'none');
-  LIQUID_VARIANT = (isFluid || isHybrid || isCurrentFill || isApprovedHybrid) ? 'fluid' : 'legacy';
-  POLISHED_MOTION = POLISHED_VARIANT !== 'none';
-  /* Only the fluid refinement retimes the inspection stops; the hybrid keeps the
-     checkpoint's own pause frames. */
-  if(isFluid) POSE_MS = FLUID_POSE_MS.slice();
-  POLISH_STRENGTH = POLISHED_VARIANT === 'v2' && !isHybrid && params.get('strength') === 'exaggerated' ? 2 : 1;
-  ACTIVE_RUNTIME = isApprovedHybrid
-    ? 'APPROVED FOR INTEGRATION \u00b7 hybrid-1 \u2014 LOCKED CHECKPOINT'
-    : isCurrentFill
-    ? 'CURRENT CHOREOGRAPHY + HYBRID FILL \u2014 APPROVED FOR INTEGRATION \u00b7 hybrid-1'
-    : isHybrid
-    ? 'ACTIVE: POLISHED-0910 BUBBLES + FLUID FILL'
-    : POLISHED_VARIANT === 'v1'
-      ? 'ACTIVE: RESTORE 1641'
-      : POLISHED_VARIANT === 'v3'
-        ? 'ACTIVE: FLUID REFINEMENT (fluid-2)'
-        : POLISHED_VARIANT === 'v2'
-          ? (isCheckpoint ? 'ACTIVE: CHECKPOINT POLISHED-0910' : 'ACTIVE: POLISHED')
-            + (POLISH_STRENGTH > 1 ? ' — EXAGGERATED' : '')
-          : 'ACTIVE: ' + (restoreQ ? 'RESTORE ' + restoreQ.toUpperCase() : 'CURRENT');
-  DEBUG_MOTION = params.get('debug') === '1';
-  ST.rate = (!isNaN(rateQ) && rateQ > 0) ? rateQ : 1;
-  document.querySelectorAll('.pose-btn').forEach(function(b){
-    b.addEventListener('click', function(){
-      if(prefersReduced()) return;
-      freezeAt(Number(b.getAttribute('data-pose')));
-    });
-  });
-  document.getElementById('replayBtn').addEventListener('click', function(){
-    playFrom(0);
-  });
-  var scrub = document.getElementById('scrub');
-  if(scrub){
-    function onScrub(){
-      if(prefersReduced()) return;
-      stopPlay();
-      ST.ms = Number(scrub.value);
-      paint();
-    }
-    scrub.addEventListener('input', onScrub);
-    scrub.addEventListener('change', onScrub);
+/* --------------------------------------------------------- approved playback
+   The product plays the approved 3200ms source faster than the playground
+   does, and reduces the finished mark. Those decisions are approved once and
+   shared by every surface that mounts this animation, so mobile and desktop
+   cannot drift apart. Nothing here reinterprets the choreography: the same
+   source milliseconds simply arrive sooner.
+
+   Values as approved on mobile (cafe-playground-mobile/js/cafe-mobile-states.js
+   carries its own copy of them); change them together. */
+var PLAY = {
+  /* Reference rate: the 3200ms source over this. The opening runs hotter than
+     it, so the real playback is shorter than this number. */
+  REFERENCE_MS: 2650,
+  /* The cups meeting and the droplets launching want urgency, so they run this
+     much above the reference rate — full strength through the toast and the
+     launch, easing back to the reference as the bubbles reach their
+     conversation pose (left 1500, right 1510). From there the mapping is the
+     reference rate exactly, so the settle, the hold, the return to the cups and
+     the liquid fill keep their timing to the millisecond. */
+  OPEN_BOOST: 0.24,
+  BOOST_HOT: 1100,
+  BOOST_END: 1510,
+  /* Source ms at which the Welcome copy begins its fade-and-rise: as the mark
+     closes, so the screen is never empty once the gesture has finished. */
+  COPY_MS: 2860,
+  /* Readable stillness after the mark completes, before the surface moves on. */
+  HOLD_MS: 750,
+  /* Advancing early runs the rest of the gesture out over this rather than
+     cutting to the final frame. */
+  RESOLVE_MS: 280,
+  /* The finished mark is smaller than the animation that drew it, reduced
+     across the cups' own closing phase. */
+  MARK_SETTLE: 0.78,
+  SETTLE_FROM: 2600
+};
+/* How much above the reference rate the gesture runs at a point of the source. */
+function playBoostAt(ms){
+  if(ms <= PLAY.BOOST_HOT) return 1 + PLAY.OPEN_BOOST;
+  if(ms >= PLAY.BOOST_END) return 1;
+  return 1 + PLAY.OPEN_BOOST
+    * (1 - smooth((ms - PLAY.BOOST_HOT) / (PLAY.BOOST_END - PLAY.BOOST_HOT)));
+}
+/* On-screen milliseconds at which each step of the source is due, integrated
+   once from the rate above. Sampling it, rather than multiplying by a rate, is
+   what keeps the changing rate free of steps. */
+var playMap = null;
+function playTable(){
+  if(playMap) return playMap;
+  var base = TOTAL_MS / PLAY.REFERENCE_MS;
+  var step = 8, real = 0, due = [0];
+  for(var ms = 0; ms < TOTAL_MS; ms += step){
+    real += Math.min(step, TOTAL_MS - ms) / (base * playBoostAt(ms + step / 2));
+    due.push(real);
   }
+  playMap = {step: step, due: due};
+  return playMap;
+}
+
+/* ------------------------------------------------------------------ mount API
+   The product surface gets the SVG markup, a "paint this millisecond" call,
+   the durations above, and the source-time mapping. Where the mark sits, when
+   the copy arrives on screen and how the header handoff runs are the surface's
+   business, not the engine's. */
+
+var READY = false;
+function ensure(){
+  if(READY) return;
+  READY = true;
+  applyStoredBaseline(BASELINE_APPROVED_HYBRID_1);
+  POLISHED_VARIANT = 'none';   /* current-choreography bubbles and cups */
+  LIQUID_VARIANT = 'fluid';    /* continuous rise + travelling wave */
+  POLISHED_MOTION = false;
+  POLISH_STRENGTH = 1;
+  DEBUG_MOTION = false;
+  MOTION_MODE = BASELINE_APPROVED_HYBRID_1.MOTION_MODE;
   prepMotion();
-  renderStages();
-  if(prefersReduced()){
-    freezeAt(POSES.length - 1);
-    return;
-  }
-  if(!isNaN(tQ) && tQ >= 0){
-    stopPlay();
-    ST.ms = Math.min(TOTAL_MS, tQ);
-    paint();
-    return;
-  }
-  if(!isNaN(poseQ) && poseQ >= 1 && poseQ <= POSES.length){
-    freezeAt(poseQ - 1);
-    return;
-  }
-  playFrom(0);
+}
+
+window.CafeWelcomeAnim = {
+  BUILD: BUILD_ID,
+  CHECKPOINT: 'cafe-welcome-approved-hybrid-1',
+  TOTAL_MS: TOTAL_MS,
+  /* Same viewBox the approved playground previews use. */
+  markup: function(viewBox){
+    ensure();
+    return cafeCupsSvg(viewBox || '0 0 118 44');
+  },
+  frame: function(root, ms){
+    if(!root) return;
+    ensure();
+    applyFrame(root, clamp(ms, 0, TOTAL_MS));
+  },
+  /* Approved product playback. */
+  PLAY: PLAY,
+  playDuration: function(){
+    var m = playTable();
+    return m.due[m.due.length - 1];
+  },
+  /* Source millisecond to draw at a given point of the playback. */
+  sourceAt: function(real){
+    var m = playTable(), due = m.due;
+    if(!(real > 0)) return 0;
+    if(real >= due[due.length - 1]) return TOTAL_MS;
+    var lo = 0, hi = due.length - 1;
+    while(hi - lo > 1){
+      var mid = (lo + hi) >> 1;
+      if(due[mid] <= real) lo = mid; else hi = mid;
+    }
+    var span = due[hi] - due[lo];
+    return Math.min(TOTAL_MS, (lo + (span > 0 ? (real - due[lo]) / span : 0)) * m.step);
+  },
+  /* How large the mark is drawn at a given point of the choreography: full size
+     while the gesture plays, easing down to its settled size across the closing
+     phase, so it is already small when the cups come to rest. */
+  markScaleAt: function(ms){
+    var span = TOTAL_MS - PLAY.SETTLE_FROM;
+    if(span <= 0) return PLAY.MARK_SETTLE;
+    return 1 + (PLAY.MARK_SETTLE - 1) * smooth((ms - PLAY.SETTLE_FROM) / span);
+  },
+  reduced: prefersReduced
+};
 })();
-</script>
-</body>
-</html>

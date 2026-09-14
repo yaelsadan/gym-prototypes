@@ -57,9 +57,9 @@
   background-color:var(--brand-charcoal);
   background-image:linear-gradient(148deg, #928F7D -35%, var(--brand-charcoal) 100%);
   container-type:size;color:#fff;
-  --cafe-peek:0px;
+  --cafe-peek:max(clamp(40px, 6.6cqh, 56px), calc(env(safe-area-inset-bottom, 0px) + 16px));
   --cafe-stage-h:100cqh;
-  --cafe-welcome-h:var(--cafe-stage-h);
+  --cafe-welcome-h:calc(var(--cafe-stage-h) - var(--cafe-peek));
   --cafe-levels-h:var(--cafe-stage-h);
   --cafe-header-offset:148px;
   --entry-head:0;
@@ -71,8 +71,8 @@
 .screen.is-entry.is-auto-settled,
 .screen.is-entry.is-user-controlling{scroll-snap-type:none}
 .screen.is-entry.is-short{
-  --cafe-peek:0px;
-  --cafe-welcome-h:var(--cafe-stage-h);
+  --cafe-peek:max(clamp(36px, 5.8cqh, 48px), calc(env(safe-area-inset-bottom, 0px) + 16px));
+  --cafe-welcome-h:calc(var(--cafe-stage-h) - var(--cafe-peek));
   --cafe-levels-h:var(--cafe-stage-h);
 }
 .screen.is-entry .statusbar{
@@ -92,16 +92,25 @@
   display:flex;align-items:center;gap:8px;min-width:0;pointer-events:none;
   background:transparent;
 }
+/* Both halves of the lockup hold their boxes from the first frame while being
+   invisible, so the brand arrives without the header laying out again. Width is
+   the icon's own 118:44 at this height. */
 .cafe-header-mark{
-  width:auto;height:28px;flex:none;display:flex;align-items:center;overflow:visible;
+  width:calc(28px * 118 / 44);height:28px;flex:none;display:flex;align-items:center;overflow:visible;
   opacity:var(--entry-mark, 0);
-  filter:drop-shadow(0 1px 3px rgba(55,50,48,.45));
+  /* No shadow: the hero mark hands over to this box on one frame, and a shadow
+     on only one of the two would read as the mark changing weight. */
+  filter:none;
 }
-.cafe-header-mark .cafe-cups{width:auto;height:100%;display:block}
+.cafe-header-mark .cafe-cups{width:100%;height:100%;display:block}
+/* The opening carries one Café mark only, the big one, so the wordmark is not
+   present during it. It joins the icon late in the icon's flight, drifting the
+   last few pixels into place rather than switching on. */
 .cafe-header-title{
   font-family:var(--font-brand);font-size:26px;font-weight:700;font-synthesis:none;
   letter-spacing:-.2px;color:#fff;
   opacity:var(--entry-title, 0);
+  transform:translateX(calc(-7px * (1 - var(--entry-title, 0))));
 }
 /* Same close disc from entry through A/V check and searching: flat cream
    fill, hairline stroke, no glass rim and no drop shadow. */
@@ -160,12 +169,22 @@
 .cafe-welcome-lockup{
   flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
   text-align:center;transform:translateY(-3.5%);
-  padding:12px 8px 80px;overflow:visible;
+  padding:12px 8px 36px;overflow:visible;
 }
+/* The approved Welcome animation is the opening visual, so the mark is larger
+   than the old static lockup. 118:44 is the animation's own viewBox; the box
+   never changes size, so revealing the copy and flying to the header cause no
+   reflow. The droplets rise well above this box — nothing here may clip. */
+/* Above the copy: the mark crosses the headline on its way to the header, and
+   the copy is transformed while it fades, which would otherwise paint over it. */
 .cafe-hero-slot{
-  width:min(168px, 52vw);aspect-ratio:472 / 174;height:auto;margin:0 auto 12px;position:relative;
+  width:min(232px, 62vw);aspect-ratio:118 / 44;height:auto;margin:0 auto 12px;position:relative;z-index:4;
   overflow:visible;pointer-events:none;transform:translateY(-16px);
 }
+/* The animation's arc-inspection guides ship with the renderer and are never
+   product UI. */
+.cafe-hero-slot .debug-arcs,
+.cafe-header-mark .debug-arcs{display:none}
 .cafe-hero-fly{
   position:absolute;inset:0;transform-origin:center center;will-change:transform,opacity;
   pointer-events:none;overflow:visible;
@@ -230,17 +249,36 @@ body.present .demo{justify-content:center}
   text-align:center;max-width:20.5rem;margin:16px auto 0;font-size:20px;line-height:1.45;
 }
 
-.cafe-welcome.is-enter .cup-left{
-  opacity:0;transform:translate(-56px,12px) rotate(-16deg);
+/* Opening: the animation carries the screen alone, so it sits on the optical
+   centre of the empty page rather than on the copy's shoulder. When the copy
+   arrives the mark hands the middle of the screen over to it in one move. The
+   box never resizes — this is transform only, so nothing reflows. */
+.cafe-welcome.is-opening .cafe-hero-slot{
+  transform:translateY(calc(-16px + var(--hero-lift, clamp(112px, 13cqh, 124px))));
+  transition:transform .52s cubic-bezier(.22,.68,.24,1);
 }
-.cafe-welcome.is-enter .cup-right{
-  opacity:0;transform:translate(56px,8px) rotate(16deg);
+.cafe-welcome.is-opening.is-copy-in .cafe-hero-slot{--hero-lift:0px}
+/* The copy is held out of the composition and then fades and rises into place
+   as the mark closes — one move per line, never per word. Sizes, alignment and
+   typography are the settled ones. Durations track the product playback rate,
+   so the copy keeps the same relationship to the closing cups. */
+.cafe-welcome.is-opening .cafe-welcome-title,
+.cafe-welcome.is-opening .cafe-welcome-sub{
+  opacity:0;transform:translateY(12px);
+  transition:opacity .35s ease, transform .35s cubic-bezier(.22,.68,.24,1);
 }
-.cafe-welcome.is-enter .cafe-welcome-title{
-  opacity:0;animation:cafeWelcomeIn .42s ease .12s both;
+.cafe-welcome.is-opening .cafe-welcome-sub{transition-delay:.12s}
+.cafe-welcome.is-opening.is-copy-in .cafe-welcome-title,
+.cafe-welcome.is-opening.is-copy-in .cafe-welcome-sub{opacity:1;transform:none}
+/* Reduced motion shows the approved final mark with a brief soft appearance
+   instead of the choreography. On the slot, not the mark, because the mark's
+   own opacity belongs to the header handoff. */
+.cafe-welcome.is-opening.is-mark-in .cafe-hero-slot{
+  animation:cafeMarkIn .34s ease both;
 }
-.cafe-welcome.is-enter .cafe-welcome-sub{
-  opacity:0;animation:cafeWelcomeIn .42s ease .24s both;
+@keyframes cafeMarkIn{
+  0%{opacity:0}
+  100%{opacity:1}
 }
 @keyframes cafeWelcomeIn{
   0%{opacity:0;transform:translateY(10px)}
@@ -249,23 +287,23 @@ body.present .demo{justify-content:center}
 
 .cafe-scroll-cue{
   position:absolute;left:50%;bottom:0;z-index:3;
-  width:46px;height:46px;margin:0;padding:0;border:0;border-radius:50%;
-  transform:translate(-50%,50%);cursor:pointer;
-  background:var(--neutral-100);color:var(--brand-charcoal);
+  width:44px;height:44px;margin:0;padding:0;border:0;border-radius:50%;
+  transform:translate(-50%, 50%);cursor:pointer;
+  background:rgba(247,246,239,.92);color:var(--brand-charcoal);
   -webkit-appearance:none;appearance:none;
-  box-shadow:0 0 0 1.5px rgba(55,50,48,.4);
-  transition:opacity .28s ease;
+  box-shadow:0 0 0 1px rgba(55,50,48,.22);
+  transition:opacity .32s ease;
 }
 .cafe-scroll-cue .cue-icon{
   display:grid;place-items:center;width:100%;height:100%;
-  animation:cafeCueBob 1.7s ease-in-out infinite;
+  animation:cafeCueBob 2.8s ease-in-out infinite;
 }
-.cafe-scroll-cue .cue-icon svg{width:22px;height:22px;transform:rotate(180deg)}
+.cafe-scroll-cue .cue-icon svg{width:20px;height:20px;transform:rotate(180deg);opacity:.72}
 .cafe-scroll-cue:focus-visible{outline:3px solid var(--brand-yellow);outline-offset:3px}
 .cafe-scroll-cue.is-hidden{opacity:0;pointer-events:none}
 @keyframes cafeCueBob{
-  0%,22%{transform:translateY(0)}
-  50%{transform:translateY(5px)}
+  0%,28%{transform:translateY(0)}
+  50%{transform:translateY(3px)}
   78%,100%{transform:translateY(0)}
 }
 
@@ -293,19 +331,21 @@ body.present .demo{justify-content:center}
   opacity:1;transform:translateY(0);
   transition:opacity .38s ease,transform .38s ease;
 }
-.cafe-levels .pref-intro{margin:0 0 10px}
+.cafe-levels .pref-intro{margin:0 0 4px}
 .screen.is-entry .primary-cta:focus-visible{outline-color:#fff}
+.cafe-levels .primary-cta{font-size:17px}
 #cafeLevelsFocus{scroll-margin-top:0}
-.cafe-levels .cafe-acts{margin-top:52px}
+.cafe-levels .cafe-acts{margin-top:72px}
 
 .pref-copy{
   margin:18px 0 2px;width:100%;max-width:22rem;
 }
 .pref-intro{
-  margin:0 0 10px;font-size:26px;font-weight:600;line-height:1.25;color:#fff;
+  margin:0 0 4px;font-family:var(--font-brand);font-size:26px;font-weight:400;
+  font-synthesis:none;line-height:1.25;color:#fff;
 }
 .pref-lead{
-  margin:0;font-size:16px;font-weight:500;line-height:1.45;color:rgba(255,255,255,.88);
+  margin:0;font-size:18px;font-weight:500;line-height:1.4;color:rgba(255,255,255,.88);
 }
 
 .level-spectrum{
@@ -374,7 +414,7 @@ body.present .demo{justify-content:center}
   transition:filter .2s ease, opacity .2s ease, box-shadow .2s ease;
 }
 .spec-ico{
-  width:62%;height:62%;object-fit:contain;pointer-events:none;display:block;
+  width:74%;height:74%;object-fit:contain;pointer-events:none;display:block;
   user-select:none;-webkit-user-drag:none;
 }
 .spec-node.is-you .spec-dot{width:40px;height:40px}
@@ -430,46 +470,44 @@ body.present .demo{justify-content:center}
 .spec-knob{
   position:absolute;left:50%;top:50%;width:22px;height:22px;border-radius:50%;
   transform:translate(-50%,-50%);
-  background:rgba(55,50,48,.46);
+  background:rgba(55,50,48,.84);
   -webkit-backdrop-filter:blur(10px) saturate(1.08);
   backdrop-filter:blur(10px) saturate(1.08);
   border:0;
   box-shadow:
-    inset 1.2px 1.2px 0 rgba(255,255,255,.34),
-    inset -1px -1px 0 rgba(0,0,0,.2),
-    inset 0 0 8px rgba(0,0,0,.2),
-    0 0 0 0.6px rgba(255,255,255,.42),
-    0 1px 2px rgba(12,10,8,.08),
-    0 8px 22px rgba(12,10,8,.16);
+    inset 0 1px 0 rgba(255,255,255,.42),
+    inset 0 -1px 0 rgba(0,0,0,.28),
+    0 0 0 1.5px rgba(247,246,239,.9),
+    0 1px 2px rgba(16,14,12,.2),
+    0 5px 12px rgba(16,14,12,.28);
   transition:transform .2s ease, box-shadow .2s ease, background .2s ease;
 }
 .spec-knob::before{
-  content:"";position:absolute;left:7px;right:7px;top:50%;height:5px;
-  transform:translateY(-50%);
+  content:"";position:absolute;left:50%;top:50%;width:8px;height:7px;
+  transform:translate(-50%,-50%);
   background:
-    linear-gradient(rgba(247,246,239,.28), rgba(247,246,239,.28)) center 0 / 100% 1px no-repeat,
-    linear-gradient(rgba(247,246,239,.28), rgba(247,246,239,.28)) center 100% / 100% 1px no-repeat;
+    linear-gradient(rgba(247,246,239,.94), rgba(247,246,239,.94)) center 0 / 100% 1.5px no-repeat,
+    linear-gradient(rgba(247,246,239,.94), rgba(247,246,239,.94)) center 50% / 100% 1.5px no-repeat,
+    linear-gradient(rgba(247,246,239,.94), rgba(247,246,239,.94)) center 100% / 100% 1.5px no-repeat;
   pointer-events:none;
 }
 .spec-handle:focus-visible .spec-knob{
   box-shadow:
-    inset 1.2px 1.2px 0 rgba(255,255,255,.4),
-    inset -1px -1px 0 rgba(0,0,0,.18),
-    inset 0 0 8px rgba(0,0,0,.18),
-    0 0 0 1.5px rgba(255,255,255,.7),
-    0 8px 22px rgba(12,10,8,.16);
+    inset 0 1px 0 rgba(255,255,255,.5),
+    0 0 0 1.5px #fff,
+    0 0 0 3.5px rgba(249,226,76,.85),
+    0 5px 14px rgba(16,14,12,.26);
 }
 .spec-handle.is-pressed .spec-knob,
 .spec-handle.is-active .spec-knob{
   transform:translate(-50%, calc(-50% - 2.5px)) scale(1.06);
-  background:rgba(55,50,48,.58);
+  background:#373230;
   box-shadow:
-    inset 1.4px 1.4px 0 rgba(255,255,255,.48),
-    inset -1px -1px 0 rgba(0,0,0,.16),
-    inset 0 0 8px rgba(0,0,0,.16),
-    0 0 0 0.8px rgba(255,255,255,.78),
-    0 2px 4px rgba(12,10,8,.08),
-    0 12px 26px rgba(12,10,8,.18);
+    inset 0 1px 0 rgba(255,255,255,.46),
+    inset 0 -1px 0 rgba(0,0,0,.3),
+    0 0 0 1.75px rgba(255,255,255,.96),
+    0 3px 6px rgba(16,14,12,.2),
+    0 10px 20px rgba(16,14,12,.3);
 }
 .spec-handle.is-pressed,
 .spec-handle.is-active{cursor:grabbing;z-index:18}
@@ -593,10 +631,13 @@ body.present .demo{justify-content:center}
   .spec-orient-short{display:inline}
   .spec-hint{font-size:12px;gap:8px;width:64%;max-width:none}
   .spec-knob{width:20px;height:20px}
-  .pref-intro{font-size:22px}
+  .pref-intro{font-size:24px}
 }
 .screen.is-entry.is-short .cafe-welcome .cafe-display{font-size:38px}
-.screen.is-entry.is-short .cafe-welcome-lockup{padding-bottom:64px}
+.screen.is-entry.is-short .cafe-welcome-lockup{padding-bottom:28px}
+/* Short viewports: the droplets rise well above the mark, so the mark itself
+   comes down a little to keep the whole gesture clear of the header. */
+.screen.is-entry.is-short .cafe-hero-slot{width:min(196px, 56vw)}
 
 
 /* =========================================================================
@@ -837,14 +878,15 @@ body.present .demo{justify-content:center}
   color:#544f49;font-weight:600;min-height:44px;
   text-decoration:underline;text-underline-offset:3px;
 }
-.sheet.milky.search-close-sheet .btn:not(.primary):not(.search-close-cancel){
-  border-color:rgba(55,50,48,.32);
+.sheet.milky.search-close-sheet .btn.primary{
+  border:none;
+  box-shadow:0 8px 22px rgba(55,50,48,.16);
 }
 
 /* Globe is wider than the column; sides fade out instead of a hard crop. */
 .search-map-bleed{
   position:relative;flex:none;width:calc(100% + (var(--s16) * 2));
-  margin-inline:calc(var(--s16) * -1);overflow:hidden;pointer-events:none;
+  margin-top:14px;margin-inline:calc(var(--s16) * -1);overflow:hidden;pointer-events:none;
   -webkit-mask-image:linear-gradient(90deg, transparent 0%, #000 56px, #000 calc(100% - 56px), transparent 100%);
   mask-image:linear-gradient(90deg, transparent 0%, #000 56px, #000 calc(100% - 56px), transparent 100%);
 }
@@ -853,6 +895,7 @@ body.present .demo{justify-content:center}
   margin:0 0 0 50%;transform:translateX(-50%);overflow:visible;pointer-events:none;
 }
 .search-map-art{display:block;width:100%;height:auto;opacity:.92}
+
 .search-echoes{
   position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none;
   -webkit-mask-image:radial-gradient(ellipse 84% 90% at 50% 50%,#000 6%,#000 40%,transparent 76%);
@@ -885,10 +928,21 @@ body.present .demo{justify-content:center}
   position:absolute;z-index:2;width:0;height:0;
   opacity:0;animation:search-pin 16.8s ease-in-out infinite both;
 }
+.search-pin::before{
+  content:"";position:absolute;left:0;top:0;z-index:0;width:40px;height:40px;
+  margin:-20px 0 0 -20px;border-radius:50%;pointer-events:none;
+  background:radial-gradient(circle, rgba(249,226,76,.32) 0%, rgba(249,226,76,.08) 42%, transparent 72%);
+  opacity:0;transform:scale(.55);
+  animation:search-pin-glow 16.8s ease-out infinite both;
+  animation-delay:inherit;
+}
 .search-pin .pin-dot{
-  position:absolute;left:0;top:0;width:11px;height:11px;margin:-5.5px 0 0 -5.5px;
+  position:absolute;left:0;top:0;z-index:1;width:16px;height:16px;margin:-8px 0 0 -8px;
   border-radius:50%;background:var(--brand-yellow);
   box-shadow:0 0 0 4px rgba(249,226,76,.2),0 0 14px rgba(249,226,76,.38);
+  transform:scale(.75);
+  animation:search-pin-dot-pop 16.8s ease-out infinite both;
+  animation-delay:inherit;
 }
 .search-pin.p2{animation-delay:2.8s}
 .search-pin.p3{animation-delay:5.6s}
@@ -900,6 +954,18 @@ body.present .demo{justify-content:center}
   9%,24%{opacity:1}
   30%{opacity:0}
 }
+@keyframes search-pin-dot-pop{
+  0%,3%{transform:scale(.75)}
+  9%{transform:scale(1.04)}
+  13%{transform:scale(1)}
+  24%,100%{transform:scale(1)}
+}
+@keyframes search-pin-glow{
+  0%,3%{opacity:0;transform:scale(.5)}
+  8%{opacity:.42;transform:scale(.85)}
+  16%{opacity:0;transform:scale(1.7)}
+  16.01%,100%{opacity:0;transform:scale(1)}
+}
 .search-pin.has-face{z-index:3}
 .search-pin.has-face .pin-dot,
 .search-pin.has-face .pin-face{
@@ -908,7 +974,7 @@ body.present .demo{justify-content:center}
 }
 .search-pin.has-face .pin-dot{animation-name:search-pin-dot-yield}
 .search-pin.has-face .pin-face{
-  position:absolute;left:0;top:0;width:42px;height:42px;margin:-21px 0 0 -21px;
+  position:absolute;left:0;top:0;width:46px;height:46px;margin:-23px 0 0 -23px;
   border-radius:50%;overflow:hidden;background:#EDE8DC;
   border:1.5px solid rgba(247,246,239,.94);
   box-shadow:0 0 0 3px rgba(249,226,76,.32),0 3px 12px rgba(55,50,48,.28);
@@ -919,8 +985,11 @@ body.present .demo{justify-content:center}
   width:100%;height:100%;display:block;object-fit:cover;object-position:center 22%;
 }
 @keyframes search-pin-dot-yield{
-  0%,12%,28%,100%{opacity:1;transform:scale(1)}
+  0%,3%{opacity:1;transform:scale(.75)}
+  9%{opacity:1;transform:scale(1.04)}
+  12%{opacity:1;transform:scale(1)}
   16%,22%{opacity:0;transform:scale(.55)}
+  28%,100%{opacity:1;transform:scale(1)}
 }
 @keyframes search-pin-face{
   0%,12%,28%,100%{opacity:0;transform:scale(.4)}
@@ -1260,94 +1329,120 @@ body.present .demo{justify-content:center}
    personal acknowledgement. Principles are statements, not tasks — the marks
    are icons, never checkboxes. Compact so the sheet stays in the viewport.
    ========================================================================= */
-.sheet.milky.agree-sheet{padding:18px 20px 30px}
-.sheet.milky.agree-sheet .grab{margin:4px auto 16px}
-.sheet.milky.agree-sheet h4{margin-bottom:10px}
+.sheet.milky.agree-sheet{
+  padding:24px 20px calc(28px + env(safe-area-inset-bottom, 0px));
+}
+.sheet.milky.agree-sheet .grab{display:none;margin:0;height:0}
+.agree-head{
+  display:flex;align-items:center;gap:4px;margin:0 0 8px;
+}
+.sheet.milky.agree-sheet .agree-back{
+  width:44px;height:44px;flex:none;margin:0 0 0 -12px;padding:0;
+  display:grid;place-items:center;border:0;border-radius:12px;
+  background:transparent;color:#5C5752;cursor:pointer;
+  -webkit-appearance:none;appearance:none;
+}
+.sheet.milky.agree-sheet .agree-back svg{width:18px;height:18px;display:block}
+.sheet.milky.agree-sheet .agree-back:hover{color:var(--brand-charcoal);background:rgba(55,50,48,.06)}
+.sheet.milky.agree-sheet .agree-back:focus-visible{
+  outline:3px solid var(--brand-charcoal);outline-offset:3px;
+}
+.sheet.milky.agree-sheet h4{
+  flex:1;min-width:0;margin:0;padding-right:4px;
+  font-size:22px;font-weight:700;letter-spacing:-.4px;line-height:1.2;
+}
 .sheet.milky.agree-sheet .agree-intro{
-  font-size:15px;font-weight:400;line-height:1.45;color:#544f49;margin:0 0 16px;
+  font-size:18px;font-weight:400;line-height:1.4;color:#544f49;margin:0 0 16px;
 }
 .agree-list{
   list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px;
 }
 .agree-list li{
-  display:flex;align-items:flex-start;gap:12px;padding:12px 12px;
-  border-radius:14px;background:rgba(55,50,48,.035);
+  display:flex;align-items:center;gap:14px;padding:10px 14px;
+  border-radius:18px;background:#EAE9DE;
 }
 .agree-mark{
-  width:28px;height:28px;flex:none;margin-top:1px;border-radius:50%;
+  width:72px;height:72px;flex:none;
   display:grid;place-items:center;
-  background:var(--brand-yellow);color:var(--brand-charcoal);
-  box-shadow:0 0 0 1px rgba(55,50,48,.22);
+  background:transparent;color:var(--brand-charcoal);
 }
-.agree-mark svg{width:15px;height:15px;display:block}
-.agree-copy{min-width:0;padding-top:1px}
+.agree-mark img{width:72px;height:72px;display:block;object-fit:contain}
+.agree-copy{min-width:0}
 .agree-lead{
-  display:block;font-size:15px;font-weight:700;line-height:1.25;color:var(--brand-charcoal);
+  display:block;font-size:17px;font-weight:700;line-height:1.25;color:var(--brand-charcoal);
 }
 .agree-support{
-  display:block;margin-top:1px;font-size:13px;font-weight:500;line-height:1.35;color:#716C66;
+  display:block;margin-top:2px;font-size:15px;font-weight:400;line-height:1.35;color:#716C66;
 }
 
 /* One commitment, not terms. The whole row is the hit target. */
 .agree-ack{
-  display:flex;align-items:center;gap:4px;width:100%;margin-top:16px;
-  min-height:44px;padding:4px 10px 4px 4px;border-radius:14px;cursor:pointer;
-  background:rgba(55,50,48,.04);border:1.5px solid rgba(55,50,48,.16);
+  position:relative;display:flex;align-items:center;gap:10px;width:100%;margin-top:12px;
+  min-height:52px;padding:12px 16px;border-radius:18px;cursor:pointer;
+  background:#EAE9DE;border:1.5px solid rgba(55,50,48,.18);
   color:var(--brand-charcoal);text-align:left;font:inherit;user-select:none;
 }
-.agree-ack:hover{background:rgba(55,50,48,.07);border-color:rgba(55,50,48,.28)}
-.agree-ack:active{background:rgba(55,50,48,.10)}
+.agree-ack-input{
+  position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;cursor:pointer;
+  appearance:none;-webkit-appearance:none;
+}
+.agree-ack:hover{background:#E4E3D6;border-color:rgba(55,50,48,.28)}
+.agree-ack:active{background:#DDDCCE}
 .agree-ack.is-on,.agree-ack:has(input:checked){
-  background:#F7F6EF;border-color:#928F7D;
+  background:#EAE9DE;border-color:rgba(55,50,48,.28);
 }
 .agree-ack.is-on:hover,.agree-ack:has(input:checked):hover{
-  background:#F7F6EF;border-color:#928F7D;
+  background:#E4E3D6;border-color:rgba(55,50,48,.34);
 }
 .agree-ack:has(input:focus-visible){
   outline:3px solid var(--brand-charcoal);outline-offset:3px;
 }
 .agree-check{
-  position:relative;width:44px;height:44px;flex:none;
-  display:grid;place-items:center;
-}
-.agree-check input{
-  position:absolute;inset:0;width:44px;height:44px;margin:0;opacity:0;cursor:pointer;
-  appearance:none;-webkit-appearance:none;
+  position:relative;z-index:1;width:24px;height:24px;flex:none;
+  display:grid;place-items:center;pointer-events:none;
 }
 .agree-box{
-  width:20px;height:20px;border-radius:6px;background:#fff;
+  width:22px;height:22px;border-radius:5px;background:#F7F6EF;
   border:1.5px solid var(--brand-charcoal);display:grid;place-items:center;
   pointer-events:none;
 }
 .agree-ack:active .agree-box{transform:scale(.94)}
-.agree-ack input:checked + .agree-box{
-  background:#F7F6EF;border-color:#928F7D;
+.agree-ack input:checked + .agree-check .agree-box{
+  background:#F7F6EF;border-color:var(--brand-charcoal);
 }
 /* Checkmark is a shape, so checked is not colour-only. */
-.agree-ack input:checked + .agree-box::after{
+.agree-ack input:checked + .agree-check .agree-box::after{
   content:"";width:5px;height:9px;margin-top:-1px;
   border:solid var(--brand-charcoal);border-width:0 2px 2px 0;
   transform:rotate(45deg);
 }
 .agree-ack-copy{
-  flex:1;min-width:0;padding-right:6px;
-  font-size:15px;font-weight:600;line-height:1.3;color:var(--brand-charcoal);
+  position:relative;z-index:1;flex:1;min-width:0;padding-right:4px;
+  font-size:16px;font-weight:600;line-height:1.3;color:var(--brand-charcoal);
+  pointer-events:none;
 }
 
-.sheet.milky.agree-sheet .acts{margin-top:16px;gap:0}
+.sheet.milky.agree-sheet .acts{margin-top:14px;gap:0}
 .sheet.milky.agree-sheet .btn.primary{
-  box-shadow:0 8px 24px rgba(18,14,12,.22);
+  min-height:52px;border:none;border-radius:999px;
+  box-shadow:0 8px 22px rgba(55,50,48,.16);
 }
 .sheet.milky.agree-sheet .btn.primary:focus-visible{
   outline:3px solid var(--brand-charcoal);outline-offset:3px;
 }
 .sheet.milky.agree-sheet .btn.primary:hover:not(:disabled){filter:brightness(.97)}
 .sheet.milky.agree-sheet .btn.primary:active:not(:disabled){transform:scale(.99)}
-/* Disabled is faded yellow plus a dashed edge — not colour-only. */
 .sheet.milky.agree-sheet .btn.primary:disabled{
   opacity:1;cursor:default;background:rgba(249,226,76,.38);
-  color:rgba(55,50,48,.42);border:1.5px dashed rgba(55,50,48,.32);
-  box-shadow:none;
+  color:rgba(55,50,48,.42);border:none;
+  box-shadow:0 6px 16px rgba(55,50,48,.10);
+}
+.sheet-scrim:has(+ .agree-sheet){pointer-events:auto;}
+.screen:has(.agree-sheet){container-type:size;}
+@container (max-height: 700px){
+  .sheet.milky.agree-sheet{padding-top:14px;padding-bottom:22px}
+  .agree-head{margin-bottom:6px}
+  .sheet.milky.agree-sheet .agree-intro{margin-bottom:12px}
 }
 .sheet.milky.keep-on-sheet .keep-on-q{
   font-size:19px;font-weight:600;line-height:1.35;color:var(--brand-charcoal);margin-bottom:20px;
@@ -1698,7 +1793,26 @@ body.present .demo{justify-content:center}
    7 · SESSION ENDING
    Time flies, then Find me another partner, or a quiet path home.
    ========================================================================= */
-.cafe-stage.cafe-ending{justify-content:center;padding-bottom:120px}
+.cafe-stage.cafe-ending{justify-content:center;padding-bottom:120px;overflow:hidden}
+.cafe-stage.cafe-ending .cafe-display,
+.cafe-stage.cafe-ending .cafe-sub,
+.cafe-stage.cafe-ending .cafe-acts{position:relative;z-index:1}
+.ending-confetti{
+  position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden;
+}
+.ending-cf{
+  position:absolute;top:-28px;left:var(--x);
+  width:var(--s);height:auto;display:block;
+  transform-origin:50% 50%;
+  animation:endingFall var(--dur,3.8s) linear var(--d,0s) both;
+}
+.ending-cf svg{width:100%;height:auto;display:block;overflow:visible}
+@keyframes endingFall{
+  0%{opacity:0;transform:translate(0,-8px) rotate(var(--rot0));filter:saturate(1.15)}
+  10%{opacity:1}
+  62%{opacity:.92;transform:translate(var(--drift), 58vh) rotate(calc(var(--rot) * .55));filter:saturate(1.2)}
+  100%{opacity:0;transform:translate(calc(var(--drift) * 1.15), 92vh) rotate(var(--rot));filter:saturate(1.35) brightness(1.12)}
+}
 .cafe-stage .cafe-acts{margin-top:28px;gap:10px}
 .cafe-stage .cafe-sub{max-width:326px}
 .cafe-stage .primary-cta{
@@ -1723,18 +1837,10 @@ body.present .demo{justify-content:center}
   .match-takeover.is-enter .match-timer{
     animation:matchScrimIn .2s ease both;
   }
-  .match-takeover.is-enter .match-cf{
-    animation:none;
-    opacity:.34;
-    transform:translate(calc(var(--ox) + var(--dx) * .28), calc(var(--oy) + var(--dy) * .28)) scale(var(--sc)) rotate(var(--rot0));
-  }
-  .search-pin,.search-echo,.search-pin.has-face .pin-dot,.search-pin.has-face .pin-face,
+  .ending-cf{animation:none;opacity:.34;transform:translate(0,28vh) rotate(var(--rot0))}
+  .search-pin,.search-pin::before,.search-pin .pin-dot,.search-echo,.search-pin.has-face .pin-dot,.search-pin.has-face .pin-face,
   .match-indicator .mi-dot::after,.fc-status .mi-dot::after,.po-spin,.po-acts,.dock-tip,
   .cafe-scroll-cue .cue-icon,
-  .cafe-welcome.is-enter .cup-left,.cafe-welcome.is-enter .cup-right,
-  .cafe-welcome.is-enter .drop-move,.cafe-welcome.is-enter .cafe-icon-final,
-  .cafe-welcome.is-enter .cafe-live,
-  .cafe-welcome.is-enter .cafe-welcome-title,.cafe-welcome.is-enter .cafe-welcome-sub,
   .cafe-entry-header,.spec-dot,.spec-tip,.spec-knob,.spec-feedback,.spec-hint,.spec-hint-arrow-lo,.spec-hint-arrow-hi,.search-support{animation:none;transition:none}
   .wait-practice,.wait-practice .chev,.wait-practice .wp-card{transition:none;animation:none}
   .wait-practice:hover .chev,
@@ -1744,6 +1850,8 @@ body.present .demo{justify-content:center}
   .search-echo{opacity:0}
   .search-pin{opacity:0}
   .search-pin.p1{opacity:.9}
+  .search-pin::before{opacity:0}
+  .search-pin .pin-dot{transform:none}
   .cafe-levels-inner,.cafe-levels.is-in .cafe-levels-inner{opacity:1;transform:none;transition:none}
   .cafe-scroll-cue{transition:none}
   .screen.is-entry{scroll-snap-type:y mandatory}
@@ -1751,14 +1859,14 @@ body.present .demo{justify-content:center}
   .screen.is-entry.is-auto-settled,
   .screen.is-entry.is-user-controlling{scroll-snap-type:none}
   .search-pin.has-face .pin-face{opacity:0}
-  .cafe-welcome.is-enter .cup-left,
-  .cafe-welcome.is-enter .cup-right,
-  .cafe-welcome.is-enter .cafe-welcome-title,
-  .cafe-welcome.is-enter .cafe-welcome-sub,
-  .cafe-welcome.is-enter .cafe-hero-fly > .cafe-cups{opacity:1;transform:none}
-  .cafe-welcome.is-enter .cafe-icon-final{opacity:1}
-  .cafe-welcome.is-enter .cafe-live,
-  .cafe-welcome.is-enter .drop-move{opacity:0;transform:none}
+  /* No choreography, no bouncing, no animated scroll: the approved final mark
+     appears softly and the copy comes with it. */
+  .cafe-welcome.is-opening .cafe-welcome-title,
+  .cafe-welcome.is-opening .cafe-welcome-sub{
+    opacity:1;transform:none;transition:none;
+  }
+  .cafe-welcome.is-opening .cafe-hero-slot{--hero-lift:0px;transition:none}
+  .cafe-welcome.is-opening.is-mark-in .cafe-hero-slot{animation:cafeMarkIn .28s linear both}
   .level-spectrum.is-cue .spec-knob,
   .level-spectrum.is-cue .spec-glass-rim{animation:none}
 }

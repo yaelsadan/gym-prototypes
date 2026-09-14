@@ -12,7 +12,7 @@
 <!-- Shared Gym design system. Do not add Cafe rules to this file. -->
 <link rel="stylesheet" href="css/gym-primitives.css?v=20260910-7">
 <!-- Cafe-only styling. -->
-<link rel="stylesheet" href="css/cafe.css?v=20260910-7">
+<link rel="stylesheet" href="css/cafe.css?v=20260914-64">
 </head>
 <body>
 
@@ -25,6 +25,11 @@
   <code>css/cafe.css</code> and <code>js/cafe-states.js</code>. Entry / Preferences now mirrors the mobile
   continuous level spectrum in a horizontal Welcome + preferences composition. States 2–7 follow the
   settled mobile Café product behaviour, adapted to desktop layouts.
+  The Welcome entrance mounts the approved cups animation
+  (<code>?restore=cafe-welcome-approved-hybrid-1</code>) from the same generated renderer the
+  mobile Café uses, <code>../cafe-playground-mobile/js/cafe-welcome-anim.js</code>, at the same
+  product playback: 2439ms of gesture, a 78% finished mark, a 750ms readable hold, then the split
+  layout with the mark flying into the header. <b>Replay Welcome entrance</b> below replays it.
 </p>
 
 <!-- Prototype tooling. Never part of the product viewport. -->
@@ -74,7 +79,8 @@
   </div>
   <div class="row">
     <span class="grp-lbl">Live session</span>
-    <button onclick="toggleText()">Toggle activity / text sheet</button>
+    <button onclick="toggleText()">Toggle chat</button>
+    <button onclick="receivePartnerChat()">Partner sends a message</button>
     <button onclick="openLeave()">Leave &amp; report</button>
     <button onclick="partnerDropped()">Partner camera / mic off</button>
     <button onclick="partnerReconnected()">Partner reconnects</button>
@@ -109,6 +115,11 @@
 <div class="frame" id="frame"></div>
 
 <script src="js/gym-primitives.js?v=20260910-7"></script>
-<script src="js/cafe-states.js?v=20260910-7"></script>
+<!-- Approved Café Welcome animation (hybrid-1). The same generated renderer the
+     mobile Café mounts, loaded from where it is generated so the two surfaces
+     cannot diverge. Product renderer only: no playground UI, no controls, no
+     debug. Must load before the Café states so the Welcome hero can mount it. -->
+<script src="../cafe-playground-mobile/js/cafe-welcome-anim.js?v=20260914-hybrid-1"></script>
+<script src="js/cafe-states.js?v=20260914-64"></script>
 </body>
 </html>

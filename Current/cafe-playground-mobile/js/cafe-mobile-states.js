@@ -25,6 +25,15 @@ var IMG_YOU     = '../student-main-classroom-desktop/assets/pip-you.png';
 
 /* Playground durations. The session is the real 6 minutes so the clock reads
    truthfully; everything else is shortened so a loop is reviewable. */
+function cafeLocation(state){
+  var p = new URLSearchParams(location.search);
+  p.set('state', state);
+  p.delete('searchmotion');
+  p.delete('build');
+  var q = p.toString();
+  return (q ? '?' + q : '') + '#' + state;
+}
+
 var DUR = {
   searchTo:22,        // searching -> a match is offered. Long enough to see two avatar blooms.
   offer:30,           // the response window. Product value.
@@ -110,7 +119,7 @@ var NOTES = {
   hub:'3b \u00b7 Placeholder Hub carrying the persistent matching indicator. The Hub itself is not designed in this pass.',
   flashcards:'3c \u00b7 Optional practice while waiting. The Gym Solo deck. A match interrupts it; declining returns here.',
   matched:'4 \u00b7 Match found. A 30s interrupt over whatever you were doing. Accept keeps the same surface and waits for the partner.',
-  agreement:'5 \u00b7 Session agreement. Only after both accepted. Three principles to scan, one acknowledgement that enables the CTA. No decline.',
+  agreement:'5 \u00b7 Session agreement. Only after both accepted. Quiet back returns to the partner card. The offer countdown keeps running; it does not reject on its own.',
   live:'6 \u00b7 Live Cafe. The Gym Practice Room shell. Dock: Topics \u00b7 Practice \u00b7 Text, then Camera \u00b7 Mic. Text opens the Gym Main Room chat overlay and composer on the video.',
   ending:'7 \u00b7 Ending. Time flies, then Find me another partner, or Go back to homepage.'
 };
@@ -325,10 +334,244 @@ function cancelWelcomeAnim(){
     cancelAnimationFrame(welcomeAnim);
     welcomeAnim = 0;
   }
+  welcomeResolve = null;
+}
+
+/* =========================================================================
+   WELCOME OPENING — approved Café animation · hybrid-1
+   The motion itself lives in js/cafe-welcome-anim.js, generated from the
+   locked playground checkpoint ?restore=cafe-welcome-approved-hybrid-1. This
+   surface only decides when it starts, when the copy arrives, how long the
+   finished mark is held, and when it leaves for the header. No timing,
+   easing or geometry of the animation is reinterpreted here.
+   ========================================================================= */
+/* The approved choreography is 3200ms. The product plays that same source
+   faster, so the whole gesture reads livelier. This is the reference rate the
+   gesture returns to; the opening runs hotter than it (see below), so the real
+   playback is shorter. The playground and the checkpoint still run at 1×. */
+var WELCOME_PLAY_MS = 2650;
+/* The opening is the part that wants urgency: the cups meeting and the droplets
+   launching off them. It is played at this much above the reference rate, at
+   full strength through the toast and the launch, easing back to the reference
+   as the bubbles reach their conversation pose. Nothing is reordered or skipped
+   — the same source frames arrive sooner. */
+var WELCOME_OPEN_BOOST = 0.24;
+/* Source ms of full boost, then the source ms where both bubbles have arrived at
+   the conversation pose (left 1500, right 1510). From there the mapping is the
+   reference rate exactly, so the settle, the hold, the return to the cups and
+   the liquid fill keep their current timing to the millisecond. */
+var WELCOME_BOOST_HOT = 1100;
+var WELCOME_BOOST_END = 1510;
+/* Copy begins its fade-and-rise as the mark closes, so the screen is never
+   empty once the animation has finished. In source milliseconds, so it keeps
+   its place in the choreography at any playback rate. */
+var WELCOME_COPY_MS = 2860;
+/* Readable stillness after the mark completes, before the guided scroll. */
+var WELCOME_HOLD_MS = 750;
+/* The finished mark is smaller than the animation that drew it: it closes down
+   into the size it will fly to the header from. */
+var WELCOME_MARK_SETTLE = 0.78;
+/* Source window over which that reduction runs — the cups' own closing phase. */
+var WELCOME_SETTLE_FROM = 2600;
+/* Advancing early runs the rest of the animation out over this, rather than
+   cutting to the final frame. */
+var WELCOME_RESOLVE_MS = 280;
+var welcomeResolve = null;
+/* Millisecond currently on screen, so an early advance resolves from it. */
+var welcomeLastMs = 0;
+
+function welcomeAnimMarkup(){
+  if(window.CafeWelcomeAnim) return window.CafeWelcomeAnim.markup();
+  return cafeWelcomeHeroMark();
+}
+function welcomeAnimTotal(){
+  return window.CafeWelcomeAnim ? window.CafeWelcomeAnim.TOTAL_MS : 0;
+}
+/* How much above the reference rate the gesture runs at a point of the source. */
+function welcomeOpenBoostAt(ms){
+  if(ms <= WELCOME_BOOST_HOT) return 1 + WELCOME_OPEN_BOOST;
+  if(ms >= WELCOME_BOOST_END) return 1;
+  return 1 + WELCOME_OPEN_BOOST
+    * (1 - cafeSmooth(0, 1, (ms - WELCOME_BOOST_HOT) / (WELCOME_BOOST_END - WELCOME_BOOST_HOT)));
+}
+/* On-screen milliseconds at which each step of the source is due, integrated
+   once from the rate above. Sampling it, rather than multiplying by a rate, is
+   what keeps the changing rate free of steps. */
+var welcomeTimeMap = null;
+function welcomeTimeTable(){
+  var total = welcomeAnimTotal();
+  if(welcomeTimeMap && welcomeTimeMap.total === total) return welcomeTimeMap;
+  var base = total > 0 ? total / WELCOME_PLAY_MS : 1;
+  var step = 8, real = 0, due = [0];
+  for(var ms = 0; ms < total; ms += step){
+    real += Math.min(step, total - ms) / (base * welcomeOpenBoostAt(ms + step / 2));
+    due.push(real);
+  }
+  welcomeTimeMap = {total: total, step: step, due: due};
+  return welcomeTimeMap;
+}
+function welcomePlayDuration(){
+  var m = welcomeTimeTable();
+  return m.due[m.due.length - 1];
+}
+/* Source millisecond to draw at a given point of the playback. */
+function welcomeSourceAt(real){
+  var m = welcomeTimeTable();
+  var due = m.due;
+  if(!(real > 0)) return 0;
+  if(real >= due[due.length - 1]) return m.total;
+  var lo = 0, hi = due.length - 1;
+  while(hi - lo > 1){
+    var mid = (lo + hi) >> 1;
+    if(due[mid] <= real) lo = mid; else hi = mid;
+  }
+  var span = due[hi] - due[lo];
+  return Math.min(m.total, (lo + (span > 0 ? (real - due[lo]) / span : 0)) * m.step);
+}
+/* Auto-scroll must not start before the mark is finished and read. */
+function welcomeProgressDelay(){
+  return (welcomeAnimTotal() ? welcomePlayDuration() : 0) + WELCOME_HOLD_MS;
+}
+/* How large the hero mark is drawn at a given point of the choreography: full
+   size while the gesture plays, easing down to its settled size across the
+   closing phase, so it is already small when the cups come to rest. */
+function welcomeMarkScaleAt(ms){
+  var total = welcomeAnimTotal();
+  if(!total) return WELCOME_MARK_SETTLE;
+  var span = total - WELCOME_SETTLE_FROM;
+  if(span <= 0) return WELCOME_MARK_SETTLE;
+  var k = cafeSmooth(0, 1, cafeClamp01((ms - WELCOME_SETTLE_FROM) / span));
+  return 1 + (WELCOME_MARK_SETTLE - 1) * k;
+}
+function welcomeAnimPaint(el, ms){
+  if(el && window.CafeWelcomeAnim) window.CafeWelcomeAnim.frame(el, ms);
+}
+/* Size the mark currently wants in the hero, and how far it has travelled to
+   the header. Both feed one layout pass so the closing reduction and the flight
+   are the same continuous shrink, never two competing transforms. */
+var welcomeMarkScale = 1;
+var welcomeFlightT = 0;
+/* How far the hero has been scrolled past the point where the flight begins.
+   The mark flies from where it stood then, not from the slot's live position:
+   the slot is being scrolled away faster than the flight travels, so following
+   it would sweep the mark up off the top of the screen and back down again. */
+var welcomeFlightHold = 0;
+function layoutWelcomeMark(){
+  var fly = document.getElementById('cafeHeroFly');
+  var slot = document.getElementById('cafeHeroSlot');
+  var dest = document.getElementById('cafeHeaderMark');
+  if(!fly || !slot || !dest) return;
+  /* The slot is the mark's full-size box; the fly's own box is already scaled,
+     so measuring that instead would compound every frame. */
+  var a = slot.getBoundingClientRect();
+  var b = dest.getBoundingClientRect();
+  if(!a.width) return;
+  var t = welcomeFlightT;
+  var target = b.width ? b.width / a.width : 0.36;
+  var sc = welcomeMarkScale + (target - welcomeMarkScale) * t;
+  /* Reduced by its own box rather than by transform:scale, so the mark is drawn
+     at its true size on every frame — strokes and fill scale together and the
+     last frame rasterises exactly as the header's own copy does. */
+  var w = a.width * sc, h = a.height * sc;
+  fly.style.width = w + 'px';
+  fly.style.height = h + 'px';
+  var cx = lerp01(a.left + a.width / 2, b.left + b.width / 2, t);
+  var cy = lerp01(a.top + a.height / 2 + welcomeFlightHold, b.top + b.height / 2, t);
+  fly.style.transform = 'translate('
+    + (cx - (a.left + w / 2)) + 'px,'
+    + (cy - (a.top + h / 2)) + 'px)';
+  fly.style.opacity = '1';
+}
+function setWelcomeMarkScale(ms){
+  welcomeMarkScale = welcomeMarkScaleAt(ms);
+  layoutWelcomeMark();
+}
+/* The header icon is the same renderer parked on the final frame. */
+function paintWelcomeHeaderMark(){
+  welcomeAnimPaint(document.getElementById('cafeHeaderMark'), welcomeAnimTotal());
+}
+function revealWelcomeCopy(welcome){
+  if(welcome) welcome.classList.add('is-copy-in');
+}
+/* First frame under the cursor before anything moves, so entry does not flash
+   the finished mark and then restart. */
+function primeCafeWelcomeGesture(welcome){
+  cancelWelcomeAnim();
+  welcomeFlightT = 0;
+  paintWelcomeHeaderMark();
+  var fly = document.getElementById('cafeHeroFly');
+  if(!window.CafeWelcomeAnim || !fly){
+    revealWelcomeCopy(welcome);
+    return;
+  }
+  if(prefersReducedMotion()){
+    settleCafeWelcomeGesture(welcome);
+    return;
+  }
+  welcomeAnimPaint(fly, 0);
+  setWelcomeMarkScale(0);
+}
+/* Reduced motion: the approved final mark at its settled size, softly, and the
+   copy with it. */
+function settleCafeWelcomeGesture(welcome){
+  cancelWelcomeAnim();
+  var fly = document.getElementById('cafeHeroFly');
+  welcomeAnimPaint(fly, welcomeAnimTotal());
+  setWelcomeMarkScale(welcomeAnimTotal());
+  if(welcome) welcome.classList.add('is-mark-in');
+  revealWelcomeCopy(welcome);
 }
 function playCafeWelcomeGesture(welcome){
   cancelWelcomeAnim();
+  paintWelcomeHeaderMark();
+  var fly = document.getElementById('cafeHeroFly');
+  if(!window.CafeWelcomeAnim || !fly){
+    revealWelcomeCopy(welcome);
+    return;
+  }
+  if(prefersReducedMotion()){
+    settleCafeWelcomeGesture(welcome);
+    return;
+  }
+  var total = welcomeAnimTotal();
+  var t0 = performance.now();
+  welcomeLastMs = 0;
+  welcomeAnimPaint(fly, 0);
+  setWelcomeMarkScale(0);
+  welcomeAnim = requestAnimationFrame(function tick(now){
+    var ms = welcomeSourceAt(now - t0);
+    if(welcomeResolve){
+      /* Hand over quickly without jumping: the remaining span is run out on
+         its own easing from wherever the mark had got to. */
+      var r = cafeSmooth(0, 1, cafeClamp01((now - welcomeResolve.at) / WELCOME_RESOLVE_MS));
+      ms = welcomeResolve.from + (total - welcomeResolve.from) * r;
+    }
+    if(ms > total) ms = total;
+    welcomeLastMs = ms;
+    welcomeAnimPaint(fly, ms);
+    setWelcomeMarkScale(ms);
+    if(ms >= WELCOME_COPY_MS) revealWelcomeCopy(welcome);
+    if(ms >= total){
+      welcomeAnim = 0;
+      welcomeResolve = null;
+      revealWelcomeCopy(welcome);
+      return;
+    }
+    welcomeAnim = requestAnimationFrame(tick);
+  });
 }
+/* The student advanced — scroll, chevron, swipe or keyboard. Finish the mark
+   at speed, bring the copy in, and let the header handoff carry on. */
+function finishCafeWelcomeGesture(){
+  var welcome = document.querySelector('.cafe-welcome');
+  if(!welcomeAnim){
+    revealWelcomeCopy(welcome);
+    return;
+  }
+  if(!welcomeResolve) welcomeResolve = {from: welcomeLastMs, at: performance.now()};
+  revealWelcomeCopy(welcome);
+}
+function cafeClamp01(t){ return t < 0 ? 0 : t > 1 ? 1 : t; }
 
 var CAFE_POSE_VB = '-30 -130 532 330';
 var ANIM_DEBUG_FRAMES = [
@@ -803,18 +1046,21 @@ function applySpecPreviewVisuals(root){
 function screenEntry(){
   return '<div class="cafe-entry-chrome" id="cafeEntryChrome">'
       + '<div class="cafe-entry-header" id="cafeEntryHeader">'
-        + '<span class="cafe-header-mark" id="cafeHeaderMark">' + cafeCupsSvg('is-static') + '</span>'
+        /* Same renderer as the hero, frozen on the approved final frame, so the
+           hero mark can hand over to it without a size, position or art shift.
+           Its box is reserved from the start; only its opacity changes. */
+        + '<span class="cafe-header-mark" id="cafeHeaderMark">' + welcomeAnimMarkup() + '</span>'
         + '<span class="cafe-header-title">Caf\u00e9</span>'
       + '</div>'
       + '<button type="button" class="cafe-entry-close" onclick="leaveCafeHome()"'
         + ' aria-label="Close Caf\u00e9 and return home">' + GM.I.x + '</button>'
     + '</div>'
     + '<main class="cafe-entry-page">'
-      + '<section class="cafe-welcome' + (ST.welcomePlayed ? '' : ' is-enter') + '" aria-label="Welcome">'
+      + '<section class="cafe-welcome' + (ST.welcomePlayed ? '' : ' is-opening') + '" aria-label="Welcome">'
         + '<div class="cafe-welcome-lockup">'
           + '<div class="cafe-hero-slot" id="cafeHeroSlot">'
             + '<div class="cafe-hero-fly" id="cafeHeroFly">'
-              + cafeWelcomeHeroMark()
+              + welcomeAnimMarkup()
             + '</div>'
           + '</div>'
           + '<h2 class="cafe-display cafe-welcome-title">Welcome to the <b>Caf\u00e9</b>!</h2>'
@@ -889,12 +1135,11 @@ function cancelMobileWelcomeProgression(userInterrupted){
 }
 function sizeEntryWelcome(screen){
   var h = screen.clientHeight;
-  var short = h < 680;
-  screen.classList.toggle('is-short', short);
-  screen.style.setProperty('--cafe-peek', '0px');
+  screen.classList.toggle('is-short', h < 680);
   screen.style.setProperty('--cafe-stage-h', h + 'px');
-  screen.style.setProperty('--cafe-welcome-h', h + 'px');
   screen.style.setProperty('--cafe-levels-h', h + 'px');
+  screen.style.removeProperty('--cafe-peek');
+  screen.style.removeProperty('--cafe-welcome-h');
 }
 
 function cafeLevelStageTop(screen, levels){
@@ -1462,9 +1707,7 @@ function bindSpectrum(screen){
   }
 }
 
-function easeEntry(t){
-  return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
-}
+function lerp01(a, b, t){ return a + (b - a) * t; }
 function syncEntryChoreography(screen){
   var welcome = screen.querySelector('.cafe-welcome');
   var cue = document.getElementById('cafeScrollCue');
@@ -1476,32 +1719,41 @@ function syncEntryChoreography(screen){
 
   var maxWelcome = Math.max(1, welcome.offsetHeight);
   var raw = screen.scrollTop / maxWelcome;
-  var start = 0.08, end = 0.40;
+  /* The mark travels with the scroll across almost all of it, tracked straight:
+     under a finger that is direct manipulation, and under the guided scroll the
+     scroll's own easing carries it, so the flight stays smooth instead of being
+     squeezed into the fast middle of the movement. */
+  var start = 0.03, end = 0.86;
   var t = Math.max(0, Math.min(1, (raw - start) / (end - start)));
   var reduced = prefersReducedMotion();
   if(reduced) t = raw > 0.22 ? 1 : 0;
-  else t = easeEntry(t);
 
   screen.style.setProperty('--entry-head', String(t));
-  screen.style.setProperty('--entry-title', t > 0.45 ? String(Math.min(1, (t - 0.45) / 0.35)) : '0');
-  screen.style.setProperty('--entry-mark', t > 0.5 ? String(Math.min(1, (t - 0.5) / 0.35)) : '0');
+  /* The wordmark belongs to the arrival, not to the opening: it comes in over
+     the last stretch of the icon's flight, so the header resolves into the
+     complete lockup in one move instead of waiting for its other half. */
+  screen.style.setProperty('--entry-title', String(cafeClamp01((t - 0.45) / 0.4)));
+  /* One mark, one journey. The mark the animation finished on is the mark that
+     ends up beside the wordmark: it is reduced and moved into the header box
+     and simply stays there. There is no second icon to fade in and no handoff,
+     so no duplication, blink, size jump or position jump is possible.
+     #cafeHeaderMark is a transparent placeholder that reserves the header
+     space and gives the flight its target box — except under reduced motion,
+     where there is no flight and it takes the mark's place directly. */
+  var handedOver = reduced && t >= 1;
+  screen.style.setProperty('--entry-mark', handedOver ? '1' : '0');
   screen.classList.toggle('is-entry-deep', t > 0.4);
 
   if(fly && slot && !reduced){
-    var dest = document.getElementById('cafeHeaderMark');
-    if(dest){
-      var a = fly.getBoundingClientRect();
-      var b = dest.getBoundingClientRect();
-      var dx = (b.left + b.width / 2) - (a.left + a.width / 2);
-      var dy = (b.top + b.height / 2) - (a.top + a.height / 2);
-      var s = b.width && a.width ? b.width / a.width : 0.36;
-      var sc = 1 + (s - 1) * t;
-      fly.style.transform = 'translate(' + (dx * t) + 'px,' + (dy * t) + 'px) scale(' + sc + ')';
-      fly.style.opacity = t < 0.55 ? '1' : String(Math.max(0, 1 - (t - 0.55) / 0.35));
-    }
+    welcomeFlightT = t;
+    welcomeFlightHold = Math.max(0, screen.scrollTop - start * maxWelcome);
+    layoutWelcomeMark();
   } else if(fly){
-    fly.style.transform = '';
-    fly.style.opacity = t > 0.5 ? '0' : '1';
+    /* Reduced motion: the mark stays at its settled size in the hero and the
+       header's own copy takes over in one step instead of flying. */
+    welcomeFlightT = 0;
+    layoutWelcomeMark();
+    fly.style.opacity = handedOver ? '0' : '1';
   }
 
   var title = welcome.querySelector('.cafe-welcome-title');
@@ -1513,14 +1765,18 @@ function syncEntryChoreography(screen){
       el.style.opacity = t > 0.5 ? '0' : '1';
       el.style.transform = '';
     } else {
-      el.style.opacity = String(1 - t);
-      el.style.transform = 'translateY(' + (-14 * t) + 'px)';
+      /* The copy clears over the first stretch of the flight: the mark holds its
+         place on screen while the page scrolls up under it, so the headline
+         rises past it and needs to be gone by the time it gets there. */
+      var f = cafeClamp01(t / 0.3);
+      el.style.opacity = String(1 - f);
+      el.style.transform = 'translateY(' + (-14 * f) + 'px)';
     }
   }
   if(t > 0.02){
     fadeCopy(title);
     fadeCopy(sub);
-  } else if(!welcome.classList.contains('is-enter')){
+  } else if(!welcome.classList.contains('is-opening')){
     [title, sub].forEach(function(el){
       if(!el) return;
       el.style.opacity = '';
@@ -1533,7 +1789,10 @@ function syncEntryChoreography(screen){
   var box = levels.getBoundingClientRect();
   var visible = Math.min(root.bottom, box.bottom) - Math.max(root.top, box.top);
   var ratio = box.height ? Math.max(0, visible) / box.height : 0;
-  var hideCue = ratio >= 0.32 || raw > 0.42;
+  var hideCue = screen.scrollTop > 1 || mobileWelcomeScrollActive
+    || screen.classList.contains('is-auto-scrolling')
+    || screen.classList.contains('is-auto-settled')
+    || raw > 0.02;
   if(cue){
     cue.classList.toggle('is-hidden', hideCue);
     cue.setAttribute('aria-hidden', hideCue ? 'true' : 'false');
@@ -1563,7 +1822,15 @@ function bindEntryPage(screen){
   var shouldAutoProgress = !ST.welcomePlayed;
   ST.welcomePlayed = true;
   var welcome = screen.querySelector('.cafe-welcome');
-  if(shouldAutoProgress && welcome) playCafeWelcomeGesture(welcome);
+  /* Returning from a later Café state: the header already carries the mark and
+     the Welcome is a settled page. The opening plays once per fresh entry. */
+  if(!shouldAutoProgress){
+    paintWelcomeHeaderMark();
+    welcomeAnimPaint(document.getElementById('cafeHeroFly'), welcomeAnimTotal());
+    setWelcomeMarkScale(welcomeAnimTotal());
+  } else if(welcome){
+    primeCafeWelcomeGesture(welcome);
+  }
 
   function startGuidedScroll(){
     cancelMobileWelcomeProgression();
@@ -1573,10 +1840,11 @@ function bindEntryPage(screen){
     var distance = target - start;
     if(Math.abs(distance) < 2) return;
     var reduced = prefersReducedMotion();
-    var duration = reduced ? 180 : 800;
+    var duration = reduced ? 180 : 675;
     var started = performance.now();
     mobileWelcomeScrollActive = true;
     screen.classList.add('is-auto-scrolling');
+    syncEntryChoreography(screen);
     function step(now){
       if(!mobileWelcomeScrollActive) return;
       var t = Math.max(0, Math.min(1, (now - started) / duration));
@@ -1597,12 +1865,17 @@ function bindEntryPage(screen){
   }
 
   var welcomeHoldCancelled = false;
-  function stopForUserInput(){
+  function stopForUserInput(e){
+    if(e && cue && (e.target === cue || cue.contains(e.target))) return;
     welcomeHoldCancelled = true;
     cancelMobileWelcomeProgression(true);
+    /* Never trap the student behind the animation: run it out at speed and
+       bring the copy in, then hand control over. */
+    finishCafeWelcomeGesture();
   }
 
   cue.addEventListener('click', function(){
+    finishCafeWelcomeGesture();
     startGuidedScroll();
   });
 
@@ -1621,15 +1894,21 @@ function bindEntryPage(screen){
     screen.removeEventListener('wheel', stopForUserInput);
     document.removeEventListener('keydown', stopForUserInput, true);
   });
-  if(shouldAutoProgress && !prefersReducedMotion()){
+  if(shouldAutoProgress && prefersReducedMotion()){
+    settleCafeWelcomeGesture(welcome);
+  } else if(shouldAutoProgress){
     entryCleanup.push(function(){ welcomeHoldCancelled = true; });
+    entryCleanup.push(cancelWelcomeAnim);
     afterMobileWelcomeReady(welcome, function(){
       if(welcomeHoldCancelled || !screen.isConnected || !screen.classList.contains('is-entry')) return;
+      /* The animation and the hold that follows it start together, so the
+         scroll can never begin before the mark has finished and been read. */
+      playCafeWelcomeGesture(welcome);
       mobileWelcomeTimer = window.setTimeout(function(){
         mobileWelcomeTimer = 0;
         if(welcomeHoldCancelled) return;
         startGuidedScroll();
-      }, 2320);
+      }, welcomeProgressDelay());
     });
   }
   var onWinResize = function(){
@@ -1787,7 +2066,9 @@ function levelsSheet(){
 }
 /* Ambient dotted globe — the Citizen Café map. Presence is yellow pins;
    a couple of them briefly bloom into a face, then recede. Scan is thin
-   cream arcs that fade in and out as they travel, never a hard line. */
+   cream arcs that fade in and out as they travel, never a hard line.
+
+   Restore checkpoint: search-scan-canonical */
 function searchMap(){
   var faces = {
     2:'../student-main-classroom-desktop/assets/dana.png',
@@ -1826,6 +2107,7 @@ function searchMap(){
     + '</div>'
   + '</div>';
 }
+
 function searchScopeLine(){
   var n = ST.selected.length;
   var meta = n <= 1 ? 'Matching with: My level only' : ('Matching across ' + n + ' levels');
@@ -2109,15 +2391,13 @@ function screenMatched(){
    Principles are statements, not tasks. One acknowledgement enables the CTA.
    ========================================================================= */
 function agreeIcon(kind){
-  var paths = {
-    welcome:'<path d="M12 3.6v2.4M12 18v2.4M3.6 12h2.4M18 12h2.4M6.2 6.2l1.7 1.7M16.1 16.1l1.7 1.7M17.8 6.2l-1.7 1.7M7.9 16.1l-1.7 1.7"/><circle cx="12" cy="12" r="2.8"/>',
-    hebrew:'<path d="M5.5 8.2h10a2.8 2.8 0 010 5.6h-4.2L7.2 17.2v-3.4H5.5a2.8 2.8 0 010-5.6z"/>',
-    present:'<circle cx="12" cy="12" r="7.4"/><path d="M12 8.2v4.1l2.5 1.5"/>',
-    kind:'<path d="M12 18.2S6 14.2 6 10.4A3.2 3.2 0 0112 8.6a3.2 3.2 0 016 1.8c0 3.8-6 7.8-6 7.8z"/>'
-  };
-  return '<span class="agree-mark" aria-hidden="true">'
-    + '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'
-    + (paths[kind] || '') + '</svg></span>';
+  var src = {
+    hebrew:'assets/agree-hebrew.png?v=3',
+    present:'assets/agree-clock.png?v=6',
+    kind:'assets/agree-hearts.png?v=3'
+  }[kind];
+  if(!src) return '';
+  return '<span class="agree-mark" aria-hidden="true"><img src="' + src + '" alt=""></span>';
 }
 function screenAgreement(){
   var list = '';
@@ -2129,18 +2409,22 @@ function screenAgreement(){
     + '</li>';
   });
   var ack = '<label class="agree-ack' + (ST.agreed?' is-on':'') + '">'
-      + '<span class="agree-check">'
-        + '<input id="agreeAck" type="checkbox"' + (ST.agreed?' checked':'') + ' onchange="onAgreeAck(this)">'
-        + '<span class="agree-box" aria-hidden="true"></span>'
-      + '</span>'
+      + '<input id="agreeAck" class="agree-ack-input" type="checkbox"'
+        + (ST.agreed?' checked':'') + ' onchange="onAgreeAck(this)">'
+      + '<span class="agree-check" aria-hidden="true"><span class="agree-box"></span></span>'
       + '<span class="agree-ack-copy">100% agree</span>'
     + '</label>';
+  var back = '<button type="button" class="agree-back" onclick="backFromAgreement()"'
+    + ' aria-label="Back to partner">' + GM.I.chevLt + '</button>';
   return '<div class="transition-shell"></div>'
     + cafeLockup('with ' + PARTNER.name)
     + GM.sheet({
         milky:true,
         cls:'agree-sheet',
-        body:'<h4>Before jumping into the Caf\u00e9\u2026</h4>'
+        body:'<div class="agree-head">'
+          + back
+          + '<h4>Before jumping into the Caf\u00e9\u2026</h4>'
+          + '</div>'
           + '<p class="agree-intro">Here\u2019s what we\u2019re both agreeing to:</p>'
           + '<ul class="agree-list">' + list + '</ul>'
           + ack,
@@ -2158,23 +2442,15 @@ function screenAgreement(){
 /* Gym Main Room chat — overlay on the live video, composer above the dock.
    Visual language is copied from student-main-classroom-mobile; Café keeps
    the Practice Room dock (Topics / Practice / Text / Camera / Mic). */
-var CAFE_CHAT_SEED = [
-  {sender:'classmate', name:'Sarrah', level:'Yellow', text:'Why does this verb change here?'},
-  {sender:'helper', name:'Helper', reply:{name:'Sarrah', text:'Why does this verb change here?'}, text:'It changes with gender \u2014 nice catch!'},
-  {sender:'classmate', name:'Hanna', level:'Light Blue', text:'How would an Israeli say this naturally?'},
-  {sender:'helper', name:'Helper', reply:{name:'Hanna', text:'How would an Israeli say this naturally?'}, text:'Yalla balagan \uD83D\uDE04'}
-];
 var CAFE_CHAT_HALO = {
   Yellow:'#DAEF81', 'Light Blue':'#90C7FC', Green:'#DAEF81', Orange:'#F69700',
   Blue:'#90C7FC', Pink:'#F7AAF3', Red:'#F9746B', Turquoise:'#6BBEC4'
 };
 function cafeChatSeed(){
-  return CAFE_CHAT_SEED.map(function(m){
-    var copy = {sender:m.sender, name:m.name, text:m.text};
-    if(m.level) copy.level = m.level;
-    if(m.reply) copy.reply = {name:m.reply.name, text:m.reply.text};
-    return copy;
-  });
+  return [
+    {sender:'classmate', name:PARTNER.name, level:PARTNER.level, text:'Want to try ordering in Hebrew first?'},
+    {sender:'own', name:'You', text:'Yes \u2014 I\u2019ll ask for a coffee.'}
+  ];
 }
 function cafeMsgSamePerson(a, b){
   if(!a || !b) return false;
@@ -2226,7 +2502,7 @@ function cafeComposer(){
     + '<div class="footer-capsule">'
     + '<div class="ask">'
     + '<button class="react-trigger" type="button" aria-label="Reactions">' + GM.I.smiley + '</button>'
-    + '<input id="cafeChatInput" class="ph" type="text" placeholder="Ask the teacher or the class\u2026" value="' + GM.esc(draft) + '" autocomplete="off" oninput="cafeChatType(this)">'
+    + '<input id="cafeChatInput" class="ph" type="text" placeholder="Message ' + GM.esc(PARTNER.name) + '\u2026" value="' + GM.esc(draft) + '" autocomplete="off" oninput="cafeChatType(this)">'
     + '<button class="send' + active + '" id="cafeChatSend" type="button" onclick="sendText()" aria-label="Send">' + GM.I.sendPlane + '</button>'
     + '</div></div></div>';
 }
@@ -2283,7 +2559,7 @@ function screenLive(){
   var dock = GM.dock([
     {icon:GM.I.wheel, cap:'Topics',    cls:' accent', onclick:'openWheel()',    aria:'Topics'},
     {icon:GM.I.bolt,  cap:'Practice',  onclick:'openChallenge()', aria:'Practice'},
-    {icon:GM.I.chat,  cap:'Text',      on:ST.textOpen, onclick:'toggleText()',  aria:'Text chat'},
+    {icon:GM.I.chat,  cap:'Chat',      on:ST.textOpen, onclick:'toggleText()',  aria:'Chat'},
     null,
     {icon:GM.I.cam,   cap:'Camera',    slash:ST.camOff, onclick:'toggleCam()',  aria:ST.camOff?'Turn camera on':'Turn camera off'},
     {icon:GM.I.mic,   cap:'Mic',       slash:ST.micOff, onclick:'toggleMic()',  aria:ST.micOff?'Unmute':'Mute'}
@@ -2320,10 +2596,44 @@ function screenLive(){
    7 · ENDING
    Time flies, then Find me another partner, or Go back to homepage.
    ========================================================================= */
+/* =========================================================================
+   7 · ENDING
+   Time flies, then Find me another partner, or Go back to homepage.
+   ========================================================================= */
+function endingConfetti(){
+  var C = '#373230';
+  var colors = ['#F9E24C','#FFE300','#F69700','#F9746B','#90C7FC','#449CFC','#DAEF81','#7EE07C','#6BBFC4','#CEB1FF'];
+  function ink(fill){
+    return 'fill="'+fill+'" stroke="'+C+'" stroke-width="0.5" vector-effect="non-scaling-stroke"';
+  }
+  function shape(kind, fill){
+    var a = ink(fill);
+    if(kind === 'stroke') return '<svg viewBox="0 0 16 6" aria-hidden="true"><rect x="1.2" y="1.9" width="13.6" height="2.2" rx="1.1" '+a+'/></svg>';
+    if(kind === 'circ') return '<svg viewBox="0 0 10 10" aria-hidden="true"><circle cx="5" cy="5" r="3.55" '+a+'/></svg>';
+    return '<svg viewBox="0 0 10 10" aria-hidden="true"><path d="M5 1.2 L8.8 5 L5 8.8 L1.2 5 Z" '+a+'/></svg>';
+  }
+  var kinds = ['stroke','circ','dia'];
+  var html = '<span class="ending-confetti" aria-hidden="true">';
+  var i, x, drift, rot0, rot, size, delay, dur, kind;
+  for(i=0;i<28;i++){
+    x = 4 + (i * 3.4) % 92;
+    drift = (i % 2 ? 18 : -22) + (i % 5) * 4;
+    rot0 = (i % 2 ? -18 : 14) + (i % 7);
+    rot = rot0 + (i % 2 ? 120 : -140);
+    size = 10 + (i % 6) * 2;
+    delay = (i % 9) * 0.12;
+    dur = 3.4 + (i % 5) * 0.38;
+    kind = kinds[i % 3];
+    html += '<span class="ending-cf" style="--x:'+x+'%;--drift:'+drift+'px;--rot0:'+rot0+'deg;--rot:'+rot+'deg;--s:'+size+'px;--d:'+delay+'s;--dur:'+dur+'s">'
+      + shape(kind, colors[i % colors.length]) + '</span>';
+  }
+  return html + '</span>';
+}
 function screenEnding(){
   return '<div class="transition-shell"></div>'
     + cafeLockup()
     + '<main class="cafe-stage cafe-ending">'
+      + endingConfetti()
       + '<h2 class="cafe-display">Time flies!</h2>'
       + '<p class="cafe-sub">You and ' + GM.esc(PARTNER.name) + ' just spoke Hebrew for 6 minutes.</p>'
       + '<div class="cafe-acts">'
@@ -2355,6 +2665,7 @@ function seedFor(state){
     ST.matching = true; ST.left = DUR.searchTo; ST.levelsSheet = false;
     restoreLevelsDraft();
     ST.closeSheet = false;
+    ST.agreed = false;
     clearPartnerOff();
   }
   if(state === 'hub'){ if(!ST.matching){ ST.matching = true; ST.left = DUR.searchTo; } }
@@ -2367,8 +2678,8 @@ function seedFor(state){
     ST.levelsSheet = false;
     restoreLevelsDraft();
     ST.closeSheet = false;
+    ST.agreed = false;
   }
-  if(state === 'agreement'){ ST.agreed = false; }
   if(state === 'live'){
     ST.left = DUR.session; ST.textLog = cafeChatSeed(); ST.textOpen = false; ST.textDraft = ''; ST.chatExpanded = true;
     ST.leaveSheet = false; ST.keepOnSheet = false;
@@ -2389,7 +2700,7 @@ function setState(state){
   if(ORDER.indexOf(state) === -1) state = 'entry';
   ST.state = state;
   seedFor(state);
-  try{ history.replaceState(null, '', '#' + state); }catch(e){}
+  try{ history.replaceState(null, '', cafeLocation(state)); }catch(e){}
   render();
 }
 
@@ -2556,6 +2867,7 @@ function acceptMatch(){
 /* Declined by you, declined by the partner, or the window ran out: all three
    return to background matching. */
 function declineMatch(){
+  ST.agreed = false;
   ST.matching = true;
   ST.left = DUR.searchTo;
   ST.searchElapsed = 0;
@@ -2571,6 +2883,33 @@ function partnerDeclines(){
 }
 function bothAccepted(){ setState('agreement'); }
 
+/* Quiet back: return to the same partner offer. Never reject, never leave Café. */
+function backFromAgreement(){
+  if(ST.offerLeft <= 0){
+    expirePartnerOffer();
+    return;
+  }
+  ST.matchPhase = 'offer';
+  ST.matchEnter = false;
+  ST.state = 'matched';
+  try{ history.replaceState(null, '', cafeLocation('matched')); }catch(e){}
+  render();
+}
+function expirePartnerOffer(){
+  ST.agreed = false;
+  ST.matching = true;
+  ST.matchPhase = 'offer';
+  ST.matchEnter = false;
+  ST.left = DUR.searchTo;
+  ST.searchElapsed = 0;
+  ST.closeSheet = false;
+  ST.bg = 'searching';
+  ST.state = 'searching';
+  try{ history.replaceState(null, '', cafeLocation('searching')); }catch(e){}
+  render();
+  GM.toast('The window closed. Still matching\u2026');
+}
+
 function onAgreeAck(el){
   ST.agreed = !!(el && el.checked);
   var btn = document.getElementById('agreeCta');
@@ -2583,14 +2922,6 @@ function enterCafe(){ if(!ST.agreed) return; setState('live'); }
 function setPerm(p){ ST.perm = p; render(); }
 function toggleCam(){
   dismissDockTip();
-  if(ST.state === 'live' && !ST.camOff){
-    ST.keepOnSheet = true;
-    ST.leaveSheet = false;
-    ST.partnerOffSheet = false;
-    clearTimeout(partnerOffT);
-    render();
-    return;
-  }
   ST.camOff = !ST.camOff;
   render();
 }
@@ -2793,7 +3124,7 @@ function endSession(){ ST.leaveSheet = false; ST.keepOnSheet = false; clearPartn
 
 
 /* --------------------------------------------------------------- the clock */
-var TIMED = {avcheck:1, searching:1, hub:1, flashcards:1, matched:1, live:1};
+var TIMED = {avcheck:1, searching:1, hub:1, flashcards:1, matched:1, agreement:1, live:1};
 
 function tick(){
   if(!ST.clockOn || !TIMED[ST.state]) return;
@@ -2832,6 +3163,14 @@ function tick(){
       return;
     }
     syncClock();
+    return;
+  }
+  if(s === 'agreement'){
+    ST.offerLeft--;
+    if(ST.offerLeft <= 0){
+      expirePartnerOffer();
+      return;
+    }
     return;
   }
   if(s === 'live'){
@@ -3054,7 +3393,7 @@ function applyHash(){
   }
   seedFor(ST.state);
 
-  document.querySelectorAll('.sc').forEach(function(b){
+  document.querySelectorAll('.sc[data-sc]').forEach(function(b){
     b.onclick = function(){
       if(INTERVIEW) return;
       var v = b.dataset.sc;

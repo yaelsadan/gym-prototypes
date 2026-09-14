@@ -655,10 +655,12 @@ body.present .mode-btn:hover{opacity:1}
 .fc-close svg{width:16px;height:16px}
 
 /* T−10 / Starting — rackets become primary.
-   Artwork + mountLottie from Practice Rooms transfer. */
-.start{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px}
-.start .t-hero{display:grid;place-items:center;margin-bottom:10px}
-.start .t-lottie{width:520px;height:292px;max-width:78vw}
+   Same room-mark rally as Practice Room transitions. */
+.start{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;text-align:center;padding:187px 56px 64px;overflow:visible}
+.start .t-hero{display:grid;place-items:center;margin:0 0 32px;overflow:visible}
+.start .t-lottie,
+.start .t-lottie.room-mark-host{width:300px;height:168px;max-width:46vw;overflow:visible}
+.start .t-lottie.room-mark-host .room-mark{width:100%;height:100%}
 .start h2{font-family:var(--font-brand);font-weight:400;font-size:36px;line-height:1.16;margin:8px 0 10px;white-space:nowrap;letter-spacing:-.25px}
 .start .count{
   font-family:var(--font-ui);font-weight:800;font-size:64px;letter-spacing:-1px;
@@ -1945,9 +1947,8 @@ body.present .mode-btn:hover{opacity:1}
     </div>
     <div class="row" id="welcomeMotionRow">
       <span class="grp-lbl">Welcome motion</span>
-      <button type="button" class="on" data-welcome-motion="static">Static</button>
-      <button type="button" data-welcome-motion="a">Rally</button>
-      <button type="button" data-welcome-motion="c">Gym Splash</button>
+      <!-- Rally toggle archived: restore from welcome-rally.restore.txt (CSS/JS for data-v="a" is still in this file). -->
+      <button type="button" class="on" data-welcome-motion="c">Gym Splash</button>
       <span class="sep"></span>
       <button type="button" class="play" id="welcomeReplayBtn">Replay</button>
     </div>
@@ -1957,7 +1958,6 @@ body.present .mode-btn:hover{opacity:1}
       <button class="sc" data-sc="blocked-none">Blocked — no next</button>
       <span class="sep"></span>
       <span class="grp-lbl">Ending</span>
-      <button class="sc" data-sc="ending-full">Ending — Full reflection</button>
       <button class="sc" data-sc="ending-prompt">Ending — Reflection prompt</button>
       <span class="sep"></span>
       <span class="grp-lbl">Base</span>
@@ -1999,8 +1999,6 @@ body.present .mode-btn:hover{opacity:1}
   <p class="state-note" id="stateNote"></p>
   <div class="frame" id="frame"></div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.12.2/lottie.min.js"></script>
-<script src="matkot.js"></script>
 <script>
 /* ============================================================
    Transition Screens — state-driven playground
@@ -2029,15 +2027,6 @@ var I = {
   chatm:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 01-9 8.3 9 9 0 01-4-1L3 20l1.2-4A8.5 8.5 0 1121 11.5z"/></svg>',
   spark:'<svg class="spark" viewBox="0 0 33 33" fill="none"><path d="M16.1513 28.2524C14.6504 22.2425 9.89137 17.5435 3.87845 16.1079C9.85567 14.5552 14.556 9.85523 16.1085 3.8779C17.5439 9.89115 22.2428 14.6499 28.2529 16.1508C22.3122 17.6363 17.6371 22.3118 16.1513 28.2524Z" fill="#F9E24C" stroke="#373230"/></svg>'
 };
-
-/* Static rackets fallback — Practice Rooms MATKOT_SVG */
-var MATKOT_SVG='<svg class="matkot-fallback" viewBox="0 0 300 170" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">'
-  +'<g stroke="#F7F6EF" stroke-width="4" stroke-linejoin="round">'
-  +'<g transform="rotate(-16 92 92)"><rect x="52" y="34" width="80" height="98" rx="40" fill="rgba(255,255,255,.05)"/><rect x="82" y="128" width="20" height="34" rx="9" fill="rgba(255,255,255,.05)"/></g>'
-  +'<g transform="rotate(16 208 92)"><rect x="168" y="34" width="80" height="98" rx="40" fill="rgba(255,255,255,.05)"/><rect x="198" y="128" width="20" height="34" rx="9" fill="rgba(255,255,255,.05)"/></g>'
-  +'</g>'
-  +'<circle cx="150" cy="72" r="16" fill="#F9E24C" stroke="#F7F6EF" stroke-width="4"/>'
-  +'</svg>';
 
 /* Self-view still — Main Room pip-you */
 var IMG_YOU="../student-main-classroom-desktop/assets/pip-you.png";
@@ -2076,14 +2065,13 @@ var NOTES={
   'starting':'STARTING FROM A/V — less than 1 minute after check. Countdown then loading line; no Waiting Room.',
   'blocked-next':'ENTRY BLOCKED — last 7 min of current session, another session exists. Waiting Room for the next one. New copy.',
   'blocked-none':'ENTRY BLOCKED — last 7 min, no later session. Dedicated no-entry. Not Waiting/Return.',
-  'ending-full':'ENDING — FULL REFLECTION · preserved original composition with recap and full feedback column.',
   'ending-base':'ENDING — 1 SESSION · Base wrap-up. Headline for one completed session; recap stays the same. Availability is independent.',
   'ending-base-2':'ENDING — 2 IN A ROW · Base wrap-up. Stronger celebration after two consecutive sessions. Recap stays the same.',
   'ending-base-3':'ENDING — 3 BACK-TO-BACK · Base wrap-up. Strongest celebration after three consecutive sessions. Recap stays the same.',
   'ending-prompt':'ENDING — REFLECTION PROMPT · Base composition with a delayed, optional quick reflection.',
-  'ending-1':'ENDING · legacy 1-session state — opens Full reflection.',
-  'ending-2':'ENDING · legacy 2-session state — opens Full reflection.',
-  'ending-3':'ENDING · legacy 3+ session state — opens Full reflection.',
+  'ending-1':'ENDING · legacy 1-session hash — remaps to Ending — 1 session.',
+  'ending-2':'ENDING · legacy 2-session hash — remaps to Ending — 2 in a row.',
+  'ending-3':'ENDING · legacy 3+ session hash — remaps to Ending — 3 back-to-back.',
   'ending-more':'ENDING · legacy hash — remaps to 1 session with another session available.',
   'arrive':'ENTERING MAIN ROOM — same screen as T−10; countdown swaps to loading line, copy becomes “Entering the Main Room”.',
   'practice-going':'PRACTICE ROOMS — full spatial transition from Main Room into Practice Rooms.',
@@ -2138,7 +2126,7 @@ var ST={
   entering:false,          /* countdown done → loading line + entering copy */
   practiceWaitReason:'',   /* declined-timeout | left-early */
   softLoading:false,
-  welcomeMotion:'static'
+  welcomeMotion:'c'
 };
 
 function fmt(sec){
@@ -2151,35 +2139,12 @@ function hubTipAttrs(label, wide){
   return ' data-hub-tip="'+safe+'" aria-label="'+safe+'"'+(wide?' data-hub-wide':'');
 }
 
-/* ---- Lottie — Practice Rooms mountLottie (v21 playhead-preserving) ---- */
-var lottieAnim=null, lottieHost=null, lottieFrame=0;
-function destroyLottie(){
-  if(lottieAnim){
-    try{ lottieFrame=lottieAnim.currentFrame||0; }catch(e){}
-    try{ lottieAnim.destroy(); }catch(e){}
-  }
-  lottieAnim=null; lottieHost=null;
-}
-function mountLottie(){
-  var box=document.getElementById('matkot-lottie');
-  if(!box){ destroyLottie(); return; }
-  if(lottieAnim && lottieHost===box) return;
-  destroyLottie();
-  if(typeof lottie==='undefined'||typeof MATKOT==='undefined') return;
-  try{
-    box.innerHTML='';
-    lottieHost=box;
-    lottieAnim=lottie.loadAnimation({container:box,renderer:'svg',loop:true,autoplay:true,animationData:MATKOT});
-    lottieAnim.setSpeed(1.15);
-    if(lottieFrame>0){ try{ lottieAnim.goToAndPlay(lottieFrame,true); }catch(e){} }
-  }catch(e){ box.innerHTML=MATKOT_SVG; lottieAnim=null; lottieHost=null; }
-}
 function rackets(cls){
-  return '<div class="'+(cls||'t-hero')+'"><div id="matkot-lottie" class="t-lottie">'+MATKOT_SVG+'</div></div>';
+  return '<div class="'+(cls||'t-hero')+'"><div class="t-lottie room-mark-host">'+roomRallySvg()+'</div></div>';
 }
 function roomRallySvg(){
   var out='<svg class="room-mark" viewBox="'+MARK.vb+'" aria-hidden="true"'
-    +' fill="none" stroke="'+MARK.stroke+'" stroke-width="'+MARK.sw+'"'
+    +' overflow="visible" fill="none" stroke="'+MARK.stroke+'" stroke-width="'+MARK.sw+'"'
     +' stroke-linecap="round" stroke-linejoin="round">',i,p;
   for(i=0;i<MARK.paths.length;i++){
     p=MARK.paths[i];
@@ -2189,7 +2154,7 @@ function roomRallySvg(){
   return out+'<circle class="room-ball" cx="115.25" cy="76" r="11" fill="'+MARK.fill+'" stroke="'+MARK.stroke+'"/></svg>';
 }
 function roomPaddles(){
-  return '<div class="t-hero"><div class="t-lottie room-mark-host">'+roomRallySvg()+'</div></div>';
+  return rackets();
 }
 
 function lockup(){
@@ -3135,8 +3100,8 @@ function endingCelebrateMarkup(){
 }
 function isEndingScene(scene){
   scene=scene||ST.scene;
-  return scene==='ending-full'||isEndingBaseScene(scene)||scene==='ending-prompt'
-    ||scene==='ending-1'||scene==='ending-2'||scene==='ending-3'||scene==='ending-more';
+  return isEndingBaseScene(scene)||scene==='ending-prompt'
+    ||scene==='ending-full'||scene==='ending-1'||scene==='ending-2'||scene==='ending-3'||scene==='ending-more';
 }
 function isEndingBaseScene(scene){
   scene=scene||ST.scene;
@@ -3153,21 +3118,20 @@ function endingHeadline(){
 }
 function endingSceneName(){
   if(isEndingBaseScene()||ST.scene==='ending-prompt') return ST.scene;
-  return 'ending-full';
+  return 'ending-base';
 }
 function canonicalEnding(scene){
-  if(scene==='ending-more'){
-    ST.endMoreAvailable=true;
+  if(scene==='ending-more'||scene==='ending-full'||scene==='ending-1'){
+    if(scene==='ending-more') ST.endMoreAvailable=true;
     ST.endSessions=1;
-    return 'ending-full';
+    return 'ending-base';
   }
-  if(scene==='ending-1'){ ST.endSessions=1; return 'ending-full'; }
-  if(scene==='ending-2'){ ST.endSessions=2; return 'ending-full'; }
-  if(scene==='ending-3'){ ST.endSessions=3; return 'ending-full'; }
+  if(scene==='ending-2'){ ST.endSessions=2; return 'ending-base-2'; }
+  if(scene==='ending-3'){ ST.endSessions=3; return 'ending-base-3'; }
   if(scene==='ending-base'){ ST.endSessions=1; return scene; }
   if(scene==='ending-base-2'){ ST.endSessions=2; return scene; }
   if(scene==='ending-base-3'){ ST.endSessions=3; return scene; }
-  if(scene==='ending-full'||scene==='ending-prompt') ST.endSessions=1;
+  if(scene==='ending-prompt') ST.endSessions=1;
   return scene;
 }
 function openPracticeTools(){
@@ -3332,55 +3296,6 @@ function playEndingCelebration(){
 }
 function playEnding(){ playEndingCelebration(); }
 
-function screenEndingFull(){
-  var depth=endingDepth();
-  var recap=ENDING_RECAP[depth]||ENDING_RECAP[1];
-  var today=recap.today.map(function(item){ return '<li>'+item+'</li>'; }).join('');
-  var sendOn=hasEndingFeedback();
-  var sendLbl=ST.fbSent?'Sent':'Send feedback';
-  var note=depth>=3
-    ? '<div class="fb-q">Anything else you\u2019d like to share?</div>'
-      +'<textarea class="fb-note" placeholder="Share a thought, if you\u2019d like" oninput="setFbNote(this.value)">'
-      +String(ST.fbNote||'').replace(/&/g,'&amp;').replace(/</g,'&lt;')
-      +'</textarea>'
-    : '';
-  var send=depth>=3
-    ? '<button class="btn cream end-send"'+(ST.fbSent||!sendOn?' disabled':'')+' onclick="sendFeedback()">'+sendLbl+'</button>'
-    : '';
-  return lockupWelcome()
-    +'<div class="ending is-close'+(depth>=3?' is-deep':'')+(ST.endingRested?' is-rested':'')+'"><div class="ending-stage">'
-    +'<div class="ending-panel"><div class="ending-inner">'
-    +'<div class="end-copy">'
-      +'<div class="end-hero"><h2>That\u2019s a wrap! Well done.</h2></div>'
-      +'<div class="end-recap">'
-        +'<div class="end-today">'
-          +'<h3>Here\u2019s what you did in this session:</h3>'
-          +'<ul>'+today+'</ul>'
-          +endingToolsOnboarding()
-        +'</div>'
-        +'<div class="end-people">'
-          +'<h3>Your Gym partners:</h3>'
-          +'<div class="partners">'+endingPartnerHtml(recap.people)+'</div>'
-        +'</div>'
-      +'</div>'
-    +'</div>'
-    +endingCelebrateMarkup()
-    +'<div class="end-seal">'+endDoneMark()+'</div>'
-    +'</div></div>'
-    +'<aside class="end-fb">'
-      +'<div class="end-fb-body">'
-        +'<div class="end-fb-k">One quick thing</div>'
-        +'<div class="fb-q">How did that feel</div>'
-        +fbOpts('fb1',['Light','Good stretch','Tired in a good way'])
-        +'<div class="fb-q">What helped you most?</div>'
-        +fbOpts('fb2',['Hearing others','The teacher','The practice rooms'])
-        +note
-        +send
-      +'</div>'
-      +'<div class="end-acts">'+endingCtas()+'</div>'
-    +'</aside>'
-    +'</div></div>';
-}
 function endingBaseCtas(){
   var solo=!ST.endMoreAvailable;
   if(solo) return '<button class="btn end-home is-solo" onclick="goHome()">Back to homepage</button>';
@@ -3440,9 +3355,8 @@ function screenEndingBase(withPrompt){
     +'</div></div></div>';
 }
 function screenEnding(){
-  if(isEndingBaseScene()) return screenEndingBase(false);
   if(ST.scene==='ending-prompt') return screenEndingBase(true);
-  return screenEndingFull();
+  return screenEndingBase(false);
 }
 function fbOpts(key, labels){
   var html='<div class="fb-opts">';
@@ -3774,7 +3688,7 @@ function playFlow(kind){
   if(kind==='on-time'){ ST.late=false; ST.left=DUR.waiting; setScene('welcome'); }
   if(kind==='late'){ ST.late=true; setScene('welcome-late'); }
   if(kind==='last-minute'){ ST.late=false; ST.left=DUR.lastMinute; setScene('welcome'); }
-  if(kind==='one-more'){ ST.late=false; ST.endMoreAvailable=true; ST.endSessions=1; setScene('ending-full'); }
+  if(kind==='one-more'){ ST.late=false; ST.endMoreAvailable=true; ST.endSessions=1; setScene('ending-base'); }
 }
 
 function render(){
@@ -3797,9 +3711,6 @@ function render(){
   else html=screenWelcome(false);
 
   f.innerHTML=html+softLoadingOverlay();
-  var needsLottie=(scene==='waiting'||scene==='waiting-t20'||scene==='waiting-t10'||scene==='starting'||scene==='blocked-next'||scene==='arrive');
-  if(needsLottie) mountLottie();
-  else { destroyLottie(); lottieFrame=0; }
   if(isEndingScene(scene)) playEndingCelebration();
   syncSwitcher();
   syncAvMicMeter();
@@ -3807,7 +3718,7 @@ function render(){
   if(scene==='welcome'){
     playWelcomeMotion({
       desktop:true,
-      variant:ST.welcomeMotion||'static',
+      variant:ST.welcomeMotion||'c',
       surface:document.getElementById('welcomeMotionHost'),
       play:true
     });
@@ -3827,7 +3738,7 @@ function syncSwitcher(){
     b.classList.toggle('on', b.getAttribute('data-av-perm')===avPermState());
   });
   document.querySelectorAll('[data-welcome-motion]').forEach(function(b){
-    b.classList.toggle('on', b.getAttribute('data-welcome-motion')===(ST.welcomeMotion||'static'));
+    b.classList.toggle('on', b.getAttribute('data-welcome-motion')===(ST.welcomeMotion||'c'));
   });
   document.querySelectorAll('[data-av-timing]').forEach(function(b){
     var active=avTimingPreviewActive();
@@ -3839,8 +3750,8 @@ function syncSwitcher(){
       ? ' · '+(isEndingBaseScene()?ST.endSessions+' session'+(ST.endSessions===1?'':'s')+' · ':'')
         +(ST.endMoreAvailable?'next session available':'no next session available')
       : '';
-    if(ST.scene==='welcome' && ST.welcomeMotion && ST.welcomeMotion!=='static'){
-      extra+=' · Welcome motion '+(ST.welcomeMotion==='a'?'Rally':'Gym Splash');
+    if(ST.scene==='welcome' && ST.welcomeMotion==='c'){
+      extra+=' · Welcome motion Gym Splash';
     }
     var permNote=ST.scene==='av-check'?' · permission '+avPermState():'';
     note.innerHTML='<b>'+ST.scene+'</b>'+extra+(ST.entering?' · entering':'')+' — '+(NOTES[ST.scene]||'')+' · clock '+(ST.clockOn?'on':'paused')+' · '+fmt(ST.left)+permNote;

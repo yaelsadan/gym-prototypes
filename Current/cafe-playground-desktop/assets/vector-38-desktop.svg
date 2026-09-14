@@ -1,0 +1,7 @@
+<svg width="568" height="210" viewBox="0 0 568 210" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Ribbon fold: both X strokes are C1 at (478,54).
+       Lower-right leaves the junction on the same 76.6° tangent as the incoming diagonal, then eases.
+       Main cubic still crosses pill mid (~188). -->
+  <path fill="#EAE9DE" d="M-80 176 L-80 -2 C-80 -8.5 -71 -14 -60 -14 H450 C458 -14 463 -3 467 8 L478 54 L490 8 C494 -3 502 -14 518 -14 H640 C646.1 -14 652 -8.5 652 -2 V118 C555 124 492.85 116.1 478 54 L472.6 74.7 C449.8 162.1 355 189 236 190 H120 C70 190 -20 190 -60 188 C-71 188 -80 182.5 -80 176 Z"/>
+  <path fill="#F0EEE6" d="M467 8 L478 54 L490 8 Z"/>
+</svg>

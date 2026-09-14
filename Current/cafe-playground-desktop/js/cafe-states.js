@@ -185,7 +185,12 @@ var CI = {
   skipNext:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M4.6 5.1L16.6 12 4.6 18.9V5.1z"/><rect x="17.6" y="5" width="2.2" height="14" rx=".6"/></svg>',
   bookmark:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3.8h10c.7 0 1.2.5 1.2 1.2V20l-6.2-3.3L5.8 20V5c0-.7.5-1.2 1.2-1.2z"/></svg>',
   wheel:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 3.5v17M3.5 12h17M6 6l12 12M18 6L6 18"/><circle cx="12" cy="12" r="1.7" fill="currentColor" stroke="none"/></svg>',
-  bolt:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M13.4 2.5L4.8 13.4h6L10.6 21.5 19.2 10.6h-6z"/></svg>'
+  bolt:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M13.4 2.5L4.8 13.4h6L10.6 21.5 19.2 10.6h-6z"/></svg>',
+  smile:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8.5 14.5a4.5 4.5 0 007 0"/><path d="M9 9.5h.01M15 9.5h.01"/></svg>',
+  chevUp:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 15l6-6 6 6"/></svg>',
+  chevDn:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>',
+  /* Same glyph as Main Classroom footer chat (RAIL.CHAT). */
+  chat:'<svg viewBox="0 0 222 222" fill="none" stroke="currentColor" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"><path d="M111 194.25C156.974 194.25 194.25 156.978 194.25 111C194.25 65.022 156.978 27.75 111 27.75C65.022 27.75 27.75 65.022 27.75 111C27.75 126.125 31.783 140.308 38.833 152.531L31 184L63 175C76 187 93 194.25 111 194.25Z"/></svg>'
 };
 
 /* ------------------------------------------------------------------ state */
@@ -226,6 +231,11 @@ var ST = {
   card:0, cardRevealed:false, cardMarked:false, cardPlaying:false,
   textOpen:false,
   textLog:[],
+  textDraft:'',
+  chatExpanded:false,
+  chatUnread:0,
+  chatPreview:null,
+  chatDockAnim:null,
   leaveSheet:false,
   keepOnSheet:false,
   partnerOffSheet:false,
@@ -276,8 +286,12 @@ function lockup(){
 var CAFE_MARK =
   '<img class="cafe-mark" src="../cafe-playground-mobile/cafe-mark.png" alt="" aria-hidden="true">';
 
-function lockupSolo(){
-  return '<div class="lockup">'
+/* brandHidden keeps the lockup's space while the Welcome entrance owns the
+   brand: the mark and the word are invisible until the opening mark flies up
+   here, so the header never shows a second pair of cups and never shifts
+   sideways when the brand arrives. */
+function lockupSolo(brandHidden){
+  return '<div class="lockup' + (brandHidden ? ' is-brand-hidden' : '') + '">'
     + CAFE_MARK
     + '<span class="session-id"><span class="id-main">Cafe</span></span>'
     + '</div>';
@@ -298,18 +312,29 @@ function cafeDialog(opts){
     + '</div></div>';
 }
 
-function cafeFooter(items, end){
-  var html = '<div class="g-footer"><div class="footer-capsule">';
+function cafeFooter(items, end, extras){
+  extras = extras || {};
+  var chatOpen = !!extras.chatOpen;
+  var html = '<div class="g-footer">';
+  html += '<div class="footer-capsule' + (chatOpen && extras.chatAnim !== 'in' ? ' is-chat-open' : '') + '">';
+  html += '<div class="footer-glass" aria-hidden="true"></div>';
+  if(extras.preview) html += extras.preview;
+  if(extras.overlay) html += extras.overlay;
+  if(extras.composer) html += '<div class="cafe-composer-slot">' + extras.composer + '</div>';
+  html += '<div class="footer-controls">';
   (items||[]).forEach(function(it){
     if(it.divider){
       html += '<span class="rc-div" aria-hidden="true"></span>';
       return;
     }
-    html += '<button class="rc-btn' + (it.active?' is-active':'') + (it.accent?' accent':'') + '" type="button" onclick="'
+    html += '<button class="rc-btn' + (it.active?' is-active':'') + (it.accent?' accent':'')
+      + (it.chat?' is-chat':'') + (it.badge?' has-unread':'') + '" type="button" onclick="'
       + (it.onclick||'') + '"' + GP.hubTipAttrs(it.label) + '>' + it.icon
-      + (it.slash ? '<span class="slash"></span>' : '') + '</button>';
+      + (it.slash ? '<span class="slash"></span>' : '')
+      + (it.badge ? '<span class="chat-badge">' + GP.esc(String(it.badge)) + '</span>' : '')
+      + '</button>';
   });
-  html += '</div>';
+  html += '</div></div>';
   if(end){
     html += '<button class="footer-end" type="button" onclick="' + (end.onclick||'') + '">'
       + GP.I.leave + '<span>' + GP.esc(end.label) + '</span></button>';
@@ -1241,27 +1266,242 @@ function bindSpectrum(host){
   }
 }
 
-var DESKTOP_WELCOME_HOLD_MS = 1600;
-var DESKTOP_WELCOME_REVEAL_MS = 800;
+/* =========================================================================
+   WELCOME ENTRANCE — approved Café animation · hybrid-1
+   The motion is the locked playground checkpoint
+   ?restore=cafe-welcome-approved-hybrid-1, mounted from the same generated
+   renderer the mobile Café uses: ../cafe-playground-mobile/js/cafe-welcome-anim.js.
+   Playback rate, the copy cue, the closing reduction of the mark and the
+   readable hold all come from that module's approved PLAY block, so the two
+   surfaces play the identical gesture at the identical speed and neither can
+   drift. Nothing about the choreography is reinterpreted here. This surface
+   decides only where the mark sits, when the split layout arrives, and how the
+   brand lands in the header.
+   ========================================================================= */
+/* Fallback for the readable hold the shared module carries. */
+var DESKTOP_WELCOME_HOLD_MS = 750;
+/* Reduced motion, or a missing renderer: the finished mark and the copy are
+   shown together and read briefly before the split arrives. */
+var DESKTOP_WELCOME_STILL_MS = 620;
+/* The split reveal — text into the left panel, levels into the right, the mark
+   into the header — and the shortened one an early advance gets. */
+var DESKTOP_WELCOME_REVEAL_MS = 760;
 var DESKTOP_WELCOME_SHORT_MS = 420;
 var DESKTOP_WELCOME_EASE = 'cubic-bezier(0.22, 1, 0.36, 1)';
 var DESKTOP_WELCOME_SLIDE = {
-  hero: {delay:0, duration:680},
-  title:{delay:110, duration:660},
-  copy: {delay:230, duration:580}
+  mark: {delay:0, duration:740},
+  title:{delay:70, duration:640},
+  copy: {delay:150, duration:600}
 };
 var DESKTOP_WELCOME_SLIDE_SHORT = {
-  hero: {delay:0, duration:400},
-  title:{delay:62, duration:358},
-  copy: {delay:124, duration:296}
+  mark: {delay:0, duration:408},
+  title:{delay:36, duration:352},
+  copy: {delay:80, duration:330}
 };
 var desktopWelcomeAdvancing = false;
+/* Playback state. The millisecond on screen is kept so an early advance can
+   resolve the gesture from where it actually is. */
+var desktopWelcomeAnim = 0;
+var desktopWelcomeResolve = null;
+var desktopWelcomeLastMs = 0;
+var desktopBrandFlight = null;
+
+function cafeAnimApi(){ return window.CafeWelcomeAnim || null; }
+function desktopReducedMotion(){
+  return !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+}
+/* The approved animation, or the approved static mark if the renderer is not
+   loaded — the screen still reads, it simply does not move. */
+function desktopWelcomeMarkup(){
+  var api = cafeAnimApi();
+  return api ? api.markup() : cafeCupsSvg('is-static');
+}
+function desktopWelcomeHoldMs(){
+  var api = cafeAnimApi();
+  return api ? api.PLAY.HOLD_MS : DESKTOP_WELCOME_HOLD_MS;
+}
+function desktopSmooth01(t){
+  t = t < 0 ? 0 : t > 1 ? 1 : t;
+  return t * t * (3 - 2 * t);
+}
+
+/* One layout pass for the mark. While the gesture plays it is drawn at its
+   stage size reduced by the approved closing curve; the flight to the header
+   takes the same box over from there, so the reduction and the flight read as
+   one continuous shrink. Sized by its own box rather than by transform:scale,
+   so it is drawn at its true size on every frame and lands rasterised exactly
+   as the header's own copy is. */
+function layoutDesktopWelcomeMark(scale){
+  if(desktopBrandFlight) return;
+  var stage = document.getElementById('cafeEntryHero');
+  var mark = document.getElementById('cafeEntryMark');
+  if(!stage || !mark) return;
+  var w = stage.clientWidth, h = stage.clientHeight;
+  if(!w) return;
+  var mw = w * scale, mh = h * scale;
+  mark.style.width = mw + 'px';
+  mark.style.height = mh + 'px';
+  mark.style.transform = 'translate(' + ((w - mw) / 2) + 'px,' + ((h - mh) / 2) + 'px)';
+}
+function paintDesktopWelcomeFrame(ms){
+  var api = cafeAnimApi();
+  var mark = document.getElementById('cafeEntryMark');
+  if(!api || !mark) return;
+  api.frame(mark, ms);
+  layoutDesktopWelcomeMark(api.markScaleAt(ms));
+}
+function revealDesktopWelcomeCopy(main){
+  if(main) main.classList.add('is-copy-in');
+}
+function stopDesktopWelcomeAnim(){
+  if(desktopWelcomeAnim) cancelAnimationFrame(desktopWelcomeAnim);
+  desktopWelcomeAnim = 0;
+  desktopWelcomeResolve = null;
+}
+/* Reduced motion, or no renderer: the approved final mark at its settled size,
+   with the copy alongside it. No gesture. */
+function settleDesktopWelcomeAnim(main){
+  var api = cafeAnimApi();
+  stopDesktopWelcomeAnim();
+  if(api){
+    desktopWelcomeLastMs = api.TOTAL_MS;
+    paintDesktopWelcomeFrame(api.TOTAL_MS);
+  }
+  revealDesktopWelcomeCopy(main);
+}
+/* Returns the playback length, or 0 when nothing is being played. */
+function playDesktopWelcomeAnim(main){
+  var api = cafeAnimApi();
+  stopDesktopWelcomeAnim();
+  desktopWelcomeLastMs = 0;
+  if(!api || !document.getElementById('cafeEntryMark')){
+    revealDesktopWelcomeCopy(main);
+    return 0;
+  }
+  if(desktopReducedMotion()){
+    settleDesktopWelcomeAnim(main);
+    return 0;
+  }
+  var total = api.TOTAL_MS, play = api.PLAY, t0 = performance.now();
+  /* First frame painted before the clock starts, so the entry never flashes the
+     finished mark and then restarts. */
+  paintDesktopWelcomeFrame(0);
+  desktopWelcomeAnim = requestAnimationFrame(function tick(now){
+    var ms = api.sourceAt(now - t0);
+    if(desktopWelcomeResolve){
+      /* Advanced early: the remaining span is run out on its own easing from
+         wherever the mark had got to, rather than cut to the final frame. */
+      var r = desktopSmooth01((now - desktopWelcomeResolve.at) / play.RESOLVE_MS);
+      ms = desktopWelcomeResolve.from + (total - desktopWelcomeResolve.from) * r;
+    }
+    if(ms > total) ms = total;
+    desktopWelcomeLastMs = ms;
+    paintDesktopWelcomeFrame(ms);
+    if(ms >= play.COPY_MS) revealDesktopWelcomeCopy(main);
+    if(ms >= total){
+      desktopWelcomeAnim = 0;
+      desktopWelcomeResolve = null;
+      revealDesktopWelcomeCopy(main);
+      return;
+    }
+    desktopWelcomeAnim = requestAnimationFrame(tick);
+  });
+  return api.playDuration();
+}
+function resolveDesktopWelcomeAnim(main){
+  /* If the copy had not been cued yet it still fades in rather than appearing
+     all at once alongside the split layout. */
+  if(main && !main.classList.contains('is-copy-in')) main.classList.add('is-copy-late');
+  revealDesktopWelcomeCopy(main);
+  if(!desktopWelcomeAnim || desktopWelcomeResolve) return;
+  desktopWelcomeResolve = {from: desktopWelcomeLastMs, at: performance.now()};
+}
+
+/* ------------------------------------------------- the mark into the header
+   The finished mark becomes the header's mark: the same node travels there and
+   parks on the box the lockup has been reserving for it. So there is never a
+   second cups illustration on screen, nothing crossfades at the end of the
+   flight, and the settled Welcome panel holds the text alone. */
+function desktopBrandLockup(){
+  return document.querySelector('.frame.is-entry .lockup') || document.querySelector('.lockup');
+}
+function desktopMarkAspect(mark){
+  var svg = mark && mark.querySelector('svg');
+  var vb = svg && svg.viewBox && svg.viewBox.baseVal;
+  return vb && vb.width && vb.height ? vb.width / vb.height : 118 / 44;
+}
+function parkDesktopBrandMark(){
+  var mark = document.querySelector('.cafe-brand-fly');
+  var lock = mark && mark.parentNode;
+  var dest = lock && lock.querySelector && lock.querySelector('.cafe-mark');
+  if(!mark || !dest) return;
+  var lockBox = lock.getBoundingClientRect();
+  var to = dest.getBoundingClientRect();
+  if(!to.width) return;
+  var h = to.width / desktopMarkAspect(mark);
+  mark.style.transition = 'none';
+  mark.style.transform = 'none';
+  mark.style.left = (to.left - lockBox.left) + 'px';
+  mark.style.top = (to.top + to.height / 2 - h / 2 - lockBox.top) + 'px';
+  mark.style.width = to.width + 'px';
+  mark.style.height = h + 'px';
+  void mark.offsetWidth;
+  /* Parked: it now carries the same soft lift as the header art everywhere else
+     in Café. Not while it is flying — the gesture renders as approved. */
+  mark.style.transition = 'filter 220ms ease';
+  mark.classList.add('is-parked');
+}
+/* Lift the mark out of the composition onto the header lockup, still drawn at
+   the size and place it had. Measured before the split layout is applied. */
+function beginDesktopBrandFlight(from){
+  desktopBrandFlight = null;
+  var mark = document.getElementById('cafeEntryMark');
+  var lock = desktopBrandLockup();
+  var dest = lock && lock.querySelector('.cafe-mark');
+  if(!mark || !lock || !dest || !from || !from.width) return false;
+  var lockBox = lock.getBoundingClientRect();
+  var to = dest.getBoundingClientRect();
+  if(!to.width) return false;
+  /* Matched on width: the header art and the renderer draw the same cups in a
+     hair-different box, and width is what the eye reads. */
+  var w1 = to.width, h1 = to.width / desktopMarkAspect(mark);
+  var x0 = from.left - lockBox.left, y0 = from.top - lockBox.top;
+  desktopBrandFlight = {
+    mark: mark, lock: lock,
+    w1: w1, h1: h1,
+    dx: (to.left - lockBox.left) - x0,
+    dy: (to.top + to.height / 2 - h1 / 2 - lockBox.top) - y0
+  };
+  mark.className = 'cafe-brand-fly';
+  lock.appendChild(mark);
+  mark.style.transition = 'none';
+  mark.style.left = x0 + 'px';
+  mark.style.top = y0 + 'px';
+  mark.style.width = from.width + 'px';
+  mark.style.height = from.height + 'px';
+  mark.style.transform = 'none';
+  void mark.offsetWidth;
+  return true;
+}
+function runDesktopBrandFlight(ms){
+  var f = desktopBrandFlight;
+  if(!f) return;
+  var ease = ' ' + ms + 'ms ' + DESKTOP_WELCOME_EASE;
+  f.mark.style.transition = 'width' + ease + ', height' + ease + ', transform' + ease;
+  f.mark.style.width = f.w1 + 'px';
+  f.mark.style.height = f.h1 + 'px';
+  f.mark.style.transform = 'translate(' + f.dx.toFixed(2) + 'px,' + f.dy.toFixed(2) + 'px)';
+  /* The word joins late in the flight, so the mark arrives first and the lockup
+     completes itself rather than announcing itself. */
+  var word = f.lock.querySelector('.session-id');
+  if(word) word.style.transitionDelay = Math.round(ms * 0.46) + 'ms';
+  f.lock.classList.add('is-brand-in');
+}
 
 function welcomeFlyItems(main){
   return [
-    {el: main.querySelector('.cafe-welcome-fly-hero'), key:'hero', scale:true},
-    {el: main.querySelector('.cafe-welcome-fly-title'), key:'title', scale:false},
-    {el: main.querySelector('.cafe-welcome-fly-copy'), key:'copy', scale:false}
+    {el: main.querySelector('.cafe-welcome-fly-title'), key:'title'},
+    {el: main.querySelector('.cafe-welcome-fly-copy'), key:'copy'}
   ];
 }
 
@@ -1283,27 +1523,30 @@ function welcomeRect(el){
 
 function playWelcomeSlide(main, shortened){
   var items = welcomeFlyItems(main).filter(function(item){ return item.el; });
-  if(!items.length) return shortened ? DESKTOP_WELCOME_SHORT_MS : DESKTOP_WELCOME_REVEAL_MS;
+  var times = shortened ? DESKTOP_WELCOME_SLIDE_SHORT : DESKTOP_WELCOME_SLIDE;
+  var stage = main.querySelector('.cafe-welcome-fly-hero');
+  var mark = document.getElementById('cafeEntryMark');
+  /* Where each part stands now, before the split layout is applied. */
+  var markFrom = mark ? welcomeRect(mark) : null;
   var first = items.map(function(item){ return welcomeRect(item.el); });
+  var flying = beginDesktopBrandFlight(markFrom);
+  if(stage && stage.parentNode) stage.parentNode.removeChild(stage);
   main.classList.remove('is-intro');
   main.classList.add('is-revealing');
   if(shortened) main.classList.add('is-accelerated');
   if(typeof layoutSpectrum === 'function') layoutSpectrum();
   void main.offsetWidth;
-  var times = shortened ? DESKTOP_WELCOME_SLIDE_SHORT : DESKTOP_WELCOME_SLIDE;
-  var maxEnd = 0;
+  var maxEnd = flying ? times.mark.delay + times.mark.duration : 0;
   items.forEach(function(item, i){
     var last = welcomeRect(item.el);
     var dx = first[i].left - last.left;
     var dy = first[i].top - last.top;
-    var sx = item.scale && last.width ? first[i].width / last.width : 1;
-    var sy = item.scale && last.height ? first[i].height / last.height : 1;
     var t = times[item.key];
     maxEnd = Math.max(maxEnd, t.delay + t.duration);
     item.el.style.transition = 'none';
     item.el.style.transformOrigin = '0 0';
     item.el.style.willChange = 'transform';
-    item.el.style.transform = 'translate(' + dx.toFixed(2) + 'px,' + dy.toFixed(2) + 'px) scale(' + sx.toFixed(4) + ',' + sy.toFixed(4) + ')';
+    item.el.style.transform = 'translate(' + dx.toFixed(2) + 'px,' + dy.toFixed(2) + 'px)';
   });
   window.requestAnimationFrame(function(){
     window.requestAnimationFrame(function(){
@@ -1311,8 +1554,9 @@ function playWelcomeSlide(main, shortened){
       items.forEach(function(item){
         var t = times[item.key];
         item.el.style.transition = 'transform ' + t.duration + 'ms ' + DESKTOP_WELCOME_EASE + ' ' + t.delay + 'ms';
-        item.el.style.transform = 'translate(0,0) scale(1)';
+        item.el.style.transform = 'translate(0,0)';
       });
+      runDesktopBrandFlight(times.mark.duration);
     });
   });
   return maxEnd || (shortened ? DESKTOP_WELCOME_SHORT_MS : DESKTOP_WELCOME_REVEAL_MS);
@@ -1322,12 +1566,19 @@ function finishDesktopWelcomeEntrance(main){
   if(!main || !main.isConnected) return;
   var prefs = main.querySelector('.cafe-entry-prefs');
   clearWelcomeSlide(main);
-  main.classList.remove('is-intro','is-revealing','is-accelerated');
+  main.classList.remove('is-intro','is-revealing','is-accelerated','is-copy-in','is-copy-late');
   main.classList.add('is-ready');
   if(prefs){
     prefs.removeAttribute('aria-hidden');
     prefs.inert = false;
   }
+  /* The mark ends on the approved final icon, parked on the header's own box. */
+  var api = cafeAnimApi();
+  var landed = document.querySelector('.cafe-brand-fly');
+  stopDesktopWelcomeAnim();
+  if(api && landed) api.frame(landed, api.TOTAL_MS);
+  desktopBrandFlight = null;
+  parkDesktopBrandMark();
   desktopWelcomeAdvancing = false;
 }
 
@@ -1336,9 +1587,14 @@ function advanceDesktopWelcomeEntrance(shortened){
   if(!main || desktopWelcomeAdvancing) return;
   desktopWelcomeAdvancing = true;
   ST.welcomeEntranceSeen = true;
-  var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var duration;
-  if(reduced){
+  if(desktopReducedMotion()){
+    /* No flight: the mark leaves the composition and the header brand is simply
+       complete, without travel or bounce. */
+    var stage = main.querySelector('.cafe-welcome-fly-hero');
+    if(stage && stage.parentNode) stage.parentNode.removeChild(stage);
+    var lock = desktopBrandLockup();
+    if(lock) lock.classList.remove('is-brand-hidden');
     if(shortened) main.classList.add('is-accelerated');
     main.classList.remove('is-intro');
     main.classList.add('is-revealing');
@@ -1356,44 +1612,74 @@ function advanceDesktopWelcomeEntrance(shortened){
 
 function bindDesktopWelcomeEntrance(){
   var main = document.querySelector('.cafe-entry');
-  if(!main || ST.welcomeEntranceSeen){
-    if(main) finishDesktopWelcomeEntrance(main);
+  if(!main) return;
+  /* Returning from a later Café state in the same session: the split layout and
+     the complete header brand, with no replay. Only a fresh load replays. */
+  if(ST.welcomeEntranceSeen){
+    finishDesktopWelcomeEntrance(main);
     return;
   }
-  var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  desktopWelcomeAdvancing = false;
+  desktopBrandFlight = null;
+  var played = playDesktopWelcomeAnim(main);
+  var wait = played > 0 ? played + desktopWelcomeHoldMs() : DESKTOP_WELCOME_STILL_MS;
   var autoTimer = window.setTimeout(function(){
     advanceDesktopWelcomeEntrance(false);
-  }, reduced ? 520 : DESKTOP_WELCOME_HOLD_MS);
-  function interruptPointer(){
+  }, wait);
+  /* Any sign of advancing hands control back at once: the gesture is resolved
+     to its finished mark and the split layout arrives on the short timing. */
+  function advanceNow(){
     window.clearTimeout(autoTimer);
+    resolveDesktopWelcomeAnim(main);
     advanceDesktopWelcomeEntrance(true);
   }
+  function interruptPointer(){ advanceNow(); }
+  function interruptWheel(){ advanceNow(); }
   function interruptKeyboard(ev){
-    if(ev.key !== 'Tab' || !main.classList.contains('is-intro')) return;
+    if(!main.classList.contains('is-intro')) return;
+    if(ev.metaKey || ev.ctrlKey || ev.altKey) return;
+    var k = ev.key;
+    if(k !== 'Tab' && k !== 'Enter' && k !== ' ' && k !== 'Spacebar'
+      && k !== 'ArrowDown' && k !== 'ArrowRight' && k !== 'PageDown') return;
     ev.preventDefault();
-    window.clearTimeout(autoTimer);
-    advanceDesktopWelcomeEntrance(true);
+    advanceNow();
+  }
+  function onBrandResize(){
+    if(!desktopBrandFlight) parkDesktopBrandMark();
   }
   main.addEventListener('pointerdown', interruptPointer, {once:true});
+  main.addEventListener('wheel', interruptWheel, {once:true, passive:true});
   document.addEventListener('keydown', interruptKeyboard, true);
+  window.addEventListener('resize', onBrandResize);
   entryCleanup.push(function(){
     window.clearTimeout(autoTimer);
     main.removeEventListener('pointerdown', interruptPointer);
+    main.removeEventListener('wheel', interruptWheel);
     document.removeEventListener('keydown', interruptKeyboard, true);
+    window.removeEventListener('resize', onBrandResize);
+    stopDesktopWelcomeAnim();
   });
 }
 
 function screenEntry(){
-  var entranceClass = ST.welcomeEntranceSeen ? ' is-ready' : ' is-intro';
-  return lockupSolo()
+  /* The opening only runs on a fresh Café entry. Coming back from a later state
+     in the same session, the split layout and the header brand are simply
+     there: the mark has already made its way to the header, so the Welcome
+     panel carries the text and nothing else. */
+  var intro = !ST.welcomeEntranceSeen;
+  return lockupSolo(intro)
     + '<div class="cafe-shell cafe-shell-entry"></div>'
-    + '<main class="cafe-entry' + entranceClass + '" aria-label="Caf\u00e9 entry">'
+    + '<main class="cafe-entry' + (intro ? ' is-intro' : ' is-ready') + '" aria-label="Caf\u00e9 entry">'
       + '<div class="cafe-entry-compose">'
         + '<section class="cafe-entry-welcome" aria-label="Welcome">'
           + '<div class="cafe-entry-welcome-lockup">'
-            + '<div class="cafe-welcome-fly cafe-welcome-fly-hero">'
-              + '<div class="cafe-entry-hero" aria-hidden="true">' + cafeCupsSvg('is-static') + '</div>'
-            + '</div>'
+            + (intro
+              ? '<div class="cafe-welcome-fly cafe-welcome-fly-hero">'
+                + '<div class="cafe-entry-hero" id="cafeEntryHero" aria-hidden="true">'
+                  + '<div class="cafe-entry-mark" id="cafeEntryMark">' + desktopWelcomeMarkup() + '</div>'
+                + '</div>'
+              + '</div>'
+              : '')
             + '<div class="cafe-welcome-fly cafe-welcome-fly-title">'
               + '<h2 class="cafe-display cafe-welcome-title">Welcome<br><span class="cafe-welcome-line">to the <b>Caf\u00e9</b>!</span></h2>'
             + '</div>'
@@ -1851,7 +2137,7 @@ function matchSheet(){
   var framed = ST.matchLayout === 'framed';
   var enter = ST.matchEnter ? ' is-enter' : '';
   var card = '<div class="match-card' + (accepted?' is-waiting':'') + (framed?' is-framed':'') + '">'
-    + '<img class="match-card-deco" src="../cafe-playground-mobile/assets/match-card-deco.png" alt="" aria-hidden="true">'
+    + '<img class="match-card-deco" src="assets/vector-41-desktop.png?v=20260914-44" alt="" aria-hidden="true">'
     + '<div class="match-intro">'
       + '<span class="match-photo"><img src="' + PARTNER.img + '" alt="' + GP.esc(PARTNER.name) + '"></span>'
       + '<div class="match-who">'
@@ -1908,15 +2194,13 @@ function screenMatched(){
 
 /* --------------------------------------------------- 5. SESSION AGREEMENT */
 function agreeIcon(kind){
-  var paths = {
-    welcome:'<path d="M12 3.6v2.4M12 18v2.4M3.6 12h2.4M18 12h2.4M6.2 6.2l1.7 1.7M16.1 16.1l1.7 1.7M17.8 6.2l-1.7 1.7M7.9 16.1l-1.7 1.7"/><circle cx="12" cy="12" r="2.8"/>',
-    hebrew:'<path d="M5.5 8.2h10a2.8 2.8 0 010 5.6h-4.2L7.2 17.2v-3.4H5.5a2.8 2.8 0 010-5.6z"/>',
-    present:'<circle cx="12" cy="12" r="7.4"/><path d="M12 8.2v4.1l2.5 1.5"/>',
-    kind:'<path d="M12 18.2S6 14.2 6 10.4A3.2 3.2 0 0112 8.6a3.2 3.2 0 016 1.8c0 3.8-6 7.8-6 7.8z"/>'
-  };
-  return '<span class="agree-mark" aria-hidden="true">'
-    + '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'
-    + (paths[kind] || '') + '</svg></span>';
+  var src = {
+    hebrew:'assets/agree-hebrew.png?v=3',
+    present:'assets/agree-clock.png?v=6',
+    kind:'assets/agree-hearts.png?v=3'
+  }[kind];
+  if(!src) return '';
+  return '<span class="agree-mark" aria-hidden="true"><img src="' + src + '" alt=""></span>';
 }
 
 function screenAgreement(){
@@ -1935,13 +2219,18 @@ function screenAgreement(){
       + '</span>'
       + '<span class="agree-ack-copy">100% agree</span>'
     + '</label>';
+  var back = '<button type="button" class="agree-back" onclick="backFromAgreement()" aria-label="Back to Match Found">'
+    + '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>'
+    + '</button>';
   return lockup()
     + '<div class="cafe-shell"></div>'
     + cafeDialog({
         milky:true,
         cls:'agree-dialog',
-        title:'Before jumping into the Caf\u00e9\u2026',
-        body:'<p class="agree-intro">Here\u2019s what we\u2019re both agreeing to:</p>'
+        body:'<div class="agree-head">' + back
+          + '<h4 id="agreeTitle">Before jumping into the Caf\u00e9\u2026</h4>'
+          + '</div>'
+          + '<p class="agree-intro">Here\u2019s what we\u2019re both agreeing to:</p>'
           + '<ul class="agree-list">' + list + '</ul>'
           + ack,
         acts:'<button class="btn primary" id="agreeCta" type="button" onclick="enterCafe()"'
@@ -1950,24 +2239,81 @@ function screenAgreement(){
 }
 
 /* ------------------------------------------------- 6. LIVE CAFE SESSION */
-function textSheet(){
-  var log = '';
-  ST.textLog.forEach(function(m){
-    log += '<div class="ts-msg' + (m.own?' own':'') + '">' + GP.esc(m.text) + '</div>';
+function cafeChatSeed(){
+  return [
+    {s:'partner', n:PARTNER.name, t:'Want to try ordering in Hebrew first?'},
+    {s:'own', n:'You', t:'Yes \u2014 I\u2019ll ask for a coffee.'},
+    {s:'partner', n:PARTNER.name, t:'Great. How do you spell \u05e7\u05e4\u05d4?'},
+    {s:'own', n:'You', t:'Qof, pe, he.'}
+  ];
+}
+function cafeMsgSame(a, b){
+  if(!a || !b) return false;
+  return (a.s || '') === (b.s || '') && (a.n || a.name || '') === (b.n || b.name || '');
+}
+function cafeChatMsg(m, opts){
+  opts = opts || {};
+  var own = m.s === 'own' || m.own;
+  var helper = m.s === 'helper';
+  var name = own ? 'You' : (m.n || m.name || PARTNER.name);
+  var text = m.t || m.text || '';
+  var isLead = opts.isLead !== false;
+  var cls = 'mo' + (own ? ' is-own' : '') + (helper ? ' is-helper' : '') + (isLead ? ' has-av' : ' cont');
+  var haloCol = helper ? '' : (own ? '#DAEF81' : '#90C7FC');
+  var halo = haloCol ? '<span class="av-halo" style="background:' + haloCol + '" aria-hidden="true"></span>' : '';
+  var nm = helper
+    ? (GP.I.spark + (name === 'Helper' || name === 'helper' ? 'Helper' : GP.esc(name) + ' \u00B7 Helper'))
+    : GP.esc(name);
+  var av = isLead
+    ? ('<div class="av-gutter"><span class="av">' + halo + '<span class="av-face">' + GP.esc(GP.initial(name)) + '</span></span></div>')
+    : '<div class="av-gutter"></div>';
+  return '<div class="' + cls + '">'
+    + av
+    + '<div class="bd"><div class="nm">' + nm + '</div><div class="tx">' + GP.esc(text) + '</div></div>'
+    + '</div>';
+}
+function cafeChatOverlay(){
+  var msgs = ST.textLog || [];
+  var canExpand = msgs.length > 3;
+  var expanded = !!ST.chatExpanded && canExpand;
+  var shown = expanded ? msgs : msgs.slice(-3);
+  var html = '';
+  shown.forEach(function(m, i){
+    var prev = i ? shown[i - 1] : (expanded ? null : msgs[msgs.length - shown.length - 1]);
+    html += cafeChatMsg(m, {isLead:!cafeMsgSame(m, prev)});
   });
-  return '<aside class="panel cafe-text-panel" aria-label="Activity and text">'
-    + '<div class="panel-head"><span class="pt">Right now</span>'
-      + '<button class="pclose" type="button" onclick="closeText()" aria-label="Close"'
-      + GP.hubTipAttrs('Close') + '>' + GP.I.x + '</button></div>'
-    + '<div class="ts-activity"><div class="ts-title">' + GP.esc(ACTIVITY.title) + '</div>'
-    + '<div class="ts-body">' + GP.esc(ACTIVITY.body) + '</div></div>'
-    + (log ? '<div class="ts-log" id="tsLog">' + log + '</div>' : '')
-    + '<div class="composer">'
-      + '<input id="tsInput" type="text" placeholder="Spell it, or type a short answer\u2026" autocomplete="off">'
-      + '<button class="send" type="button" onclick="sendText()"' + GP.hubTipAttrs('Send') + '>' + GP.I.send + '</button>'
-    + '</div>'
-    + '<p class="ts-note">Nothing here is saved after this chat.</p>'
-    + '</aside>';
+  var grow = '';
+  if(canExpand){
+    grow = '<button type="button" class="chat-grow" onclick="toggleChatExpand()" aria-label="'
+      + (expanded ? 'Collapse chat' : 'Show earlier messages') + '">'
+      + (expanded ? CI.chevDn : CI.chevUp) + '</button>';
+  }
+  return '<div class="cafe-chat-overlay ' + (expanded?'is-expanded':'is-compact') + '" id="ovl" aria-label="Chat">'
+    + grow
+    + '<div class="chat-history" id="cafeChatHistory"><div class="chat-stack">' + html + '</div></div>'
+    + '</div>';
+}
+function cafeComposer(){
+  var draft = ST.textDraft || '';
+  var active = draft.trim() ? ' active' : '';
+  return '<div class="cafe-composer">'
+    + '<button class="react-btn" type="button" aria-label="Reactions"' + GP.hubTipAttrs('Reactions') + '>' + CI.smile + '</button>'
+    + '<input id="cafeChatInput" type="text" placeholder="Message ' + GP.esc(PARTNER.name) + '\u2026" value="' + GP.esc(draft) + '" autocomplete="off">'
+    + '<button class="send' + active + '" type="button" onclick="sendText()"' + GP.hubTipAttrs('Send') + '>' + GP.I.send + '</button>'
+    + '</div>';
+}
+function cafeChatPreview(){
+  var m = ST.chatPreview;
+  if(!m) return '';
+  var helper = m.s === 'helper';
+  var name = m.n || m.name || PARTNER.name;
+  var nm = helper
+    ? (name === 'Helper' || name === 'helper' ? 'Helper' : GP.esc(name) + ' \u00B7 Helper')
+    : GP.esc(name);
+  return '<button type="button" class="cafe-chat-preview' + (helper?' is-helper':'') + '" onclick="openText()">'
+    + '<span class="en">' + nm + '</span>'
+    + '<span class="tx">' + GP.esc(m.t || m.text || '') + '</span>'
+    + '</button>';
 }
 
 function leaveSheet(){
@@ -2019,32 +2365,40 @@ function dockTipHtml(){
 }
 
 function screenLive(){
+  var unread = ST.chatUnread > 9 ? '9+' : (ST.chatUnread || 0);
+  var sheetOpen = ST.leaveSheet || ST.keepOnSheet || ST.partnerOffSheet;
+  var chatOpen = ST.textOpen && !sheetOpen;
   var controls = [
+    {icon:CI.chat, label:'Chat', chat:true, active:chatOpen, badge:(!chatOpen && unread) ? unread : 0, onclick:'toggleText()'},
     {icon:CI.wheel, label:'Topics', accent:true, onclick:'openWheel()'},
     {icon:CI.bolt,  label:'Practice', onclick:'openChallenge()'},
-    {icon:GP.I.chat, label:'Text', active:ST.textOpen, onclick:'toggleText()'},
     {divider:true},
     {icon:GP.I.cam, label:ST.camOff?'Turn camera on':'Turn camera off', slash:ST.camOff, onclick:'toggleCam()'},
     {icon:GP.I.mic, label:ST.micOff?'Unmute':'Mute', slash:ST.micOff, onclick:'toggleMic()'}
   ];
-  var dock = cafeFooter(controls, {label:'Leave & report', onclick:'openLeave()'});
-  var sheetOpen = ST.textOpen || ST.leaveSheet || ST.keepOnSheet || ST.partnerOffSheet;
-  if(ST.dockTip && !sheetOpen){
+  var extras = {
+    chatOpen: chatOpen,
+    chatAnim: ST.chatDockAnim,
+    composer: cafeComposer(),
+    overlay: chatOpen ? cafeChatOverlay() : '',
+    preview: (!chatOpen && !sheetOpen && ST.chatPreview) ? cafeChatPreview() : ''
+  };
+  var dock = cafeFooter(controls, {label:'Leave & report', onclick:'openLeave()'}, extras);
+  if(ST.dockTip && !sheetOpen && !ST.textOpen && !ST.chatPreview){
     dock = dock.replace('<div class="g-footer">', '<div class="g-footer">' + dockTipHtml());
   }
 
   return '<div class="cafe-shell deep"></div>'
+    + '<div class="clock-chrome-fade" aria-hidden="true"></div>'
     + '<div class="cafe-topbar">'
-      + lockup()
       + '<div class="top-right">' + GP.timePill(ST.left, DUR.sessionFinal) + '</div>'
     + '</div>'
-    + '<div class="cafe-tiles' + (ST.textOpen?' with-panel':'') + '">'
+    + '<div class="cafe-tiles">'
       + '<div class="g-split">'
         + cafeTile(PARTNER.name, {img:PARTNER.img, camOff:ST.partnerCamOff, micOff:ST.partnerMicOff})
         + cafeTile('You', {alt:true, img:IMG_YOU, camOff:ST.camOff, micOff:ST.micOff})
       + '</div>'
     + '</div>'
-    + (ST.textOpen ? textSheet() : '')
     + dock
     + (ST.leaveSheet ? leaveSheet() : '')
     + (ST.keepOnSheet ? keepOnSheet() : '')
@@ -2052,10 +2406,41 @@ function screenLive(){
 }
 
 /* ------------------------------ 7. SESSION ENDING / SEARCHING AGAIN */
+function endingConfetti(){
+  var C = '#373230';
+  var colors = ['#F9E24C','#FFE300','#F69700','#F9746B','#90C7FC','#449CFC','#DAEF81','#7EE07C','#6BBFC4','#CEB1FF'];
+  function ink(fill){
+    return 'fill="'+fill+'" stroke="'+C+'" stroke-width="0.5" vector-effect="non-scaling-stroke"';
+  }
+  function shape(kind, fill){
+    var a = ink(fill);
+    if(kind === 'stroke') return '<svg viewBox="0 0 16 6" aria-hidden="true"><rect x="1.2" y="1.9" width="13.6" height="2.2" rx="1.1" '+a+'/></svg>';
+    if(kind === 'circ') return '<svg viewBox="0 0 10 10" aria-hidden="true"><circle cx="5" cy="5" r="3.55" '+a+'/></svg>';
+    return '<svg viewBox="0 0 10 10" aria-hidden="true"><path d="M5 1.2 L8.8 5 L5 8.8 L1.2 5 Z" '+a+'/></svg>';
+  }
+  var kinds = ['stroke','circ','dia'];
+  var html = '<span class="ending-confetti" aria-hidden="true">';
+  var i, x, drift, rot0, rot, size, delay, dur, kind;
+  for(i=0;i<28;i++){
+    x = 4 + (i * 3.4) % 92;
+    drift = (i % 2 ? 18 : -22) + (i % 5) * 4;
+    rot0 = (i % 2 ? -18 : 14) + (i % 7);
+    rot = rot0 + (i % 2 ? 120 : -140);
+    size = 10 + (i % 6) * 2;
+    delay = (i % 9) * 0.12;
+    dur = 3.4 + (i % 5) * 0.38;
+    kind = kinds[i % 3];
+    html += '<span class="ending-cf" style="--x:'+x+'%;--drift:'+drift+'px;--rot0:'+rot0+'deg;--rot:'+rot+'deg;--s:'+size+'px;--d:'+delay+'s;--dur:'+dur+'s">'
+      + shape(kind, colors[i % colors.length]) + '</span>';
+  }
+  return html + '</span>';
+}
+
 function screenEnding(){
   return lockupSolo()
     + '<div class="cafe-shell"></div>'
     + '<main class="cafe-stage cafe-ending">'
+      + endingConfetti()
       + '<div class="ending-copy">'
         + '<h2 class="g-display">Time flies!</h2>'
         + '<p class="g-sub">You and ' + GP.esc(PARTNER.name) + ' just spoke Hebrew for 6 minutes.</p>'
@@ -2105,7 +2490,9 @@ function seedFor(state){
   }
   if(state === 'agreement'){ ST.agreed = false; }
   if(state === 'live'){
-    ST.left = DUR.session; ST.textLog = []; ST.textOpen = false;
+    ST.left = DUR.session; ST.textLog = cafeChatSeed(); ST.textOpen = false; ST.textDraft = '';
+    ST.chatExpanded = false; ST.chatUnread = 0; ST.chatPreview = null; ST.chatDockAnim = null;
+    clearTimeout(chatDockCloseT); chatDockCloseT = null;
     ST.leaveSheet = false; ST.keepOnSheet = false;
     clearPartnerOff();
     if(!ST.dockTipSeen) armDockTip();
@@ -2273,6 +2660,17 @@ function partnerDeclines(){
 }
 function bothAccepted(){ setState('agreement'); }
 
+function backFromAgreement(){
+  if(ST.state !== 'agreement') return;
+  ST.agreed = false;
+  if(ST.matchPhase !== 'accepted') ST.matchPhase = 'offer';
+  if(ST.matchPhase === 'accepted' && ST.left <= 0) ST.left = DUR.partnerConfirm;
+  if(ST.matchPhase === 'offer' && ST.offerLeft <= 0) ST.offerLeft = DUR.offer;
+  ST.state = 'matched';
+  try{ history.replaceState(null, '', '#matched'); }catch(e){}
+  render();
+}
+
 function onAgreeAck(el){
   ST.agreed = !!(el && el.checked);
   var btn = document.getElementById('agreeCta');
@@ -2285,14 +2683,6 @@ function enterCafe(){ if(!ST.agreed) return; setState('live'); }
 function setPerm(p){ ST.perm = p; render(); }
 function toggleCam(){
   dismissDockTip();
-  if(ST.state === 'live' && !ST.camOff){
-    ST.keepOnSheet = true;
-    ST.leaveSheet = false;
-    ST.partnerOffSheet = false;
-    clearTimeout(partnerOffT);
-    render();
-    return;
-  }
   ST.camOff = !ST.camOff;
   render();
 }
@@ -2340,16 +2730,91 @@ function cardNext(){ cardStep(1); }
 function openWheel(){ dismissDockTip(); cafeToast('Topics \u2014 entry point only in this pass'); }
 function openChallenge(){ dismissDockTip(); cafeToast('Practice \u2014 entry point only in this pass'); }
 
-function toggleText(){ dismissDockTip(); ST.textOpen = !ST.textOpen; render(); }
-function closeText(){ ST.textOpen = false; render(); }
+function toggleText(){
+  dismissDockTip();
+  var cap = document.querySelector('.frame .footer-capsule');
+  if(ST.textOpen && cap && !cap.classList.contains('is-chat-open')){
+    clearTimeout(chatDockCloseT);
+    chatDockCloseT = null;
+    cap.classList.add('is-chat-open');
+    return;
+  }
+  if(ST.textOpen){
+    closeText();
+    return;
+  }
+  openText();
+}
+function openText(){
+  dismissDockTip();
+  clearTimeout(chatPreviewT);
+  clearTimeout(chatDockCloseT);
+  var wasOpen = !!ST.textOpen;
+  ST.textOpen = true;
+  ST.chatUnread = 0;
+  ST.chatPreview = null;
+  ST.chatExpanded = false;
+  if(!(ST.textLog && ST.textLog.length)) ST.textLog = cafeChatSeed();
+  ST.chatDockAnim = wasOpen ? null : 'in';
+  var cap = document.querySelector('.frame .footer-capsule');
+  if(wasOpen && cap){
+    cap.classList.add('is-chat-open');
+    return;
+  }
+  render();
+}
+function closeText(){
+  ST.chatExpanded = false;
+  var cap = document.querySelector('.frame .footer-capsule');
+  if(ST.textOpen && cap && cap.classList.contains('is-chat-open')){
+    cap.classList.remove('is-chat-open');
+    clearTimeout(chatDockCloseT);
+    chatDockCloseT = setTimeout(function(){
+      chatDockCloseT = null;
+      ST.textOpen = false;
+      ST.chatDockAnim = null;
+      render();
+    }, 360);
+    return;
+  }
+  ST.textOpen = false;
+  ST.chatDockAnim = null;
+  render();
+}
 function toggleChat(){ toggleText(); }
+function toggleChatExpand(){
+  if((ST.textLog || []).length <= 3) return;
+  ST.chatExpanded = !ST.chatExpanded;
+  render();
+}
 function sendText(){
-  var el = document.getElementById('tsInput');
-  if(!el) return;
-  var text = el.value.trim();
+  var el = document.getElementById('cafeChatInput');
+  var text = ((el && el.value) || ST.textDraft || '').trim();
   if(!text) return;
-  ST.textLog.push({own:true, text:text});
-  el.value = '';
+  ST.textLog.push({s:'own', n:'You', t:text});
+  ST.textDraft = '';
+  if(el) el.value = '';
+  render();
+}
+var chatPreviewT = null;
+var chatDockCloseT = null;
+function receivePartnerChat(text){
+  if(ST.state !== 'live') return;
+  var msg = {s:'partner', n:PARTNER.name, t:text || 'How do you spell that?'};
+  ST.textLog.push(msg);
+  if(ST.textOpen){
+    ST.chatPreview = null;
+    render();
+    return;
+  }
+  ST.chatUnread = (ST.chatUnread || 0) + 1;
+  ST.chatPreview = msg;
+  clearTimeout(chatPreviewT);
+  chatPreviewT = setTimeout(function(){
+    chatPreviewT = null;
+    ST.chatPreview = null;
+    render();
+  }, 4800);
   render();
 }
 
@@ -2545,13 +3010,27 @@ function render(){
     bindDesktopWelcomeEntrance();
   }
 
+  if(s === 'live' && ST.textOpen && ST.chatDockAnim === 'in'){
+    ST.chatDockAnim = null;
+    var cap = f.querySelector('.footer-capsule');
+    requestAnimationFrame(function(){
+      requestAnimationFrame(function(){
+        if(!ST.textOpen || !cap) return;
+        cap.classList.add('is-chat-open');
+      });
+    });
+  }
+
   if(ST.textOpen){
-    var log = document.getElementById('tsLog');
-    if(log) log.scrollTop = log.scrollHeight;
-    var input = document.getElementById('tsInput');
+    var input = document.getElementById('cafeChatInput');
     if(input){
       input.focus();
       input.addEventListener('keydown', function(ev){ if(ev.key === 'Enter') sendText(); });
+      input.addEventListener('input', function(){
+        ST.textDraft = input.value;
+        var send = input.parentNode && input.parentNode.querySelector('.send');
+        if(send) send.classList.toggle('active', input.value.trim().length > 0);
+      });
     }
   }
   if(ST.closeSheet && ST.state === 'searching') bindCloseDecisionFocus();

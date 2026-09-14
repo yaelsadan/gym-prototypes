@@ -39,9 +39,9 @@
 </style>
 
 <!-- Shared Gym mobile design system. Do not add Café rules to these files. -->
-<link rel="stylesheet" href="css/gym-mobile.css?v=20260910-7">
+<link rel="stylesheet" href="css/gym-mobile.css?v=20260914-icon1">
 <!-- Café-only styling. -->
-<link rel="stylesheet" href="css/cafe-mobile.css?v=20260910-7">
+<link rel="stylesheet" href="css/cafe-mobile.css?v=20260914-end1">
 </head>
 <body>
 
@@ -82,6 +82,7 @@
     <button type="button" onclick="reviewMatchingStopped()">Matching stopped</button>
 
     <div class="grp">Welcome cups (debug playground)</div>
+    <button type="button" onclick="location.href='../cafe-welcome-cups-animation-playground/index.html?restore=cafe-welcome-approved-hybrid-1'">Approved animation · hybrid-1</button>
     <button type="button" onclick="location.href='../cafe-welcome-cups-animation-playground/index.html'">Open cups motion playground</button>
     <div class="anim-debug-tools">
     <div class="grp">Animation debug (saved reference)</div>
@@ -142,7 +143,7 @@
 
 <div class="anim-debug-tools">
 <h2>Animation debug — six static frames</h2>
-<p class="lead" style="margin-bottom:12px">Saved development reference. Not product UI. Hidden unless <code>?animdebug=1</code>. The moving-cups refinement lives in <a href="../cafe-welcome-cups-animation-playground/index.html">cafe-welcome-cups-animation-playground</a> — canonical Welcome is unchanged.</p>
+<p class="lead" style="margin-bottom:12px">Saved development reference. Not product UI. Hidden unless <code>?animdebug=1</code>. Superseded: the Welcome now plays the approved animation <b>hybrid-1</b>, integrated from <a href="../cafe-welcome-cups-animation-playground/index.html?restore=cafe-welcome-approved-hybrid-1">the motion playground's locked checkpoint</a>.</p>
 <div id="animDebugGrid" class="anim-debug-grid"></div>
 </div>
 
@@ -160,6 +161,7 @@
   <div class="note-card">
     <h3>Product decisions this pass encodes</h3>
     <ul>
+      <li><b>The Welcome opens with the approved cups animation.</b> The hero mark is the approved <code>hybrid-1</code> animation — the same renderer and sampler as the playground checkpoint <code>?restore=cafe-welcome-approved-hybrid-1</code>, not a second implementation of it. It plays once per fresh Café entry, in memory only, over 2440ms — the approved 3200ms source, played hotter through the toast and the launch and at the reference rate from the conversation pose on, so the choreography itself is untouched. The header carries only the close control while it runs: the big mark is the only Café brand on screen. The copy fades and rises in as the mark closes, the mark eases down to its settled size as the cups come to rest, and that finished mark is then the one reduced into the header, with <i>Café</i> joining it late in the flight. There is never a second cups icon or a second wordmark on screen.</li>
       <li><b>Preferences are a continuous level range.</b> All eligible levels are selected by default — the recommended matching state. The student may narrow or widen a single spectrum; there are no gaps, and their own level always stays inside the range. Level names and order come from <code>LEVEL_DATA.eligible</code> (placeholder data).</li>
       <li><b>The helper is supportive, not a count.</b> The default line is <i>All levels selected — your best chance of meeting someone</i>. A narrower range names the ends, and a very tight range adds that widening may help.</li>
       <li><b>A/V check runs before matching, on every entry.</b> Live mic feedback is the Gym echo on the Mic control. Device setup is behind a quiet settings affordance. The Entry CTA is a continuation, and <b>Start matching</b> lives at the end of the check.</li>
@@ -183,7 +185,11 @@
   </div>
 </div>
 
-<script src="js/gym-mobile.js?v=20260910-7"></script>
-<script src="js/cafe-mobile-states.js?v=20260910-7"></script>
+<script src="js/gym-mobile.js?v=20260914-icon1"></script>
+<!-- Approved Café Welcome animation (hybrid-1). Generated from the motion
+     playground; product renderer only, no playground UI. Must load before the
+     Café states so the Welcome hero can mount it. -->
+<script src="js/cafe-welcome-anim.js?v=20260914-hybrid-1"></script>
+<script src="js/cafe-mobile-states.js?v=20260914-end1"></script>
 </body>
 </html>

@@ -364,7 +364,12 @@ h2{font-size:15px;margin:var(--s32) 0 var(--s8)}
   background:rgba(55,50,48,.40);color:#F7F6EF;box-shadow:none;
 }
 .rc-btn svg{width:22px;height:22px;color:inherit}
-.rc-btn.is-on{background:rgba(247,246,239,.22);border-color:rgba(247,246,239,.34)}
+.rc-btn.is-on{
+  background:rgba(55,50,48,.40);
+  border-color:rgba(255,246,236,.10);
+  color:var(--brand-yellow);
+}
+.rc-btn.is-on svg{color:var(--brand-yellow)}
 .rc-btn .slash{
   position:absolute;top:50%;left:50%;width:32px;height:2.8px;background:var(--status-live);border-radius:3px;
   transform:translate(-50%,-50%) rotate(-45deg);box-shadow:0 0 0 1.6px rgba(43,39,36,.6);
