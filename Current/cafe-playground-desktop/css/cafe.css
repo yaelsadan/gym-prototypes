@@ -496,13 +496,6 @@
 .frame.is-entry.is-spec-dragging{touch-action:none}
 .level-spectrum.is-dragging .spec-node{pointer-events:none}
 
-/* Searching edit-levels sheet still uses scope chips */
-.pref-row{display:flex;flex-wrap:wrap;gap:10px}
-.pref-row .g-choice.stacked{min-width:236px}
-.pref-edge{
-  margin-top:2px;font-size:14px;font-weight:500;line-height:1.4;
-  color:rgba(247,246,239,.50);
-}
 
 @media (max-width: 1280px){
   .cafe-entry{padding:80px 32px 28px}
@@ -955,19 +948,38 @@
   .search-close-pop::before{display:none}
 }
 
-.invite.milky.levels-dialog{width:min(640px, calc(100% - 80px));text-align:left}
-.levels-dialog .pool-line{
-  margin:0 0 8px;font-size:15px;font-weight:500;line-height:1.4;color:#716C66;
+/* Edit levels: the same spectrum as Entry, on the milky dialog.
+   Copy contrast follows the mobile levels sheet so labels stay readable. */
+.invite.milky.levels-dialog{
+  width:min(720px, calc(100% - 64px));
+  text-align:left;
+  padding:26px 32px 24px;
+  overflow:visible;
 }
-.levels-dialog .pref-row{display:flex;flex-wrap:wrap;gap:10px;margin:6px 0 10px}
-.levels-dialog .g-choice{
-  background:rgba(55,50,48,.05);border-color:rgba(55,50,48,.22);color:var(--brand-charcoal);
+.invite.milky.levels-dialog h4{margin:0 0 4px}
+.invite.milky.levels-dialog p.pool-line{
+  margin:0 0 2px;font-size:15px;font-weight:500;line-height:1.4;color:#716C66;
 }
-.levels-dialog .g-choice:hover{background:rgba(55,50,48,.08)}
-.levels-dialog .g-choice.is-on{background:var(--brand-yellow);border-color:var(--brand-charcoal)}
-.levels-dialog .g-choice.stacked .ch-hint{color:#716C66}
-.levels-dialog .g-choice.stacked.is-on .ch-hint{color:rgba(55,50,48,.62)}
-.levels-dialog .pref-edge{color:#716C66}
+.levels-dialog .level-spectrum{max-width:520px;margin:-20px auto 0}
+.levels-dialog .spec-board{padding-top:0}
+.levels-dialog .spec-stage{margin-top:0}
+.levels-dialog .spec-orient{color:#716C66;margin-top:2px}
+.invite.milky.levels-dialog .spec-hint,
+.invite.milky.levels-dialog .spec-hint-arrow{
+  margin:0;color:#716C66;
+  font-size:13px;font-weight:500;line-height:1.25;
+}
+.levels-dialog .spec-sr{margin:0}
+.invite.milky.levels-dialog .acts{
+  margin-top:16px;
+  justify-content:center;
+}
+.invite.milky.levels-dialog .btn.primary{
+  flex:none;
+  width:260px;
+  border:0;
+  box-shadow:0 6px 18px rgba(55,50,48,.12);
+}
 
 
 /* =========================================================================

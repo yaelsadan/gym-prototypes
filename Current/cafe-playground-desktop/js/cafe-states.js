@@ -58,8 +58,8 @@ var NOTES = {
 };
 
 /* ------------------------------------------------------- matching scope */
-/* Searching "Edit levels" still uses these three scope chips. Entry uses the
-   continuous spectrum (LEVEL_DATA + range). setScope maps onto the range. */
+/* Entry and Edit levels share the continuous spectrum (LEVEL_DATA + range).
+   setScope remains as a mapping from the old three scopes onto that range. */
 var SCOPES = [
   {id:'exact', label:'Exactly my level',    hint:'',                      lower:0, upper:0},
   {id:'below', label:'My level and below',  hint:'up to 3 levels lower',  lower:3, upper:0},
@@ -833,7 +833,9 @@ function specTipsOverlap(a, b, padX, padY){
 }
 function layoutSpecLabels(root){
   var board = root.querySelector('.spec-board');
-  var host = document.querySelector('.cafe-entry-prefs') || document.getElementById('frame');
+  var host = root.closest('.levels-dialog')
+    || document.querySelector('.cafe-entry-prefs')
+    || document.getElementById('frame');
   if(!board || !host) return;
   var boardBox = board.getBoundingClientRect();
   var hostBox = host.getBoundingClientRect();
@@ -1819,33 +1821,14 @@ function screenAvCheck(){
 }
 
 /* ---------------------------------------------------------- 3. SEARCHING */
-function prefEdgeLine(){
-  var band = eligibleBand();
-  if(!band.atBottomEdge) return '';
-  return '<p class="pref-edge">'
-    + (band.lo === band.hi
-      ? 'You\u2019re at the lowest level, so this matches you with ' + ladderLabel(band.lo) + '.'
-      : 'There aren\u2019t three levels below you, so this matches you with '
-        + ladderLabel(band.lo) + '\u2013' + ladderLabel(band.hi) + '.')
-    + '</p>';
-}
-
 function levelsSheet(){
-  var row = '';
-  SCOPES.forEach(function(s){
-    row += '<button class="g-choice stacked ink' + (ST.prefs.scope===s.id ? ' is-on' : '') + '" type="button"'
-      + ' onclick="setScope(\'' + s.id + '\')">'
-      + '<span class="ch-label">' + GP.esc(s.label) + '</span>'
-      + (s.hint ? '<span class="ch-hint">' + GP.esc(s.hint) + '</span>' : '')
-      + '</button>';
-  });
   return cafeDialog({
     milky:true,
     cls:'levels-dialog',
     onScrim:'closeLevels()',
-    title:'Choose partner levels',
-    body:'<p class="pool-line">Adding more levels may help you match faster.</p>'
-      + '<div class="pref-row">' + row + '</div>' + prefEdgeLine(),
+    body:'<h4 id="cafeLevelsHeading">Choose partner levels</h4>'
+      + '<p class="pool-line">Adding more levels may help you match faster.</p>'
+      + levelSpectrum(),
     acts:'<button class="btn primary" type="button" onclick="closeLevels()">Keep searching</button>'
   });
 }
@@ -2195,9 +2178,9 @@ function screenMatched(){
 /* --------------------------------------------------- 5. SESSION AGREEMENT */
 function agreeIcon(kind){
   var src = {
-    hebrew:'assets/agree-hebrew.png?v=3',
+    hebrew:'assets/agree-hebrew.png?v=4',
     present:'assets/agree-clock.png?v=6',
-    kind:'assets/agree-hearts.png?v=3'
+    kind:'assets/agree-hearts.png?v=4'
   }[kind];
   if(!src) return '';
   return '<span class="agree-mark" aria-hidden="true"><img src="' + src + '" alt=""></span>';
@@ -3005,10 +2988,8 @@ function render(){
   f.classList.toggle('is-entry', s === 'entry');
 
   unbindEntrySpectrum();
-  if(s === 'entry'){
-    bindSpectrum(f);
-    bindDesktopWelcomeEntrance();
-  }
+  if(document.getElementById('levelSpectrum')) bindSpectrum(f);
+  if(s === 'entry') bindDesktopWelcomeEntrance();
 
   if(s === 'live' && ST.textOpen && ST.chatDockAnim === 'in'){
     ST.chatDockAnim = null;
