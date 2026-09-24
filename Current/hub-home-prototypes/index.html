@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hub Homepage Concepts</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #373230;
+      --muted: #6f6a67;
+      --line: #d9d6d2;
+      --surface: #f7f6ef;
+      --card: #fff;
+      --shadow: 0 12px 32px rgba(55, 50, 48, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--surface);
+      color: var(--ink);
+      font-family: Assistant, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    main {
+      width: min(100% - 32px, 960px);
+      margin: 0 auto;
+      padding: clamp(48px, 8vw, 88px) 0 40px;
+    }
+
+    header {
+      max-width: 720px;
+      margin-bottom: 36px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(32px, 6vw, 52px);
+      line-height: 1.05;
+      letter-spacing: -0.035em;
+    }
+
+    .subtitle {
+      margin: 12px 0 0;
+      font-size: clamp(18px, 2.4vw, 22px);
+      font-weight: 600;
+    }
+
+    .intro {
+      max-width: 640px;
+      margin: 12px 0 0;
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .concepts {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 20px;
+    }
+
+    .concept {
+      min-height: 330px;
+      padding: clamp(24px, 4vw, 34px);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      background: var(--card);
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .direction {
+      margin: 0 0 14px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: clamp(25px, 4vw, 32px);
+      line-height: 1.1;
+      letter-spacing: -0.025em;
+    }
+
+    .description {
+      margin: 18px 0 28px;
+      color: var(--muted);
+      font-size: 16px;
+    }
+
+    .actions {
+      margin-top: auto;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .button {
+      min-height: 46px;
+      padding: 0 18px;
+      border: 1px solid var(--ink);
+      border-radius: 999px;
+      color: var(--ink);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    .button--primary {
+      background: var(--ink);
+      color: #fff;
+    }
+
+    .button:hover {
+      transform: translateY(-1px);
+    }
+
+    .button:focus-visible {
+      outline: 3px solid rgba(55, 50, 48, 0.25);
+      outline-offset: 3px;
+    }
+
+    footer {
+      margin-top: 30px;
+      padding-top: 20px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    @media (max-width: 700px) {
+      main {
+        width: min(100% - 24px, 520px);
+        padding-top: 38px;
+      }
+
+      .concepts {
+        grid-template-columns: 1fr;
+      }
+
+      .concept {
+        min-height: 300px;
+      }
+    }
+
+    @media (max-width: 370px) {
+      .actions {
+        flex-direction: column;
+      }
+
+      .button {
+        width: 100%;
+      }
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+      .button {
+        transition: transform 160ms ease;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <h1>Hub Homepage Concepts</h1>
+      <p class="subtitle">Interactive structural prototypes for review</p>
+      <p class="intro">These prototypes explore two different organizing principles for the Hub homepage.</p>
+    </header>
+
+    <section class="concepts" aria-label="Hub homepage directions">
+      <article class="concept">
+        <p class="direction">Direction 1</p>
+        <h2>Class-led</h2>
+        <p class="description">The class is the stable anchor of the homepage. Other learning experiences are organized around the student’s class journey through controlled shortcuts and contextual recommendations.</p>
+        <div class="actions">
+          <a class="button button--primary" href="./class-led-user-testing/" target="_blank" rel="noopener">Open prototype</a>
+          <a class="button" href="./class-led-user-testing/?review=1" target="_blank" rel="noopener">Review controls</a>
+        </div>
+      </article>
+
+      <article class="concept">
+        <p class="direction">Direction 2</p>
+        <h2>Adaptive Orbit</h2>
+        <p class="description">A stable, playful navigation model whose center adapts to the most relevant activity while keeping the wider product ecosystem visible and explorable.</p>
+        <div class="actions">
+          <a class="button button--primary" href="./orbit-user-testing/" target="_blank" rel="noopener">Open prototype</a>
+          <a class="button" href="./orbit-user-testing/?review=1" target="_blank" rel="noopener">Review controls</a>
+        </div>
+      </article>
+    </section>
+
+    <footer>For moderated user testing, open the prototype links directly rather than sharing this comparison page.</footer>
+  </main>
+</body>
+</html>
