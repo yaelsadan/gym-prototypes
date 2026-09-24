@@ -2392,9 +2392,9 @@ function screenMatched(){
    ========================================================================= */
 function agreeIcon(kind){
   var src = {
-    hebrew:'assets/agree-hebrew.png?v=3',
+    hebrew:'assets/agree-hebrew.png?v=4',
     present:'assets/agree-clock.png?v=6',
-    kind:'assets/agree-hearts.png?v=3'
+    kind:'assets/agree-hearts.png?v=4'
   }[kind];
   if(!src) return '';
   return '<span class="agree-mark" aria-hidden="true"><img src="' + src + '" alt=""></span>';
