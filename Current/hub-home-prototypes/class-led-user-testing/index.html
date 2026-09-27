@@ -1306,8 +1306,8 @@ body.dir3 #s-home .orbit.is-flat .orbit__stage::after{display:none;}
     <div class="rrow">
       <span class="rlabel">Gym</span>
       <div class="rsegs" role="tablist" aria-label="Gym homepage state">
-        <button class="rseg" role="tab" data-class-gym="active" aria-selected="true">Active</button>
-        <button class="rseg" role="tab" data-class-gym="inactive" aria-selected="false">Inactive</button>
+        <button class="rseg" role="tab" data-class-gym="inactive" aria-selected="true">Default</button>
+        <button class="rseg" role="tab" data-class-gym="active" aria-selected="false">Gym starting</button>
       </div>
     </div>
     <div class="rrow">
@@ -1375,10 +1375,10 @@ body.dir3 #s-home .orbit.is-flat .orbit__stage::after{display:none;}
         <svg viewBox="0 0 82 82" fill="none" stroke="#373230" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"><path d="M20 26 H55 V44 A17 17 0 0 1 20 44 Z" fill="rgba(255,227,0,.16)"/><rect x="20.5" y="26.5" width="34" height="5.4" fill="#FFE300" stroke="none"/><path d="M55 32 H61 A7.2 7.2 0 0 1 61 46.5 H55"/><path d="M17 58 H60"/></svg>
       </span>
       <span class="nbanner__b">
-        <span class="nbanner__t"><b>The Café is livelier now</b></span>
-        <span class="nbanner__m">8 people available · 2 from your class</span>
+        <span class="nbanner__t"><b>Gym starts in 8 minutes</b></span>
+        <span class="nbanner__m">Live Hebrew practice · 17 min</span>
       </span>
-      <button class="nbanner__cta" id="nbannerCta">Enter</button>
+      <button class="nbanner__cta" id="nbannerCta">Join</button>
       <button class="nbanner__x" id="nbannerX" aria-label="Dismiss">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
       </button>
@@ -2157,7 +2157,7 @@ body.dir3 #s-home .orbit.is-flat .orbit__stage::after{display:none;}
   });
 
   /* ---------- class-led homepage review states ---------- */
-  var classGymState="active";
+  var classGymState="inactive", gymBannerTimer;
   var classRecoState="classpod";
   var classRecommendations={
     classpod:{message:"New ClassPod added · Lesson 12",action:"Listen now",label:"Listen to the new ClassPod"},
@@ -2167,6 +2167,8 @@ body.dir3 #s-home .orbit.is-flat .orbit__stage::after{display:none;}
   function setClassGymState(state){
     classGymState=state;
     var active=state==="active";
+    if(!active){ clearTimeout(gymBannerTimer); $("#nbanner").classList.remove("show"); }
+    else { clearTimeout(gymBannerTimer); $("#nbanner").classList.add("show"); gymBannerTimer=setTimeout(function(){ $("#nbanner").classList.remove("show"); },8000); }
     $("#classGymStatus").textContent=active?"STARTING IN 8 MINUTES":"NEXT SESSION · TOMORROW AT 6:00 PM";
     $("#classGymCopy").textContent=active
       ?"Practice Hebrew live with other students"
@@ -2217,7 +2219,7 @@ body.dir3 #s-home .orbit.is-flat .orbit__stage::after{display:none;}
       setClassRecommendation(b.dataset.classReco);
     });
   });
-  setClassGymState("active");
+  setClassGymState("inactive");
   setClassRecommendation("classpod");
 
   /* ---------- sheets ---------- */
@@ -2328,12 +2330,10 @@ body.dir3 #s-home .orbit.is-flat .orbit__stage::after{display:none;}
     },2400);
   }
 
-  /* in-app banner: soft, transient demo (auto-appears once, dismissible) */
-  if(nbanner && document.body.classList.contains("review-mode")){
-    setTimeout(function(){ if(!scrim.classList.contains("show")) nbanner.classList.add("show"); }, 2600);
-    var hideT=setTimeout(function(){ nbanner.classList.remove("show"); }, 12000);
-    $("#nbannerX").addEventListener("click",function(){ nbanner.classList.remove("show"); clearTimeout(hideT); });
-    $("#nbannerCta").addEventListener("click",function(){ nbanner.classList.remove("show"); clearTimeout(hideT); openSheet("cafeSheet"); });
+  /* Non-blocking Gym announcement appears when the reviewer activates the scenario. */
+  if(nbanner){
+    $("#nbannerX").addEventListener("click",function(){ nbanner.classList.remove("show"); clearTimeout(gymBannerTimer); });
+    $("#nbannerCta").addEventListener("click",function(){ nbanner.classList.remove("show"); clearTimeout(gymBannerTimer); $("#classGymCard").click(); });
   }
 
   /* notification rows: mark read, route to destination */
