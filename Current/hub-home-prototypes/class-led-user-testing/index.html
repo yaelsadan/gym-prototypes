@@ -1238,8 +1238,7 @@ body.dir3 #s-home .orbit.is-flat .orbit__stage::after{display:none;}
 .people-card>*{pointer-events:none;}
 .people-card:first-of-type{margin-top:0;}
 .people-card__status{min-height:14px;font-size:10px;font-weight:600;letter-spacing:.045em;color:#6d6967;text-transform:uppercase;margin-bottom:3px;}
-.people-card--cafe{padding-top:18px;}
-.people-card--cafe .people-card__status{display:none;}
+.people-card--cafe{padding-top:14px;}
 .people-card--gym.is-starting{min-height:176px;}
 .people-card--gym.is-starting .people-card__status{margin-bottom:11px;}
 .people-card__title-row{display:flex;align-items:center;gap:9px;}
@@ -1276,6 +1275,7 @@ body.dir3 #s-home .orbit.is-flat .orbit__stage::after{display:none;}
   margin-right:-14px;padding-right:14px;
 }
 .class-led-preview-strip::-webkit-scrollbar{display:none;}
+.class-led-home .scard .magart{display:block;width:100%;}
 .class-led-preview{
   flex:0 0 52%;height:136px;border:0;border-radius:15px;background:#e5e5e5;
   box-shadow:inset 0 -12px 0 #d7d7d7;text-align:left;color:var(--ink);padding:16px;
@@ -1441,13 +1441,14 @@ body.dir3 #s-home .orbit.is-flat .orbit__stage::after{display:none;}
 
           <section class="class-led-section people-section" aria-labelledby="practiceWithPeople">
             <h2 class="class-led-heading" id="practiceWithPeople">Practice with people</h2>
-            <button class="people-card people-card--cafe" type="button" data-goto="cafe-feature" aria-label="Find a partner in The Café">
-              <span class="people-card__status" aria-hidden="true"></span>
+            <button class="people-card people-card--cafe" type="button" data-goto="cafe-feature" aria-label="The Café. Available anytime. 8 learners available. Find a partner">
+              <span class="people-card__status">Available anytime</span>
               <span class="people-card__title-row">
                 <span class="people-card__icon world-icon" data-world-icon="cafe" aria-hidden="true"></span>
                 <span class="people-card__title">Café</span>
               </span>
               <span class="people-card__copy">Ready for a spontaneous Hebrew conversation?</span>
+              <span class="people-card__meta"><strong>8</strong><span>learners available</span></span>
               <span class="people-card__foot"><span class="class-led-cta">Find a partner</span></span>
             </button>
             <button class="people-card people-card--gym is-starting" id="classGymCard" type="button" aria-label="Join The Gym. 17 min. 24 joined">
@@ -1474,31 +1475,47 @@ body.dir3 #s-home .orbit.is-flat .orbit__stage::after{display:none;}
           </section>
 
           <section class="class-led-section" aria-labelledby="classLedCircles">
-            <div class="class-led-preview-head"><h2 class="class-led-heading" id="classLedCircles">Circles</h2><span>See more</span></div>
-            <div class="class-led-preview-strip">
-              <button class="class-led-preview" type="button" data-goto="circles" aria-label="Open upcoming Circles">
-                <b>Upcoming events</b><span>Explore Circles</span>
-              </button>
-              <button class="class-led-preview" type="button" data-goto="circles" aria-label="Open more Circles">
-                <b>Community events</b><span>See what’s next</span>
-              </button>
-              <button class="class-led-preview" type="button" data-goto="circles" aria-label="Open featured Circles">
-                <b>Featured Circle</b><span>Meet the community</span>
-              </button>
-            </div>
+            <div class="class-led-preview-head"><h2 class="class-led-heading" id="classLedCircles">Circles</h2><button class="link" type="button" data-goto="circles">See more</button></div>
+            <article class="evcard">
+              <div class="evcard__cover">
+                <span class="evcard__tag">Upcoming</span>
+                <span class="evcard__host" aria-hidden="true">N</span>
+              </div>
+              <div class="evcard__body">
+                <h3 class="evcard__t">Coffee, slang and the art of small talk</h3>
+                <p class="evcard__d">A live conversation about the Hebrew you actually hear on the street — and how to join in.</p>
+                <div class="evcard__meta">
+                  <span class="who">With Noa Levi</span>
+                  <span class="sep"></span><span>Today</span>
+                  <span class="sep"></span><span>18:30</span>
+                  <span class="sep"></span><span class="who">7 attending</span>
+                </div>
+                <div class="evcard__actions">
+                  <button class="btn btn--sm btn--dark js-toggle" type="button" data-on="You’re going" data-off="RSVP">RSVP</button>
+                  <button class="btn btn--sm btn--ghost js-toggle" type="button" data-on="Added to plan" data-off="Add to plan">Add to plan</button>
+                </div>
+              </div>
+            </article>
           </section>
 
           <section class="class-led-section" aria-labelledby="classLedMagazine">
-            <div class="class-led-preview-head"><h2 class="class-led-heading" id="classLedMagazine">Magazine</h2><span>See more</span></div>
-            <div class="class-led-preview-strip">
-              <button class="class-led-preview" type="button" data-goto="magazine" aria-label="Open Magazine stories">
-                <b>Hebrew stories</b><span>Explore Magazine</span>
+            <div class="class-led-preview-head"><h2 class="class-led-heading" id="classLedMagazine">Magazine</h2><button class="link" type="button" data-goto="magazine">See more</button></div>
+            <div class="stream" tabindex="0" aria-label="Magazine stories, scroll sideways">
+              <button class="scard scard--lead" type="button" data-goto="magazine" aria-label="Read Why Israelis say Yalla in five different ways">
+                <span class="magart" aria-hidden="true"><i class="a1"></i><i class="a2"></i><i class="a3"></i></span>
+                <span class="scard__k">New this week · 4 min</span>
+                <span class="mag-lead__t">Why Israelis say ‘Yalla’ in five different ways</span>
+                <span class="scard__foot"><span class="btn btn--sm btn--ghost">Read story</span></span>
               </button>
-              <button class="class-led-preview" type="button" data-goto="magazine" aria-label="Open more Magazine content">
-                <b>New this week</b><span>Read the latest</span>
+              <button class="scard" type="button" data-goto="magazine" aria-label="Read The five most common past-tense slips">
+                <span class="scard__k">6 min read</span>
+                <span class="scard__t">The five most common past-tense slips</span>
+                <span class="scard__foot"><span class="link">Read</span></span>
               </button>
-              <button class="class-led-preview" type="button" data-goto="magazine" aria-label="Open featured Magazine content">
-                <b>Editor’s pick</b><span>Discover a new story</span>
+              <button class="scard" type="button" data-goto="magazine" aria-label="Read A short history of the Tel Aviv café">
+                <span class="scard__k">5 min read</span>
+                <span class="scard__t">A short history of the Tel Aviv café</span>
+                <span class="scard__foot"><span class="link">Read</span></span>
               </button>
             </div>
           </section>
