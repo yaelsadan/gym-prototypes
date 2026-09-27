@@ -2095,7 +2095,8 @@ body.dir3 #s-home .orbit.is-flat .orbit__stage::after{display:none;}
   });}
   var rdone=$("#reenrollDoneBtn"); if(rdone){ rdone.addEventListener("click",closeSheets); }
   var rexpl=$("#reenrollExplore"); if(rexpl){ rexpl.addEventListener("click",closeSheets); }
-  applyReenroll();
+  var entryReenroll=new URLSearchParams(window.location.search).get("reenroll");
+  setReenrollState(entryReenroll==="open"||entryReenroll==="closing"?entryReenroll:"off");
   applyNextClass();
 
   $$(".filt").forEach(function(f){f.addEventListener("click",function(){f.setAttribute("aria-checked",f.getAttribute("aria-checked")==="true"?"false":"true");});});
@@ -2204,7 +2205,7 @@ body.dir3 #s-home .orbit.is-flat .orbit__stage::after{display:none;}
     p = p || (5-i);
     if(p>bestP){bestP=p;sel=i;}
   });
-  sel=SPACES.findIndex(function(s){return s.id==="class";});
+  sel=SPACES.findIndex(function(s){return s.id===(new URLSearchParams(window.location.search).get("gym")==="starting"?"gym":"class");});
   var pos=sel;
 
   var stage=$("#orbStage"),track=$("#orbTrack"),rail=$(".orbit__rail",stage),
