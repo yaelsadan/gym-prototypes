@@ -2217,7 +2217,7 @@ body.dir3 #s-home .orbit.is-flat .orbit__stage::after{display:none;}
       setClassRecommendation(b.dataset.classReco);
     });
   });
-  setClassGymState("inactive");
+  setClassGymState(new URLSearchParams(window.location.search).get("gym")==="starting"?"active":"inactive");
   setClassRecommendation("classpod");
 
   /* ---------- sheets ---------- */
@@ -2436,7 +2436,8 @@ body.dir3 #s-home .orbit.is-flat .orbit__stage::after{display:none;}
   });}
   var rdone=$("#reenrollDoneBtn"); if(rdone){ rdone.addEventListener("click",closeSheets); }
   var rexpl=$("#reenrollExplore"); if(rexpl){ rexpl.addEventListener("click",closeSheets); }
-  applyReenroll();
+  var entryReenroll=new URLSearchParams(window.location.search).get("reenroll");
+  setReenrollState(entryReenroll==="open"||entryReenroll==="closing"?entryReenroll:"off");
   applyNextClass();
 
   $$(".filt").forEach(function(f){f.addEventListener("click",function(){f.setAttribute("aria-checked",f.getAttribute("aria-checked")==="true"?"false":"true");});});
