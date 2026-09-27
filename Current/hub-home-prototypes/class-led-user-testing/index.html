@@ -1159,7 +1159,7 @@ body.dir3 #s-home .orbit.is-flat .orbit__stage::after{display:none;}
 #s-home>.greet-k,
 #s-home>.reenroll,
 #s-home>.sec{display:none!important;}
-#s-home{padding-bottom:56px;}
+#s-home{padding-bottom:88px;}
 .class-led-home{margin-top:20px;padding-bottom:8px;}
 .class-led-section{margin-top:25px;}
 .class-led-section:first-child{margin-top:0;}
@@ -1206,22 +1206,16 @@ body.dir3 #s-home .orbit.is-flat .orbit__stage::after{display:none;}
 .class-shortcut{
   min-height:90px;padding:12px 10px 10px;text-align:center;border:.2px solid rgba(55,49,46,.24);border-radius:19px;
   background:#dedede;color:var(--ink);box-shadow:0 4px 9px rgba(55,49,46,.10),0 1px 3px rgba(55,49,46,.07);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;
+  position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;
 }
 .class-shortcut>*{pointer-events:none;}
 .class-shortcut img{width:40px;height:40px;object-fit:contain;display:block;}
 .class-shortcut b{font-size:13px;}
-.class-shortcut:focus-visible{outline:2px solid var(--ink);outline-offset:3px;}
-.class-recommendation{
-  width:100%;min-height:70px;margin-top:10px;padding:12px 17px;border:0;border-radius:19px;
-  background:#f1f1f1;color:var(--ink);text-align:left;
-  display:flex;align-items:flex-end;justify-content:space-between;gap:12px;
+.class-shortcut__new{
+  position:absolute;top:9px;right:9px;padding:3px 7px;border-radius:999px;
+  background:#F9E24C;color:#373230;font-size:10px;line-height:1.2;font-weight:700;
 }
-.class-recommendation>*{pointer-events:none;}
-.class-recommendation__body{min-width:0;}
-.class-recommendation__eyebrow{display:block;font-size:10px;letter-spacing:.04em;color:#777;text-transform:uppercase;margin-bottom:6px;}
-.class-recommendation__message{display:block;font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.class-recommendation__action{font-size:12px;font-weight:700;text-decoration:underline;text-underline-offset:2px;white-space:nowrap;}
+.class-shortcut:focus-visible{outline:2px solid var(--ink);outline-offset:3px;}
 .people-section{
   margin:26px -14px 0;padding:16px 14px 16px;background:#f7f7f7;border-radius:25px 25px 0 0;
 }
@@ -1284,8 +1278,6 @@ body.dir3 #s-home .orbit.is-flat .orbit__stage::after{display:none;}
   .class-led-section{margin-top:24px;}
   .class-gateway{padding-left:14px;padding-right:14px;}
   .class-next{font-size:12px;}
-  .class-recommendation{padding-left:13px;padding-right:13px;gap:8px;}
-  .class-recommendation__message{font-size:12px;}
   .people-card__copy{font-size:13px;}
 }
 </style>
@@ -1308,14 +1300,6 @@ body.dir3 #s-home .orbit.is-flat .orbit__stage::after{display:none;}
       <div class="rsegs" role="tablist" aria-label="Gym homepage state">
         <button class="rseg" role="tab" data-class-gym="inactive" aria-selected="true">Default</button>
         <button class="rseg" role="tab" data-class-gym="active" aria-selected="false">Gym starting</button>
-      </div>
-    </div>
-    <div class="rrow">
-      <span class="rlabel">Recommendation</span>
-      <div class="rsegs" role="tablist" aria-label="Contextual recommendation">
-        <button class="rseg" role="tab" data-class-reco="classpod" aria-selected="true">ClassPod</button>
-        <button class="rseg" role="tab" data-class-reco="practice" aria-selected="false">Practice</button>
-        <button class="rseg" role="tab" data-class-reco="materials" aria-selected="false">Materials</button>
       </div>
     </div>
     <div class="rrow" id="calRow" hidden>
@@ -1419,19 +1403,12 @@ body.dir3 #s-home .orbit.is-flat .orbit__stage::after{display:none;}
                 <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAADM0lEQVR4AeyYW24bMQxFJ1lR0BZoPtOVNTur++cAaeAVxeW5kKaO7BGpGSkNAhvm6EWR91Dyh+d2+iSfK8hHO8jriVxPZFAFhl6t+293D7Ivd4/32Zizfm+ebiASnERm0Vns/uXwONvzYUcfn7zeo10NIuFWWQRhWQwiZ0O0WV57095OO2K8mdswCIOQFMEyqzw5Z8FU3ATvzZiPmHxfp4ep08cFkXCrPIln4SaY8ZIGQRss7ZJP73kXhIQA0EYM8NnPKs4YIJkVJI9nn06dKghJWyDQhD+nJePKYekEWZvstzElQPq9AKsgCGsxwD3/EhD/ElBwXE07QdYjVgex6hE0EggICYo4n/rY6TAsAfOYuBg+NauCEKy2+T3WVJxAQasgEpoqpv6Ih4n0wqqgjg4fxMvSYT16fWupfJBAxWoJvDVV23Ni3dHhg1gQr2JadxJZmOWvc2200fFxQUIVsyT758NOCQc8IoVyQaTLhKod9fBO0/J7BY2BjAI4iauqn4xbuzEQr2KtWQt/VduqXkz/Gwbyx0As5NaKWYih3xBIrWICDFRsE0XttFLgEEjyvdxYEoFeXo3PWjFUlGKH5mytmD4bbgc5C7luYrEYwULFQawqqs46nbFdJjrmeO4VBlms2HnMvjNWwEjAMIiCbaiY9nuPS6KDOdtACiG6apeSF34tQ8Vs2ZB820BK0VatnleujCWoMmcSXjZtILZbwa0d9rXizLGtX8LNa0WnCSQatMjxLsMmECmyKqkd8OAlg/6jr4jdDrIiibeF6woE77k836X1dpD04yP5msTsw75/vfuFeAxxnMSWq9sMQrKcHAGeIRp/DPHZ/+nP4YfEpzeReT637GspVDNITnQ8Tj9zP7ckl9kbQoTTZy0Llvj0+pT5qtlvkaJVfU4WV4Eg7OY4/T6+TvP1mEUjlCpj9M1O8kW7zX6rQMgCzNPL4YZ+tpYK5j292tUgWQBAGON8nTgd9bli9jKatdG2GSQL5DQAUmvXSX27XqwLyoCigPizn71R6waylFBgBqTWAwTWTrEVgtzDQUhyyQRWAibQS/7e3H8D8YS1rl9BWis22v/TnMhfAAAA///HlT3FAAAABklEQVQDALYZ4nSmrMacAAAAAElFTkSuQmCC" alt="" aria-hidden="true" />
                 <b>Practice tools</b>
               </button>
-              <button class="class-shortcut" type="button" data-class-destination="classpods" aria-label="Open ClassPods in My Class">
+              <button class="class-shortcut" type="button" data-class-destination="classpods" aria-label="Open ClassPods in My Class; new content available">
+                <span class="class-shortcut__new" aria-hidden="true">New</span>
                 <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAC0AAAAxCAYAAABODiB6AAAB2klEQVR4AeyVAW7CMAxFo52M3Ww32462PCFLodiO3SRFiKB+msb296sp6ld5w8+GvupH25Pek3Ym8NGPx60O5sfQMVbTxo6RSQPzW9sDW0+Fs6a/Uoq2X85+zkIDQc/v+sUasLoMHeS3ChW1SVnoWy1GNM2A1rKnAw+E31PQ28hAS4NR2CMPfnijY0y9jkJjKOaq0eAm/liEph6BFiOgMV4lwKWX2yMKjaFrNClIH+Ta9aC5866J2yEfpB8yKz1ogJFZvDDgPoo9aPeOF0ObA/OgFzKFrNPQTBiF3Bcl8Yio4NakKVjEEraFIQUddn5FojVp9Q6nAE4wsaAnWK+z0KCZMs/Tuq6Dzhr0oOX68g29fsb3Dtakea418cJB9+o53/ghrZ/awYLmj6gJc5FqmNwUL85aP9XOglaTm02aoGYrvaQepQvPQqcbzSzY0DOn6XntSXvTmRnbk545Tc9rZNK8DDzvZTENGhheqb2mkZyeRy+uvnw0aIwAVwsIVhFDdXn6iPRQB+NBQwMYohixRjQkPiI8EB544i/imhgi/iALmiQKRVwjuVbNSEhKfPCVUva45ix7D2cPuk3EALV7s9f4o65vFLprdGVCEvpKNLvXhrZnMzfylpP+BwAA///9QVMTAAAABklEQVQDACmBUmPXmfVZAAAAAElFTkSuQmCC" alt="" aria-hidden="true" />
                 <b>ClassPods</b>
               </button>
             </div>
-
-            <button class="class-recommendation" type="button" aria-label="Listen to the new ClassPod">
-              <span class="class-recommendation__body">
-                <span class="class-recommendation__eyebrow">Continue learning</span>
-                <span class="class-recommendation__message" id="classRecoMessage">New ClassPod added · Lesson 12</span>
-              </span>
-              <span class="class-recommendation__action" id="classRecoAction">Listen now</span>
-            </button>
           </section>
 
           <section class="class-led-section people-section" aria-labelledby="practiceWithPeople">
@@ -2156,12 +2133,6 @@ body.dir3 #s-home .orbit.is-flat .orbit__stage::after{display:none;}
 
   /* ---------- class-led homepage review states ---------- */
   var classGymState="inactive", gymBannerTimer;
-  var classRecoState="classpod";
-  var classRecommendations={
-    classpod:{message:"New ClassPod added · Lesson 12",action:"Listen now",label:"Listen to the new ClassPod"},
-    practice:{message:"12 new phrases are ready",action:"Practice now",label:"Practice 12 new phrases"},
-    materials:{message:"Materials for your next class",action:"View materials",label:"View materials for your next class"}
-  };
   function setClassGymState(state){
     classGymState=state;
     var active=state==="active";
@@ -2176,28 +2147,6 @@ body.dir3 #s-home .orbit.is-flat .orbit__stage::after{display:none;}
     $("#classGymCard").classList.toggle("is-starting",active);
     $("#classGymCard").setAttribute("aria-label",active?"Join The Gym. 17 min. 24 joined":"View The Gym schedule");
   }
-  function setClassRecommendation(state){
-    classRecoState=state;
-    var data=classRecommendations[state]||classRecommendations.classpod;
-    $("#classRecoMessage").textContent=data.message;
-    $("#classRecoAction").textContent=data.action;
-    $(".class-recommendation").setAttribute("aria-label",data.label);
-  }
-  function revealLesson12ClassPod(){
-    var target=$("#lesson12ClassPod");
-    if(!target) return;
-    var reduce=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    scroll.scrollTo({top:Math.max(0,target.offsetTop-16),behavior:reduce?"auto":"smooth"});
-    $$(".is-arrived").forEach(function(item){item.classList.remove("is-arrived");});
-    target.classList.add("is-arrived");
-    clearTimeout(revealLesson12ClassPod.timer);
-    revealLesson12ClassPod.timer=setTimeout(function(){target.classList.remove("is-arrived");},1700);
-  }
-  $(".class-recommendation").addEventListener("click",function(){
-    showScreen("learn");
-    if(classRecoState==="classpod") setTimeout(revealLesson12ClassPod,40);
-    else if(classRecoState==="practice") scroll.scrollTop=0;
-  });
   $("#classGymCard").addEventListener("click",function(){
     var active=classGymState==="active";
     $("#gymFeatureState").textContent=active?"Opening The Gym":"Gym schedule";
@@ -2211,14 +2160,7 @@ body.dir3 #s-home .orbit.is-flat .orbit__stage::after{display:none;}
       setClassGymState(b.dataset.classGym);
     });
   });
-  $$("[data-class-reco]").forEach(function(b){
-    b.addEventListener("click",function(){
-      $$("[data-class-reco]").forEach(function(x){x.setAttribute("aria-selected",x===b?"true":"false");});
-      setClassRecommendation(b.dataset.classReco);
-    });
-  });
   setClassGymState(new URLSearchParams(window.location.search).get("gym")==="starting"?"active":"inactive");
-  setClassRecommendation("classpod");
 
   /* ---------- sheets ---------- */
   var scrim=$("#scrim");
