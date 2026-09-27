@@ -1216,6 +1216,17 @@ body.dir3 #s-home .orbit.is-flat .orbit__stage::after{display:none;}
   background:#F9E24C;color:#373230;font-size:10px;line-height:1.2;font-weight:700;
 }
 .class-shortcut:focus-visible{outline:2px solid var(--ink);outline-offset:3px;}
+.class-recommendation{
+  width:100%;min-height:70px;margin-top:10px;padding:12px 17px;border:0;border-radius:19px;
+  background:#f1f1f1;color:var(--ink);text-align:left;
+  display:flex;align-items:flex-end;justify-content:space-between;gap:12px;
+}
+.class-recommendation[hidden]{display:none;}
+.class-recommendation>*{pointer-events:none;}
+.class-recommendation__body{min-width:0;}
+.class-recommendation__eyebrow{display:block;font-size:10px;letter-spacing:.04em;color:#777;text-transform:uppercase;margin-bottom:6px;}
+.class-recommendation__message{display:block;font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.class-recommendation__action{font-size:12px;font-weight:700;text-decoration:underline;text-underline-offset:2px;white-space:nowrap;}
 .people-section{
   margin:26px -14px 0;padding:16px 14px 16px;background:#f7f7f7;border-radius:25px 25px 0 0;
 }
@@ -1278,6 +1289,8 @@ body.dir3 #s-home .orbit.is-flat .orbit__stage::after{display:none;}
   .class-led-section{margin-top:24px;}
   .class-gateway{padding-left:14px;padding-right:14px;}
   .class-next{font-size:12px;}
+  .class-recommendation{padding-left:13px;padding-right:13px;gap:8px;}
+  .class-recommendation__message{font-size:12px;}
   .people-card__copy{font-size:13px;}
 }
 </style>
@@ -1300,6 +1313,13 @@ body.dir3 #s-home .orbit.is-flat .orbit__stage::after{display:none;}
       <div class="rsegs" role="tablist" aria-label="Gym homepage state">
         <button class="rseg" role="tab" data-class-gym="inactive" aria-selected="true">Default</button>
         <button class="rseg" role="tab" data-class-gym="active" aria-selected="false">Gym starting</button>
+      </div>
+    </div>
+    <div class="rrow">
+      <span class="rlabel">Contextual update</span>
+      <div class="rsegs" role="tablist" aria-label="Contextual update treatment">
+        <button class="rseg" role="tab" data-class-context="off" aria-selected="true" aria-controls="classRecommendation">Off</button>
+        <button class="rseg" role="tab" data-class-context="on" aria-selected="false" aria-controls="classRecommendation">On</button>
       </div>
     </div>
     <div class="rrow" id="calRow" hidden>
@@ -1409,6 +1429,14 @@ body.dir3 #s-home .orbit.is-flat .orbit__stage::after{display:none;}
                 <b>ClassPods</b>
               </button>
             </div>
+
+            <button class="class-recommendation" id="classRecommendation" type="button" aria-label="Listen to the new ClassPod" hidden>
+              <span class="class-recommendation__body">
+                <span class="class-recommendation__eyebrow">Continue learning</span>
+                <span class="class-recommendation__message">New ClassPod added · Lesson 12</span>
+              </span>
+              <span class="class-recommendation__action">Listen now</span>
+            </button>
           </section>
 
           <section class="class-led-section people-section" aria-labelledby="practiceWithPeople">
@@ -2059,7 +2087,8 @@ body.dir3 #s-home .orbit.is-flat .orbit__stage::after{display:none;}
   "use strict";
   var $=function(s,r){return (r||document).querySelector(s);};
   var $$=function(s,r){return [].slice.call((r||document).querySelectorAll(s));};
-  if(new URLSearchParams(window.location.search).get("review")==="1"){
+  var isReviewMode=new URLSearchParams(window.location.search).get("review")==="1";
+  if(isReviewMode){
     document.body.classList.add("review-mode");
   }
 
@@ -2133,6 +2162,25 @@ body.dir3 #s-home .orbit.is-flat .orbit__stage::after{display:none;}
 
   /* ---------- class-led homepage review states ---------- */
   var classGymState="inactive", gymBannerTimer;
+  function setClassContextualUpdate(enabled){
+    var show=isReviewMode&&enabled;
+    $("#classRecommendation").hidden=!show;
+    $(".class-shortcut__new").hidden=show;
+    $("[data-class-destination='classpods']").setAttribute(
+      "aria-label",
+      show?"Open ClassPods in My Class":"Open ClassPods in My Class; new content available"
+    );
+  }
+  function revealLesson12ClassPod(){
+    var target=$("#lesson12ClassPod");
+    if(!target) return;
+    var reduce=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    scroll.scrollTo({top:Math.max(0,target.offsetTop-16),behavior:reduce?"auto":"smooth"});
+    $$(".is-arrived").forEach(function(item){item.classList.remove("is-arrived");});
+    target.classList.add("is-arrived");
+    clearTimeout(revealLesson12ClassPod.timer);
+    revealLesson12ClassPod.timer=setTimeout(function(){target.classList.remove("is-arrived");},1700);
+  }
   function setClassGymState(state){
     classGymState=state;
     var active=state==="active";
@@ -2160,6 +2208,18 @@ body.dir3 #s-home .orbit.is-flat .orbit__stage::after{display:none;}
       setClassGymState(b.dataset.classGym);
     });
   });
+  $$("[data-class-context]").forEach(function(b){
+    b.addEventListener("click",function(){
+      $$("[data-class-context]").forEach(function(x){x.setAttribute("aria-selected",x===b?"true":"false");});
+      setClassContextualUpdate(b.dataset.classContext==="on");
+    });
+  });
+  $("#classRecommendation").addEventListener("click",function(){
+    if(!isReviewMode||this.hidden) return;
+    showScreen("learn");
+    setTimeout(revealLesson12ClassPod,40);
+  });
+  setClassContextualUpdate(false);
   setClassGymState(new URLSearchParams(window.location.search).get("gym")==="starting"?"active":"inactive");
 
   /* ---------- sheets ---------- */
