@@ -1276,6 +1276,8 @@ body.dir3 #s-home .orbit.is-flat .orbit__stage::after{display:none;}
 }
 .class-led-preview-strip::-webkit-scrollbar{display:none;}
 .class-led-home .scard .magart{display:block;width:100%;}
+.class-led-home [aria-label="Magazine stories, scroll sideways"]{cursor:grab;}
+.class-led-home [aria-label="Magazine stories, scroll sideways"].is-dragging{cursor:grabbing;scroll-snap-type:none;user-select:none;}
 .class-led-preview{
   flex:0 0 52%;height:136px;border:0;border-radius:15px;background:#e5e5e5;
   box-shadow:inset 0 -12px 0 #d7d7d7;text-align:left;color:var(--ink);padding:16px;
@@ -2176,6 +2178,43 @@ body.dir3 #s-home .orbit.is-flat .orbit__stage::after{display:none;}
       }
     });
   });
+  (function(){
+    var stream=$('[aria-label="Magazine stories, scroll sideways"]');
+    if(!stream) return;
+    var dragging=false,moved=false,suppressClick=false,startX=0,startScroll=0,pointerId=null;
+    stream.addEventListener("pointerdown",function(e){
+      if(e.pointerType!=="mouse"||e.button!==0) return;
+      dragging=true;moved=false;startX=e.clientX;startScroll=stream.scrollLeft;pointerId=e.pointerId;
+    });
+    stream.addEventListener("pointermove",function(e){
+      if(!dragging||e.pointerId!==pointerId) return;
+      var dx=e.clientX-startX;
+      if(!moved&&Math.abs(dx)<5) return;
+      if(!moved){
+        moved=true;
+        stream.classList.add("is-dragging");
+        try{stream.setPointerCapture(pointerId);}catch(err){}
+      }
+      e.preventDefault();
+      stream.scrollLeft=startScroll-dx;
+    });
+    function endDrag(e){
+      if(!dragging||e.pointerId!==pointerId) return;
+      dragging=false;
+      suppressClick=moved;
+      stream.classList.remove("is-dragging");
+      try{stream.releasePointerCapture(pointerId);}catch(err){}
+      pointerId=null;
+      setTimeout(function(){suppressClick=false;},0);
+    }
+    stream.addEventListener("pointerup",endDrag);
+    stream.addEventListener("pointercancel",endDrag);
+    stream.addEventListener("click",function(e){
+      if(!suppressClick) return;
+      e.preventDefault();
+      e.stopImmediatePropagation();
+    },true);
+  })();
 
   /* ---------- class-led homepage review states ---------- */
   var classGymState="inactive", gymBannerTimer;
