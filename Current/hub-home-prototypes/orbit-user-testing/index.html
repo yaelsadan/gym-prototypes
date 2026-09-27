@@ -2362,9 +2362,9 @@ body.dir3 #s-home .orbit.is-flat .orbit__stage::after{display:none;}
     swapT=setTimeout(function(){renderFocus();focusEl.classList.remove("swap");},170);
   }
 
-  $(".rseg[data-orbit-scenario]").forEach(function(b){
+  $$(".rseg[data-orbit-scenario]").forEach(function(b){
     b.addEventListener("click",function(){
-      $(".rseg[data-orbit-scenario]").forEach(function(x){x.setAttribute("aria-selected",x===b?"true":"false");});
+      $$(".rseg[data-orbit-scenario]").forEach(function(x){x.setAttribute("aria-selected",x===b?"true":"false");});
       var target=SPACES.findIndex(function(space){return space.id===b.dataset.orbitScenario;});
       if(target>=0){goTo(target);scroll.scrollTo({top:0,behavior:"smooth"});}
     });
