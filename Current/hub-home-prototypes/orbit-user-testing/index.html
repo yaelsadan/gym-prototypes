@@ -942,10 +942,18 @@ body.dir3 #s-home .orbit__stage::after{
 .orbit__rail{border-color:#cecece;}
 .orbit__nav{top:0;gap:140px;z-index:4;}
 .onav{
-  width:44px;height:44px;background:transparent;border-radius:50%;
-  font-size:23px;color:#4a4745;
+  width:48px;height:48px;background:rgba(255,255,255,.88);border-radius:50%;
+  font-size:32px;font-weight:600;color:#343130;
 }
 .onav:hover{background:#eee;}
+/* One short invitation to browse; interaction stays available throughout. */
+.orbit.is-inviting #orbPrev{animation:orbHintLeft .7s ease-in-out 2;}
+.orbit.is-inviting #orbNext{animation:orbHintRight .7s ease-in-out 2;}
+@keyframes orbHintLeft{50%{transform:translateX(-6px);background:#eee;}}
+@keyframes orbHintRight{50%{transform:translateX(6px);background:#eee;}}
+@media (prefers-reduced-motion:reduce){
+  .orbit.is-inviting #orbPrev,.orbit.is-inviting #orbNext{animation:none;}
+}
 .oitem{
   width:94px;height:124px;z-index:1;
   transition:transform 260ms var(--ease),opacity 260ms var(--ease);
@@ -2913,6 +2921,10 @@ body.dir3 #s-home .orbit.is-flat .orbit__stage::after{display:none;}
   /* ---------- init ---------- */
   renderFocus();
   renderOrbit();
+  if(!window.matchMedia("(prefers-reduced-motion: reduce)").matches){
+    setTimeout(function(){orbitEl.classList.add("is-inviting");},350);
+    setTimeout(function(){orbitEl.classList.remove("is-inviting");},2100);
+  }
   renderCal();
   buildMiniMonth();
   setTimeout(function(){renderOrbit();syncOrbitFlat();},80);
