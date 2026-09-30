@@ -2,6 +2,26 @@
 
 ---
 
+## v04 — Topics wheel and Practice (this pass)
+
+Mirrors two mobile Café features onto the desktop Live screen. Nothing else in the flow changed.
+
+- **Topics wheel** (`CafeTopicsWheel`): the approved glass wheel from mobile, ~45% of the stage
+  width, cropped by the bottom edge and centred on the seam; the chosen topic lands as a strip on
+  the seam. The helper capsule steps aside while it is open.
+- **Practice** (`CafePractice`): the mobile module ported unchanged (same 7 text + 3 demo audio
+  exercises, one shared state, same actions, flip / swap, audio player, empty sync seam). Placement
+  is desktop-specific: a compact frosted card centred on the seam between the side-by-side tiles,
+  the instruction above it, one action panel below (Previous · Reveal answer / Back to question ·
+  Next). Chat can stay open; Topics closes Practice. The final-20s countdown, which normally lands
+  on the seam, hangs above the card while Practice is open.
+- **Chat** anchors bottom-left of the stage (glass extends leftward with the input).
+- Prototype controls: **Open Practice**, **Audio exercise preview**.
+- Not on desktop: swipe between exercises (touch only), and the mobile wheel-open Camera / Mic
+  stack (desktop keeps them in the footer).
+
+---
+
 ## v03 — level data correction (this pass)
 
 v02 treated the colour list in

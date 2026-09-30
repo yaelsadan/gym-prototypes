@@ -3,7 +3,8 @@
 Frozen at **mobile v02 — the early flow reworked**.
 
 Mobile is now the primary Café design surface. `Current/cafe-playground-desktop/` is the
-frozen initial scaffold and reference; it was not modified in this pass and nothing here has
+scaffold and reference. Only the Topics wheel and Practice (the `CafePractice` module, same
+data, state and actions) have been mirrored there; the rest of the mobile v02 flow has not
 been propagated back to it.
 
 ---
@@ -141,10 +142,23 @@ unchanged from v01 and are still awaiting their own pass.
 
 ### Deliberately deferred
 
-7. **Spin the Wheel** and **Challenge / Indie Practice** are entry points only. What this pass
-   fixes is their place and weight: they lead the dock as conversation-support tools, ahead of
-   the divider, with the Wheel carrying the yellow accent the way TIP does in Gym. The
-   experiences themselves are a separate pass.
+7. **Spin the Wheel** is built; **Practice** now opens a shared exercise card on the seam
+   (`CafePractice`). Its deck is 7 demo text exercises plus 3 demo audio ones (every third); Challenge Mode has no
+   exercise or audio data in this repo, so demo audio plays a silent timer bar only. Real Hebrew
+   audio takes those slots via `CafePractice.setAudioExercises()`.
+   Actions (`open/play/pause/reveal/back/next/close`) are events ready for a session channel
+   (`connect({send})` / `receive(evt)`), but no sync layer exists, so nothing is sent yet.
+   Chat can stay open beside Practice (the chat list is squeezed between the Practice actions and
+   the input); opening Topics closes Practice (a shared `close`). Open: whether Next/Previous
+   should be shuffled or server-chosen. On very short screens (< 720px) the card floor drops to
+   84px and long sentences scroll inside it, so chat + Practice + the final countdown still fit.
+   The action panel is one row: Previous · Reveal answer / Back to question · Next (charcoal
+   glass circles, no stroke); on touch, a horizontal swipe on the card is Next / Previous and a
+   tap still flips. The final-20s countdown defaults to the seam (52–58px); while Practice, the
+   Topics wheel or a chosen-topic strip holds the seam it rests above the footer (40–44px). With
+   the wheel open, Camera / Mic stack vertically at the top-right of the lower video.
+   Desktop mirrors Practice (`Current/cafe-playground-desktop`): card centred on the seam
+   between the side-by-side tiles, same panel, no swipe; its countdown hangs above the card.
 8. **Flashcards are a reference, not a system.** Five placeholder cards on the Gym Solo deck,
    enough to prove the interrupt and the return. No scheduling, no real deck, no progress, and
    no decision yet about *which* deck a waiting student should see.

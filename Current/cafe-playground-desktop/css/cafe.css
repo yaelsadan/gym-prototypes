@@ -1459,6 +1459,7 @@
   display:flex;align-items:flex-start;justify-content:flex-end;
   padding:18px 28px;pointer-events:none;
 }
+.frame:has(.cafe-tiles) .cafe-topbar{inset:0;padding:0}
 .cafe-topbar > *{pointer-events:auto}
 .cafe-topbar .top-right{display:flex;align-items:center;gap:12px}
 
@@ -1470,6 +1471,7 @@
   width:320px;height:130px;
   z-index:9;
   pointer-events:none;
+  transition:opacity .9s ease;
   background:
     radial-gradient(ellipse 200px 95px at 94% 18%,
       rgba(55,50,48,.72) 0%,
@@ -1488,9 +1490,25 @@
   color:#fff;font-size:22px;font-weight:700;letter-spacing:.15px;
   text-shadow:0 1px 4px rgba(55,50,48,.55);
 }
-.cafe-topbar .g-timepill svg{width:20px;height:20px;color:#fff;opacity:.9}
+.frame:has(.cafe-tiles) .cafe-topbar .g-timepill{
+  position:absolute;top:18px;right:28px;left:auto;
+  transform:translate(0,0);
+  pointer-events:none;z-index:2;
+  transition:
+    top 1.15s cubic-bezier(.22,.8,.2,1),
+    right 1.15s cubic-bezier(.22,.8,.2,1),
+    transform 1.15s cubic-bezier(.22,.8,.2,1),
+    gap 1.15s cubic-bezier(.22,.8,.2,1),
+    color .7s ease,
+    text-shadow .7s ease;
+}
+.cafe-topbar .g-timepill svg{
+  width:20px;height:20px;color:#fff;opacity:.9;
+  transition:width .7s ease,height .7s ease,opacity .45s ease,margin .7s ease;
+}
 .cafe-topbar .g-timepill .time{
   font-size:22px;font-weight:700;letter-spacing:.15px;font-variant-numeric:tabular-nums;
+  transition:font-size 1.15s cubic-bezier(.22,.8,.2,1),color .7s ease,letter-spacing 1.15s ease;
 }
 .cafe-topbar .g-timepill.final{
   color:var(--brand-yellow);font-weight:800;
@@ -1500,6 +1518,41 @@
 }
 .cafe-topbar .g-timepill.final svg,
 .cafe-topbar .g-timepill.final .time{color:var(--brand-yellow);opacity:1}
+.frame:has(.g-timepill.is-center) .clock-chrome-fade{opacity:0}
+.frame:has(.cafe-tiles) .cafe-topbar .g-timepill.is-center{
+  top:50%;right:50%;
+  transform:translate(50%,-50%);
+  gap:0;
+  isolation:isolate;
+  color:var(--brand-yellow);
+  font-size:96px;font-weight:800;
+  letter-spacing:-.03em;
+  text-shadow:0 1px 1px rgba(55,50,48,.16);
+  animation:none;
+}
+.frame:has(.cafe-tiles) .cafe-topbar .g-timepill.is-center::before{
+  content:"";
+  position:absolute;left:50%;top:50%;z-index:-1;
+  width:5.4em;height:2.7em;
+  transform:translate(-50%,-50%);
+  pointer-events:none;
+  background:radial-gradient(ellipse at center,
+    rgba(55,50,48,.48) 0%,
+    rgba(55,50,48,.24) 36%,
+    rgba(55,50,48,.08) 58%,
+    rgba(55,50,48,0) 74%);
+  animation:centerClockVeil 1.15s cubic-bezier(.22,.8,.2,1) both;
+}
+@keyframes centerClockVeil{from{opacity:0}to{opacity:1}}
+.frame:has(.cafe-tiles) .cafe-topbar .g-timepill.is-center .time{
+  font-size:96px;font-weight:800;letter-spacing:-.03em;color:var(--brand-yellow);
+  transform-origin:center;
+  animation:centerClockPulse 2.8s ease-in-out 1.15s infinite;
+}
+@keyframes centerClockPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.03)}}
+.frame:has(.cafe-tiles) .cafe-topbar .g-timepill.is-center svg{
+  width:0;height:0;margin:0;opacity:0;overflow:hidden;
+}
 @keyframes roomcalm{0%,100%{opacity:1}50%{opacity:.82}}
 
 .cafe-tiles{position:absolute;inset:0;z-index:3;padding:14px;display:flex}
@@ -1520,12 +1573,47 @@
   overflow:visible;
   padding:0 22px 18px;
 }
-.frame:has(.cafe-tiles) .g-footer .footer-end{
-  font-weight:500;opacity:.92;
+.frame:has(.cafe-tiles) .g-footer .footer-av{
+  pointer-events:auto;position:absolute;right:96px;bottom:32px;left:auto;z-index:3;
+  display:flex;align-items:center;gap:14px;
 }
+.frame:has(.cafe-tiles) .g-footer .footer-end{
+  top:auto;right:22px;bottom:32px;left:auto;
+  width:60px;height:60px;padding:0;gap:0;
+  display:grid;place-items:center;
+  border-radius:50%;
+  font-weight:500;opacity:1;
+  color:#F7F6EF;
+  background:rgba(55,50,48,.70);
+  border:1px solid rgba(255,246,236,.16);
+  box-shadow:none;
+}
+.frame:has(.cafe-tiles) .g-footer .footer-end svg{width:24px;height:24px;color:#F9746B}
+.frame:has(.cafe-tiles) .g-footer .footer-end:hover{
+  color:#F7F6EF;
+  background:rgba(55,50,48,.85);
+}
+.frame:has(.cafe-tiles) .g-footer .footer-end:hover svg{color:#F9746B}
 .frame:has(.cafe-tiles) .g-footer .footer-capsule{
   --cafe-chat-w:clamp(320px, calc(50cqw - 230px), 420px);
   --cafe-composer-w:calc(var(--cafe-chat-w) - 18px);
+  /* Open chat anchors to the bottom-left of the conversation stage. The tools
+     stay centered; only the glass and the input section reach leftward.
+     --cafe-chat-left is the glass left edge measured from this capsule's left
+     edge: 50% (half the capsule) puts us at the frame centre, 50cqw walks back
+     to the frame's left edge, then the tile padding plus the edge inset. */
+  --cafe-tile-pad:14px;
+  --cafe-chat-edge:22px;
+  --cafe-chat-inset:18px;
+  --cafe-chat-left:calc(50% + var(--cafe-tile-pad) + var(--cafe-chat-edge) - 50cqw);
+  --cafe-input-left:calc(var(--cafe-chat-left) + var(--cafe-chat-inset));
+  /* Full run from the input's left edge to just short of the tools, then the
+     input takes 80% of it (20% shorter, cut from the right edge; the left
+     edge stays put). The run scales with the frame, so the input shrinks with
+     it and never reaches the tools; 280px keeps it usable and can never
+     exceed the full run. */
+  --cafe-input-full:calc(-1 * var(--cafe-input-left) - 8px);
+  --cafe-input-w:min(var(--cafe-input-full), max(calc(var(--cafe-input-full) * .8), 280px));
   position:relative;
   overflow:visible;
   flex:none;
@@ -1535,9 +1623,6 @@
   box-shadow:none;
   -webkit-backdrop-filter:none;
   backdrop-filter:none;
-}
-.frame:has(.cafe-tiles) .g-footer .footer-capsule.is-chat-open{
-  margin-left:max(0px, calc(var(--cafe-chat-w) + 240px - 50cqw));
 }
 .footer-glass{
   position:absolute;inset:0;z-index:0;pointer-events:none;border-radius:999px;
@@ -1550,8 +1635,10 @@
   box-shadow:inset 1px 1px 0 rgba(255,255,255,.10), 0 12px 34px rgba(18,14,12,.30);
   transition:left .34s cubic-bezier(.22,.82,.2,1);
 }
+/* One continuous glass surface: the tools footer extends leftward with the
+   input when chat opens. */
 .footer-capsule.is-chat-open .footer-glass{
-  left:calc(-1 * (var(--cafe-chat-w) + 14px));
+  left:var(--cafe-chat-left);
 }
 .footer-controls{
   position:relative;z-index:2;
@@ -1566,25 +1653,22 @@
 }
 
 .cafe-composer-slot{
-  --cafe-composer-w:calc(var(--cafe-chat-w) - 18px);
-  position:absolute;top:16px;right:calc(100% + 8px);z-index:2;
+  /* right edge pinned at the shortened input's end, so the slot grows out to the left */
+  position:absolute;top:16px;right:calc(100% - var(--cafe-input-left) - var(--cafe-input-w));z-index:2;
   display:flex;align-items:center;
   height:56px;width:0;
   overflow:hidden;
+  /* clip cannot be scrolled, so focusing the input while the slot is still
+     growing no longer nudges the composer out of alignment. */
+  overflow:clip;
   opacity:0;
   pointer-events:none;
   transition:width .34s cubic-bezier(.22,.82,.2,1),opacity .2s ease;
 }
 .footer-capsule.is-chat-open .cafe-composer-slot{
-  width:var(--cafe-composer-w);
+  width:var(--cafe-input-w);
   opacity:1;
   pointer-events:auto;
-}
-.footer-capsule.is-chat-open .cafe-composer-slot::after{
-  content:'';
-  position:absolute;right:-14px;top:10px;bottom:10px;width:1px;
-  background:rgba(255,246,236,.22);
-  pointer-events:none;
 }
 
 .cafe-chat-preview{
@@ -1619,10 +1703,11 @@
 .g-footer .rc-btn.is-active svg{color:var(--brand-yellow)}
 
 .cafe-chat-overlay{
-  --cafe-composer-w:calc(var(--cafe-chat-w) - 18px);
-  position:absolute;left:calc(-8px - var(--cafe-composer-w) - 8px);bottom:calc(100% + 10px);z-index:4;
-  width:calc(var(--cafe-composer-w) + 8px);max-width:none;
-  padding-left:8px;box-sizing:border-box;
+  /* Left edge and width match the input section exactly; the gap to the glass
+     is one fixed value so messages always sit directly above the input. */
+  position:absolute;left:var(--cafe-input-left);bottom:calc(100% + 10px);z-index:4;
+  width:var(--cafe-input-w);max-width:none;
+  box-sizing:border-box;
   pointer-events:none;
   overflow:visible;
   display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-end;gap:8px;
@@ -1650,7 +1735,7 @@
 }
 .cafe-chat-overlay.is-expanded .chat-history{
   pointer-events:auto;overflow-x:visible;overflow-y:auto;max-height:min(42vh, 340px);
-  padding:4px 4px 6px 8px;margin-left:-8px;width:calc(100% + 8px);box-sizing:border-box;
+  padding:4px 4px 6px 6px;margin-left:-6px;width:calc(100% + 6px);box-sizing:border-box;
 }
 .cafe-chat-overlay.is-expanded .chat-stack{display:flex;flex-direction:column;gap:0}
 .cafe-chat-overlay .mo{
@@ -1950,6 +2035,8 @@ body.present .cafe-tiles{padding:14px}
 body.present .cafe-topbar .g-timepill,
 body.present .cafe-topbar .g-timepill .time,
 body.present .cafe-topbar .g-timepill.final{font-size:23px}
+body.present .frame:has(.cafe-tiles) .cafe-topbar .g-timepill.is-center,
+body.present .frame:has(.cafe-tiles) .cafe-topbar .g-timepill.is-center .time{font-size:120px;font-weight:800}
 body.present .searching-stage{padding:88px 5vw 28px}
 @media (min-height: 860px){
   body.present .search-map{height:min(400px, 44vh);width:calc(min(400px, 44vh) * 2.24)}
@@ -2007,7 +2094,9 @@ body.present .searching-stage{padding:88px 5vw 28px}
   }
   .search-pin,.search-echo,.search-pin.has-face .pin-dot,.search-pin.has-face .pin-face,
   .match-indicator .mi-dot::after,.fc-status .mi-dot::after,.po-spin,.po-acts,.dock-tip,
-  .cafe-topbar .g-timepill.final,.ending-cf,
+  .cafe-topbar .g-timepill,.cafe-topbar .g-timepill .time,.cafe-topbar .g-timepill svg,
+  .cafe-topbar .g-timepill.final,.cafe-topbar .g-timepill.is-center::before,
+  .clock-chrome-fade,.ending-cf,
   .av-echo-ring,.cafe-wave.is-live i,.fc-flip,
   .frame:has(.cafe-tiles) .g-footer .footer-capsule,
   .footer-glass,.cafe-composer-slot,.cafe-chat-overlay{animation:none;transition:none}
@@ -2029,6 +2118,321 @@ body.present .searching-stage{padding:88px 5vw 28px}
 @keyframes cafeDesktopWelcomeFade{
   from{opacity:0}
   to{opacity:1}
+}
+
+/* =========================================================================
+   6b · TOPICS WHEEL  (desktop)
+   The approved glass wheel from the Mobile Café, opened from the Topics button
+   in the helper capsule. Everything is scoped to .tw-* or to .frame.tw-*; the
+   layer mounts once and is re-attached after every Live render (see
+   CafeTopicsWheel in cafe-states.js).
+   Placement is desktop-specific. The wheel is drawn 428px across and scaled
+   as a whole by --tw-k (set from JS: ~45% of the stage width), about its
+   centre, which sits 46px above the bottom edge on the seam between the two
+   tiles. The result strip is anchored from JS to the whole stage: centred on
+   the seam, 24px above the conversation toolbar.
+   ========================================================================= */
+/* The helper capsule steps aside while the wheel is open. Camera, Mic and
+   Leave sit outside it and stay put. */
+.frame.tw-armed .footer-capsule{
+  transition:opacity .22s ease,transform .3s cubic-bezier(.4,0,.2,1);
+}
+.frame.tw-open .footer-capsule,
+.frame.tw-open .dock-tip{
+  opacity:0;transform:translateY(24px);pointer-events:none;
+}
+.frame.tw-open .footer-capsule *{pointer-events:none !important}
+
+.tw-layer{
+  --tw-yellow:var(--brand-yellow);       /* brand yellow #F9E24C */
+  --tw-drop:#FFE300;                     /* teardrop fill from Union.svg */
+  --tw-frost:rgba(168,168,164,.36);
+  --tw-strip-bg:rgba(34,34,32,.6);
+  --tw-yellow-soft:#EDE2A2;
+  --tw-k:1.346;                          /* wheel scale, overwritten from JS */
+  position:absolute;inset:0;z-index:30;pointer-events:none;
+  /* The wheel is cropped by the stage. clip (not hidden) keeps the layer from
+     becoming a scroll container, so focusing or scrolling the cropped part of
+     the wheel can never move the video tiles. */
+  overflow:hidden;overflow:clip;
+  font-family:var(--font-ui);
+  -webkit-user-select:none;user-select:none;
+}
+.tw-layer *{box-sizing:border-box}
+.tw-wheel{
+  position:absolute;left:50%;bottom:-168px;width:428px;height:428px;margin-left:-214px;
+  pointer-events:none;visibility:hidden;
+  transform:translateY(calc(var(--tw-k) * 260px + 24px)) scale(var(--tw-k));
+}
+.tw-wheel.open{
+  visibility:visible;pointer-events:auto;transform:translateY(0) scale(var(--tw-k));
+  transition:transform .56s cubic-bezier(.18,.9,.24,1.04);
+}
+.tw-wheel.closing{
+  visibility:visible;transform:translateY(calc(var(--tw-k) * 260px + 24px)) scale(var(--tw-k));
+  transition:transform .32s cubic-bezier(.5,0,.75,.2);
+}
+/* clear glass: shows through the channels between the wedges */
+.tw-glass{
+  position:absolute;inset:0;border-radius:50%;
+  background:rgba(255,255,255,.05);
+  -webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px);
+  box-shadow:0 -4px 28px rgba(0,0,0,.09),0 -14px 60px rgba(0,0,0,.06);
+}
+/* milky frosted wedges; the mask is set from JS and rotates with the spinner */
+.tw-frost{
+  position:absolute;inset:0;
+  background:var(--tw-frost);
+  -webkit-backdrop-filter:blur(14px) saturate(1.05);backdrop-filter:blur(14px) saturate(1.05);
+  will-change:transform;
+}
+.tw-face{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.tw-wedge{fill:url(#twSheen);stroke:rgba(255,255,255,.16);stroke-width:.7;transition:stroke .3s ease}
+.tw-wedge.sel{stroke:var(--tw-yellow);stroke-opacity:.75;stroke-width:1.3}
+.tw-spinner{will-change:transform}
+.tw-lbl text{fill:#fff;transition:fill .28s ease;text-shadow:0 1px 2px rgba(0,0,0,.28)}
+.tw-lbl .he{font-weight:600}
+.tw-lbl .en{font-weight:400;opacity:0;transition:opacity .25s ease}
+.tw-lbl.sel text{fill:var(--tw-yellow);text-shadow:0 1px 3px rgba(0,0,0,.45)}
+.tw-lbl.sel .en{opacity:1}
+.tw-lbl{transition:opacity .12s linear}
+
+/* the fixed teardrop: it never rotates, the wheel turns beneath it */
+.tw-drop{
+  position:absolute;width:107px;height:127px;left:160.9px;top:140.9px;
+  background:none;border:0;padding:0;cursor:pointer;-webkit-tap-highlight-color:transparent;
+}
+.tw-drop svg{
+  display:block;width:107px;height:127px;overflow:visible;transform-origin:53.1px 73.1px;
+  transition:transform .12s ease;
+}
+.tw-drop:hover svg{transform:scale(1.04)}
+.tw-drop:active svg{transform:scale(.95)}
+.tw-drop[aria-disabled="true"]{cursor:default}
+.tw-drop:focus{outline:none}
+.tw-drop:focus-visible .tw-ring{stroke:#fff;stroke-opacity:.9}
+.tw-ring{fill:none;stroke:transparent;stroke-width:2}
+.tw-drop.pop svg{animation:twPop .42s cubic-bezier(.3,1.6,.5,1)}
+@keyframes twPop{0%{transform:scale(.92)}60%{transform:scale(1.07)}100%{transform:scale(1)}}
+.tw-wheel.open .tw-drop{animation:twDropIn .5s .16s both cubic-bezier(.3,1.5,.5,1)}
+@keyframes twDropIn{from{transform:scale(.6);opacity:0}to{transform:none;opacity:1}}
+
+.tw-close{
+  /* on the wheel's upper-right shoulder, ~26px outside the rim at 40° */
+  position:absolute;left:calc(50% + var(--tw-k) * 137.6px + .7px);bottom:calc(var(--tw-k) * 164px + 49.9px);width:32px;height:32px;border-radius:50%;border:0;padding:0;
+  background:rgba(40,40,38,.34);
+  -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);
+  display:grid;place-items:center;cursor:pointer;
+  opacity:0;transform:scale(.8);pointer-events:none;transition:opacity .2s,transform .2s;
+}
+.tw-close.show{opacity:1;transform:none;pointer-events:auto;transition-delay:.25s}
+.tw-close svg{width:14px;height:14px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round}
+.tw-close:focus-visible{outline:2px solid var(--tw-yellow);outline-offset:2px}
+
+/* the result strip: wide and low, centred on the seam, hung from a line 24px
+   above the conversation toolbar. left / top / max-width are set from JS. */
+.tw-strip{
+  position:absolute;left:50%;top:50%;z-index:5;
+  transform:translate(-50%,-100%);
+  width:max-content;max-width:calc(100% - 64px);
+  padding:14px 34px 16px;border-radius:18px;
+  background:var(--tw-strip-bg);
+  -webkit-backdrop-filter:blur(10px) saturate(1.1);backdrop-filter:blur(10px) saturate(1.1);
+  box-shadow:0 8px 26px rgba(0,0,0,.20);
+  text-align:center;pointer-events:none;
+}
+.tw-strip p{margin:0}
+.tw-strip .he{font:600 31px/1.25 var(--font-ui);color:var(--tw-yellow);direction:rtl}
+.tw-strip .en{font:400 17.5px/1.32 var(--font-ui);color:var(--tw-yellow-soft);direction:ltr;margin-top:3px}
+.tw-strip.flying .he,.tw-strip.flying .en{visibility:hidden}
+.tw-fly{position:absolute;inset:0;z-index:6;pointer-events:none;overflow:hidden}
+.tw-fly span{
+  position:absolute;white-space:nowrap;transform-origin:50% 50%;will-change:transform;
+  text-shadow:0 1px 3px rgba(0,0,0,.35);
+}
+.tw-fly .he{font:600 31px/1.25 var(--font-ui)}
+.tw-fly .en{font:400 17.5px/1.32 var(--font-ui)}
+.tw-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+@media (prefers-reduced-motion:reduce){
+  .frame.tw-armed .footer-capsule{transition:opacity .2s}
+  .frame.tw-open .footer-capsule,.frame.tw-open .dock-tip{transform:none}
+  .tw-wheel.open,.tw-wheel.closing{transition:opacity .2s}
+  .tw-wheel{transform:scale(var(--tw-k));opacity:0}
+  .tw-wheel.open{opacity:1}
+  .tw-wheel.open .tw-drop{animation:none}
+}
+
+/* =========================================================================
+   6c · PRACTICE  (desktop)
+   The mobile Café Practice card, placed for the desktop stage. The card
+   SURFACE is centred on the seam between the two side-by-side tiles (the
+   centre of the frame); the instruction sits above it and the actions
+   straddle its bottom edge, so the card (not the group) owns the seam.
+   Geometry: .pr-layer is a region inset 110px from top and bottom, so its
+   centre is the frame centre. .pr-group is a single-column grid: rows
+   1fr | auto | 1fr (label at the end of the top row, card in the middle,
+   action panel at the start of the bottom row). Previous / Next sit in the
+   action panel, either side of Reveal answer / Back to question.
+   Stacking: under the footer (20) and the clock (22), above the tiles (3),
+   so Camera, Mic, Leave and the timer are never covered. Chat can stay open;
+   it draws above the card if the two ever touch.
+   ========================================================================= */
+.pr-layer{
+  --pr-card-max:340px;
+  position:absolute;left:0;right:0;top:110px;bottom:110px;z-index:19;
+  pointer-events:none;font-family:var(--font-ui);
+}
+.pr-layer *{box-sizing:border-box}
+.pr-layer.is-suspended{visibility:hidden}
+.pr-layer.is-closing{pointer-events:none}
+.pr-group{
+  /* centred with auto margins, not a transform: the enter animation owns transform */
+  position:absolute;left:0;right:0;top:0;bottom:0;margin:0 auto;width:min(100%,540px);
+  display:grid;
+  grid-template-columns:minmax(0,1fr);
+  grid-template-rows:1fr auto 1fr;
+  justify-items:center;
+}
+
+/* Practice button while its card is up: the same yellow "on" as Chat */
+.g-footer .rc-btn[aria-label="Practice"][aria-expanded="true"]{
+  background:rgba(55,50,48,.70);border-color:rgba(255,246,236,.16);color:var(--brand-yellow);
+}
+.g-footer .rc-btn[aria-label="Practice"][aria-expanded="true"] svg{color:var(--brand-yellow)}
+
+/* instruction label: small, muted, above the card */
+.pr-label{
+  grid-row:1;align-self:end;margin:0 0 14px;max-width:100%;text-align:center;
+  font:600 14px/1.25 var(--font-ui);letter-spacing:.2px;color:rgba(232,229,220,.9);
+  text-shadow:0 1px 3px rgba(18,14,12,.65);
+}
+
+/* the frosted-glass card. Blur lives on the card itself (not on a flipped
+   child), so the glass survives the flip. */
+.pr-card{
+  grid-row:2;position:relative;width:100%;max-width:540px;pointer-events:auto;
+  border-radius:26px;border:1px solid rgba(255,255,255,.62);
+  background:linear-gradient(145deg,rgba(255,255,255,.80) 0%,rgba(247,246,239,.68) 100%);
+  -webkit-backdrop-filter:blur(22px) saturate(1.25);backdrop-filter:blur(22px) saturate(1.25);
+  box-shadow:inset 1px 1px 0 rgba(255,255,255,.7),0 18px 44px rgba(18,14,12,.30);
+  color:var(--brand-charcoal);
+  cursor:pointer;                       /* the whole surface flips the card */
+}
+.pr-card .pr-player{cursor:default}
+.pr-card .pr-player .pr-play{cursor:pointer}
+/* both faces share one grid cell, so the card is as tall as the taller face:
+   it does not move or resize when it flips */
+.pr-faces{
+  display:grid;max-height:var(--pr-card-max);overflow-y:auto;overscroll-behavior:contain;
+  scrollbar-width:none;border-radius:inherit;
+}
+.pr-faces::-webkit-scrollbar{display:none}
+.pr-face{
+  grid-area:1/1;min-height:132px;padding:32px 44px calc(32px + 18px);   /* +18: the button overlaps the bottom edge */
+  display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;
+}
+.pr-layer.is-short .pr-face{min-height:104px;padding:20px 36px calc(20px + 18px)}
+.pr-card:not(.is-answer) .pr-back,
+.pr-card.is-answer .pr-front{visibility:hidden}
+.pr-text{
+  margin:0;width:100%;font-weight:600;letter-spacing:-.25px;line-height:1.3;color:var(--brand-charcoal);
+  overflow-wrap:anywhere;text-wrap:balance;
+}
+.pr-text[dir="rtl"]{letter-spacing:0}
+.pr-len-s{font-size:34px}
+.pr-len-m{font-size:28px}
+.pr-len-l{font-size:23px;line-height:1.4}
+
+/* close: small cream disc on the card's upper-right corner. Deliberately not
+   Leave (the round control in the footer). */
+.pr-close{
+  position:absolute;top:-13px;right:-10px;z-index:2;width:30px;height:30px;padding:0;
+  display:grid;place-items:center;cursor:pointer;border-radius:50%;
+  background:var(--neutral-100);color:var(--brand-charcoal);
+  border:1px solid rgba(55,50,48,.16);box-shadow:0 3px 10px rgba(18,14,12,.28);
+}
+.pr-close:hover{background:#fff}
+.pr-close svg{width:12px;height:12px}
+.pr-close::after{content:"";position:absolute;inset:-7px;border-radius:50%}   /* 44px target */
+.pr-close:focus-visible,.pr-btn:focus-visible,.pr-play:focus-visible,.pr-nav:focus-visible{outline:2px solid var(--brand-yellow);outline-offset:2px}
+.pr-card .pr-close:focus-visible{outline-color:var(--brand-charcoal)}
+
+/* Previous / Next: the charcoal disc IS the button, so the chevron sits in
+   the true centre of the circle (no offset ::before). Height matches Reveal. */
+.pr-nav{
+  pointer-events:auto;flex:none;width:46px;height:46px;padding:0;margin:0;border-radius:50%;
+  display:grid;place-items:center;cursor:pointer;color:#F7F6EF;
+  background:rgba(55,50,48,.48);border:0;
+  -webkit-backdrop-filter:blur(22px) saturate(1.2);backdrop-filter:blur(22px) saturate(1.2);
+  box-shadow:0 6px 16px rgba(18,14,12,.24);
+  transition:background .18s ease;
+}
+.pr-nav:hover{background:rgba(55,50,48,.62)}
+.pr-nav svg{display:block;width:20px;height:20px}
+.pr-prev svg{transform:translateX(1px)}
+.pr-next svg{transform:translateX(-1px)}
+
+/* audio player: the Gym replay-player language (outlined play, bar waveform) */
+.pr-player{
+  display:flex;align-items:center;gap:14px;width:100%;max-width:380px;
+  padding:9px 20px 9px 9px;border-radius:999px;
+  border:1px solid rgba(55,50,48,.16);background:rgba(255,255,255,.38);
+}
+.pr-play{
+  width:50px;height:50px;flex:none;border-radius:50%;border:none;outline:none;cursor:pointer;padding:0;
+  display:grid;place-items:center;
+  background:var(--brand-yellow);color:var(--brand-charcoal);box-shadow:0 2px 8px rgba(55,50,48,.22);
+}
+.pr-play svg{width:21px;height:21px}
+.pr-play:focus-visible{outline:2px solid var(--brand-charcoal);outline-offset:2px}
+.pr-play:disabled{background:#E1DDD3;color:#8B8681;box-shadow:none;cursor:default}
+/* no recording behind it: the button keeps its shape but is visibly unavailable */
+.pr-play[aria-disabled="true"]{opacity:.55;cursor:not-allowed;box-shadow:none}
+.pr-wave{flex:1;min-width:0;height:34px;display:flex;align-items:center;justify-content:space-between}
+.pr-wave i{flex:1;max-width:3px;border-radius:1.5px;background:rgba(55,50,48,.24);transform-origin:center}
+.pr-wave i.on{background:var(--brand-charcoal)}
+.pr-wave.is-live i{animation:prwave 1s ease-in-out infinite}
+.pr-wave.is-live i:nth-child(odd){animation-delay:.12s}
+.pr-wave.is-live i:nth-child(3n){animation-delay:.24s}
+.pr-wave.is-live i:not(.on){background:rgba(55,50,48,.36)}
+@keyframes prwave{0%,100%{transform:scaleY(.62)}50%{transform:scaleY(1)}}
+.pr-player.is-error .pr-wave{opacity:.4}
+
+/* action panel: Previous · Reveal / Back · Next, straddling the card's bottom */
+.pr-acts{
+  --pr-overlap:18px;
+  grid-row:3;align-self:start;margin-top:calc(var(--pr-overlap) * -1);
+  position:relative;z-index:3;pointer-events:none;
+  display:flex;align-items:center;justify-content:center;gap:10px;
+}
+.pr-acts-q,.pr-acts-a{display:flex;justify-content:center;pointer-events:none}
+.pr-acts-q[hidden],.pr-acts-a[hidden]{display:none}
+.pr-btn{
+  pointer-events:auto;height:46px;padding:0 26px;border-radius:999px;cursor:pointer;white-space:nowrap;
+  font:700 16px/1 var(--font-ui);letter-spacing:-.05px;
+  color:#F7F6EF;background:rgba(55,50,48,.62);border:1px solid rgba(255,246,236,.16);
+  -webkit-backdrop-filter:blur(14px) saturate(1.1);backdrop-filter:blur(14px) saturate(1.1);
+  box-shadow:0 6px 16px rgba(18,14,12,.24);
+  transition:background .18s ease,filter .18s ease;
+}
+.pr-btn:hover{background:rgba(55,50,48,.80)}
+.pr-btn.primary{background:var(--brand-yellow);border-color:var(--brand-yellow);color:var(--brand-charcoal)}
+.pr-btn.primary:hover{background:var(--brand-yellow);filter:brightness(.97)}
+/* no duplicate actions while a flip is running (Close stays available) */
+.pr-layer.is-busy .pr-btn,
+.pr-layer.is-busy .pr-nav,
+.pr-layer.is-busy .pr-play{pointer-events:none}
+
+/* The final-20s countdown normally lands on the seam, which is where the card
+   is. While Practice is open it hangs above the instruction instead; JS
+   (publish() in CafePractice) writes --pr-clock-y on the frame. The clock is
+   not resized, and the card does not move when the countdown starts. */
+.frame.pr-open:has(.cafe-tiles) .cafe-topbar .g-timepill.is-center{top:var(--pr-clock-y,22%)}
+
+@media (prefers-reduced-motion:reduce){
+  .pr-wave.is-live i{animation:none}
+  .pr-nav,.pr-btn{transition:none}
 }
 
 body.interview .mode-btn{display:none !important}

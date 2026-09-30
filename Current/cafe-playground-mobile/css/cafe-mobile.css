@@ -1516,7 +1516,7 @@ body.present .demo{justify-content:center}
   display:block;font-size:14.5px;font-weight:600;line-height:1.35;letter-spacing:-.1px;
 }
 .dock-tip-arrow{
-  position:absolute;left:calc(50% - 68px);bottom:-7px;width:14px;height:8px;
+  position:absolute;left:calc(50% - 58px);bottom:-7px;width:14px;height:8px;
   transform:translateX(-50%);pointer-events:none;
   background:var(--brand-yellow);
   clip-path:polygon(0 0, 100% 0, 50% 100%);
@@ -1537,9 +1537,161 @@ body.present .demo{justify-content:center}
   100%{opacity:0;transform:translateY(6px)}
 }
 
-/* Topics stays in the dock group; the icon matches the rest of the row. */
-.rc-btn.accent svg{color:#F7F6EF}
-.rc-btn.accent{background:rgba(55,50,48,.52)}
+/* ---- Live footer: one row, two kinds of control --------------------------
+   [ frosted glass: Chat · Topics · Practice ]  [ Camera ] [ Mic ]
+   The glass group holds the conversation tools. Topics and Practice carry a
+   little more weight (charcoal fill); Chat stays quiet but readable. Camera
+   and Mic are device controls, so each gets its own translucent charcoal
+   circle, set apart by a small gap. Every target is 48px.
+   Camera and Mic are positioned (not flowed) so they can glide to the bottom
+   corners while the wheel is open (see 6b) without being rebuilt. */
+.cafe-dock{
+  --dock-btn:48px;
+  --dock-tools-w:184px;
+  --dock-gap:12px;        /* glass group -> Camera */
+  --dock-av-gap:8px;      /* Camera -> Mic */
+  --dock-total:calc(var(--dock-tools-w) + var(--dock-gap) + var(--dock-btn) * 2 + var(--dock-av-gap));
+  --dock-left:calc(50% - var(--dock-total) / 2);
+  --dock-h:82px;
+  position:relative;flex:none;width:100%;height:var(--dock-h);
+}
+.cafe-dock .rc-tools{
+  position:absolute;top:0;left:var(--dock-left);
+  box-sizing:border-box;width:var(--dock-tools-w);height:var(--dock-h);
+  display:flex;align-items:flex-start;justify-content:space-between;
+  padding:10px 12px 0;border-radius:999px;pointer-events:auto;
+  border:1px solid rgba(255,246,236,.08);
+  background:
+    linear-gradient(135deg,rgba(255,255,255,.22) 0%,rgba(255,255,255,.06) 42%,transparent 100%),
+    rgba(78,72,66,.28);
+  -webkit-backdrop-filter:blur(26px) saturate(1.14);backdrop-filter:blur(26px) saturate(1.14);
+  box-shadow:inset 1px 1px 0 rgba(255,255,255,.12),0 10px 24px rgba(18,14,12,.18);
+  transition:opacity .2s ease,visibility 0s linear 0s;
+}
+.cafe-dock .rc-item{min-width:var(--dock-btn);width:var(--dock-btn);gap:3px}
+.cafe-dock .rc-btn{width:var(--dock-btn);height:var(--dock-btn);flex:none}
+.cafe-dock .rc-cap{text-shadow:0 1px 3px rgba(18,14,12,.55)}
+/* weight inside the glass group */
+.cafe-dock .rc-btn.emph{background:rgba(55,50,48,.52);border-color:rgba(255,246,236,.14);color:#F7F6EF}
+.cafe-dock .rc-btn.emph svg{color:#F7F6EF}
+.cafe-dock .emph + .rc-cap{color:rgba(247,246,236,.94);font-weight:700}
+.cafe-dock .rc-btn.quiet{background:transparent;border-color:transparent;color:rgba(247,246,239,.9)}
+.cafe-dock .rc-btn.quiet svg{color:inherit}
+.cafe-dock .rc-btn.quiet.is-on{background:rgba(55,50,48,.40);border-color:rgba(255,246,236,.10);color:var(--brand-yellow)}
+.cafe-dock .rc-btn.quiet.is-on svg{color:var(--brand-yellow)}
+.cafe-dock .quiet + .rc-cap{color:rgba(247,246,236,.80)}
+.cafe-dock .rc-btn:focus-visible{outline:2px solid var(--brand-yellow);outline-offset:2px}
+/* device circles */
+.cafe-dock .rc-av{
+  position:absolute;top:11px;width:var(--dock-btn);      /* 10px pad + the group's 1px border: same baseline as the glass buttons */
+  display:flex;flex-direction:column;align-items:center;pointer-events:auto;
+  transition:left .44s cubic-bezier(.22,.8,.2,1),top .44s cubic-bezier(.22,.8,.2,1);
+}
+.cafe-dock .rc-av-cam{left:calc(var(--dock-left) + var(--dock-tools-w) + var(--dock-gap))}
+.cafe-dock .rc-av-mic{left:calc(var(--dock-left) + var(--dock-tools-w) + var(--dock-gap) + var(--dock-btn) + var(--dock-av-gap))}
+.cafe-dock .rc-av .rc-btn{
+  background:rgba(55,50,48,.62);border:1px solid rgba(255,246,236,.14);color:#F7F6EF;
+  -webkit-backdrop-filter:blur(14px) saturate(1.1);backdrop-filter:blur(14px) saturate(1.1);
+  box-shadow:0 6px 16px rgba(18,14,12,.20);
+  transition:background .2s ease,color .2s ease;
+}
+/* off: deeper fill, dimmed glyph, red slash (the slash is the Gym off-state) */
+.cafe-dock .rc-av .rc-btn.is-off{background:rgba(34,30,28,.82);color:rgba(247,246,239,.66)}
+.cafe-dock .rc-av .rc-btn.is-off svg{color:inherit}
+
+/* Top edge of the footer row (row height + bottom padding). The chat composer
+   and the chat above it rest on this line. */
+.screen{--cafe-dock-top:calc(82px + max(20px,calc(env(safe-area-inset-bottom,0px) + 8px)))}
+/* Footer keeps its Gym size; the bottom padding honours the home indicator.
+   It also sits above the wheel layer (z 36) at all times, so Camera / Mic
+   never slip under the wheel while it slides in or out. */
+.screen:has(.cafe-dock) .rfooter{
+  z-index:40;
+  padding-bottom:max(20px,calc(env(safe-area-inset-bottom,0px) + 8px));
+}
+
+/* ---- Live header ----------------------------------------------------------
+   The session-exit X (top-left) is a 32px glass circle with a 44px target.
+   The clock is the shared room clock, lifted out of the header so it can
+   travel to the seam. */
+.rheader .icon-btn.session-exit::after{content:"";position:absolute;inset:-6px;border-radius:50%}
+.rheader .icon-btn.session-exit:focus-visible{outline:2px solid var(--brand-yellow);outline-offset:2px}
+.cafe-clock{
+  position:absolute;top:50px;right:12px;z-index:43;
+  transform:translate(0,0);pointer-events:none;
+  transition:
+    top 1.15s cubic-bezier(.22,.8,.2,1),
+    right 1.15s cubic-bezier(.22,.8,.2,1),
+    transform 1.15s cubic-bezier(.22,.8,.2,1);
+}
+.cafe-clock .room-status{display:flex;flex-direction:column;align-items:flex-end;gap:2px}
+.cafe-clock .room-time{
+  transition:font-size 1.15s cubic-bezier(.22,.8,.2,1),gap 1.15s cubic-bezier(.22,.8,.2,1),letter-spacing 1.15s ease,color .7s ease;
+}
+.cafe-clock .room-time svg{transition:width .7s ease,height .7s ease,opacity .45s ease}
+.cafe-clock .room-time .cap{transition:opacity .45s ease,font-size .7s ease}
+/* the corner wash that sits behind the yellow clock (Gym rule, re-keyed to the lifted clock) */
+.screen:has(.cafe-clock .room-time.final) .rheader::before{
+  content:"";position:absolute;top:-48px;right:0;width:220px;height:118px;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 150px 72px at 94% 18%,rgba(55,50,48,.74) 0%,rgba(55,50,48,.40) 48%,rgba(55,50,48,0) 100%),
+    radial-gradient(ellipse 220px 118px at 100% 0%,rgba(55,50,48,.70) 0%,rgba(55,50,48,.42) 34%,rgba(55,50,48,.20) 58%,rgba(55,50,48,0) 100%);
+  transition:opacity .9s ease;
+}
+.screen:has(.cafe-clock.is-center) .rheader::before{opacity:0}
+
+/* Final countdown: the same clock, large and yellow. By default it glides to
+   the seam between the two videos (centre of the screen), 52-58px, adapting to
+   screen height (the screen is a size container while the clock exists), the
+   same as desktop.
+   Surfaces that own the seam push it down to a resting line near the bottom
+   (the older, smaller 40-44px treatment) so they never have to move:
+     Practice open   -> above the footer row
+       + chat open   -> just above the chat input
+     wheel open      -> just above the wheel
+     topic strip up  -> above the footer row (the strip is on the seam)       */
+.screen:has(.cafe-clock){container-type:size}
+.cafe-clock.is-center,
+.cafe-chat-overlay{--fc-size:clamp(40px,5.3cqh,44px)}
+.cafe-clock.is-center{
+  --fc-size:clamp(52px,6.6cqh,58px);
+  --fc-bottom:calc(var(--cafe-dock-top) + 18px);
+  top:50%;
+  right:50%;transform:translate(50%,-50%);isolation:isolate;
+}
+.screen.pr-open .cafe-clock.is-center,
+.screen.tw-open .cafe-clock.is-center,
+.screen:has(.tw-strip) .cafe-clock.is-center{
+  --fc-size:clamp(40px,5.3cqh,44px);
+  top:calc(100% - var(--fc-bottom) - var(--fc-size) * 1.05);
+  transform:translate(50%,0);
+}
+.screen.pr-open:has(.cafe-composer) .cafe-clock.is-center{--fc-bottom:calc(var(--cafe-dock-top) + 86px)}
+.screen.tw-open .cafe-clock.is-center{--fc-bottom:calc(var(--tw-cy) + 206px)}
+/* with Practice open the chat list stops below the resting countdown */
+.screen.pr-open:has(.cafe-clock.is-center) .cafe-chat-overlay{
+  bottom:calc(var(--cafe-dock-top) + 96px + var(--fc-size) * 1.05);
+}
+.cafe-clock.is-center .room-status{align-items:center;gap:0}
+.cafe-clock.is-center .room-time{
+  gap:0;font-size:var(--fc-size);line-height:1.05;font-weight:800;letter-spacing:-.03em;color:var(--brand-yellow);
+  padding:0;text-shadow:0 1px 1px rgba(55,50,48,.16);animation:none;
+}
+.cafe-clock.is-center .room-time svg{width:0;height:0;opacity:0;overflow:hidden}
+.cafe-clock.is-center .room-time .cap{opacity:0;font-size:0;width:0;overflow:hidden}
+.cafe-clock.is-center .room-time .tval{
+  display:inline-block;transform-origin:center;animation:cafeCenterPulse 2.8s ease-in-out 1.15s infinite;
+}
+.cafe-clock.is-center::before{
+  content:"";position:absolute;left:50%;top:50%;z-index:-1;
+  width:5.4em;height:2.7em;font-size:var(--fc-size);
+  transform:translate(-50%,-50%);pointer-events:none;
+  background:radial-gradient(ellipse at center,
+    rgba(55,50,48,.48) 0%,rgba(55,50,48,.24) 36%,rgba(55,50,48,.08) 58%,rgba(55,50,48,0) 74%);
+  animation:cafeCenterVeil 1.15s cubic-bezier(.22,.8,.2,1) both;
+}
+@keyframes cafeCenterVeil{from{opacity:0}to{opacity:1}}
+@keyframes cafeCenterPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.03)}}
 
 /* The top participant label clears the leave control.
    Upstream note: Practice Rooms mobile moved the leave X to the top-left in a
@@ -1565,7 +1717,7 @@ body.present .demo{justify-content:center}
   position:absolute;
   left:var(--s16);
   right:var(--s16);
-  bottom:calc(var(--footer-h) + 80px);
+  bottom:calc(var(--cafe-dock-top) + 66px + 22px);   /* composer height + a little air above it */
   top:auto;
   z-index:16;
   pointer-events:none;
@@ -1729,7 +1881,7 @@ body.present .demo{justify-content:center}
 .cafe-composer{
   position:absolute;
   left:var(--s16);right:var(--s16);
-  bottom:calc(var(--footer-h) + 6px);
+  bottom:calc(var(--cafe-dock-top) + 10px);          /* rests just above the footer row */
   z-index:32;
   pointer-events:auto;
 }
@@ -1790,6 +1942,179 @@ body.present .demo{justify-content:center}
 
 
 /* =========================================================================
+   6b · TOPICS WHEEL
+   The approved cropped glass wheel, opened from the Topics dock button.
+   Everything is scoped to .tw-* or to .screen.tw-*; the layer mounts once
+   and is re-attached after every Live render (see CafeTopicsWheel in
+   cafe-mobile-states.js). Geometry hangs off the bottom-centre of the screen,
+   so the wheel holds at any phone width: 380px across (outer radius 190),
+   cropped 144px by the bottom edge. --tw-cy is the rotation centre's height
+   above the bottom: 46px, plus the home-indicator inset where there is one, so
+   the spin button and its touch target always clear the bottom safe area.
+   ========================================================================= */
+.screen{--tw-cy:calc(46px + env(safe-area-inset-bottom,0px))}
+/* While the wheel is open the conversation-tools group steps aside and the
+   footer scrim fades. Camera and Mic stay: they glide up to the top-right of the
+   lower video, stacked (the rest of their rules are in the Live footer block)
+   and remain live, above the wheel, through the spin and the result hand-off.
+   Their captions fade so nothing but the two charcoal circles is left. */
+.screen.tw-armed .footer-scrim{transition:opacity .22s ease}
+.screen.tw-open .footer-scrim{opacity:0}
+.screen.tw-open .cafe-dock .rc-tools{
+  opacity:0;visibility:hidden;pointer-events:none;
+  transition:opacity .16s ease,visibility 0s linear .16s;
+}
+/* Wheel open: Camera and Mic lift out of the footer row and stack vertically
+   (Camera above Mic) in the top-right corner of the lower video, 14px in from
+   the right edge and 12px below the seam. That is well above the wheel, so the
+   circles never sit on the glass or on a label, and the spin button has the
+   bottom of the screen to itself. They stay 48px and live.
+   Placement is measured from the seam (50% of the screen, via the screen's
+   size container) but the circles belong to the dock, so the offset is taken
+   from the dock's top edge (--cafe-dock-top up from the bottom). */
+.screen.tw-open .cafe-dock{--dock-av-top:calc(var(--cafe-dock-top) - 50cqh + 12px)}
+.screen.tw-open .cafe-dock .rc-av-cam,
+.screen.tw-open .cafe-dock .rc-av-mic{left:calc(100% + var(--s16) - 14px - var(--dock-btn))}   /* + the footer's own side padding */
+.screen.tw-open .cafe-dock .rc-av-cam{top:var(--dock-av-top)}
+.screen.tw-open .cafe-dock .rc-av-mic{top:calc(var(--dock-av-top) + var(--dock-btn) + 12px)}
+/* over the glass wheel the circles need a little more presence */
+.screen.tw-open .cafe-dock .rc-av .rc-btn{
+  background:rgba(55,50,48,.64);border-color:rgba(255,246,236,.18);color:#F7F6EF;
+  -webkit-backdrop-filter:blur(16px) saturate(1.1);backdrop-filter:blur(16px) saturate(1.1);
+}
+.screen.tw-open .cafe-dock .rc-av .rc-btn.is-off{background:rgba(34,30,28,.82);color:rgba(247,246,239,.66)}
+.cafe-dock .rc-av .rc-cap{transition:opacity .2s ease}
+.screen.tw-open .cafe-dock .rc-av .rc-cap{opacity:0}
+/* dock hint bubbles never ride along onto the wheel */
+.screen.tw-open .rfooter .dock-tip{opacity:0;pointer-events:none}
+
+.tw-layer{
+  --tw-yellow:var(--brand-yellow);       /* brand yellow #F9E24C */
+  --tw-drop:#FFE300;                     /* teardrop fill from Union.svg */
+  --tw-frost:rgba(168,168,164,.36);
+  --tw-strip-bg:rgba(34,34,32,.6);
+  --tw-yellow-soft:#EDE2A2;
+  position:absolute;inset:0;z-index:36;pointer-events:none;
+  overflow:hidden;overflow:clip;         /* cropped wheel must never scroll the screen */
+  font-family:var(--font-ui);
+  -webkit-user-select:none;user-select:none;
+}
+.tw-layer *{box-sizing:border-box}
+.tw-wheel{
+  position:absolute;left:50%;bottom:calc(var(--tw-cy) - 190px);width:380px;height:380px;margin-left:-190px;
+  pointer-events:none;visibility:hidden;
+  transform:translateY(calc(280px + env(safe-area-inset-bottom,0px)));
+}
+.tw-wheel.open{
+  visibility:visible;pointer-events:auto;transform:translateY(0);
+  transition:transform .56s cubic-bezier(.18,.9,.24,1.04);
+}
+.tw-wheel.closing{
+  visibility:visible;transform:translateY(calc(280px + env(safe-area-inset-bottom,0px)));
+  transition:transform .32s cubic-bezier(.5,0,.75,.2);
+}
+/* clear glass: shows through the channels between the wedges */
+.tw-glass{
+  position:absolute;inset:0;border-radius:50%;
+  background:rgba(255,255,255,.05);
+  -webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px);
+  box-shadow:0 -4px 28px rgba(0,0,0,.09),0 -14px 60px rgba(0,0,0,.06);
+}
+/* milky frosted wedges; the mask is set from JS and rotates with the spinner */
+.tw-frost{
+  position:absolute;inset:0;
+  background:var(--tw-frost);
+  -webkit-backdrop-filter:blur(14px) saturate(1.05);backdrop-filter:blur(14px) saturate(1.05);
+  will-change:transform;
+}
+.tw-face{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.tw-wedge{fill:url(#twSheen);stroke:rgba(255,255,255,.16);stroke-width:.7;transition:stroke .3s ease}
+.tw-wedge.sel{stroke:var(--tw-yellow);stroke-opacity:.75;stroke-width:1.3}
+.tw-spinner{will-change:transform}
+.tw-lbl text{fill:#fff;transition:fill .28s ease;text-shadow:0 1px 2px rgba(0,0,0,.28)}
+.tw-lbl .he{font-weight:600}
+.tw-lbl.sel text{fill:var(--tw-yellow);text-shadow:0 1px 3px rgba(0,0,0,.45)}
+.tw-lbl{transition:opacity .12s linear}
+
+/* the fixed teardrop: it never rotates, the wheel turns beneath it */
+/* The artwork (107 x 127) is unchanged and its round body is centred exactly on the
+   wheel's rotation centre (190, 190). The button itself is only the drop's own
+   silhouette plus a few px (78 x 98, bottom edge 39px below the centre), so the touch
+   target stays inside the screen, above the bottom safe area; the svg is drawn
+   around it and does not take pointer events. */
+.tw-drop{
+  position:absolute;width:78px;height:98px;left:151px;top:131px;
+  background:none;border:0;padding:0;cursor:pointer;-webkit-tap-highlight-color:transparent;
+}
+.tw-drop svg{
+  position:absolute;left:-14.1px;top:-14.1px;pointer-events:none;
+  display:block;width:107px;height:127px;overflow:visible;transform-origin:53.1px 73.1px;
+  transition:transform .12s ease;
+}
+.tw-drop:hover svg{transform:scale(1.04)}
+.tw-drop:active svg{transform:scale(.95)}
+.tw-drop[aria-disabled="true"]{cursor:default}
+.tw-drop:focus{outline:none}
+.tw-drop:focus-visible .tw-ring{stroke:#fff;stroke-opacity:.9}
+.tw-ring{fill:none;stroke:transparent;stroke-width:2}
+.tw-drop.pop svg{animation:twPop .42s cubic-bezier(.3,1.6,.5,1)}
+@keyframes twPop{0%{transform:scale(.92)}60%{transform:scale(1.07)}100%{transform:scale(1)}}
+.tw-wheel.open .tw-drop{animation:twDropIn .5s .16s both cubic-bezier(.3,1.5,.5,1)}
+@keyframes twDropIn{from{transform:scale(.6);opacity:0}to{transform:none;opacity:1}}
+
+.tw-close{
+  position:absolute;right:14px;bottom:calc(var(--tw-cy) + 178px);width:32px;height:32px;border-radius:50%;border:0;padding:0;
+  background:rgba(40,40,38,.34);
+  -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);
+  display:grid;place-items:center;cursor:pointer;
+  opacity:0;transform:scale(.8);pointer-events:none;transition:opacity .2s,transform .2s;
+}
+.tw-close.show{opacity:1;transform:none;pointer-events:auto;transition-delay:.25s}
+.tw-close svg{width:14px;height:14px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round}
+.tw-close:focus-visible{outline:2px solid var(--tw-yellow);outline-offset:2px}
+.tw-close::after{content:"";position:absolute;inset:-6px;border-radius:50%}   /* 44px target, 32px glass */
+
+/* the result strip, on the seam between the two videos */
+.tw-strip{
+  position:absolute;left:50%;top:50%;z-index:5;
+  transform:translate(-50%,-50%);
+  width:max-content;max-width:calc(100% - 32px);
+  padding:9px 16px 10px;border-radius:14px;
+  background:var(--tw-strip-bg);
+  -webkit-backdrop-filter:blur(10px) saturate(1.1);backdrop-filter:blur(10px) saturate(1.1);
+  box-shadow:0 6px 20px rgba(0,0,0,.18);
+  text-align:center;pointer-events:none;
+}
+/* The strip stays on the seam; the final countdown lives at the bottom now. */
+.tw-strip{transition:top .5s cubic-bezier(.22,.8,.2,1)}
+.tw-strip.flying{transition:none}
+.tw-strip p{margin:0}
+.tw-strip .he{font:600 18px/1.28 var(--font-ui);color:var(--tw-yellow);direction:rtl}
+.tw-strip .en{font:400 13px/1.32 var(--font-ui);color:var(--tw-yellow-soft);direction:ltr;margin-top:2px}
+.tw-strip.flying .he,.tw-strip.flying .en{visibility:hidden}
+.tw-fly{position:absolute;inset:0;z-index:6;pointer-events:none;overflow:hidden}
+.tw-fly span{
+  position:absolute;white-space:nowrap;transform-origin:50% 50%;will-change:transform;
+  text-shadow:0 1px 3px rgba(0,0,0,.35);
+}
+.tw-fly .he{font:600 18px/1.28 var(--font-ui)}
+.tw-fly .en{font:400 13px/1.32 var(--font-ui)}
+.tw-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+@media (prefers-reduced-motion:reduce){
+  .screen.tw-armed .footer-scrim{transition:opacity .2s}
+  .cafe-dock .rc-av,.cafe-dock .rc-tools,.cafe-clock,.cafe-clock .room-time,
+  .cafe-clock .room-time svg,.cafe-clock .room-time .cap{transition:none}
+  .cafe-clock.is-center::before,.cafe-clock.is-center .room-time .tval{animation:none}
+  .tw-strip{transition:none}
+  .tw-wheel.open,.tw-wheel.closing{transition:opacity .2s}
+  .tw-wheel{transform:none;opacity:0}
+  .tw-wheel.open{opacity:1}
+  .tw-wheel.open .tw-drop{animation:none}
+}
+
+
+/* =========================================================================
    7 · SESSION ENDING
    Time flies, then Find me another partner, or a quiet path home.
    ========================================================================= */
@@ -1817,6 +2142,7 @@ body.present .demo{justify-content:center}
 .cafe-stage .cafe-sub{max-width:326px}
 .cafe-stage .primary-cta{
   width:auto;min-width:210px;max-width:100%;padding-inline:28px;
+  border:none;
 }
 .cafe-stage .text-cta{
   margin:0;padding:6px 8px;border:0;background:none;box-shadow:none;
@@ -1869,4 +2195,161 @@ body.present .demo{justify-content:center}
   .cafe-welcome.is-opening.is-mark-in .cafe-hero-slot{animation:cafeMarkIn .28s linear both}
   .level-spectrum.is-cue .spec-knob,
   .level-spectrum.is-cue .spec-glass-rim{animation:none}
+}
+
+
+/* =========================================================================
+   6c · PRACTICE  —  CafePractice
+   A compact shared exercise. The CARD SURFACE is centred vertically on the
+   seam between the two videos; the instruction sits above it and the actions
+   below it, so the card (not the whole group) owns the seam.
+   Geometry: .pr-layer is a region inset 110px from top and bottom, so its
+   centre is the seam. .pr-group is a single-column grid: rows 1fr | auto | 1fr
+   (label at the end of the top row, card in the middle, action panel at the
+   start of the bottom row). Previous / Next sit in the action panel, either
+   side of Reveal answer / Back to question.
+   JS (publish() in CafePractice) caps --pr-card-max so the actions can never
+   reach the chat input, and writes --pr-avoid on .screen: the y below the
+   actions, where the chat list has to stop.
+   The layer sits under the footer (z 40), the header (42) and the clock (43):
+   Camera, Mic, the exit X and the timer are never covered. It does not move
+   when the final countdown starts.
+   ========================================================================= */
+.pr-layer{
+  --pr-card-max:300px;
+  position:absolute;left:0;right:0;top:110px;bottom:110px;z-index:34;
+  pointer-events:none;font-family:var(--font-ui);
+}
+.pr-layer *{box-sizing:border-box}
+.pr-layer.is-suspended{visibility:hidden}
+.pr-layer.is-closing{pointer-events:none}
+.pr-group{
+  position:absolute;inset:0;margin:0 auto;width:min(100%,322px);display:grid;
+  grid-template-columns:minmax(0,1fr);
+  grid-template-rows:1fr auto 1fr;
+  justify-items:center;
+}
+
+/* the "You" name label would sit half under the card, so it steps aside while
+   Practice is open (the video itself does not move) */
+.rhalf.bottom .who{transition:opacity .2s ease}
+.screen.pr-open .rhalf.bottom .who{opacity:0}
+/* Practice button while its card is up: the same yellow "on" as Chat */
+.cafe-dock .rc-btn.emph.is-on,
+.cafe-dock .rc-btn.emph.is-on svg{color:var(--brand-yellow)}
+
+/* instruction label: small, muted gray, above the card */
+.pr-label{
+  grid-row:1;align-self:end;margin:0 0 10px;max-width:100%;text-align:center;
+  font:600 12.5px/1.25 var(--font-ui);letter-spacing:.2px;color:rgba(232,229,220,.88);
+  text-shadow:0 1px 3px rgba(18,14,12,.65);
+}
+
+/* the frosted-glass card. Blur lives on the card itself (not on a flipped
+   child), so the glass survives the flip. */
+.pr-card{
+  grid-row:2;position:relative;width:100%;max-width:322px;pointer-events:auto;
+  border-radius:22px;border:1px solid rgba(255,255,255,.62);
+  background:linear-gradient(145deg,rgba(255,255,255,.80) 0%,rgba(247,246,239,.68) 100%);
+  -webkit-backdrop-filter:blur(22px) saturate(1.25);backdrop-filter:blur(22px) saturate(1.25);
+  box-shadow:inset 1px 1px 0 rgba(255,255,255,.7),0 16px 38px rgba(18,14,12,.30);
+  color:var(--brand-charcoal);
+  cursor:pointer;                       /* the whole surface flips the card */
+}
+.pr-card .pr-player{cursor:default}
+.pr-card .pr-player .pr-play{cursor:pointer}
+/* both faces share one grid cell, so the card is as tall as the taller face:
+   it does not move or resize when it flips */
+.pr-faces{
+  display:grid;max-height:var(--pr-card-max);overflow-y:auto;overscroll-behavior:contain;
+  scrollbar-width:none;border-radius:inherit;touch-action:pan-y;
+}
+.pr-faces::-webkit-scrollbar{display:none}
+.pr-face{
+  grid-area:1/1;min-height:104px;padding:24px 22px calc(24px + 14px);   /* +14: the action panel overlaps the bottom edge */
+  display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;
+}
+.pr-layer.is-short .pr-face{min-height:84px;padding:16px 20px calc(16px + 14px)}
+.pr-card:not(.is-answer) .pr-back,
+.pr-card.is-answer .pr-front{visibility:hidden}
+.pr-text{
+  margin:0;width:100%;font-weight:600;letter-spacing:-.2px;line-height:1.32;color:var(--brand-charcoal);
+  overflow-wrap:anywhere;text-wrap:balance;
+}
+.pr-text[dir="rtl"]{letter-spacing:0}
+.pr-len-s{font-size:26px}
+.pr-len-m{font-size:22px}
+.pr-len-l{font-size:19px;line-height:1.4}
+
+/* close: small cream disc on the card's upper-right corner. Deliberately not
+   the session-exit X (a dark glass disc, top-left of the screen). */
+.pr-close{
+  position:absolute;top:-11px;right:-8px;z-index:2;width:26px;height:26px;padding:0;
+  display:grid;place-items:center;cursor:pointer;border-radius:50%;
+  background:var(--neutral-100);color:var(--brand-charcoal);
+  border:1px solid rgba(55,50,48,.16);box-shadow:0 3px 10px rgba(18,14,12,.28);
+}
+.pr-close svg{width:11px;height:11px}
+.pr-close::after{content:"";position:absolute;inset:-9px;border-radius:50%}   /* 44px target */
+.pr-close:focus-visible,.pr-btn:focus-visible,.pr-play:focus-visible,.pr-nav:focus-visible{outline:2px solid var(--brand-yellow);outline-offset:2px}
+.pr-card .pr-close:focus-visible{outline-color:var(--brand-charcoal)}
+
+/* Previous / Next: the charcoal disc IS the button, so the chevron sits in
+   the true centre of the circle (no offset ::before). Height matches Reveal. */
+.pr-nav{
+  pointer-events:auto;flex:none;width:40px;height:40px;padding:0;margin:0;border-radius:50%;
+  display:grid;place-items:center;cursor:pointer;color:#F7F6EF;
+  background:rgba(55,50,48,.48);border:0;
+  -webkit-backdrop-filter:blur(22px) saturate(1.2);backdrop-filter:blur(22px) saturate(1.2);
+  box-shadow:0 1px 4px rgba(18,14,12,.10);
+}
+.pr-nav svg{display:block;width:18px;height:18px}
+.pr-prev svg{transform:translateX(1px)}   /* optical: the left chevron's point sits left of centre */
+.pr-next svg{transform:translateX(-1px)}
+
+/* audio player: the Gym replay-player language (outlined play, bar waveform) */
+.pr-player{
+  display:flex;align-items:center;gap:10px;width:100%;max-width:264px;
+  padding:7px 14px 7px 7px;border-radius:999px;
+  border:1px solid rgba(55,50,48,.16);background:rgba(255,255,255,.38);
+}
+.pr-player .gm-playbtn{width:40px;height:40px;box-shadow:0 2px 8px rgba(55,50,48,.22)}
+.pr-player .gm-playbtn:disabled{background:#E1DDD3;color:#8B8681;box-shadow:none;cursor:default}
+/* no recording behind it: the button keeps its shape but is visibly unavailable */
+.pr-player .gm-playbtn[aria-disabled="true"]{opacity:.55;cursor:not-allowed;box-shadow:none}
+.pr-player .gm-wave{height:28px;min-width:0}
+.pr-player .gm-wave i{flex:1;max-width:3px;background:rgba(55,50,48,.24)}
+.pr-player .gm-wave i.on{background:var(--brand-charcoal)}
+.pr-player .gm-wave.is-live i:not(.on){background:rgba(55,50,48,.36)}
+.pr-player.is-error .gm-wave{opacity:.4}
+
+/* action panel: Previous · Reveal / Back · Next, straddling the card's bottom */
+.pr-acts{
+  --pr-overlap:14px;
+  grid-row:3;align-self:start;margin-top:calc(var(--pr-overlap) * -1);
+  position:relative;z-index:3;pointer-events:none;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.pr-acts-q,.pr-acts-a{display:flex;justify-content:center;pointer-events:none}
+.pr-acts-q[hidden],.pr-acts-a[hidden]{display:none}
+.pr-btn{
+  pointer-events:auto;height:40px;padding:0 20px;border-radius:999px;cursor:pointer;white-space:nowrap;
+  font:700 14.5px/1 var(--font-ui);letter-spacing:-.05px;
+  color:#F7F6EF;background:rgba(55,50,48,.62);border:1px solid rgba(255,246,236,.16);
+  -webkit-backdrop-filter:blur(14px) saturate(1.1);backdrop-filter:blur(14px) saturate(1.1);
+  box-shadow:0 2px 8px rgba(18,14,12,.14);     /* light: the button overlaps the card, so a heavy shadow dirties it */
+}
+.pr-btn.primary{background:var(--brand-yellow);border-color:var(--brand-yellow);color:var(--brand-charcoal);box-shadow:0 1px 4px rgba(18,14,12,.10)}
+/* no duplicate actions while a flip is running (Close stays available) */
+.pr-layer.is-busy .pr-btn,
+.pr-layer.is-busy .pr-nav,
+.pr-layer.is-busy .pr-play{pointer-events:none}
+
+/* ---- Chat while Practice is open ------------------------------------------
+   Practice stays exactly where it is. The chat list is squeezed into the room
+   between the Practice actions (--pr-avoid, written by JS) and the input, and
+   scrolls internally for older messages. The input keeps its footer anchor. */
+.screen.pr-open .cafe-chat-overlay{top:var(--pr-avoid,auto);overflow:hidden}
+.screen.pr-open .cafe-chat-overlay.is-compact .chat-history{
+  display:flex;flex-direction:column;justify-content:flex-end;    /* clip the OLDEST, not the newest */
 }

@@ -41,14 +41,14 @@
 <!-- Shared Gym mobile design system. Do not add Café rules to these files. -->
 <link rel="stylesheet" href="css/gym-mobile.css?v=20260914-icon1">
 <!-- Café-only styling. -->
-<link rel="stylesheet" href="css/cafe-mobile.css?v=20260914-end1">
+<link rel="stylesheet" href="css/cafe-mobile.css?v=20260930-final1">
 </head>
 <body>
 
 <h1>Citizen Café — Mobile <span style="font-weight:400;color:var(--text-muted);font-size:14px">v01 · primary design surface</span></h1>
 <p class="lead">
   The mobile Café playground, and from here the primary surface for Café design exploration. Desktop
-  (<code>Current/cafe-playground-desktop/</code>) is frozen as the initial scaffold and reference.
+  (<code>Current/cafe-playground-desktop/</code>) is the scaffold and reference; the Topics wheel and Practice are mirrored there.
   Café is a sibling of Gym, not a new visual system: the phone shell, statusbar, transition shell, A/V check,
   live video stack, participant labels, room clock, glass dock, Leave &amp; report and milky bottom sheets are
   the existing Gym mobile components at their existing values, taken from
@@ -117,6 +117,11 @@
     <button onclick="jumpFinal()">Jump to final 20s</button>
     <button onclick="replayDockTip()">Show toolbar tip</button>
 
+    <div class="grp">Practice</div>
+    <button type="button" onclick="if(ST.state!=='live')setState('live');openChallenge()">Open Practice</button>
+    <button type="button" onclick="previewPracticeAudio()">Audio exercise preview</button>
+    <div class="state">Every third Practice exercise is an audio one. There is no Hebrew recording in this prototype, so Play runs a silent progress bar on a timer to show the listening state; no sound is produced, generated or recorded. "Audio exercise preview" jumps straight to one. Real audio takes those slots through <code>CafePractice.setAudioExercises()</code>.</div>
+
     <div class="grp">A/V check</div>
     <button onclick="micRecord()">Mic test: record</button>
     <button onclick="micStop()">Mic test: recorded</button>
@@ -151,7 +156,7 @@
   <div class="note-card">
     <h3>What is reused, not redrawn</h3>
     <ul>
-      <li><b>Live Café is the Practice Room shell.</b> Vertical stacked video split, cream Assistant participant labels in their fixed per-tile positions, the flat top-right room clock with its yellow final-seconds treatment, the floating milky-glass dock, the mic-off flag, the camera-off cream face, and <b>Leave &amp; report</b>. No new video-call layout was designed.</li>
+      <li><b>Live Café is the Practice Room shell.</b> Vertical stacked video split, cream Assistant participant labels in their fixed per-tile positions, the flat top-right room clock with its yellow final-seconds treatment, the mic-off flag, the camera-off cream face, and the <b>Leave &amp; report</b> sheet. The footer is one row: a frosted-glass group for Chat / Topics / Practice, then Camera and Mic in their own circles. The top-left X is the only session exit. The room clock is small and top-right, turns yellow at 0:30, and becomes a large yellow countdown on the seam between the videos at 0:20 (it sits above the footer instead while Practice, the Topics wheel or a chosen-topic strip holds the seam). No new video-call layout was designed.</li>
       <li><b>A/V check is the canonical mobile A/V block</b> — the same card, preview, 52px glass Camera / Mic / Blur controls, live mic echo rings and permission helpers. Device choice and an optional playback test sit in a settings sheet, opened from a quiet <i>Audio &amp; camera settings</i> link. <b>Start matching</b> is the only primary CTA.</li>
       <li><b>Flashcards while waiting are the Solo Room deck</b> — the same flip card, bookmark, replay player and glass nav dock, in a Café waiting shell rather than a room.</li>
       <li><b>Every decision surface is the Gym milky bottom sheet</b>: match found, the agreement, editing levels mid-search, and Leave &amp; report. The depleting <code>.respline</code> carries the response window, as it does for Gym consent.</li>
@@ -176,7 +181,7 @@
     <h3>Explicit placeholders</h3>
     <ul>
       <li><b>The Hub is not designed.</b> The grey field on state 3b exists only so the matching indicator has something to sit over, and says so on screen.</li>
-      <li><b>Spin the Wheel and Challenge mode are entry points only.</b> Tapping them acknowledges and stops — the experiences are a later pass. What this pass fixes is their place and weight in the dock.</li>
+      <li><b>Topics opens the approved Topics wheel; Practice opens one shared exercise card.</b> Topics is the cropped glass wheel from <code>References:topics-wheel</code>, spun from the fixed yellow teardrop. The chosen topic lands as a charcoal strip on the seam between the two videos for 10 seconds. Practice opens a compact frosted card on the same seam (Reveal answer, then Back to question / Next, all outside the card). It is one state changed only by named actions (<code>CafePractice</code> in <code>cafe-mobile-states.js</code>), shaped to connect to the session sync layer later; there is no sync layer in this prototype, so nothing is sent to the partner. Challenge Mode has no exercise or audio data in the repo, so the deck is a small demo text set and no audio is simulated.</li>
       <li><b>Flashcards are a reference, not a system.</b> Five placeholder cards, enough to show the interrupt behaviour.</li>
       <li><b>The devices are mock hardware.</b> Two options per input so “choose the right one” is a real interaction, not a settings surface.</li>
       <li><b>Level names, the eligible set and the partner’s level</b> come from the sampled palette, which is not authoritative product data.</li>
@@ -190,6 +195,6 @@
      playground; product renderer only, no playground UI. Must load before the
      Café states so the Welcome hero can mount it. -->
 <script src="js/cafe-welcome-anim.js?v=20260914-hybrid-1"></script>
-<script src="js/cafe-mobile-states.js?v=20260924-icons"></script>
+<script src="js/cafe-mobile-states.js?v=20260930-final1"></script>
 </body>
 </html>

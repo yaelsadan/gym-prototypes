@@ -37,6 +37,7 @@ var DUR = {
   partnerConfirm:4,
   session:360,
   sessionFinal:30,
+  sessionCenter:20,
   ending:7,
   partnerOffWait:9
 };
@@ -53,7 +54,7 @@ var NOTES = {
   flashcards:'3c · Optional practice while waiting. Matching stays visible. A match interrupts it; declining returns here.',
   matched:'4 · Match found. A 30s interrupt over whatever you were doing. Accept keeps the same surface and waits for the partner.',
   agreement:'5 · Session agreement. Only after both accepted. Three principles to scan, one acknowledgement that enables the CTA. No decline.',
-  live:'6 · Live Cafe. Two-person desktop tiles. Dock: Topics · Practice · Text, then Camera · Mic.',
+  live:'6 · Live Cafe. Two-person desktop tiles. Helper tools centered (Chat · Topics · Practice). Camera and mic sit on the right, with Leave. Topics opens the glass wheel; Practice opens one shared exercise card on the seam (Previous · Reveal · Next). Clock: yellow at 0:30, large on the seam at 0:20 (above the card while Practice is open).',
   ending:'7 · Ending. Time flies, then Find me another partner, or Go back to homepage.'
 };
 
@@ -312,32 +313,35 @@ function cafeDialog(opts){
     + '</div></div>';
 }
 
+function cafeControlBtn(it){
+  if(it.divider) return '<span class="rc-div" aria-hidden="true"></span>';
+  return '<button class="rc-btn' + (it.active?' is-active':'') + (it.accent?' accent':'')
+    + (it.chat?' is-chat':'') + (it.badge?' has-unread':'') + '" type="button" onclick="'
+    + (it.onclick||'') + '"' + GP.hubTipAttrs(it.label) + '>' + it.icon
+    + (it.slash ? '<span class="slash"></span>' : '')
+    + (it.badge ? '<span class="chat-badge">' + GP.esc(String(it.badge)) + '</span>' : '')
+    + '</button>';
+}
 function cafeFooter(items, end, extras){
   extras = extras || {};
   var chatOpen = !!extras.chatOpen;
   var html = '<div class="g-footer">';
+  if(extras.av && extras.av.length){
+    html += '<div class="footer-av">';
+    extras.av.forEach(function(it){ html += cafeControlBtn(it); });
+    html += '</div>';
+  }
   html += '<div class="footer-capsule' + (chatOpen && extras.chatAnim !== 'in' ? ' is-chat-open' : '') + '">';
   html += '<div class="footer-glass" aria-hidden="true"></div>';
   if(extras.preview) html += extras.preview;
   if(extras.overlay) html += extras.overlay;
   if(extras.composer) html += '<div class="cafe-composer-slot">' + extras.composer + '</div>';
   html += '<div class="footer-controls">';
-  (items||[]).forEach(function(it){
-    if(it.divider){
-      html += '<span class="rc-div" aria-hidden="true"></span>';
-      return;
-    }
-    html += '<button class="rc-btn' + (it.active?' is-active':'') + (it.accent?' accent':'')
-      + (it.chat?' is-chat':'') + (it.badge?' has-unread':'') + '" type="button" onclick="'
-      + (it.onclick||'') + '"' + GP.hubTipAttrs(it.label) + '>' + it.icon
-      + (it.slash ? '<span class="slash"></span>' : '')
-      + (it.badge ? '<span class="chat-badge">' + GP.esc(String(it.badge)) + '</span>' : '')
-      + '</button>';
-  });
+  (items||[]).forEach(function(it){ html += cafeControlBtn(it); });
   html += '</div></div>';
   if(end){
-    html += '<button class="footer-end" type="button" onclick="' + (end.onclick||'') + '">'
-      + GP.I.leave + '<span>' + GP.esc(end.label) + '</span></button>';
+    html += '<button class="footer-end" type="button" onclick="' + (end.onclick||'') + '"'
+      + GP.hubTipAttrs(end.label) + '>' + GP.I.leave + '</button>';
   }
   return html + '</div>';
 }
@@ -2347,26 +2351,55 @@ function dockTipHtml(){
     + '</button>';
 }
 
+/* Corner clock slides to the seam between the two tiles in the last 20s.
+   centerTimerShown keeps a later re-render from replaying that glide. */
+var centerTimerShown = false;
+function cafeTimePill(){
+  var html = GP.timePill(ST.left, DUR.sessionFinal);
+  if(ST.left <= DUR.sessionCenter) html = html.replace('class="g-timepill', 'class="g-timepill is-center');
+  return html;
+}
+function armCenterTimer(frame){
+  if(ST.state !== 'live' || ST.left > DUR.sessionCenter){
+    centerTimerShown = false;
+    return;
+  }
+  if(centerTimerShown) return;
+  var pill = frame.querySelector('.g-timepill');
+  if(!pill) return;
+  centerTimerShown = true;
+  pill.classList.remove('is-center');
+  requestAnimationFrame(function(){
+    requestAnimationFrame(function(){
+      if(pill.isConnected && ST.state === 'live' && ST.left <= DUR.sessionCenter){
+        pill.classList.add('is-center');
+      }
+    });
+  });
+}
+
 function screenLive(){
   var unread = ST.chatUnread > 9 ? '9+' : (ST.chatUnread || 0);
   var sheetOpen = ST.leaveSheet || ST.keepOnSheet || ST.partnerOffSheet;
   var chatOpen = ST.textOpen && !sheetOpen;
-  var controls = [
+  var helpers = [
     {icon:CI.chat, label:'Chat', chat:true, active:chatOpen, badge:(!chatOpen && unread) ? unread : 0, onclick:'toggleText()'},
     {icon:CI.wheel, label:'Topics', accent:true, onclick:'openWheel()'},
-    {icon:CI.bolt,  label:'Practice', onclick:'openChallenge()'},
-    {divider:true},
+    {icon:CI.bolt,  label:'Practice', onclick:'openChallenge()'}
+  ];
+  var av = [
     {icon:GP.I.cam, label:ST.camOff?'Turn camera on':'Turn camera off', slash:ST.camOff, onclick:'toggleCam()'},
     {icon:GP.I.mic, label:ST.micOff?'Unmute':'Mute', slash:ST.micOff, onclick:'toggleMic()'}
   ];
   var extras = {
     chatOpen: chatOpen,
     chatAnim: ST.chatDockAnim,
+    av: av,
     composer: cafeComposer(),
     overlay: chatOpen ? cafeChatOverlay() : '',
     preview: (!chatOpen && !sheetOpen && ST.chatPreview) ? cafeChatPreview() : ''
   };
-  var dock = cafeFooter(controls, {label:'Leave & report', onclick:'openLeave()'}, extras);
+  var dock = cafeFooter(helpers, {label:'Leave & report', onclick:'openLeave()'}, extras);
   if(ST.dockTip && !sheetOpen && !ST.textOpen && !ST.chatPreview){
     dock = dock.replace('<div class="g-footer">', '<div class="g-footer">' + dockTipHtml());
   }
@@ -2374,7 +2407,7 @@ function screenLive(){
   return '<div class="cafe-shell deep"></div>'
     + '<div class="clock-chrome-fade" aria-hidden="true"></div>'
     + '<div class="cafe-topbar">'
-      + '<div class="top-right">' + GP.timePill(ST.left, DUR.sessionFinal) + '</div>'
+      + '<div class="top-right">' + cafeTimePill() + '</div>'
     + '</div>'
     + '<div class="cafe-tiles">'
       + '<div class="g-split">'
@@ -2387,6 +2420,1196 @@ function screenLive(){
     + (ST.keepOnSheet ? keepOnSheet() : '')
     + (ST.partnerOffSheet ? partnerOffSheet() : '');
 }
+
+/* =========================================================================
+   6b · TOPICS WHEEL  —  CafeTopicsWheel  (desktop)
+   The wheel and its behaviour are the approved ones from the Mobile Café
+   (Current/cafe-playground-mobile, section 6b). Only the placement is
+   desktop-specific:
+     · the wheel is ~45% of the stage width, cropped by the bottom edge and
+       centred on the seam between the two tiles (the centre of the frame);
+     · the result strip is anchored to the whole stage: centred on the seam,
+       24px above the conversation toolbar;
+     · the helper capsule (Chat / Topics / Practice) steps aside while the
+       wheel is open. Camera, Mic and Leave stay where they are.
+   It is an overlay layer: it mounts once inside #frame and is re-attached
+   after every Live render. Everything it owns (DOM, listeners, timers,
+   animation frames, Web Animations) is released in destroy(), which render()
+   triggers as soon as the frame leaves Live.
+   ========================================================================= */
+var CafeTopicsWheel = (function(){
+  /* ---------- Content: all 31 supplied topics, Hebrew + English ---------- */
+  const TOPICS = [
+    ["משהו שחיבר אותי לאנשים שונים","Something that connected me to people from a different background"],
+    ["מקרה הזוי שקרה לי","A bizarre incident that happened to me"],
+    ["אתגר פיזי או מנטלי קשה","A tough physical or mental challenge"],
+    ["ציפייה מוגזמת שהתנפצה","An unrealistic expectation that fell apart"],
+    ["הרגל שהייתי רוצה לשנות","An automatic habit I'd like to change"],
+    ["אדם יוצא דופן שפגשתי","An exceptional person I met"],
+    ["יום שבו הכל היה על הפנים","A day when everything went wrong"],
+    ["טעות שעשיתי כי לא נזהרתי","A mistake I made because I wasn't careful"],
+    ["לעשות בשביל עצמי מול בשביל אחרים","Doing things for myself vs. for others"],
+    ["משהו שפעם היה מסובך והיום בא בקלות","Something that was once complex and now comes easily"],
+    ["מקום קסום או מיוחד שגיליתי","A magical or special place I discovered"],
+    ["התחלה חדשה במקום חדש","A fresh start in a new place"],
+    ["אני והעבודה שלי","Me and my work"],
+    ["מכור ל…","Addicted to..."],
+    ["בלעדיי / בלעדיו","Without me / without it"],
+    ["משהו שהוא כבר מאחוריי","Something that is behind me"],
+    ["כמוני / כמוךָ","Like me / like you"],
+    ["נמשך יותר מדי זמן","Dragging on / lasting too long"],
+    ["מקום שהשתנה","A place that has changed"],
+    ["כשהייתי ילד/ה","When I was a child"],
+    ["דברים שאני פחות טוב בהם","Things I'm less good at"],
+    ["מבחינתי / מכל הבחינות","As far as I'm concerned / in every aspect"],
+    ["אתגר פיזי ואתגר מנטלי","Physical vs. mental challenge"],
+    ["לדחות / דחיינות","To postpone / procrastination"],
+    ["עבודה וזמן פנוי","Workaholism and life balance"],
+    ["הדירה הכי גרועה שהייתה לי","The worst apartment I ever had"],
+    ["להעביר את הזמן","To pass the time"],
+    ["עצה טובה","Good advice"],
+    ["מטלות בבית","Household chores"],
+    ["הדברים הקטנים שמעצבנים (Pet Peeves)","Pet peeves"],
+    ["יום טיפוסי בחיי","A day in my life"]
+  ];
+
+  /* ---------- Geometry ---------- */
+  const SVGNS = "http://www.w3.org/2000/svg";
+  const C = 214, R = 214, N = 8, SEG = 360 / N;
+  const W_OUT = 207.6, W_IN = 30, GAP = 5, CORNER = 6;   // wedge geometry (px)
+  const RIM_PAD = 17, SIDE_PAD = 11, MIN_R = 92;
+  const HIDDEN_FROM = 140, HIDDEN_TO = 220;              // labels re-deal while hidden behind the dock
+
+  /* ---------- Timing ---------- */
+  const HOLD_MS = 800, FLY_MS = 720, EN_LAG_MS = 50, STRIP_VISIBLE_MS = 10000, STRIP_FADE_MS = 800;
+
+  /* ---------- Desktop scale ---------- */
+  // The wheel is drawn in a 428px space and scaled as a whole (wk), so the
+  // curved labels scale with it. It targets 45% of the stage width, and never
+  // rises above 62% of the stage height. Keep HE_PX / EN_PX in step with the
+  // .tw-strip / .tw-fly type in cafe.css.
+  const WHEEL_SHARE = 0.45, WHEEL_MAX_RISE = 0.62, STRIP_GAP = 24;
+  const HE_PX = 31, EN_PX = 17.5;
+
+  const mqReduce = window.matchMedia ? matchMedia("(prefers-reduced-motion: reduce)") : { matches:false };
+  const isReduced = () => !!mqReduce.matches;
+
+  /* ---------- Live state (all reset by destroy) ---------- */
+  let layer = null, wheel, spinner, arcs, frost, drop, flap, closeBtn, live, fly;
+  let slots = [], queue = [], rot = 0, spinning = false, isOpen = false, selected = -1;
+  let rafId = 0, handoffTimer = 0, stripTimer = 0, strip = null, gen = 0;
+  let timers = [], listening = false, fontsReady = false, pendingOpen = false;
+  let lastTick = 0, flapAngle = 0, wk = 1;
+  const layoutCache = new Map();
+
+  const rad = d => d * Math.PI / 180, deg = r => r * 180 / Math.PI;
+  const pt = (r, a) => [C + r * Math.sin(rad(a)), C - r * Math.cos(rad(a))];
+  const f2 = n => n.toFixed(2);
+  const norm = a => ((a % 360) + 360) % 360;
+  const hostEl = () => document.getElementById("frame");
+
+  /* every delayed call goes through here so destroy() can cancel it */
+  function later(fn, ms){
+    const id = setTimeout(() => { timers = timers.filter(t => t !== id); fn(); }, ms);
+    timers.push(id);
+    return id;
+  }
+
+  /* ---------- Rounded wedge shapes ---------- */
+  // point s px along the radial at angle a, shifted `off` px toward decreasing angle
+  const P = (s, a, off) => [C + s * Math.sin(rad(a)) - off * Math.cos(rad(a)), C - s * Math.cos(rad(a)) - off * Math.sin(rad(a))];
+  function wedgePath(c){
+    const h = SEG / 2, g = GAP / 2, d = W_OUT - CORNER;
+    const delta = deg(Math.asin((CORNER + g) / d));
+    const along = d * Math.cos(rad(delta));
+    const lIn = P(W_IN, c - h, -g), lSide = P(along, c - h, -g), lOut = pt(W_OUT, c - h + delta);
+    const rOut = pt(W_OUT, c + h - delta), rSide = P(along, c + h, g), rIn = P(W_IN, c + h, g);
+    return `M${f2(lIn[0])} ${f2(lIn[1])}L${f2(lSide[0])} ${f2(lSide[1])}` +
+      `A${CORNER} ${CORNER} 0 0 1 ${f2(lOut[0])} ${f2(lOut[1])}` +
+      `A${W_OUT} ${W_OUT} 0 0 1 ${f2(rOut[0])} ${f2(rOut[1])}` +
+      `A${CORNER} ${CORNER} 0 0 1 ${f2(rSide[0])} ${f2(rSide[1])}` +
+      `L${f2(rIn[0])} ${f2(rIn[1])}Z`;
+  }
+
+  /* ---------- Text layout ---------- */
+  const ctx = document.createElement("canvas").getContext("2d");
+  const measure = (s, w, size) => { ctx.font = `${w} ${size}px Assistant`; return ctx.measureText(s).width; };
+  const avail = r => rad(SEG) * r - 2 * SIDE_PAD;
+  const HEB = /[\u0590-\u05FF]/;
+
+  function tokenize(s){
+    const raw = s.match(/\([^)]*\)|\S+/g) || [], out = [];
+    raw.forEach(t => { if (t === "/" && out.length) out[out.length - 1] += " /"; else out.push(t); });
+    return out;
+  }
+  // returns lines as arrays of tokens
+  function wrap(tokens, radii, weight, size){
+    const lines = []; let i = 0;
+    const fits = (arr, r) => measure(arr.join(" "), weight, size) <= avail(r);
+    for (let li = 0; li < radii.length && i < tokens.length; li++) {
+      const line = [tokens[i]];
+      if (!fits(line, radii[li])) return null;
+      i++;
+      while (i < tokens.length && fits([...line, tokens[i]], radii[li])) line.push(tokens[i++]);
+      lines.push(line);
+    }
+    if (i < tokens.length) return null;
+    for (let k = lines.length - 1; k > 0; k--) {        // avoid a lone last word
+      if (lines[k].length === 1 && lines[k - 1].length >= 2) {
+        const cand = [lines[k - 1][lines[k - 1].length - 1], ...lines[k]];
+        if (fits(cand, radii[k])) { lines[k] = cand; lines[k - 1] = lines[k - 1].slice(0, -1); }
+      }
+    }
+    return lines;
+  }
+  function layout(idx){
+    if (layoutCache.has(idx)) return layoutCache.get(idx);
+    const [he, en] = TOPICS[idx];
+    const heT = tokenize(he), enT = tokenize(en);
+    let best = null;
+    // Hebrew is sized so the English line(s) always fit beneath it when the wedge is selected,
+    // which means the Hebrew never reflows when the translation appears.
+    outer:
+    for (const hs of [15, 14.5, 14, 13.5, 13, 12.5, 12]) for (const es of [10.5, 10, 9.5, 9]) {
+      const heLead = hs * 1.16, enLead = es * 1.22, r0 = R - RIM_PAD - hs * 0.5;
+      const heR = [r0, r0 - heLead, r0 - 2 * heLead];
+      for (let hl = 1; hl <= 3; hl++) {
+        const heLines = wrap(heT, heR.slice(0, hl), 600, hs);
+        if (!heLines || heLines.length !== hl) continue;
+        const e0 = heR[hl - 1] - hs * 0.5 - 5 - es * 0.5;
+        const enR = [e0, e0 - enLead, e0 - 2 * enLead];
+        for (let el = 1; el <= 3; el++) {
+          const enLines = wrap(enT, enR.slice(0, el), 400, es);
+          if (!enLines || enLines.length !== el || enR[el - 1] < MIN_R) continue;
+          best = { hs, es, heLines, enLines, heR, enR }; break outer;
+        }
+      }
+    }
+    if (!best) best = { hs: 12, es: 9, heLines: [heT], enLines: [enT], heR: [R - RIM_PAD - 6], enR: [R - RIM_PAD - 22] };
+    layoutCache.set(idx, best);
+    return best;
+  }
+
+  /* Shared arc paths for label lines (drawn at the top, left→right so text sits upright) */
+  const arcCache = new Set();
+  function arcId(r){
+    r = Math.round(r * 10) / 10;
+    const id = "twArc" + String(r).replace(".", "_");
+    if (!arcCache.has(id)) {
+      const half = SEG / 2 - 0.5;
+      const [x1, y1] = pt(r, -half), [x2, y2] = pt(r, half);
+      const p = document.createElementNS(SVGNS, "path");
+      p.setAttribute("id", id);
+      p.setAttribute("d", `M${f2(x1)} ${f2(y1)} A${r} ${r} 0 0 1 ${f2(x2)} ${f2(y2)}`);
+      arcs.appendChild(p); arcCache.add(id);
+    }
+    return id;
+  }
+  function addLine(g, tokens, r, cls, size, dir){
+    const t = document.createElementNS(SVGNS, "text");
+    t.setAttribute("class", cls);
+    t.setAttribute("font-size", size);
+    t.setAttribute("text-anchor", "middle");
+    t.setAttribute("dominant-baseline", "central");
+    t.setAttribute("direction", dir);
+    t.style.direction = dir; t.style.unicodeBidi = "plaintext";
+    const tp = document.createElementNS(SVGNS, "textPath");
+    tp.setAttribute("href", "#" + arcId(r));
+    tp.setAttribute("startOffset", "50%");
+    tp.textContent = tokens.join(" ");
+    t.appendChild(tp); g.appendChild(t);
+  }
+  function renderLabel(slot){
+    const g = slot.g; g.textContent = "";
+    const L = layout(slot.topic);
+    L.heLines.forEach((s, i) => addLine(g, s, L.heR[i], "he", L.hs, "rtl"));
+    L.enLines.forEach((s, i) => addLine(g, s, L.enR[i], "en", L.es, "ltr"));  // visible only when selected
+    g.setAttribute("aria-label", TOPICS[slot.topic][0]);
+  }
+
+  /* ---------- Mount: the layer is built once, on first open ---------- */
+  const DROP_D = "M53.0996 17.1C64.9911 24.9711 89.0992 54.1863 89.0996 68.3871C89.0996 69.0474 89.0645 69.7022 88.9961 70.35C89.0647 71.2577 89.0996 72.1747 89.0996 73.1C89.0996 92.9822 72.9819 109.1 53.0996 109.1C33.2174 109.1 17.0996 92.9822 17.0996 73.1C17.0996 72.1748 17.1336 71.2576 17.2021 70.35C17.1337 69.7022 17.0996 69.0473 17.0996 68.3871C17.1001 54.1863 41.7413 23.9216 53.0996 17.1Z";
+  function mount(){
+    if (layer) return;
+    layer = document.createElement("div");
+    layer.className = "tw-layer";
+    window.addEventListener("resize", onResize);
+    layer.innerHTML =
+      '<div class="tw-wheel" aria-hidden="true">' +
+        '<div class="tw-glass"></div>' +
+        '<div class="tw-frost"></div>' +
+        '<svg class="tw-face" viewBox="0 0 428 428" aria-hidden="true">' +
+          '<defs>' +
+            '<linearGradient id="twRimSheen" x1="120" y1="0" x2="300" y2="428" gradientUnits="userSpaceOnUse">' +
+              '<stop offset="0" stop-color="#fff" stop-opacity=".16"/>' +
+              '<stop offset=".28" stop-color="#fff" stop-opacity=".05"/>' +
+              '<stop offset=".6" stop-color="#fff" stop-opacity="0"/>' +
+            '</linearGradient>' +
+            '<radialGradient id="twSheen" cx="214" cy="214" r="214" gradientUnits="userSpaceOnUse">' +
+              '<stop offset=".55" stop-color="#fff" stop-opacity="0"/>' +
+              '<stop offset="1" stop-color="#fff" stop-opacity=".09"/>' +
+            '</radialGradient>' +
+          '</defs>' +
+          '<defs class="tw-arcs"></defs>' +
+          '<g class="tw-spinner"></g>' +
+          /* glass rim: a clear band outside the inset wedges, faint tint + diffuse reflection, no hard edge */
+          '<circle cx="214" cy="214" r="211" fill="none" stroke="rgba(255,255,255,.07)" stroke-width="6"/>' +
+          '<circle cx="214" cy="214" r="211" fill="none" stroke="url(#twRimSheen)" stroke-width="6"/>' +
+        '</svg>' +
+        '<button class="tw-drop" type="button" aria-label="Spin the wheel">' +
+          '<svg viewBox="0 0 107 127" aria-hidden="true">' +
+            '<defs>' +
+              '<filter id="twDropShadow" x="-30%" y="-30%" width="160%" height="160%">' +
+                '<feGaussianBlur in="SourceAlpha" stdDeviation="8.55"/>' +
+                '<feColorMatrix values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .25 0"/>' +
+                '<feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>' +
+              '</filter>' +
+            '</defs>' +
+            '<g class="tw-flap">' +
+              '<path filter="url(#twDropShadow)" fill="var(--tw-drop)" d="' + DROP_D + '"/>' +
+              '<circle class="tw-ring" cx="53.1" cy="73.1" r="41"/>' +
+            '</g>' +
+          '</svg>' +
+        '</button>' +
+      '</div>' +
+      '<button class="tw-close" type="button" aria-label="Close topics wheel">' +
+        '<svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 2l10 10M12 2 2 12"/></svg>' +
+      '</button>' +
+      '<div class="tw-fly" aria-hidden="true"></div>' +
+      '<div class="tw-sr" aria-live="polite"></div>';
+
+    wheel = layer.querySelector(".tw-wheel");
+    spinner = layer.querySelector(".tw-spinner");
+    arcs = layer.querySelector(".tw-arcs");
+    frost = layer.querySelector(".tw-frost");
+    drop = layer.querySelector(".tw-drop");
+    flap = layer.querySelector(".tw-flap");
+    closeBtn = layer.querySelector(".tw-close");
+    fly = layer.querySelector(".tw-fly");
+    live = layer.querySelector(".tw-sr");
+
+    // mask (not clip-path) so the backdrop blur itself is confined to the wedges
+    const wedgeUnion = Array.from({ length: N }, (_, i) => wedgePath(i * SEG)).join("");
+    const maskUrl = `url("data:image/svg+xml,${encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' width='428' height='428' viewBox='0 0 428 428'><path fill='#000' d='${wedgeUnion}'/></svg>`)}")`;
+    frost.style.webkitMaskImage = maskUrl; frost.style.maskImage = maskUrl;
+    frost.style.webkitMaskSize = frost.style.maskSize = "428px 428px";
+    frost.style.webkitMaskRepeat = frost.style.maskRepeat = "no-repeat";
+
+    drop.addEventListener("click", spin);
+    closeBtn.addEventListener("click", () => close());
+  }
+
+  /* ---------- Wheel build ---------- */
+  const shuffle = a => { for (let i = a.length - 1; i > 0; i--) { const j = Math.random() * (i + 1) | 0; [a[i], a[j]] = [a[j], a[i]]; } return a; };
+  function nextTopic(){
+    const onWheel = new Set(slots.map(s => s.topic));
+    for (let n = 0; n < queue.length; n++) { const t = queue.shift(); queue.push(t); if (!onWheel.has(t)) return t; }
+    return queue[0];
+  }
+  function build(){
+    spinner.textContent = "";
+    arcs.textContent = ""; arcCache.clear();
+    const wedges = document.createElementNS(SVGNS, "g");
+    spinner.appendChild(wedges);
+    queue = shuffle(TOPICS.map((_, i) => i));
+    slots = [];
+    for (let i = 0; i < N; i++) {
+      const w = document.createElementNS(SVGNS, "path");
+      w.setAttribute("class", "tw-wedge"); w.setAttribute("d", wedgePath(i * SEG));
+      wedges.appendChild(w);
+      const g = document.createElementNS(SVGNS, "g");
+      g.setAttribute("class", "tw-lbl");
+      g.setAttribute("transform", `rotate(${i * SEG} ${C} ${C})`);
+      spinner.appendChild(g);
+      const slot = { i, g, w, topic: -1, swapped: false };
+      slots.push(slot);
+      slot.topic = nextTopic(); renderLabel(slot);
+    }
+    rot = 0; applyRot();
+  }
+  const worldAngle = s => norm(s.i * SEG + rot);
+  function applyRot(){
+    spinner.setAttribute("transform", `rotate(${rot.toFixed(3)} ${C} ${C})`);
+    frost.style.transform = `rotate(${rot.toFixed(3)}deg)`;
+  }
+  function swapHidden(){
+    for (const s of slots) {
+      const a = worldAngle(s), hidden = a > HIDDEN_FROM && a < HIDDEN_TO;
+      if (hidden && !s.swapped) { s.topic = nextTopic(); renderLabel(s); s.swapped = true; }
+      else if (!hidden) s.swapped = false;
+    }
+  }
+
+  /* ---------- Drop "clapper" ---------- */
+  const tickIndex = () => Math.floor((rot + SEG / 2) / SEG);
+  function updateFlap(){
+    const t = tickIndex();
+    if (t !== lastTick) { flapAngle = -8; lastTick = t; }
+    flapAngle *= 0.8;
+    flap.setAttribute("transform", `rotate(${flapAngle.toFixed(2)} 53.1 73.1)`);
+  }
+
+  /* ---------- Easing ---------- */
+  function bezier(p1x, p1y, p2x, p2y){
+    const cx = 3 * p1x, bx = 3 * (p2x - p1x) - cx, ax = 1 - cx - bx;
+    const cy = 3 * p1y, by = 3 * (p2y - p1y) - cy, ay = 1 - cy - by;
+    const sx = t => ((ax * t + bx) * t + cx) * t, sy = t => ((ay * t + by) * t + cy) * t;
+    return x => { let lo = 0, hi = 1, t = x; for (let i = 0; i < 32; i++) { t = (lo + hi) / 2; sx(t) < x ? lo = t : hi = t; } return sy(t); };
+  }
+  const spinEase = bezier(0.34, 0.02, 0.12, 1);
+  const settleEase = t => 1 - Math.pow(1 - t, 3);
+
+  /* ---------- Spin ---------- */
+  function setSelected(slotIdx){
+    slots.forEach(s => { const on = s.i === slotIdx; s.g.classList.toggle("sel", on); s.w.classList.toggle("sel", on); });
+    selected = slotIdx;
+  }
+  function spin(){
+    if (spinning || !isOpen) return;
+    clearTimeout(handoffTimer);
+    spinning = true;
+    const reduce = isReduced();
+    drop.setAttribute("aria-disabled", "true");
+    setSelected(-1);
+    const dist = s => Math.min(worldAngle(s), 360 - worldAngle(s));
+    const onTop = slots.reduce((b, s) => dist(s) < dist(b) ? s : b);
+    let k; do { k = Math.random() * N | 0; } while (k === onTop.i);
+    const turns = reduce ? 1 : 4 + (Math.random() * 2 | 0);
+    const total = turns * 360 + norm(-k * SEG - rot);
+    const overshoot = reduce ? 0 : 3.2, main = reduce ? 1100 : 2750, settle = reduce ? 0 : 380;
+    const start = rot, t0 = performance.now(), myGen = gen;
+    const frame = now => {
+      if (myGen !== gen) return;
+      const el = now - t0;
+      if (el < main) rot = start + (total + overshoot) * spinEase(el / main);
+      else if (el < main + settle) rot = start + total + overshoot * (1 - settleEase((el - main) / settle));
+      else { rot = norm(start + total); applyRot(); swapHidden(); lastTick = tickIndex(); finish(k); return; }
+      applyRot(); swapHidden(); updateFlap();
+      rafId = requestAnimationFrame(frame);
+    };
+    rafId = requestAnimationFrame(frame);
+  }
+  function finish(k){
+    spinning = false;
+    drop.removeAttribute("aria-disabled");
+    const myGen = gen;
+    const relax = () => {
+      if (myGen !== gen || !flap) return;
+      flapAngle *= 0.75; flap.setAttribute("transform", `rotate(${flapAngle.toFixed(2)} 53.1 73.1)`);
+      if (Math.abs(flapAngle) > .05) requestAnimationFrame(relax);
+    };
+    relax();
+    setSelected(k);
+    drop.classList.remove("pop"); void drop.offsetWidth; drop.classList.add("pop");
+    const [he, en] = TOPICS[slots[k].topic];
+    live.textContent = `Topic: ${he}. ${en}`;
+    handoffTimer = later(() => handoff(k), HOLD_MS);
+  }
+
+  /* ---------- Handoff: selected wedge text → conversation strip ---------- */
+  const layerScale = () => layer.getBoundingClientRect().width / (layer.offsetWidth || 1);
+
+  function applyScale(){
+    if (!layer) return;
+    const W = layer.offsetWidth, H = layer.offsetHeight;
+    if (!W || !H) return;
+    wk = Math.max(0.9, Math.min(WHEEL_SHARE * W / (2 * R), WHEEL_MAX_RISE * H / (R + 46)));
+    layer.style.setProperty("--tw-k", wk.toFixed(4));
+  }
+
+  // The strip belongs to the whole conversation stage: centred on the seam
+  // between the two videos, STRIP_GAP above the conversation toolbar. The
+  // toolbar is located by layout (offsetTop), not by its painted rect, so the
+  // answer is the same while the capsule is stepped aside behind the wheel.
+  function placeStrip(el){
+    const host = hostEl(), tiles = host ? host.querySelectorAll(".cafe-tile") : [];
+    if (!el || !layer) return;
+    const sc = layerScale(), lr = layer.getBoundingClientRect();
+    let seamX = layer.offsetWidth / 2, stageW = layer.offsetWidth;
+    if (tiles.length > 1) {
+      const a = tiles[0].getBoundingClientRect(), b = tiles[tiles.length - 1].getBoundingClientRect();
+      seamX = ((a.right + b.left) / 2 - lr.left) / sc;
+      stageW = (b.right - a.left) / sc;
+    }
+    const g = host && host.querySelector(".g-footer"), cap = host && host.querySelector(".footer-capsule");
+    const capTop = g && cap ? g.offsetTop + cap.offsetTop : layer.offsetHeight - 106;
+    el.style.left = seamX + "px";
+    el.style.top = (capTop - STRIP_GAP) + "px";          // the strip hangs from this line
+    el.style.maxWidth = Math.min(stageW - 64, 880) + "px";
+  }
+
+  function removeStrip(fast){
+    clearTimeout(stripTimer);
+    if (!strip) return;
+    const s = strip; strip = null;
+    s.animate([{ opacity: 1 }, { opacity: 0 }], { duration: fast ? 180 : STRIP_FADE_MS, easing: "ease", fill: "forwards" })
+      .onfinish = () => s.remove();
+  }
+  function buildStrip(he, en){
+    const el = document.createElement("div");
+    el.className = "tw-strip flying";
+    el.setAttribute("role", "status");
+    const mk = (cls, dir, tokens) => {
+      const p = document.createElement("p"); p.className = cls; p.dir = dir;
+      tokens.forEach((tk, i) => {
+        if (i) p.appendChild(document.createTextNode(" "));
+        const s = document.createElement("span"); s.textContent = tk;
+        if (dir === "rtl" && !HEB.test(tk)) s.dir = "ltr";
+        p.appendChild(s);
+      });
+      return p;
+    };
+    el.appendChild(mk("he", "rtl", tokenize(he)));
+    el.appendChild(mk("en", "ltr", tokenize(en)));
+    return el;
+  }
+  // centre point + tangent angle of every token on the wheel, in logical order, layer px
+  function sourcePositions(lines, radii, size, weight, dir){
+    const out = [], space = measure(" ", weight, size);
+    const ox = wheel.offsetLeft, oy = wheel.offsetTop;
+    lines.forEach((tokens, li) => {
+      const r = radii[li];
+      const widths = tokens.map(t => measure(t, weight, size));
+      const W = widths.reduce((a, b) => a + b, 0) + space * (tokens.length - 1);
+      const visual = tokens.map((t, i) => i);
+      if (dir === "rtl") visual.reverse();
+      let cursor = 0; const pos = [];
+      visual.forEach(i => {
+        const centre = cursor + widths[i] / 2;
+        const a = deg((centre - W / 2) / r);
+        const [x, y] = pt(r, a);
+        pos[i] = { x: ox + C + (x - C) * wk, y: oy + C + (y - C) * wk, a };   // scaled about the wheel centre
+        cursor += widths[i] + space;
+      });
+      out.push(...pos);
+    });
+    return out;
+  }
+
+  function handoff(k){
+    if (!isOpen || spinning || selected !== k) return;
+    const slot = slots[k], L = layout(slot.topic), [he, en] = TOPICS[slot.topic];
+    removeStrip(true);
+    const el = buildStrip(he, en);
+    layer.appendChild(el);
+    placeStrip(el);
+    strip = el;
+
+    if (isReduced()) {
+      el.classList.remove("flying");
+      el.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 250, fill: "backwards" });
+      close(true); armStripTimer(); return;
+    }
+
+    const sc = layerScale(), lr = layer.getBoundingClientRect();
+    const targets = [...el.querySelectorAll("span")].map(s => {
+      const r = s.getBoundingClientRect();
+      return { left: (r.left - lr.left) / sc, top: (r.top - lr.top) / sc, w: r.width / sc, h: r.height / sc, span: s };
+    });
+    const src = [
+      ...sourcePositions(L.heLines, L.heR, L.hs, 600, "rtl").map(p => ({ ...p, cls: "he", k: L.hs * wk / HE_PX })),
+      ...sourcePositions(L.enLines, L.enR, L.es, 400, "ltr").map(p => ({ ...p, cls: "en", k: L.es * wk / EN_PX }))
+    ];
+
+    slot.g.style.opacity = "0";          // the flying words take over from the wedge label
+    const anims = [];
+    src.forEach((s, i) => {
+      const t = targets[i]; if (!t) return;
+      const f = document.createElement("span");
+      f.className = s.cls; f.textContent = t.span.textContent;
+      f.dir = s.cls === "he" && HEB.test(f.textContent) ? "rtl" : "ltr";
+      f.style.left = t.left + "px"; f.style.top = t.top + "px";
+      fly.appendChild(f);
+      const dx = s.x - (t.left + t.w / 2), dy = s.y - (t.top + t.h / 2);
+      const toColor = s.cls === "he" ? "var(--tw-yellow)" : "var(--tw-yellow-soft)";
+      anims.push(f.animate([
+        { transform: `translate(${dx}px, ${dy}px) rotate(${s.a}deg) scale(${s.k})`, color: "var(--tw-yellow)" },
+        // columns settle first, rows second: words slide into their final x-slots before the lines merge, so they never collide
+        { transform: `translate(${dx * .08}px, ${dy * .5}px) rotate(${s.a * .15}deg) scale(${(s.k + 1) / 2})`, offset: .5 },
+        { transform: "none", color: toColor }
+      ], { duration: FLY_MS, delay: s.cls === "en" ? EN_LAG_MS : 0, easing: "cubic-bezier(.45,0,.2,1)", fill: "both" }));
+    });
+    el.animate([{ opacity: 0, transform: "translate(-50%,-100%) scale(.96)" }, { opacity: 1, transform: "translate(-50%,-100%)" }],
+      { duration: 380, delay: FLY_MS * .45, easing: "cubic-bezier(.2,.8,.2,1)", fill: "backwards" });
+
+    close(true);                          // wheel slides down while the words travel up
+
+    const myGen = gen;
+    Promise.all(anims.map(a => a.finished)).then(() => {
+      if (myGen !== gen) return;
+      if (strip !== el) { fly.textContent = ""; return; }
+      el.classList.remove("flying");
+      fly.textContent = "";
+      armStripTimer();
+    }).catch(() => {});
+  }
+  function armStripTimer(){
+    clearTimeout(stripTimer);
+    stripTimer = later(() => removeStrip(false), STRIP_VISIBLE_MS);
+  }
+
+  /* ---------- Open / close ---------- */
+  const topicsBtn = () => document.querySelector("#frame .rc-btn[aria-label=\"Topics\"]");
+  function setExpanded(on){
+    const b = topicsBtn();
+    if (b) b.setAttribute("aria-expanded", on ? "true" : "false");
+  }
+  function doOpen(){
+    const host = hostEl();
+    if (isOpen || !host || ST.state !== "live") return;
+    mount();
+    if (layer.parentNode !== host) host.appendChild(layer);
+    host.classList.add("tw-armed");
+    applyScale();
+    isOpen = true;
+    if (!slots.length) build();
+    slots.forEach(s => s.g.style.opacity = "");
+    wheel.classList.remove("closing");
+    wheel.setAttribute("aria-hidden", "false");
+    host.classList.add("tw-open");
+    setExpanded(true);
+    if (!isReduced()) {
+      const to = rot, from = rot - 24, t0 = performance.now(), dur = 620, myGen = gen;
+      rot = from; applyRot();
+      const f = now => {
+        if (myGen !== gen) return;
+        const p = Math.min(1, (now - t0) / dur);
+        rot = from + (to - from) * settleEase(p); applyRot();
+        if (p < 1 && isOpen) requestAnimationFrame(f);
+        else { rot = norm(to); applyRot(); lastTick = tickIndex(); }
+      };
+      requestAnimationFrame(f);
+    }
+    const myOpen = gen;
+    requestAnimationFrame(() => { if (myOpen === gen && isOpen) wheel.classList.add("open"); });
+    closeBtn.classList.add("show");
+    later(() => { if (isOpen) drop.focus({ preventScroll: true }); }, 350);
+    listen(true);
+  }
+  function open(){
+    if (isOpen) return;
+    if (fontsReady) { doOpen(); return; }
+    pendingOpen = true;   // fonts are still loading: measure once they are in
+  }
+  function close(fromHandoff){
+    if (!isOpen) return;
+    cancelAnimationFrame(rafId);
+    clearTimeout(handoffTimer);
+    if (spinning) { spinning = false; drop.removeAttribute("aria-disabled"); rot = norm(rot); applyRot(); }
+    isOpen = false;
+    listen(false);
+    wheel.classList.remove("open"); wheel.classList.add("closing");
+    wheel.setAttribute("aria-hidden", "true");
+    closeBtn.classList.remove("show");
+    setExpanded(false);
+    later(() => {
+      const host = hostEl();
+      if (!isOpen && host) host.classList.remove("tw-open");
+    }, fromHandoff === true ? FLY_MS : 200);
+    later(() => { if (!isOpen && wheel) { wheel.classList.remove("closing"); slots.forEach(s => s.g.style.opacity = ""); } }, 420);
+    later(() => {
+      if (isOpen || ST.state !== "live") return;
+      const b = topicsBtn();
+      if (b) b.focus({ preventScroll: true });
+    }, fromHandoff === true ? FLY_MS + 200 : 320);
+  }
+
+  /* ---------- Listeners (only while the wheel is open) ---------- */
+  function onKey(e){ if (e.key === "Escape") close(); }
+  function onScreenClick(e){
+    if (!isOpen || spinning || !layer) return;
+    if (e.target.closest(".tw-drop,.tw-close,.g-footer,.g-dialog,.cafe-topbar")) return;
+    const r = layer.getBoundingClientRect(), s = r.width / (layer.offsetWidth || 1);
+    const x = (e.clientX - r.left) / s, y = (e.clientY - r.top) / s;
+    if (Math.hypot(x - layer.offsetWidth / 2, y - (wheel.offsetTop + C)) > R * wk) close();
+  }
+  const onResize = () => { applyScale(); if (strip) placeStrip(strip); };
+  function listen(on){
+    const host = hostEl();
+    if (on === listening) return;
+    listening = on;
+    if (on) {
+      document.addEventListener("keydown", onKey);
+      if (host) host.addEventListener("click", onScreenClick);
+    } else {
+      document.removeEventListener("keydown", onKey);
+      if (host) host.removeEventListener("click", onScreenClick);
+    }
+  }
+
+  /* ---------- Lifecycle ---------- */
+  // Called by render() after every frame paint. innerHTML wipes the layer out
+  // of #frame, so on Live it is put back; off Live everything is released.
+  function sync(host, state){
+    if (state !== "live") { destroy(); return; }
+    host.classList.add("tw-armed");
+    if (!layer) return;
+    host.appendChild(layer);
+    host.classList.toggle("tw-open", isOpen);
+    applyScale();
+    if (strip) placeStrip(strip);
+    if (isOpen) {
+      setExpanded(true);
+      // another surface took over: a sheet or the chat
+      if (ST.leaveSheet || ST.keepOnSheet || ST.partnerOffSheet || ST.textOpen) close();
+    }
+  }
+  // Releases the DOM, listeners, timers, animation frames and Web Animations.
+  function destroy(){
+    gen++;
+    cancelAnimationFrame(rafId);
+    timers.forEach(clearTimeout); timers = [];
+    clearTimeout(handoffTimer); clearTimeout(stripTimer);
+    window.removeEventListener("resize", onResize);
+    listen(false);
+    if (layer) {
+      try { layer.getAnimations({ subtree: true }).forEach(a => a.cancel()); } catch (e) {}
+      if (layer.parentNode) layer.parentNode.removeChild(layer);
+    }
+    const host = hostEl();
+    if (host) host.classList.remove("tw-open", "tw-armed");
+    layer = wheel = spinner = arcs = frost = drop = flap = closeBtn = live = fly = null;
+    slots = []; queue = []; arcCache.clear();
+    rot = 0; spinning = false; isOpen = false; selected = -1; strip = null;
+    rafId = handoffTimer = stripTimer = 0; flapAngle = 0; lastTick = 0; pendingOpen = false; wk = 1;
+  }
+
+  /* ---------- Fonts: measure only once Assistant (Hebrew + Latin) is in ---------- */
+  const fontsLoad = document.fonts && document.fonts.load ? Promise.race([
+    Promise.all([document.fonts.load('600 15px "Assistant"', "אב"), document.fonts.load('400 10px "Assistant"', "Ab")]),
+    new Promise(r => setTimeout(r, 1500))
+  ]) : Promise.resolve();
+  fontsLoad.then(() => {
+    layoutCache.clear();
+    fontsReady = true;
+    if (pendingOpen) { pendingOpen = false; doOpen(); }
+  }).catch(() => { fontsReady = true; });
+
+  return {
+    open: open, close: function(){ close(); }, spin: spin, sync: sync, reset: destroy,
+    /* read-only inspection for review */
+    get state(){
+      return {
+        rot: rot, spinning: spinning, selected: selected, isOpen: isOpen, strip: strip && strip.textContent,
+        topicCount: TOPICS.length,
+        slots: slots.map(s => ({ i: s.i, a: worldAngle(s), topic: TOPICS[s.topic][0] }))
+      };
+    }
+  };
+})();
+
+
+
+
+/* =========================================================================
+   6c · PRACTICE  —  CafePractice  (desktop)
+   The interaction is the mobile Café Practice (Current/cafe-playground-mobile,
+   section 6c) carried over unchanged: the same exercise data (7 text exercises,
+   every third one an audio exercise, 3 silent-timer demo recordings until real
+   audio is registered with setAudioExercises), the same one shared state and
+   the same actions (open · play · pause · reveal · back · prev · next · go ·
+   close), the same flip / swap transitions, the same transport seam
+   (connect({send}) / receive(evt); nothing is sent, there is no sync layer),
+   and the same audio player logic (real HTMLAudioElement for real sources, a
+   silent progress bar for the demo ones).
+   Only the placement is desktop-specific: the card surface is centred on the
+   seam between the two side-by-side tiles (the centre of the frame), compact,
+   with the instruction above it, Previous / Next flanking it and the actions
+   straddling its bottom edge. It is an overlay layer: it mounts once inside
+   #frame and is re-attached after every Live render, so toggling Camera / Mic
+   never rebuilds it or interrupts audio. It sits under the footer and the
+   clock, and never blocks either. Chat can stay open beside it; opening Topics
+   closes it.
+   ========================================================================= */
+var CafePractice = (function(){
+  /* ---------- Content (identical to mobile) ---------- */
+  var PRACTICE_TEXT = [
+    {id:'demo-he-1', type:'text', from:'he', to:'en',
+     prompt:'הוא לא הבין למה כולם צחקו.',
+     answer:'He didn\u2019t understand why everyone was laughing.'},
+    {id:'demo-en-1', type:'text', from:'en', to:'he',
+     prompt:'Could you say that again, a little more slowly?',
+     answer:'אפשר לחזור על זה עוד פעם, קצת יותר לאט?'},
+    {id:'demo-he-2', type:'text', from:'he', to:'en',
+     prompt:'אם היה לי יותר זמן, הייתי לומד לנגן בגיטרה.',
+     answer:'If I had more time, I would learn to play the guitar.'},
+    {id:'demo-en-2', type:'text', from:'en', to:'he',
+     prompt:'She told me she had never been to Berlin.',
+     answer:'היא סיפרה לי שהיא אף פעם לא הייתה בברלין.'},
+    {id:'demo-he-3', type:'text', from:'he', to:'en',
+     prompt:'איפה הכי כיף לשתות קפה בעיר הזאת?',
+     answer:'Where is the nicest place to have coffee in this city?'},
+    {id:'demo-en-3', type:'text', from:'en', to:'he',
+     prompt:'It took me a while to get used to living far from my family.',
+     answer:'לקח לי קצת זמן להתרגל לגור רחוק מהמשפחה שלי.'},
+    {id:'demo-he-4', type:'text', from:'he', to:'en',
+     prompt:'בשנה האחרונה עברתי דירה פעמיים, ועדיין לא הרגשתי שהמקום הזה הוא בית.',
+     answer:'Last year I moved twice, and I still didn\u2019t feel that this place was home.'}
+  ];
+  var PRACTICE_AUDIO = [];   // {id, src, answer} — real Hebrew audio only
+  var PRACTICE_AUDIO_DEMO = [
+    {id:'demo-audio-1', type:'audio', from:'he', to:'en', src:null, simulated:true, dur:8,
+     answer:'Could you tell me how to get to the station?'},
+    {id:'demo-audio-2', type:'audio', from:'he', to:'en', src:null, simulated:true, dur:8,
+     answer:'I haven\u2019t seen him since last summer.'},
+    {id:'demo-audio-3', type:'audio', from:'he', to:'en', src:null, simulated:true, dur:8,
+     answer:'We were going to leave early, but it started to rain.'}
+  ];
+
+  /* The deck: every third exercise is an audio one. */
+  function deck(){
+    var real = PRACTICE_AUDIO.filter(function(e){ return e && e.src && e.answer; })
+      .map(function(e){ return {id:e.id, type:'audio', from:'he', to:'en', src:e.src, answer:e.answer}; });
+    var audio = real.concat(PRACTICE_AUDIO_DEMO.slice(real.length));
+    var out = [];
+    PRACTICE_TEXT.forEach(function(t, i){ out.push(t); if(i % 2 === 1 && audio.length) out.push(audio.shift()); });
+    return out.concat(audio);
+  }
+  function idxOf(id){ var d = deck(); for(var i = 0; i < d.length; i++) if(d[i].id === id) return i; return -1; }
+  function findEx(id){ var i = idxOf(id); return i < 0 ? null : deck()[i]; }
+  function cur(){ return findEx(S.exId) || deck()[0]; }
+  function nextId(){ var d = deck(), i = idxOf(S.exId); return d[(i + 1) % d.length].id; }
+  function prevId(){ var d = deck(), i = idxOf(S.exId); return d[i <= 0 ? d.length - 1 : i - 1].id; }
+
+  /* ---------- The one shared state ---------- */
+  var S = {open:false, exId:null, side:'q', playing:false, seq:0};
+
+  /* ---------- Transport seam (empty on purpose) ---------- */
+  var transport = null, queue = [];
+
+  /* ---------- Local view state ---------- */
+  var layer = null, group, labelEl, card, front, back, actsQ, actsA;
+  var busy = false, gen = 0, needsEnter = false, listening = false, ro = null;
+  var audio = null, audioId = null, playerError = false;
+  var simTimer = 0, simPos = 0;      // silent progress for the design preview only
+  var mqReduce = window.matchMedia ? matchMedia('(prefers-reduced-motion: reduce)') : {matches:false};
+  var reduced = function(){ return !!mqReduce.matches; };
+  var hostEl = function(){ return document.getElementById('frame'); };
+  var blocked = function(){ return ST.leaveSheet || ST.keepOnSheet || ST.partnerOffSheet; };
+  var P = 'perspective(1200px) ';
+
+  /* ---------- Icons (Practice-local; the desktop primitives have no player set) ---------- */
+  var ICON = {
+    chevLt:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg>',
+    chevRt:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>',
+    play:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13l11-6.5z"/></svg>',
+    pause:'<svg viewBox="0 0 24 24" fill="currentColor"><rect x="7" y="5" width="3.6" height="14" rx="1.2"/><rect x="13.4" y="5" width="3.6" height="14" rx="1.2"/></svg>',
+    close:'<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><path d="M2.6 2.6l6.8 6.8M9.4 2.6l-6.8 6.8"/></svg>'
+  };
+  function wave(){
+    var h = [7,12,17,22,19,14,20,25,22,15,10,17,24,20,14,9,15,22,18,12,17,10,7,12,19], out = '';
+    for(var i = 0; i < h.length; i++) out += '<i style="height:' + Math.round(h[i] * 1.2) + 'px"></i>';
+    return '<div class="pr-wave">' + out + '</div>';
+  }
+
+  /* ---------- Copy ---------- */
+  function labelFor(ex, side){
+    if(side === 'a') return 'Answer';
+    if(ex.type === 'audio') return 'Listen and translate to English';
+    return ex.to === 'en' ? 'Translate to English' : 'Translate to Hebrew';
+  }
+  function sizeClass(text){
+    var n = String(text).length;
+    return n <= 32 ? 'pr-len-s' : (n <= 70 ? 'pr-len-m' : 'pr-len-l');
+  }
+  function textHtml(text, lang){
+    return '<p class="pr-text ' + sizeClass(text) + '" lang="' + lang + '" dir="' + (lang === 'he' ? 'rtl' : 'ltr') + '">'
+      + GP.esc(text) + '</p>';
+  }
+
+  /* ---------- DOM ---------- */
+  function build(){
+    layer = document.createElement('div');
+    layer.className = 'pr-layer';
+    layer.innerHTML =
+      '<div class="pr-group">'
+        + '<p class="pr-label" aria-live="polite"></p>'
+        + '<div class="pr-card" role="group" aria-label="Practice exercise">'
+          + '<button class="pr-close" type="button" data-act="close" aria-label="Close practice">' + ICON.close + '</button>'
+          + '<div class="pr-faces">'
+            + '<div class="pr-face pr-front"></div>'
+            + '<div class="pr-face pr-back"></div>'
+          + '</div>'
+        + '</div>'
+        + '<div class="pr-acts">'
+          + '<button class="pr-nav pr-prev" type="button" data-act="prev" aria-label="Previous exercise">' + ICON.chevLt + '</button>'
+          + '<div class="pr-acts-q"><button class="pr-btn primary" type="button" data-act="reveal">Reveal answer</button></div>'
+          + '<div class="pr-acts-a"><button class="pr-btn" type="button" data-act="back">Back to question</button></div>'
+          + '<button class="pr-nav pr-next" type="button" data-act="next" aria-label="Next exercise">' + ICON.chevRt + '</button>'
+        + '</div>'
+      + '</div>';
+    group = layer.querySelector('.pr-group');
+    labelEl = layer.querySelector('.pr-label');
+    card = layer.querySelector('.pr-card');
+    front = layer.querySelector('.pr-front');
+    back = layer.querySelector('.pr-back');
+    actsQ = layer.querySelector('.pr-acts-q');
+    actsA = layer.querySelector('.pr-acts-a');
+    /* Only [data-act] controls act, plus the card surface itself, which flips
+       from anywhere except the player. Nothing here reaches the frame. */
+    layer.addEventListener('click', function(e){
+      e.stopPropagation();
+      var b = e.target.closest ? e.target.closest('[data-act]') : null;
+      if(!b || !layer.contains(b)){
+        if(e.target.closest && e.target.closest('.pr-card') && !e.target.closest('.pr-player')
+           && !(window.getSelection && String(window.getSelection()).length))
+          dispatch(S.side === 'q' ? 'reveal' : 'back');
+        return;
+      }
+      var act = b.getAttribute('data-act');
+      if(act === 'toggle') act = S.playing ? 'pause' : 'play';
+      dispatch(act);
+    });
+    needsEnter = true;
+    paint();
+  }
+  function fillContent(){
+    var ex = cur();
+    layer.setAttribute('data-type', ex.type);
+    front.innerHTML = ex.type === 'audio' ? playerHtml() : textHtml(ex.prompt, ex.from);
+    back.innerHTML = textHtml(ex.answer, ex.to);
+    simStop();
+    if(ex.type === 'audio' && ex.src) loadAudio(ex);
+    paintPlayer();
+  }
+  function showSide(side){
+    var ex = cur();
+    card.classList.toggle('is-answer', side === 'a');
+    front.toggleAttribute('inert', side === 'a');
+    back.toggleAttribute('inert', side !== 'a');
+    front.setAttribute('aria-hidden', side === 'a' ? 'true' : 'false');
+    back.setAttribute('aria-hidden', side === 'a' ? 'false' : 'true');
+    actsQ.hidden = side === 'a'; actsQ.toggleAttribute('inert', side === 'a');
+    actsA.hidden = side !== 'a'; actsA.toggleAttribute('inert', side !== 'a');
+    labelEl.textContent = labelFor(ex, side);
+  }
+  function paint(){ fillContent(); showSide(S.side); publish(); }
+  function refocus(){
+    if(!layer) return;
+    var a = document.activeElement;
+    if(a && a !== document.body && !layer.contains(a)) return;
+    var b = layer.querySelector(S.side === 'a' ? '.pr-acts-a [data-act="back"]' : '.pr-acts-q [data-act="reveal"]');
+    if(b) b.focus({preventScroll:true});
+  }
+
+  /* Attach (idempotent). Runs from open() and from every Live render. */
+  function ensure(host){
+    if(!host) return;
+    if(!layer) build();
+    if(layer.parentNode !== host) host.appendChild(layer);
+    host.classList.add('pr-open');
+    setBtn(true);
+    listen(true);
+    publish();
+    if(!ro && window.ResizeObserver){ ro = new ResizeObserver(publish); ro.observe(card); ro.observe(host); }
+    if(needsEnter){
+      needsEnter = false;
+      if(!reduced()) group.animate([{opacity:0, transform:'translateY(10px) scale(.98)'}, {opacity:1, transform:'none'}],
+        {duration:260, easing:'cubic-bezier(.22,.8,.2,1)'});
+      else group.animate([{opacity:0}, {opacity:1}], {duration:140});
+      refocus();
+    }
+  }
+  function setBtn(on){
+    var b = document.querySelector('#frame .rc-btn[aria-label="Practice"]');
+    if(!b) return;
+    b.classList.toggle('is-active', on);
+    b.setAttribute('aria-expanded', on ? 'true' : 'false');
+  }
+  function onKey(e){
+    if(e.key !== 'Escape' || !S.open || blocked()) return;
+    var t = e.target && e.target.tagName;
+    if(t === 'INPUT' || t === 'TEXTAREA') return;      // Escape in the chat field is not "close Practice"
+    dispatch('close');
+  }
+  /* Layout hand-off, run whenever the card or frame changes size:
+     1. cap the card so its actions always end above the toolbar; long
+        sentences scroll inside the card instead of growing it;
+     2. tell the final-20s countdown where to sit. It normally lands on the
+        seam, which is where this card is, so while Practice is open it hangs
+        above the instruction instead (--pr-clock-y on the frame). */
+  function publish(){
+    var host = hostEl();
+    if(!host || !layer || !card) return;
+    var hr = host.getBoundingClientRect();
+    var hh = host.clientHeight;
+    var acts = layer.querySelector('.pr-acts');
+    var extent = (acts.offsetHeight || 46) + (parseFloat(getComputedStyle(acts).marginTop) || 0);
+    var short = hh < 640;
+    var max = Math.max(short ? 96 : 140, Math.min(340, 2 * (hh / 2 - 150 - extent)));
+    layer.classList.toggle('is-short', short);
+    layer.style.setProperty('--pr-card-max', Math.round(max) + 'px');
+    var size = document.body.classList.contains('present') ? 120 : 96;
+    var labelTop = labelEl.getBoundingClientRect().top - hr.top;
+    var y = Math.max(size * 0.6 + 72, labelTop - 16 - size * 0.6);
+    host.style.setProperty('--pr-clock-y', Math.round(y) + 'px');
+  }
+  function listen(on){
+    if(on === listening) return;
+    listening = on;
+    if(on) document.addEventListener('keydown', onKey); else document.removeEventListener('keydown', onKey);
+  }
+
+  /* ---------- Audio (real HTMLAudioElement; demo recordings are a silent timer) ---------- */
+  function playerHtml(){
+    var ex = cur(), none = !ex.src && !ex.simulated;
+    return '<div class="pr-player">'
+      + '<button class="pr-play" type="button" data-act="toggle" aria-label="Play Hebrew audio"'
+      + (none ? ' aria-disabled="true"' : '') + '>' + ICON.play + '</button>'
+      + wave()
+      + '</div>';
+  }
+  function getAudio(){
+    if(audio) return audio;
+    audio = new Audio();
+    audio.preload = 'metadata';
+    audio.addEventListener('timeupdate', paintPlayer);
+    audio.addEventListener('loadedmetadata', paintPlayer);
+    audio.addEventListener('ended', function(){
+      S.playing = false;
+      try{ audio.currentTime = 0; }catch(e){}
+      paintPlayer();
+    });
+    audio.addEventListener('error', function(){
+      if(!audio.getAttribute('src')) return;
+      playerError = true; S.playing = false; paintPlayer();
+    });
+    return audio;
+  }
+  function loadAudio(ex){
+    var a = getAudio();
+    if(audioId !== ex.id){
+      audioId = ex.id; playerError = false;
+      a.src = ex.src; a.load();
+    } else {
+      try{ a.currentTime = 0; }catch(e){}
+    }
+  }
+  function simPause(){ clearInterval(simTimer); simTimer = 0; }
+  function simStop(){ simPause(); simPos = 0; }
+  function simStart(){
+    var ex = cur(), t0 = performance.now() - simPos * 1000;
+    simPause();
+    simTimer = setInterval(function(){
+      simPos = (performance.now() - t0) / 1000;
+      if(simPos >= ex.dur){ simStop(); S.playing = false; }
+      paintPlayer();
+    }, 80);
+  }
+  function stopAudio(){
+    if(audio){ audio.pause(); try{ audio.currentTime = 0; }catch(e){} }
+    simStop();
+    S.playing = false;
+    paintPlayer();
+  }
+  function releaseAudio(){
+    simStop();
+    if(!audio) return;
+    audio.pause();
+    audio.removeAttribute('src'); audioId = null; playerError = false;
+    try{ audio.load(); }catch(e){}
+  }
+  function paintPlayer(){
+    if(!layer) return;
+    var p = layer.querySelector('.pr-player');
+    if(!p) return;
+    var btn = p.querySelector('.pr-play'), wv = p.querySelector('.pr-wave');
+    var ex = cur(), sim = !!ex.simulated, none = !ex.src && !sim;
+    var dur = sim ? ex.dur : (!none && audio && isFinite(audio.duration) ? audio.duration : 0);
+    var pos = sim ? simPos : (!none && audio ? audio.currentTime : 0);
+    var ratio = dur ? Math.min(1, pos / dur) : 0;
+    var want = S.playing ? 'pause' : 'play';
+    if(btn.getAttribute('data-icon') !== want){
+      btn.setAttribute('data-icon', want);
+      btn.innerHTML = S.playing ? ICON.pause : ICON.play;
+      btn.setAttribute('aria-label', S.playing ? 'Pause Hebrew audio' : 'Play Hebrew audio');
+    }
+    var bars = wv.children;
+    for(var i = 0; i < bars.length; i++) bars[i].classList.toggle('on', (i / bars.length) < ratio);
+    wv.classList.toggle('is-live', S.playing);
+    p.classList.toggle('is-error', playerError);
+    btn.disabled = playerError;
+    btn.setAttribute('aria-disabled', none ? 'true' : 'false');
+    if(!none) btn.removeAttribute('aria-disabled');
+  }
+
+  /* ---------- Transitions (one at a time) ---------- */
+  function runSwap(kind, mid){
+    if(!layer) return;
+    busy = true; layer.classList.add('is-busy');
+    var my = gen, flip = kind === 'flip';
+    var end = function(){
+      if(my !== gen) return;
+      busy = false;
+      if(layer) layer.classList.remove('is-busy');
+      refocus();
+      drain();
+    };
+    if(reduced()){ mid(); end(); return; }
+    var a1 = card.animate(
+      flip ? [{transform:P + 'rotateY(0deg)'}, {transform:P + 'rotateY(90deg)'}]
+           : [{opacity:1, transform:'scale(1)'}, {opacity:0, transform:'scale(.97)'}],
+      {duration: flip ? 180 : 130, easing:'cubic-bezier(.4,0,1,1)', fill:'forwards'});
+    a1.onfinish = function(){
+      if(my !== gen) return;
+      mid();
+      a1.cancel();
+      var a2 = card.animate(
+        flip ? [{transform:P + 'rotateY(-90deg)'}, {transform:P + 'rotateY(0deg)'}]
+             : [{opacity:0, transform:'scale(.97)'}, {opacity:1, transform:'scale(1)'}],
+        {duration: flip ? 240 : 190, easing:'cubic-bezier(0,0,.2,1)'});
+      a2.onfinish = end;
+    };
+  }
+  function drain(){ while(queue.length && !busy && layer) apply(queue.shift()); }
+
+  /* ---------- Actions: the whole shared interaction ---------- */
+  function apply(evt){
+    var ex;
+    switch(evt.type){
+      case 'open':
+        if(S.open) return false;
+        S.exId = (evt.exId && findEx(evt.exId)) ? evt.exId : deck()[0].id;
+        S.side = 'q'; S.playing = false; S.open = true;
+        /* the wheel and any topic strip give way; chat may stay */
+        dismissForPractice();
+        ensure(hostEl());
+        return true;
+      case 'play':
+        ex = cur();
+        if(!S.open || S.side !== 'q' || ex.type !== 'audio' || !(ex.src || ex.simulated) || S.playing || playerError) return false;
+        S.playing = true;
+        if(ex.simulated){ simStart(); }
+        else {
+          var pr = getAudio().play();
+          if(pr && pr.catch) pr.catch(function(){ S.playing = false; paintPlayer(); });
+        }
+        paintPlayer();
+        return true;
+      case 'pause':
+        if(!S.open || !S.playing) return false;
+        S.playing = false; if(audio) audio.pause();
+        simPause();
+        paintPlayer();
+        return true;
+      case 'reveal':
+        if(!S.open || S.side !== 'q') return false;
+        stopAudio(); S.side = 'a';
+        runSwap('flip', function(){ showSide('a'); });
+        return true;
+      case 'back':
+        if(!S.open || S.side !== 'a') return false;
+        S.side = 'q';
+        runSwap('flip', function(){ showSide('q'); });
+        return true;
+      case 'next':
+      case 'prev':
+      case 'go':
+        if(!S.open) return false;
+        stopAudio();
+        S.exId = (evt.exId && findEx(evt.exId)) ? evt.exId : (evt.type === 'prev' ? prevId() : nextId());
+        S.side = 'q';
+        runSwap('swap', paint);
+        return true;
+      case 'close':
+        if(!S.open) return false;
+        stopAudio();
+        S.open = false; queue.length = 0; busy = false; gen++;
+        retire(false);
+        return true;
+    }
+    return false;
+  }
+  var TRANSITIONING = {reveal:1, back:1, next:1, prev:1, go:1};
+  function dispatch(type, exId){
+    if(type !== 'open' && !S.open) return;
+    if(busy && TRANSITIONING[type]) return;          // no duplicate actions mid-flip
+    var evt = {type:type, exId:S.exId, seq:S.seq + 1, at:Date.now()};
+    if(type === 'open') evt.exId = exId || S.exId || deck()[0].id;
+    if(type === 'go') evt.exId = exId;
+    if(type === 'next') evt.exId = nextId();
+    if(type === 'prev') evt.exId = prevId();
+    if(!apply(evt)) return;
+    S.seq = evt.seq;
+    if(transport && transport.send){ try{ transport.send(evt); }catch(e){} }
+  }
+  function receive(evt){
+    if(!evt || !evt.type) return;
+    if(busy && TRANSITIONING[evt.type]){ queue.push(evt); return; }
+    if(apply(evt)) S.seq = Math.max(S.seq, evt.seq || 0);
+  }
+
+  /* ---------- Leaving ---------- */
+  // Fades the layer out (or drops it at once) and clears the host.
+  function retire(immediate){
+    var l = layer, g = group;
+    layer = group = labelEl = card = front = back = actsQ = actsA = null;
+    listen(false);
+    if(ro){ ro.disconnect(); ro = null; }
+    var host = hostEl();
+    if(host){ host.classList.remove('pr-open'); host.style.removeProperty('--pr-clock-y'); }
+    setBtn(false);
+    if(!l) return;
+    var drop = function(){ if(l.parentNode) l.parentNode.removeChild(l); };
+    if(immediate || reduced()){ drop(); return; }
+    l.classList.add('is-closing');
+    g.animate([{opacity:1, transform:'none'}, {opacity:0, transform:'translateY(6px) scale(.985)'}],
+      {duration:160, easing:'ease-in', fill:'forwards'});
+    setTimeout(drop, 190);
+  }
+  // Session left Live: release everything, including the audio element.
+  function reset(){
+    gen++;
+    var l = layer;
+    if(l){ try{ l.getAnimations({subtree:true}).forEach(function(a){ a.cancel(); }); }catch(e){} }
+    retire(true);
+    releaseAudio();
+    S.open = false; S.exId = null; S.side = 'q'; S.playing = false;
+    queue.length = 0; busy = false; needsEnter = false;
+  }
+  // Called by render() after every frame paint.
+  function sync(host, state){
+    if(state !== 'live'){ if(S.open || layer || audio) reset(); return; }
+    if(!S.open) return;
+    ensure(host);                                        // chat may be open alongside: Practice is unchanged
+    var b = blocked();
+    layer.classList.toggle('is-suspended', b);
+    if(b && S.playing) dispatch('pause');
+  }
+
+  return {
+    open: function(){ if(S.open){ refocus(); return; } dispatch('open'); },
+    close: function(){ dispatch('close'); },
+    dismiss: function(){ if(S.open) dispatch('close'); },
+    previewAudio: function(){
+      var a = deck().filter(function(e){ return e.type === 'audio'; })[0];
+      if(!a) return;
+      if(S.open) dispatch('go', a.id); else dispatch('open', a.id);
+    },
+    sync: sync, reset: reset,
+    receive: receive,
+    connect: function(t){ transport = t || null; },
+    setAudioExercises: function(list){ PRACTICE_AUDIO = (list || []).filter(function(e){ return e && e.id && e.src && e.answer; }); },
+    /* read-only inspection for review */
+    get state(){ return {open:S.open, exId:S.exId, side:S.side, playing:S.playing, seq:S.seq, busy:busy, deck:deck().length}; }
+  };
+})();
+
+/* Opening Practice reuses the existing cleanup: CafeTopicsWheel.reset() releases
+   the wheel and any selected-topic strip. Chat is a separate, personal surface
+   and is left alone. */
+function dismissForPractice(){
+  CafeTopicsWheel.reset();
+  var tb = document.querySelector('#frame .rc-btn[aria-label="Topics"]');
+  if(tb) tb.setAttribute('aria-expanded', 'false');
+}
+/* Prototype control: draw the audio exercise design without a recording. */
+function previewPracticeAudio(){
+  if(ST.state !== 'live') setState('live');
+  dismissDockTip();
+  CafePractice.previewAudio();
+}
+
 
 /* ------------------------------ 7. SESSION ENDING / SEARCHING AGAIN */
 function endingConfetti(){
@@ -2473,6 +3696,8 @@ function seedFor(state){
   }
   if(state === 'agreement'){ ST.agreed = false; }
   if(state === 'live'){
+    CafeTopicsWheel.reset();
+    CafePractice.reset();
     ST.left = DUR.session; ST.textLog = cafeChatSeed(); ST.textOpen = false; ST.textDraft = '';
     ST.chatExpanded = false; ST.chatUnread = 0; ST.chatPreview = null; ST.chatDockAnim = null;
     clearTimeout(chatDockCloseT); chatDockCloseT = null;
@@ -2710,8 +3935,16 @@ function cardStep(d){ ST.card += d; ST.cardRevealed = false; ST.cardMarked = fal
 function cardPrev(){ cardStep(-1); }
 function cardNext(){ cardStep(1); }
 
-function openWheel(){ dismissDockTip(); cafeToast('Topics \u2014 entry point only in this pass'); }
-function openChallenge(){ dismissDockTip(); cafeToast('Practice \u2014 entry point only in this pass'); }
+function openWheel(){
+  dismissDockTip();
+  /* Topics and Practice share the seam: opening the wheel closes Practice. */
+  CafePractice.dismiss();
+  /* The helper capsule hides behind the wheel, so an open chat closes first. */
+  if(ST.textOpen){ closeText(); setTimeout(function(){ CafeTopicsWheel.open(); }, 420); return; }
+  CafeTopicsWheel.open();
+}
+/* Practice: one shared exercise on the seam (see CafePractice). Chat may stay open. */
+function openChallenge(){ dismissDockTip(); CafePractice.open(); }
 
 function toggleText(){
   dismissDockTip();
@@ -2961,7 +4194,11 @@ function syncClockUI(){
     if(pill){
       var t = pill.querySelector('.time');
       if(t) t.textContent = GP.mmss(ST.left);
+      var center = ST.left <= DUR.sessionCenter;
+      if(center && !pill.classList.contains('is-center')) centerTimerShown = true;
+      if(!center) centerTimerShown = false;
       pill.classList.toggle('final', ST.left <= DUR.sessionFinal);
+      pill.classList.toggle('is-center', center);
     }
   }
   syncSwitcher();
@@ -2986,10 +4223,14 @@ function render(){
   f.innerHTML = html + GP.softLoading(ST.softLoading);
   f.classList.toggle('on-light', s === 'hub' || (s === 'matched' && ST.bg === 'hub'));
   f.classList.toggle('is-entry', s === 'entry');
+  CafeTopicsWheel.sync(f, s);
+  CafePractice.sync(f, s);
 
   unbindEntrySpectrum();
   if(document.getElementById('levelSpectrum')) bindSpectrum(f);
   if(s === 'entry') bindDesktopWelcomeEntrance();
+
+  if(s === 'live') armCenterTimer(f);
 
   if(s === 'live' && ST.textOpen && ST.chatDockAnim === 'in'){
     ST.chatDockAnim = null;
