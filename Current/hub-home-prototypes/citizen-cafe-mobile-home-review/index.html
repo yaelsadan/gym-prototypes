@@ -685,7 +685,7 @@ body[data-view="calendar"] .nav,body[data-view="calendar"] .match-bar,body[data-
       display: flex;
       align-items: center;
       padding: 3px;
-      border: 1px solid var(--ink);
+      border: .75px solid #928F7D;
       border-radius: 25px;
     }
 
@@ -693,11 +693,12 @@ body[data-view="calendar"] .nav,body[data-view="calendar"] .match-bar,body[data-
       height: 38px;
       flex: 0 0 auto;
       padding: 0 12px;
-      border: .75px solid var(--ink);
+      border: .75px solid #928F7D;
       border-radius: 20px;
       background: #fff;
+      color: #373230;
       font-size: 16px;
-      font-weight: 500;
+      font-weight: 400;
       white-space: nowrap;
       cursor: pointer;
     }
@@ -710,7 +711,13 @@ body[data-view="calendar"] .nav,body[data-view="calendar"] .match-bar,body[data-
       border-radius: 18px;
     }
 
-    .filter-button[aria-pressed="true"] { background: var(--yellow); }
+    .filter-button[aria-pressed="true"] {
+      background: var(--yellow);
+      border: 1px solid #373230;
+      font-weight: 500;
+    }
+
+    .segmented .filter-button[aria-pressed="true"] { border: 1px solid #373230; }
 
     .filter-divider {
       width: 1px;
