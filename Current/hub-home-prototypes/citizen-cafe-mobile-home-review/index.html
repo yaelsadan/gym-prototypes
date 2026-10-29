@@ -32,7 +32,7 @@
   font-weight:600;font-style:italic;font-display:swap;
 }
 @font-face{font-family:Assistant;src:url("Assistant-VariableFont_wght.ttf") format("truetype");font-weight:200 800;font-style:normal;font-display:swap}
-:root{--ink:#373230;--muted:#77716c;--surface:#f7f6ef;--blue:#90c7fc;--yellow:#ffe300;--dark:#383330;--line:#ebe9e4;--shadow:0 3px 10px rgba(55,50,48,.12);--glass-tint:247,246,239;--glass-opacity:.46;--glass-blur:22px;--glass-saturate:1.7;--glass-border:rgba(255,255,255,.5);--glass-shadow:0 10px 28px rgba(55,50,48,.12);--glass-highlight:inset 0 1px 0 rgba(255,255,255,.72);--glass-selected:rgba(255,255,255,.62);--nav-size:70px;--nav-inset:8px;--match-gap:8px;--match-size:0px;--dock-pad:calc(var(--nav-inset) + var(--nav-size) + var(--match-size) + 28px + env(safe-area-inset-bottom));color-scheme:light}
+:root{--ink:#373230;--muted:#77716c;--surface:#f7f6ef;--blue:#90c7fc;--yellow:#ffe300;--dark:#373230;--line:#ebe9e4;--shadow:0 3px 10px rgba(55,50,48,.12);--glass-tint:247,246,239;--glass-opacity:.46;--glass-blur:22px;--glass-saturate:1.7;--glass-border:rgba(255,255,255,.5);--glass-shadow:0 10px 28px rgba(55,50,48,.12);--glass-highlight:inset 0 1px 0 rgba(255,255,255,.72);--glass-selected:rgba(255,255,255,.62);--nav-size:70px;--nav-inset:8px;--match-gap:8px;--match-size:0px;--dock-pad:calc(var(--nav-inset) + var(--nav-size) + var(--match-size) + 28px + env(safe-area-inset-bottom));color-scheme:light}
 *{box-sizing:border-box}
 html,body{margin:0;min-height:100%;background:var(--surface);color:var(--ink);font-family:Assistant,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}
 button{font:inherit;color:inherit;cursor:pointer}
@@ -299,11 +299,694 @@ body:has(#home.active) .mode-switch{right:auto;left:86px;top:18px}
  .header{padding-left:14px;padding-right:14px}.greeting,.live-label{margin-left:14px;margin-right:14px}.cafe-card{width:calc(100% - 28px);margin-left:14px;margin-right:14px}
  .main-content{padding-left:14px;padding-right:14px}.week{margin-left:-14px;margin-right:-14px}.week-head,.schedule-track{padding-left:14px;padding-right:14px}
  .schedule-track{padding-left:0;padding-right:0;scroll-padding-left:14px}.schedule-card:first-child{margin-left:14px}.schedule-card:last-child{margin-right:14px}
- .cafe-cta{width:137px}.schedule-card{flex-basis:226px}.class-copy b{font-size:17px}.class-copy span{font-size:12px}.shortcuts{gap:10px}
+  .cafe-cta{width:137px}.schedule-card{flex-basis:226px}.class-copy b{font-size:17px}.class-copy span{font-size:12px}.shortcuts{gap:10px}
 }
+/* My Class — Figma "Homepage – Beta" class frame */
+.mc{--mc-band:#eae9de;--mc-pill:#eae9e0;--mc-soft:#a19c96;padding:0 0 var(--dock-pad);background:#fff}
+.mc-sprite{position:absolute;width:0;height:0;overflow:hidden}
+.mc-head{position:relative;height:80px;padding:12px 11px 0;background:#fff}
+.mc-back{position:relative;z-index:1;width:44px;height:44px;border:0;border-radius:50%;background:#f5f5f3;box-shadow:0 2px 8px rgba(55,50,48,.1);padding:0;display:grid;place-items:center}
+.mc-back svg{width:24px;height:24px;fill:none;stroke:var(--ink);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.mc-head h1{position:absolute;left:0;right:0;top:12px;margin:0;text-align:center;font:500 17px/44px Assistant,sans-serif}
+.mc-title{margin:0;padding:0 0 0 16px;font:700 24px/30px "Fedra Display",Georgia,serif}
+.mc-practice{padding:22px 0 28px;background:var(--mc-band)}
+.mc-tools{display:grid;grid-template-columns:1fr 1fr;gap:20px 16px;margin:19px 20px 0}
+.mc-tool{height:168px;border:1px solid rgba(55,50,48,.16);border-radius:18px;background:#fff;box-shadow:0 3px 8px rgba(55,50,48,.08);padding:20px 10px 0;display:flex;flex-direction:column;align-items:center;text-align:center}
+.mc-tool--featured{grid-column:1/-1;border-color:rgba(55,50,48,.6)}
+.mc-tool:active{border-color:var(--ink)}
+.mc-tool__ic{width:82px;height:82px;display:grid;place-items:center;flex:none}
+.mc-tool__ic svg{display:block}
+.mc-tool b{margin-top:10px;font:700 15px/18px Assistant,sans-serif}
+.mc-tool span:last-child{font-size:11.5px;line-height:16px;color:#4f4a46}
+.mc-pods{padding:28px 0 8px;background:#fff}
+.mc-now{margin:24px 16px 0;border-radius:18px;background:#fff;box-shadow:0 4px 16px rgba(55,50,48,.11);padding:15px 16px 16px}
+.mc-now__kicker{margin:0;color:var(--mc-soft);font:400 10.5px/14px Assistant,sans-serif;letter-spacing:.08em;text-transform:uppercase}
+.mc-now__row{display:flex;align-items:center;gap:14px;margin-top:7px}
+.mc-now__art{flex:none;width:65px;height:65px;border:1px solid var(--ink);border-radius:9px;background:#90c7fc}
+.mc-now__copy{flex:1;min-width:0;display:flex;flex-direction:column}
+.mc-now__eyebrow{display:flex;align-items:center;gap:5px;font:400 16px/20px "Fedra Display",Georgia,serif;white-space:nowrap}
+.mc-now__eyebrow svg{flex:none;width:18px;height:18px;fill:none;stroke:var(--ink);stroke-width:1.3;stroke-linecap:round;stroke-linejoin:round}
+.mc-now__copy b{font:italic 600 24px/28px "Fedra Demi Italic","Fedra Display",Georgia,serif}
+.mc-pill{flex:none;height:28px;border:0;border-radius:999px;background:var(--mc-pill);padding:0 10px 0 11px;display:inline-flex;align-items:center;gap:6px;color:var(--ink);font:400 13.5px/16px Assistant,sans-serif;white-space:nowrap}
+.mc-pill svg{width:11px;height:11px}
+.mc-pill .mc-pill__replay{width:14px;height:14px}
+.mc-pill__bar{width:11px;height:4px;border-radius:2px;background:var(--ink);margin-right:2px}
+.mc-pill--now{height:30px;padding:0 11px 0 13px;background:var(--yellow)}
+.mc-level{position:relative;margin:36px 16px 0}
+.mc-level__btn{border:0;background:none;padding:0;display:inline-flex;align-items:center;gap:13px;font:400 16px/22px Assistant,sans-serif}
+.mc-lvl{flex:none;width:22px;height:22px}
+.mc-level__chev{width:10px;height:16px;margin-left:-8px;fill:none;stroke:var(--ink);stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.mc-level__menu{position:absolute;z-index:5;left:-3px;top:calc(100% + 17px);width:252px;border:1px solid rgba(255,255,255,.7);border-radius:22px;background:rgba(248,248,247,.96);box-shadow:0 14px 36px rgba(55,50,48,.2);backdrop-filter:blur(18px) saturate(1.4);-webkit-backdrop-filter:blur(18px) saturate(1.4);padding:9px 0}
+.mc-level__menu[hidden]{display:none}
+.mc-level__menu button{width:100%;height:42px;border:0;background:none;padding:0 16px 0 26px;display:flex;align-items:center;gap:13px;text-align:left;font:400 16px/20px Assistant,sans-serif}
+.mc-level__menu .mc-lvl{width:21px;height:21px}
+.mc-list{list-style:none;margin:26px 20px 0;padding:0}
+.mc-pod{padding:17px 0 21px;border-bottom:1px solid #ecebe6}
+.mc-pod:last-child{border-bottom:0}
+.mc-pod h3{margin:0;font:500 17px/22px Assistant,sans-serif}
+.mc-pod p{margin:15px 0 0;color:var(--mc-soft);font-size:12px;line-height:18px;text-align:right}
+.mc-pod__meta{display:flex;align-items:center;margin-top:12px}
+.mc-pod__meta time{font:700 11px/14px Assistant,sans-serif}
+.mc-dl{width:30px;height:30px;margin:0 14px 0 auto;border:0;background:none;padding:0;display:grid;place-items:center;color:var(--ink)}
+.mc-dl svg{width:26px;height:26px}
+.mc-pod{position:relative}
+.mc-pod__open{border:0;background:none;padding:0;font:inherit;color:inherit;text-align:left}
+.mc-pod__open::after{content:"";position:absolute;inset:0}
+.mc-dl,.mc-pod .mc-pill{position:relative;z-index:1}
+.mc-head--bare{height:56px}
+.mc-hero{display:flex;align-items:center;gap:14px;margin:19px 16px 0}
+.mc-hero .mc-now__copy{padding-top:5px}
+.mc-hero h1{margin:0;font:italic 600 23px/28px "Fedra Demi Italic","Fedra Display",Georgia,serif}
+.mc-play{flex:none;align-self:center;height:29px;margin-left:auto;border:0;border-radius:999px;background:var(--yellow);padding:0 11px 0 9px;display:inline-flex;align-items:center;gap:4px;color:var(--ink);font:400 15px/18px Assistant,sans-serif}
+.mc-play svg{width:13px;height:13px}
+.mc-hero__meta{margin:9px 16px 0;font-size:11px;line-height:16px}
+.mc-hero .mc-now__eyebrow{font-size:14px;line-height:18px}
+.mc-hero .mc-now__eyebrow svg{width:16px;height:16px}
+.mc-tracks{list-style:none;margin:13px 16px 0;padding:0}
+.mc-track{height:71px;border-bottom:1px solid #ecece9;display:flex;align-items:center;padding-left:2px}
+.mc-track__n{flex:none;width:22px;font-weight:500;font-size:18px;line-height:22px}
+.mc-track__t{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:18px;line-height:22px;font-weight:500}
+.mc-track__d{flex:none;margin:0 20px 0 auto;padding-left:12px;color:#a6a29d;font-size:12px;line-height:16px;font-variant-numeric:tabular-nums}
+.mc-track__play{flex:none;width:44px;height:44px;border:1px solid rgba(255,255,255,.85);border-radius:50%;background:#f1f0ec;box-shadow:inset 0 1px 0 #fff,0 3px 8px rgba(55,50,48,.16);padding:0;display:grid;place-items:center;color:var(--ink)}
+.mc-track__play svg{width:14px;height:14px;margin-left:2px}
+
+/* HUB Calendar */
+body[data-view="calendar"] .nav,body[data-view="calendar"] .match-bar,body[data-view="calendar"] .mode-switch,body[data-view="calendar"] .review-trigger,body[data-view="calendar"] .review-panel{display:none!important}
+#calendar.hub-calendar{min-height:100dvh;padding:0 0 max(40px,env(safe-area-inset-bottom));background:#fff;color:#373230;--ink:#373230;--muted:#918d88;--soft-muted:#aaa69d;--line:#e2e0dc;--yellow:#FFE300;--warm:#f7f6ef;--warm-2:#eeece3;--danger:#b44538;--white:#fff;--radius:22px}
+#calendar .topbar{padding-top:max(22px,env(safe-area-inset-top))}
+
+.topbar {
+      display: grid;
+      grid-template-columns: 52px 1fr 52px;
+      align-items: center;
+      padding: max(22px, env(safe-area-inset-top)) 14px 12px;
+    }
+
+    .topbar h1 {
+      margin: 0;
+      text-align: center;
+      font-size: 21px;
+      font-weight: 650;
+    }
+
+    .icon-button {
+      width: 48px;
+      height: 48px;
+      padding: 0;
+      border: 1px solid var(--line);
+      border-radius: 50%;
+      background: var(--white);
+      display: inline-grid;
+      place-items: center;
+      cursor: pointer;
+    }
+
+    .back-icon {
+      width: 16px;
+      height: 16px;
+      border-left: 2.5px solid currentColor;
+      border-bottom: 2.5px solid currentColor;
+      transform: rotate(45deg);
+      margin-left: 5px;
+    }
+
+    .view-toggle {
+      justify-self: end;
+      border: 0;
+      background: #99988a;
+      color: #fff;
+    }
+
+    .calendar-symbol {
+      width: 24px;
+      height: 24px;
+      display: block;
+    }
+
+    .calendar-symbol svg { width: 100%; height: 100%; display: block; }
+    .week-symbol { display: none; }
+    .view-toggle[aria-pressed="true"] .month-symbol { display: none; }
+    .view-toggle[aria-pressed="true"] .week-symbol { display: block; }
+
+    .date-area { padding: 6px 14px 0; }
+
+    .date-nav {
+      min-height: 44px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 36px 112px;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .date-nav .today-button { min-width: 36px; padding: 0 2px; }
+    .date-nav .timezone-control { width: 112px; margin-left: 8px; }
+
+    .month-title {
+      min-width: 0;
+      margin: 0 0 0 6px;
+      font-family: "Fedra Demi Italic", "Fedra Display", serif;
+      font-size: 24px;
+      line-height: 30px;
+      font-style: italic;
+      font-weight: 600;
+      letter-spacing: -.1px;
+      white-space: nowrap;
+    }
+
+    .nav-button, .today-button {
+      min-width: 44px;
+      min-height: 44px;
+      border: 0;
+      background: transparent;
+      cursor: pointer;
+      display: inline-grid;
+      place-items: center;
+    }
+
+    .cal-chevron {
+      width: 13px;
+      height: 13px;
+      border-right: 2.5px solid currentColor;
+      border-bottom: 2.5px solid currentColor;
+      transform: rotate(135deg);
+    }
+
+    .nav-button.next .cal-chevron { transform: rotate(-45deg); }
+
+    .today-button {
+      min-width: 48px;
+      padding: 0 6px;
+      color: #5f5a57;
+      font: 500 12px/16px Assistant, sans-serif;
+    }
+
+    .today-calendar {
+      width: 31px;
+      height: 31px;
+      padding-top: 7px;
+      border: 1px solid var(--ink);
+      border-radius: 4px;
+      position: relative;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      background: #f7f6ef;
+      font: 400 10px/12px Assistant, sans-serif;
+    }
+
+    .today-calendar::before {
+      content: "";
+      position: absolute;
+      inset: 0 0 auto;
+      height: 8px;
+      background: var(--ink);
+    }
+
+    .range-label {
+      min-width: 78px;
+      text-align: center;
+      font-size: 22px;
+      font-family: "Fedra Display", serif;
+      font-weight: 400;
+      white-space: nowrap;
+    }
+
+    .range-label:empty { min-width: 0; }
+
+    .timezone-wrap {
+      display: flex;
+      justify-content: flex-end;
+      margin: 20px 2px;
+    }
+
+    .timezone-control {
+      width: 118px;
+      max-width: 100%;
+      height: 36px;
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      padding: 0 28px 0 11px;
+      border: .75px solid #cbc8bf;
+      border-radius: 19px;
+      background: #fff;
+      color: var(--ink);
+      font-family: Assistant, sans-serif;
+      font-weight: 400;
+      font-size: 13px;
+      line-height: 18px;
+    }
+
+    .timezone-control::after {
+      content: "";
+      width: 7px;
+      height: 7px;
+      position: absolute;
+      right: 12px;
+      top: 12px;
+      border-right: 1.5px solid var(--ink);
+      border-bottom: 1.5px solid var(--ink);
+      transform: rotate(45deg);
+      pointer-events: none;
+    }
+
+    .timezone-current { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+    .timezone-select {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+      opacity: 0;
+    }
+
+    .timezone-control:has(.timezone-select:focus-visible) {
+      outline: 3px solid rgba(55, 50, 48, .24);
+      outline-offset: 2px;
+    }
+
+    .week-strip {
+      display: flex;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      overscroll-behavior-inline: contain;
+      scrollbar-width: none;
+      margin: 20px 0 13px;
+    }
+
+    .week-strip::-webkit-scrollbar { display: none; }
+
+    .day-button {
+      flex: 0 0 calc(100% / 7);
+      min-width: calc(100% / 7);
+      width: 57px;
+      height: 57px;
+      min-height: 57px;
+      padding: 7px 1px 4px;
+      border: 0;
+      border-radius: 50%;
+      background: transparent;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      font-size: 16px;
+      color: var(--soft-muted);
+    }
+
+    .day-button.week-start { scroll-snap-align: start; }
+
+    .day-button .date-number { font-size: 19px; line-height: 1; }
+    .day-button .weekday { font-size: 14px; }
+    .day-button.today:not(.selected) { background: var(--warm); color: var(--ink); }
+    .day-button.selected { background: var(--yellow); color: var(--ink); }
+    .day-button.selected .date-number { font-weight: 600; }
+
+    .month-card {
+      margin: 20px 0 20px;
+      padding: 0 6px 0;
+      border: 0;
+      border-radius: 0;
+      box-shadow: none;
+      background: transparent;
+    }
+
+    .month-weekdays, .month-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+    }
+
+    .month-strip {
+      display: flex;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      overscroll-behavior-inline: contain;
+      scrollbar-width: none;
+    }
+
+    .month-strip::-webkit-scrollbar { display: none; }
+
+    .month-grid {
+      flex: 0 0 100%;
+      min-width: 100%;
+      grid-auto-rows: 48px;
+      scroll-snap-align: start;
+      background:
+        linear-gradient(#eae9de, #eae9de) 0 48px / 100% 1px no-repeat,
+        linear-gradient(#eae9de, #eae9de) 0 96px / 100% 1px no-repeat,
+        linear-gradient(#eae9de, #eae9de) 0 144px / 100% 1px no-repeat,
+        linear-gradient(#eae9de, #eae9de) 0 192px / 100% 1px no-repeat,
+        linear-gradient(#eae9de, #eae9de) 0 240px / 100% 1px no-repeat;
+    }
+
+    .month-weekdays span {
+      padding: 3px 0 7px;
+      text-align: center;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .month-day {
+      width: 38px;
+      height: 38px;
+      margin: auto;
+      padding: 0;
+      border: 0;
+      border-radius: 50%;
+      background: transparent;
+      cursor: pointer;
+      font-size: 18px;
+    }
+
+    .month-day.outside { color: #bbb8b2; }
+    .month-day.today:not(.selected) { background: var(--warm-2); font-weight: 650; }
+    .month-day.selected { background: var(--yellow); color: var(--ink); }
+
+    .filters {
+      width: 100%;
+      padding: 0 14px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 5px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .filters::-webkit-scrollbar { display: none; }
+
+    .segmented {
+      height: 44px;
+      flex: 0 0 auto;
+      display: flex;
+      align-items: center;
+      padding: 3px;
+      border: 1px solid var(--ink);
+      border-radius: 25px;
+    }
+
+    .filter-button {
+      height: 38px;
+      flex: 0 0 auto;
+      padding: 0 12px;
+      border: .75px solid var(--ink);
+      border-radius: 20px;
+      background: #fff;
+      font-size: 16px;
+      font-weight: 500;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+
+    .segmented .filter-button {
+      height: 36px;
+      min-width: 54px;
+      padding-inline: 12px;
+      border: 0;
+      border-radius: 18px;
+    }
+
+    .filter-button[aria-pressed="true"] { background: var(--yellow); }
+
+    .filter-divider {
+      width: 1px;
+      height: 32px;
+      flex: 0 0 1px;
+      margin: 0 4px;
+      background: var(--line);
+    }
+
+    .activities { padding: 11px 27px 90px; }
+
+    .activity {
+      border-bottom: 1px solid var(--line);
+      position: relative;
+    }
+
+    .activity:last-child { border-bottom: 0; }
+    .activity.gym.expanded { border-bottom-color: transparent; }
+
+    .activity-row {
+      min-height: 80px;
+      padding: 18px 0;
+      display: grid;
+      grid-template-columns: 46px minmax(0, 1fr) 80px 32px;
+      align-items: center;
+      column-gap: 5px;
+    }
+
+    .time {
+      margin-top: 0;
+      color: var(--muted);
+      font: 400 15px/19px Assistant, sans-serif;
+      white-space: nowrap;
+    }
+
+    .activity-title {
+      min-width: 0;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .activity-title strong {
+      font: 700 20px/24px "Fedra Display", serif;
+    }
+
+    .duration {
+      margin-left: 4px;
+      color: var(--muted);
+      font: 400 13px/17px Assistant, sans-serif;
+      white-space: nowrap;
+    }
+
+    .action-wrap {
+      width: 80px;
+      margin-top: 0;
+      position: relative;
+      display: grid;
+      place-items: center;
+    }
+
+    .save-button {
+      min-width: 44px;
+      height: 33px;
+      min-height: 33px;
+      padding: 0 6px;
+      border: 1px solid transparent;
+      border-radius: 10px;
+      background: transparent;
+      cursor: pointer;
+      font-size: 14px;
+      white-space: nowrap;
+    }
+
+    .save-button.plus { padding: 0; font-size: 33px; font-weight: 300; line-height: 1; }
+    .save-button.state {
+      position: relative;
+      isolation: isolate;
+      border-color: transparent;
+      background: transparent;
+    }
+    .save-button.state::before {
+      content: "";
+      position: absolute;
+      z-index: -1;
+      inset: 0;
+      border: .75px solid #373230;
+      border-radius: 8px;
+      background: #efeee8;
+    }
+    .save-button.fixed { color: #68635f; background: transparent; cursor: default; }
+    .save-button:disabled { color: #aaa69d; cursor: not-allowed; }
+
+    .expand-button {
+      width: 32px;
+      height: 44px;
+      margin-top: 0;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+    }
+
+    .small-chevron {
+      width: 10px;
+      height: 10px;
+      border-right: 2px solid #bfc0c3;
+      border-bottom: 2px solid #bfc0c3;
+      transform: rotate(45deg) translateY(-3px);
+      transition: transform 150ms ease;
+    }
+
+    .expand-button[aria-expanded="true"] .small-chevron {
+      transform: rotate(225deg) translate(-2px, -1px);
+    }
+
+    .action-menu {
+      position: absolute;
+      z-index: 10;
+      top: calc(100% + 2px);
+      right: 0;
+      width: 190px;
+      padding: 5px;
+      border: 1px solid #cbc8bf;
+      border-radius: 12px;
+      background: #fff;
+      box-shadow: 0 8px 22px rgba(55, 50, 48, .16);
+    }
+
+    .action-menu button {
+      width: 100%;
+      min-height: 42px;
+      padding: 8px 10px;
+      border: 0;
+      border-radius: 8px;
+      background: transparent;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .action-menu button:hover, .action-menu button:focus-visible { background: var(--warm); }
+    .action-menu .danger { color: var(--danger); }
+
+    .details {
+      margin: -1px -13px 10px;
+      padding: 0 20px;
+      border-radius: 0 0 22px 22px;
+      background: var(--warm);
+    }
+
+    .session-row {
+      min-height: 66px;
+      display: grid;
+      grid-template-columns: 46px minmax(0, 1fr) 80px;
+      gap: 5px;
+      align-items: center;
+      border-bottom: 1px solid #d9d6ce;
+    }
+
+    .session-row:last-child { border-bottom: 0; }
+    .session-name { min-width: 0; font: 500 18px/23px Assistant, sans-serif; }
+    .session-name .duration { font: 400 14px/18px Assistant, sans-serif; }
+    .session-row .save-button { justify-self: center; }
+
+    .circle-details, .class-details {
+      margin: -1px 0 14px;
+      padding: 2px 4px 20px 66px;
+      color: #5f5a57;
+      font-size: 15px;
+      line-height: 1.45;
+    }
+
+    .circle-details p, .class-details p { margin: 0 0 14px; }
+
+    .primary-button, .secondary-button {
+      min-height: 44px;
+      padding: 0 18px;
+      border: 1px solid var(--ink);
+      border-radius: 23px;
+      background: var(--yellow);
+      cursor: pointer;
+      font-weight: 650;
+    }
+
+    .secondary-button { background: #fff; }
+
+    .empty-state {
+      padding: 60px 16px;
+      text-align: center;
+    }
+
+    .empty-state h2 {
+      margin: 0 0 8px;
+      font-family: "Fedra Display", serif;
+      font-size: 25px;
+    }
+
+    .empty-state p { margin: 0 auto 22px; max-width: 300px; color: #6f6a67; line-height: 1.45; }
+
+    .toast {
+      position: fixed;
+      z-index: 30;
+      left: 50%;
+      bottom: max(18px, env(safe-area-inset-bottom));
+      width: min(calc(100% - 28px), 470px);
+      min-height: 52px;
+      padding: 8px 10px 8px 18px;
+      border-radius: 12px;
+      background: var(--ink);
+      color: #fff;
+      box-shadow: 0 8px 22px rgba(0, 0, 0, .2);
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .toast button {
+      min-height: 38px;
+      padding: 0 10px;
+      border: 0;
+      background: transparent;
+      color: var(--yellow);
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    [hidden] { display: none !important; }
+
+    #calendar button:focus-visible, #calendar select:focus-visible {
+      outline: 3px solid rgba(55, 50, 48, .24);
+      outline-offset: 2px;
+    }
+
+    @media (max-width: 370px) {
+      .topbar { padding-inline: 10px; }
+      .date-area { padding-inline: 10px; }
+      .date-nav { gap: 2px; }
+      .month-title { margin-left: 10px; font-size: 24px; line-height: 30px; }
+      .date-nav { grid-template-columns: minmax(0, 1fr) 36px 112px; }
+      .nav-button { min-width: 38px; }
+      .today-button { min-width: 42px; padding: 0 3px; font-size: 11px; }
+      .filters { padding-inline: 6px; gap: 3px; }
+      .filter-button { padding-inline: 6px; font-size: 16px; }
+      .segmented .filter-button { min-width: 0; padding-inline: 7px; }
+      .filter-divider { margin-inline: 2px; }
+      .activities { padding-inline: 18px; }
+      .activity-row { grid-template-columns: 43px minmax(0, 1fr) 70px 28px; column-gap: 3px; }
+      .action-wrap { width: 70px; }
+      .session-row { grid-template-columns: 43px minmax(0, 1fr) 70px; gap: 3px; }
+      .activity-title strong { font-size: 20px; line-height: 24px; }
+      .activity-title .duration { margin-left: 3px; font-size: 12px; }
+      .save-button { padding-inline: 7px; font-size: 14px; }
+      .month-day { width: 35px; height: 35px; }
+    }
+
+    @media (min-width: 521px) {
+}
+  
 </style>
 </head>
 <body>
+<svg class="mc-sprite" aria-hidden="true" focusable="false">
+ <symbol id="lvl-orange" viewBox="0 0 36 36"><path d="M29.3333 0H6.66667C2.98477 0 0 2.98477 0 6.66667V29.3333C0 33.0152 2.98477 36 6.66667 36H29.3333C33.0152 36 36 33.0152 36 29.3333V6.66667C36 2.98477 33.0152 0 29.3333 0Z" fill="#F69700"/><path d="M17.9979 27.988C13.4701 27.988 9.78125 24.3047 9.78125 19.7714C9.78125 15.238 13.4646 11.5547 17.9979 11.5547C22.5312 11.5547 26.2146 15.238 26.2146 19.7714C26.2146 24.3047 22.5312 27.988 17.9979 27.988ZM17.9979 12.6658C14.0813 12.6658 10.8924 15.8547 10.8924 19.7714C10.8924 23.688 14.0813 26.8769 17.9979 26.8769C21.9146 26.8769 25.1035 23.688 25.1035 19.7714C25.1035 15.8547 21.9146 12.6658 17.9979 12.6658Z" fill="#373230"/><path d="M18 25.0917V24.3973C20.5556 24.3973 22.6278 22.3195 22.6278 19.7695H23.3222C23.3222 22.7029 20.9333 25.0917 18 25.0917Z" fill="#373230"/><path d="M18.7889 10.949H17.6778C17.6778 9.61015 16.5889 8.52127 15.25 8.52127V7.41016C17.2 7.41016 18.7889 8.99904 18.7889 10.949Z" fill="#373230"/><path d="M18.7908 10.9489H17.6797V10.4211C17.713 9.13774 18.2297 7.94331 19.1241 7.04331C20.0186 6.14331 21.213 5.63219 22.4852 5.59886C22.6352 5.58775 22.7852 5.65442 22.8908 5.75998C22.9964 5.86553 23.0575 6.01552 23.0519 6.16552C23.0186 7.43774 22.5019 8.62664 21.6075 9.52664C21.2963 9.83775 20.9408 10.11 20.5575 10.3266L20.0075 9.35997C20.3019 9.1933 20.5797 8.98219 20.8241 8.73775C21.363 8.19886 21.7241 7.51552 21.8741 6.77664C21.1352 6.92108 20.4519 7.2822 19.913 7.82664C19.2186 8.52109 18.8186 9.44885 18.7908 10.4322V10.9489Z" fill="#373230"/></symbol>
+ <symbol id="lvl-pink" viewBox="0 0 36 36"><path d="M29.3333 0H6.66667C2.98477 0 0 2.98477 0 6.66667V29.3333C0 33.0152 2.98477 36 6.66667 36H29.3333C33.0152 36 36 33.0152 36 29.3333V6.66667C36 2.98477 33.0152 0 29.3333 0Z" fill="#F7AAF3"/><path d="M23.2299 24.7928H12.7743C12.4688 24.7928 12.2188 24.5428 12.2188 24.2372V12.5372C12.2188 9.34834 14.8132 6.75391 18.0021 6.75391C21.191 6.75391 23.7854 9.34834 23.7854 12.5372V24.2372C23.7854 24.5428 23.5354 24.7928 23.2299 24.7928ZM13.3299 23.6817H22.6743V12.5372C22.6743 9.95945 20.5799 7.86502 18.0021 7.86502C15.4243 7.86502 13.3299 9.95945 13.3299 12.5372V23.6817Z" fill="#373230"/><path d="M19.2695 25.9766H16.7695V29.5766H19.2695V25.9766Z" fill="#373230"/><path d="M15.913 21.4832C15.1463 21.4832 14.5186 20.861 14.5186 20.0887V15.9054C14.5186 15.5221 14.2075 15.2054 13.8186 15.2054H12.7741C12.5797 15.2054 12.4297 15.0498 12.4297 14.8609C12.4297 14.6721 12.5852 14.5165 12.7741 14.5165H13.8186C14.5852 14.5165 15.213 15.1387 15.213 15.911V20.0943C15.213 20.4776 15.5241 20.7943 15.913 20.7943C16.3019 20.7943 16.613 20.4832 16.613 20.0943V13.8221C16.613 13.0554 17.2352 12.4276 18.0075 12.4276C18.7797 12.4276 19.4019 13.0498 19.4019 13.8221V15.911C19.4019 16.2943 19.713 16.611 20.1019 16.611C20.4908 16.611 20.8019 16.2998 20.8019 15.911V12.3554C20.8019 11.5887 21.4241 10.9609 22.1964 10.9609H23.2408C23.4352 10.9609 23.5852 11.1165 23.5852 11.3054C23.5852 11.4943 23.4297 11.6499 23.2408 11.6499H22.1964C21.813 11.6499 21.4964 11.9609 21.4964 12.3498V15.9054C21.4964 16.6721 20.8741 17.2998 20.1019 17.2998C19.3297 17.2998 18.7075 16.6776 18.7075 15.9054V13.8165C18.7075 13.4332 18.3964 13.1165 18.0075 13.1165C17.6186 13.1165 17.3075 13.4276 17.3075 13.8165V20.0887C17.3075 20.8554 16.6852 21.4832 15.913 21.4832Z" fill="#373230"/></symbol>
+ <symbol id="lvl-yellow" viewBox="0 0 36 36"><path d="M29.3333 0H6.66667C2.98477 0 0 2.98477 0 6.66667V29.3333C0 33.0152 2.98477 36 6.66667 36H29.3333C33.0152 36 36 33.0152 36 29.3333V6.66667C36 2.98477 33.0152 0 29.3333 0Z" fill="#FFE300"/><path d="M18.001 8.21763C18.8898 9.16763 20.151 9.73429 21.5121 9.73429C21.9843 9.73429 22.451 9.66207 22.8954 9.52873C23.0565 10.2232 23.3787 10.8843 23.8454 11.4565C24.5287 12.2954 25.451 12.8676 26.4732 13.1065C26.2176 13.951 26.1954 14.8565 26.4343 15.7398C26.6676 16.6176 27.1454 17.3954 27.7843 18.001C27.1398 18.601 26.6676 19.3787 26.4343 20.2621C26.201 21.1399 26.2176 22.051 26.4787 22.8954C25.4565 23.1343 24.5343 23.7065 23.851 24.5454C23.3843 25.1176 23.0621 25.7787 22.901 26.4732C22.4565 26.3398 21.9898 26.2676 21.5176 26.2676C20.1565 26.2676 18.8954 26.8343 18.0065 27.7843C17.1176 26.8343 15.8565 26.2676 14.4898 26.2676C14.0176 26.2676 13.551 26.3398 13.1065 26.4732C12.9454 25.7787 12.6232 25.1176 12.1565 24.5454C11.4732 23.7065 10.551 23.1343 9.52873 22.8954C9.78429 22.051 9.80651 21.1454 9.56762 20.2621C9.33429 19.3843 8.85651 18.6065 8.21762 18.001C8.86207 17.401 9.33429 16.6232 9.57318 15.7398C9.80651 14.8621 9.78984 13.951 9.53429 13.1065C10.5565 12.8676 11.4787 12.2954 12.1621 11.4565C12.6287 10.8843 12.951 10.2232 13.1121 9.52873C13.5565 9.66207 14.0232 9.73429 14.4954 9.73429C15.8621 9.73429 17.1176 9.16208 18.0065 8.21763M18.001 6.08984C17.4676 7.70096 16.001 8.62318 14.4898 8.62318C13.6343 8.62318 12.7676 8.32874 12.051 7.68985H12.0454C12.5287 10.0232 10.7121 12.1176 8.4454 12.1176C8.1954 12.1176 7.93984 12.0899 7.68429 12.0399H7.68985C9.45096 14.0287 8.61206 17.1621 6.0954 17.9954C8.60651 18.8287 9.45096 21.9676 7.68985 23.9454H7.68429C7.93984 23.901 8.1954 23.8732 8.4454 23.8732C10.7065 23.8732 12.5232 25.9676 12.0454 28.3065H12.051C12.7676 27.6621 13.6343 27.3676 14.4898 27.3676C15.9954 27.3676 17.4676 28.2899 18.001 29.8954C18.5343 28.2899 20.001 27.3676 21.5121 27.3676C22.3676 27.3676 23.2343 27.6621 23.951 28.3009H23.9565C23.4732 25.9676 25.2898 23.8732 27.5565 23.8732C27.8065 23.8732 28.0621 23.901 28.3176 23.951H28.3121C26.551 21.9621 27.3898 18.8287 29.9065 17.9954C27.3954 17.1621 26.551 14.0232 28.3121 12.0454H28.3176C28.0621 12.0899 27.8065 12.1176 27.5565 12.1176C25.2954 12.1176 23.4787 10.0232 23.9621 7.68429H23.9565C23.2398 8.32873 22.3732 8.62318 21.5176 8.62318C20.0121 8.62318 18.5398 7.70096 18.0065 6.0954L18.001 6.08984Z" fill="#373230"/><path d="M18.0012 24.2346C17.8068 24.2346 17.6568 24.079 17.6568 23.8901C17.6568 23.7013 17.8123 23.5457 18.0012 23.5457C21.0568 23.5457 23.5401 21.0623 23.5401 18.0068C23.5401 14.9512 21.0568 12.4679 18.0012 12.4679C14.9457 12.4679 12.4623 14.9512 12.4623 18.0068C12.4623 18.1957 12.3068 18.3512 12.1179 18.3512C11.929 18.3512 11.7734 18.1957 11.7734 18.0068C11.7734 14.5679 14.5679 11.7734 18.0068 11.7734C21.4457 11.7734 24.2401 14.5679 24.2401 18.0068C24.2401 21.4457 21.4457 24.2401 18.0068 24.2401L18.0012 24.2346Z" fill="#373230"/><path d="M17.9999 22.3905C15.5777 22.3905 13.6055 20.4182 13.6055 17.996C13.6055 15.5738 15.5777 13.6016 17.9999 13.6016C18.1944 13.6016 18.3444 13.7571 18.3444 13.946C18.3444 14.1349 18.1888 14.2904 17.9999 14.2904C15.961 14.2904 14.2999 15.9515 14.2999 17.9904C14.2999 20.0293 15.961 21.6905 17.9999 21.6905C18.1944 21.6905 18.3444 21.846 18.3444 22.0349C18.3444 22.2238 18.1888 22.3793 17.9999 22.3793V22.3905Z" fill="#373230"/></symbol>
+ <symbol id="lvl-light-blue" viewBox="0 0 36 36"><path d="M29.5222 0H6.47776C2.90019 0 0 2.9002 0 6.47778V29.5222C0 33.0998 2.90019 36 6.47776 36H29.5222C33.0998 36 36 33.0998 36 29.5222V6.47778C36 2.9002 33.0998 0 29.5222 0Z" fill="#90C7FC"/><path d="M5.60221 18.1977C5.60221 15.7959 7.55165 13.8531 9.94683 13.8531C10.2779 13.8531 10.5966 13.8903 10.9039 13.9605C11.9976 11.6766 14.3298 10.0977 17.0302 10.0977C20.5563 10.0977 23.4512 12.781 23.7874 16.2191C25.9708 16.4352 27.6801 18.2802 27.6801 20.5197C27.6801 22.9043 25.7424 24.8421 23.3577 24.8421H7.32476C5.6355 24.8421 4.25796 23.4721 4.25781 21.7757C4.25781 20.6668 4.84153 19.705 5.71452 19.1645C5.6422 18.8544 5.60222 18.532 5.60221 18.1977ZM6.71333 18.1977C6.71333 18.5696 6.7789 18.9241 6.89833 19.2632L7.07357 19.7602L6.58637 19.9615C5.86924 20.257 5.36892 20.9543 5.36892 21.7757C5.36907 22.8569 6.24754 23.731 7.32476 23.731H23.3577C25.1287 23.731 26.569 22.2907 26.569 20.5197C26.5689 18.8041 25.2172 17.3989 23.5227 17.3128L23.3577 17.309H22.7197L22.7078 16.7649C22.6419 13.6831 20.1271 11.2088 17.0302 11.2088C14.6228 11.2088 12.5621 12.7106 11.7367 14.8324L11.5403 15.3375L11.0303 15.1535C10.6894 15.0305 10.331 14.9642 9.94683 14.9642C8.16424 14.9642 6.71333 16.4106 6.71333 18.1977Z" fill="#373230"/><path d="M30.6382 18.6686C30.6382 16.1664 28.6362 14.1339 26.1482 14.0793L25.6046 14.0674V13.4462C25.6046 12.0364 24.4645 10.8963 23.0547 10.8963V9.78516C24.9284 9.78516 26.4699 11.1895 26.688 13.004C29.5342 13.3232 31.7494 15.7348 31.7494 18.6686C31.7493 19.7074 31.472 20.6811 30.9849 21.5196L30.0241 20.9619C30.4147 20.2894 30.6382 19.5075 30.6382 18.6686Z" fill="#373230"/><path d="M25.5881 20.5195C25.5881 21.7502 24.5879 22.7499 23.3572 22.7499H10.3906V22.0554H23.3572C24.2043 22.0554 24.8937 21.3667 24.8937 20.5195H25.5881Z" fill="#373230"/><path d="M17.0293 12.8819C15.3612 12.882 13.8959 13.8834 13.2923 15.4384L12.6445 15.1866C13.3521 13.364 15.0754 12.1876 17.0293 12.1875V12.8819Z" fill="#373230"/></symbol>
+ <symbol id="mc-play" viewBox="0 0 12 12"><path d="M2.5 1.2v9.6L10.6 6Z" fill="currentColor"/></symbol>
+ <symbol id="mc-replay" viewBox="0 0 16 16"><path d="M12.9 9.3A5.1 5.1 0 1 1 11.5 4.3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M12.3 1.6v3.3H9" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+ <symbol id="mc-download" viewBox="0 0 24 24"><path d="M12 3.5v11.5M6.6 9.8l5.4 5.4 5.4-5.4M4.5 20h15" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+</svg>
 <main class="app" id="app">
 <section class="view home active" id="home" aria-label="Home">
  <div class="blue-field"></div>
@@ -350,9 +1033,87 @@ body:has(#home.active) .mode-switch{right:auto;left:86px;top:18px}
   </div>
  </div>
 </section>
-<section class="view destination" id="class" aria-label="My Class"><div class="dest-head"><button class="back" data-back>←</button><h1>My Class</h1></div><div class="dest-card"><h2>Light Blue</h2><p>Next class Thursday at 8:30 PM</p></div><div class="dest-card anchor" id="practice"><h2>Practice</h2><p>Challenge mode, flashcards and Keep Up.</p></div><div class="dest-card anchor" id="classpods"><h2>ClassPods</h2><p>Lesson 12 · New recap ready to listen.</p></div></section>
+<section class="view destination mc" id="class" aria-label="My Class">
+ <header class="mc-head"><button class="mc-back" type="button" data-back aria-label="Back"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 5.5 8 12l6.5 6.5"/></svg></button><h1>My Class</h1></header>
+ <section class="mc-practice anchor" id="practice" aria-labelledby="mc-practice-title">
+  <h2 class="mc-title" id="mc-practice-title">Your Practice</h2>
+  <div class="mc-tools">
+   <button class="mc-tool mc-tool--featured" type="button"><span class="mc-tool__ic" aria-hidden="true"><svg viewBox="0 0 78 78" fill="none" width="78" height="78"><path d="M70.162 42.5796V34.7939L6.99988 34.7939V42.5796L70.162 42.5796Z" fill="#FFE300" stroke="#0A0A0A" stroke-width="0.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M65.9103 24.3743H60.5654V52.9991H65.9103V24.3743Z" fill="white" stroke="#0A0A0A" stroke-width="0.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M60.5658 20H53.2782V57.3738H60.5658V20Z" fill="white" stroke="#0A0A0A" stroke-width="0.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M23.8842 20H16.5966V57.3738H23.8842V20Z" fill="white" stroke="#0A0A0A" stroke-width="0.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M16.5953 24.3743H11.2505V52.9991H16.5953V24.3743Z" fill="white" stroke="#0A0A0A" stroke-width="0.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span><b>Keep Up</b><span>Fresh from last class</span></button>
+   <button class="mc-tool" type="button"><span class="mc-tool__ic" aria-hidden="true"><svg viewBox="0 0 81 82" fill="none" width="81" height="82"><path d="M40.6095 71C57.178 71 70.6095 57.5685 70.6095 41C70.6095 24.4315 57.178 11 40.6095 11C24.0409 11 10.6095 24.4315 10.6095 41C10.6095 57.5685 24.0409 71 40.6095 71Z" fill="white" stroke="#373230" stroke-width="0.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M40.6095 62C52.2075 62 61.6095 52.598 61.6095 41C61.6095 29.402 52.2075 20 40.6095 20C29.0115 20 19.6095 29.402 19.6095 41C19.6095 52.598 29.0115 62 40.6095 62Z" fill="white" stroke="#373230" stroke-width="0.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M40.6095 53C47.2369 53 52.6095 47.6274 52.6095 41C52.6095 34.3726 47.2369 29 40.6095 29C33.9821 29 28.6095 34.3726 28.6095 41C28.6095 47.6274 33.9821 53 40.6095 53Z" fill="#FFE300" stroke="#373230" stroke-width="0.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span><b>Challenge Mode</b><span>Old and new, all in one</span></button>
+   <button class="mc-tool" type="button"><span class="mc-tool__ic" aria-hidden="true"><svg viewBox="0 0 82 82" fill="none" width="82" height="82"><path d="M31.9099 24.9233C32.3642 22.1995 34.9399 20.3642 37.6628 20.8237L49.9372 22.895L55.9431 51.2787C56.5146 53.9803 54.7887 56.6392 52.0886 57.2172L29.0759 62.142C28.504 62.2644 27.9346 62.2827 27.3864 62.2114C26.5247 61.1373 26.1061 59.7152 26.3503 58.2514L31.9099 24.9233Z" fill="#FFE300"/><path d="M37.3803 20.782L61.0255 24.7128C63.6134 25.143 65.3562 27.5885 64.9182 30.1751L59.1855 64.0301C58.7473 66.6163 56.2945 68.3646 53.7068 67.9344L30.0616 64.0037C27.4739 63.5735 25.7312 61.1277 26.1689 58.5414L31.9016 24.6864C32.3396 22.0999 34.7925 20.3518 37.3803 20.782Z" stroke="#373230" stroke-width="0.5"/><path d="M19.9449 19.2193L43.3942 14.2752C45.9612 13.734 48.4886 15.3745 49.0394 17.9394L56.2505 51.5166C56.8013 54.0814 55.1669 56.5994 52.6 57.1406L29.1507 62.0847C26.5838 62.6259 24.0563 60.9854 23.5055 58.4205L16.2945 24.8433C15.7437 22.2784 17.378 19.7605 19.9449 19.2193Z" stroke="#373230" stroke-width="0.5"/></svg></span><b>Just Flashcards</b><span>Grow your vocab</span></button>
+  </div>
+ </section>
+ <section class="mc-pods anchor" id="classpods" aria-labelledby="mc-pods-title">
+  <h2 class="mc-title" id="mc-pods-title">Class pods</h2>
+  <article class="mc-now" aria-label="Continue listening: Recap n’ Drill, Lesson 11">
+   <p class="mc-now__kicker">Continue listening</p>
+   <div class="mc-now__row">
+    <svg class="mc-now__art" aria-hidden="true"><use href="#lvl-light-blue"/></svg>
+    <div class="mc-now__copy"><span class="mc-now__eyebrow"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 14.5v-2a8 8 0 0 1 16 0v2"/><rect x="3.5" y="13.5" width="4" height="6.5" rx="1.6"/><rect x="16.5" y="13.5" width="4" height="6.5" rx="1.6"/></svg>Recap n’ Drill</span><b>Lesson 11</b></div>
+    <button class="mc-pill mc-pill--now" type="button" aria-label="Resume Lesson 11, 8 minutes left">8 min left<svg aria-hidden="true"><use href="#mc-play"/></svg></button>
+   </div>
+  </article>
+  <div class="mc-level">
+   <button class="mc-level__btn" id="mcLevelBtn" type="button" aria-haspopup="menu" aria-expanded="false" aria-controls="mcLevelMenu"><svg class="mc-lvl" id="mcLevelIcon" aria-hidden="true"><use href="#lvl-light-blue"/></svg><span id="mcLevelLabel">Light Blue</span><svg class="mc-level__chev" viewBox="0 0 10 16" aria-hidden="true"><path d="M1.8 5.6 5 2.4l3.2 3.2M1.8 10.4 5 13.6l3.2-3.2"/></svg></button>
+   <div class="mc-level__menu" id="mcLevelMenu" role="menu" aria-label="Choose class level" hidden>
+    <button type="button" role="menuitemradio" aria-checked="false" data-mc-level="orange"><svg class="mc-lvl" aria-hidden="true"><use href="#lvl-orange"/></svg>Orange</button>
+    <button type="button" role="menuitemradio" aria-checked="false" data-mc-level="pink"><svg class="mc-lvl" aria-hidden="true"><use href="#lvl-pink"/></svg>Pink</button>
+    <button type="button" role="menuitemradio" aria-checked="false" data-mc-level="yellow"><svg class="mc-lvl" aria-hidden="true"><use href="#lvl-yellow"/></svg>Yellow</button>
+    <button type="button" role="menuitemradio" aria-checked="true" data-mc-level="light-blue"><svg class="mc-lvl" aria-hidden="true"><use href="#lvl-light-blue"/></svg>Light Blue</button>
+   </div>
+  </div>
+  <ol class="mc-list" aria-label="Lesson recordings">
+   <li class="mc-pod"><h3><button class="mc-pod__open" type="button" data-pod="11">Lesson 11</button></h3><p lang="he" dir="rtl">מעניין + מילת שאלה, תרגול, לחכות - שם פועל והווה, לקוות הווה ושם פועל - תזכורת, תרגול, לאו דווקא, תרגול</p><div class="mc-pod__meta"><time datetime="2026-10-15">15 Oct, 2026</time><button class="mc-dl" type="button" aria-label="Download Lesson 11"><svg aria-hidden="true"><use href="#mc-download"/></svg></button><button class="mc-pill" type="button" data-pod="11" aria-label="Resume Lesson 11, 8 minutes left">8 min left<svg aria-hidden="true"><use href="#mc-play"/></svg></button></div></li>
+   <li class="mc-pod"><h3><button class="mc-pod__open" type="button" data-pod="10">Lesson 10</button></h3><p lang="he" dir="rtl">מעניין + מילת שאלה, תרגול, לחכות - שם פועל והווה, לקוות הווה ושם פועל - תזכורת, תרגול, לאו דווקא, תרגול</p><div class="mc-pod__meta"><time datetime="2026-10-08">8 Oct, 2026</time><button class="mc-dl" type="button" aria-label="Download Lesson 10"><svg aria-hidden="true"><use href="#mc-download"/></svg></button><button class="mc-pill" type="button" data-pod="10" aria-label="Resume Lesson 10, 1 minute left">1 min<i class="mc-pill__bar" aria-hidden="true"></i><svg aria-hidden="true"><use href="#mc-play"/></svg></button></div></li>
+   <li class="mc-pod"><h3><button class="mc-pod__open" type="button" data-pod="9">Lesson 9</button></h3><p lang="he" dir="rtl">מעניין + מילת שאלה, תרגול, לחכות - שם פועל והווה, לקוות הווה ושם פועל - תזכורת, תרגול, לאו דווקא, תרגול</p><div class="mc-pod__meta"><time datetime="2026-10-01">1 Oct, 2026</time><button class="mc-dl" type="button" aria-label="Download Lesson 9"><svg aria-hidden="true"><use href="#mc-download"/></svg></button><button class="mc-pill" type="button" data-pod="9" aria-label="Listen again to Lesson 9, 7 minutes">7 min<svg class="mc-pill__replay" aria-hidden="true"><use href="#mc-replay"/></svg></button></div></li>
+   <li class="mc-pod"><h3><button class="mc-pod__open" type="button" data-pod="8">Lesson 8</button></h3><p lang="he" dir="rtl">מעניין + מילת שאלה, תרגול, לחכות - שם פועל והווה, לקוות הווה ושם פועל - תזכורת, תרגול, לאו דווקא, תרגול</p><div class="mc-pod__meta"><time datetime="2026-09-24">24 Sep, 2026</time><button class="mc-dl" type="button" aria-label="Download Lesson 8"><svg aria-hidden="true"><use href="#mc-download"/></svg></button><button class="mc-pill" type="button" data-pod="8" aria-label="Play Lesson 8, 4 minutes 30 seconds">4:30 min<svg aria-hidden="true"><use href="#mc-play"/></svg></button></div></li>
+   <li class="mc-pod"><h3><button class="mc-pod__open" type="button" data-pod="7">Lesson 7</button></h3><p lang="he" dir="rtl">מעניין + מילת שאלה, תרגול, לחכות - שם פועל והווה, לקוות הווה ושם פועל - תזכורת, תרגול, לאו דווקא, תרגול</p><div class="mc-pod__meta"><time datetime="2026-09-17">17 Sep, 2026</time><button class="mc-dl" type="button" aria-label="Download Lesson 7"><svg aria-hidden="true"><use href="#mc-download"/></svg></button><button class="mc-pill" type="button" data-pod="7" aria-label="Play Lesson 7, 4 minutes 30 seconds">4:30 min<svg aria-hidden="true"><use href="#mc-play"/></svg></button></div></li>
+   <li class="mc-pod"><h3><button class="mc-pod__open" type="button" data-pod="6">Lesson 6</button></h3><p lang="he" dir="rtl">מעניין + מילת שאלה, תרגול, לחכות - שם פועל והווה, לקוות הווה ושם פועל - תזכורת, תרגול, לאו דווקא, תרגול</p><div class="mc-pod__meta"><time datetime="2026-09-10">10 Sep, 2026</time><button class="mc-dl" type="button" aria-label="Download Lesson 6"><svg aria-hidden="true"><use href="#mc-download"/></svg></button><button class="mc-pill" type="button" data-pod="6" aria-label="Play Lesson 6, 4 minutes 30 seconds">4:30 min<svg aria-hidden="true"><use href="#mc-play"/></svg></button></div></li>
+  </ol>
+ </section>
+</section>
+<section class="view destination mc mc-lesson" id="classpod" aria-labelledby="podTitle">
+ <header class="mc-head mc-head--bare"><button class="mc-back" type="button" data-back aria-label="Back to My Class"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 5.5 8 12l6.5 6.5"/></svg></button></header>
+ <div class="mc-hero">
+  <svg class="mc-now__art" aria-hidden="true"><use href="#lvl-light-blue"/></svg>
+  <div class="mc-now__copy"><span class="mc-now__eyebrow"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 14.5v-2a8 8 0 0 1 16 0v2"/><rect x="3.5" y="13.5" width="4" height="6.5" rx="1.6"/><rect x="16.5" y="13.5" width="4" height="6.5" rx="1.6"/></svg>Recap n’ Drill</span><h1 id="podTitle">Lesson 9</h1></div>
+  <button class="mc-play" type="button"><svg aria-hidden="true"><use href="#mc-play"/></svg>Play</button>
+ </div>
+ <p class="mc-hero__meta">18 min · 7 tracks</p>
+ <ol class="mc-tracks" aria-label="Tracks">
+   <li class="mc-track"><span class="mc-track__n">1.</span><span class="mc-track__t" lang="he" dir="rtl">מעניין + מילת שאלה</span><span class="mc-track__d">2:35</span><button class="mc-track__play" type="button" aria-label="Play track 1, 2 minutes 35 seconds"><svg aria-hidden="true"><use href="#mc-play"/></svg></button></li>
+   <li class="mc-track"><span class="mc-track__n">2.</span><span class="mc-track__t" lang="he" dir="rtl">חזרות</span><span class="mc-track__d">2:35</span><button class="mc-track__play" type="button" aria-label="Play track 2, 2 minutes 35 seconds"><svg aria-hidden="true"><use href="#mc-play"/></svg></button></li>
+   <li class="mc-track"><span class="mc-track__n">3.</span><span class="mc-track__t" lang="he" dir="rtl">לחכות- שם פועל והווה</span><span class="mc-track__d">2:35</span><button class="mc-track__play" type="button" aria-label="Play track 3, 2 minutes 35 seconds"><svg aria-hidden="true"><use href="#mc-play"/></svg></button></li>
+   <li class="mc-track"><span class="mc-track__n">4.</span><span class="mc-track__t" lang="he" dir="rtl">לקוות, הווה ושם פועל- תזכורת</span><span class="mc-track__d">2:35</span><button class="mc-track__play" type="button" aria-label="Play track 4, 2 minutes 35 seconds"><svg aria-hidden="true"><use href="#mc-play"/></svg></button></li>
+   <li class="mc-track"><span class="mc-track__n">5.</span><span class="mc-track__t" lang="he" dir="rtl">דרילינג</span><span class="mc-track__d">2:35</span><button class="mc-track__play" type="button" aria-label="Play track 5, 2 minutes 35 seconds"><svg aria-hidden="true"><use href="#mc-play"/></svg></button></li>
+   <li class="mc-track"><span class="mc-track__n">6.</span><span class="mc-track__t" lang="he" dir="rtl">לאו דווקא</span><span class="mc-track__d">2:35</span><button class="mc-track__play" type="button" aria-label="Play track 6, 2 minutes 35 seconds"><svg aria-hidden="true"><use href="#mc-play"/></svg></button></li>
+   <li class="mc-track"><span class="mc-track__n">7.</span><span class="mc-track__t" lang="he" dir="rtl">דרילינג</span><span class="mc-track__d">2:35</span><button class="mc-track__play" type="button" aria-label="Play track 7, 2 minutes 35 seconds"><svg aria-hidden="true"><use href="#mc-play"/></svg></button></li>
+ </ol>
+</section>
 <section class="view destination" id="cafe" aria-label="The Café"><div class="dest-head"><button class="back" data-back>←</button><h1>The Café</h1></div><article class="dest-card search-card"><p class="search-kicker">Live practice · 6 min</p><h2 id="searchTitle">Find a partner</h2><p class="search-elapsed" id="searchElapsed" hidden></p><p class="search-note" id="searchNote">6 minutes, one-on-one, at the levels you choose.</p><div class="search-levels"><p id="searchLevels">Meeting Light Blue and Blue learners.</p><div class="level-picker" role="group" aria-label="Levels to meet"><button type="button" class="level-chip" data-level="red" aria-pressed="false"><i aria-hidden="true"></i>Red</button><button type="button" class="level-chip" data-level="orange" aria-pressed="false"><i aria-hidden="true"></i>Orange</button><button type="button" class="level-chip" data-level="pink" aria-pressed="false"><i aria-hidden="true"></i>Pink</button><button type="button" class="level-chip" data-level="yellow" aria-pressed="false"><i aria-hidden="true"></i>Yellow</button><button type="button" class="level-chip" data-level="light-blue" aria-pressed="true"><i aria-hidden="true"></i>Light Blue</button><button type="button" class="level-chip" data-level="blue" aria-pressed="true"><i aria-hidden="true"></i>Blue</button><button type="button" class="level-chip" data-level="lime" aria-pressed="false"><i aria-hidden="true"></i>Lime</button></div></div><div class="search-actions"><button type="button" class="search-primary" id="searchPrimary" data-match-action="start">Find a partner</button><button type="button" class="search-stop" id="searchStop" data-match-action="stop" hidden>Stop search</button></div><p class="search-join-note" id="searchJoinNote" hidden>You're set. This prototype does not open a call or turn on your camera or microphone.</p></article></section>
-<section class="view destination" id="calendar" aria-label="Calendar"><div class="dest-head"><button class="back" data-back>←</button><h1>Calendar</h1></div><div class="calendar-row"><div><b>Lesson 12</b><span>Today · 8 PM · My Class</span></div></div><div class="calendar-row"><div><b>Circle</b><span>Today · 7:30 PM · Community</span></div></div></section>
+<section class="view hub-calendar" id="calendar" aria-label="Calendar">
+  <header class="topbar">
+    <button class="icon-button" id="backButton" type="button" data-back aria-label="Back to Home"><span class="back-icon" aria-hidden="true"></span></button>
+    <h1>Calendar</h1>
+    <button class="icon-button view-toggle" id="viewToggle" type="button" aria-label="Show month view" aria-pressed="false">
+      <span class="calendar-symbol month-symbol" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><rect x="2.75" y="3.75" width="18.5" height="17.5" rx="2.25" stroke="currentColor" stroke-width="1.5"/><path d="M3.5 8.25h17" stroke="currentColor" stroke-width="1.5"/><path d="M7.25 2.75v3M16.75 2.75v3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M7 11.25h2.25v2.25H7zm3.875 0h2.25v2.25h-2.25zm3.875 0H17v2.25h-2.25zM7 15.25h2.25v2.25H7zm3.875 0h2.25v2.25h-2.25zm3.875 0H17v2.25h-2.25z" fill="currentColor"/></svg></span>
+      <span class="calendar-symbol week-symbol" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><rect x="2.75" y="4.25" width="18.5" height="15.5" rx="1.75" stroke="currentColor" stroke-width="1.5"/><path d="M8.75 5v14M15.25 5v14" stroke="currentColor" stroke-width="1.5"/></svg></span>
+    </button>
+  </header>
+  <section class="date-area" id="dateArea" aria-label="Choose a date"></section>
+  <div class="filters" aria-label="Filter activities">
+    <div class="segmented" aria-label="Plan filter">
+      <button class="filter-button" type="button" data-plan="all" aria-pressed="true">All</button>
+      <button class="filter-button" type="button" data-plan="plan" aria-pressed="false">My plan</button>
+    </div>
+    <span class="filter-divider" aria-hidden="true"></span>
+    <button class="filter-button" type="button" data-type="class" aria-pressed="false">My class</button>
+    <button class="filter-button" type="button" data-type="gym" aria-pressed="false">Gym</button>
+    <button class="filter-button" type="button" data-type="circle" aria-pressed="false">Circles</button>
+  </div>
+  <section class="activities" id="activities" aria-live="polite" aria-label="Activities"></section>
+  <div class="toast" id="toast" role="status" hidden><span id="toastMessage"></span><button type="button" id="undoButton">Undo</button></div>
+ </section>
 <section class="view destination" id="circles" aria-label="Circles"><div class="dest-head"><button class="back" data-back>←</button><h1>Circles</h1></div><button class="circle-card"><img class="circle-image" src="assets/circles-event.jpg" alt="Green hills in the Judean Desert"><span class="circle-body"><h3>The Imposter Syndrome of the Judean Desert</h3><p>If someone showed you a landscape full of water, greenery, and life.</p></span></button></section>
 <section class="view destination" id="community" aria-label="Community"><div class="dest-head"><button class="back" data-back>←</button><h1>Community</h1></div><div class="dest-card"><h2>Citizen Café Community</h2><p>Circles, people and stories.</p></div></section>
 <section class="view destination" id="profile" aria-label="Profile"><div class="dest-head"><button class="back" data-back>←</button><h1>Yael</h1></div><div class="dest-card"><h2>Light Blue · current class</h2><p>Preferences and account settings.</p></div></section>
@@ -380,6 +1141,7 @@ body:has(#home.active) .mode-switch{right:auto;left:86px;top:18px}
 <script>
 (function(){"use strict";
 var stack=["home"];
+var homeScroll=0;
 var LEVELS=[{id:"red",label:"Red"},{id:"orange",label:"Orange"},{id:"pink",label:"Pink"},{id:"yellow",label:"Yellow"},{id:"light-blue",label:"Light Blue"},{id:"blue",label:"Blue"},{id:"lime",label:"Lime"}];
 var match={phase:"idle",startedAt:0,levels:["light-blue","blue"],joined:false};
 var clock=0;
@@ -470,8 +1232,14 @@ function render(nextView){
   if(message!==announced){announced=message;live.textContent=message}
   syncDock();
 }
-function show(id,push){var view=document.getElementById(id);if(!view)return;document.querySelectorAll(".view").forEach(function(x){x.classList.toggle("active",x===view)});document.querySelectorAll(".nav-btn").forEach(function(x){x.removeAttribute("aria-current")});var nav=document.querySelector('.nav-btn[data-go="'+id+'"]');if(nav)nav.setAttribute("aria-current","page");if(push!==false&&stack[stack.length-1]!==id)stack.push(id);window.scrollTo(0,0);render(id)}
+function setLevelMenu(open){var btn=document.getElementById("mcLevelBtn"),menu=document.getElementById("mcLevelMenu");if(!btn||!menu)return;menu.hidden=!open;btn.setAttribute("aria-expanded",open?"true":"false")}
+function pickClassLevel(item){var id=item.dataset.mcLevel;document.querySelectorAll("[data-mc-level]").forEach(function(x){x.setAttribute("aria-checked",x===item?"true":"false")});document.getElementById("mcLevelLabel").textContent=levelLabel(id);document.querySelector("#mcLevelIcon use").setAttribute("href","#lvl-"+id);setLevelMenu(false);document.getElementById("mcLevelBtn").focus()}
+function show(id,push){setLevelMenu(false);var previous=currentView(),view=document.getElementById(id);if(!view)return;if(previous==="home"&&id==="calendar")homeScroll=window.scrollY;document.querySelectorAll(".view").forEach(function(x){x.classList.toggle("active",x===view)});document.body.dataset.view=id;document.querySelectorAll(".nav-btn").forEach(function(x){x.removeAttribute("aria-current")});var nav=document.querySelector('.nav-btn[data-go="'+(id==="classpod"?"class":id)+'"]');if(nav)nav.setAttribute("aria-current","page");if(push!==false&&stack[stack.length-1]!==id)stack.push(id);if(id==="home"&&previous==="calendar")setTimeout(function(){window.scrollTo(0,homeScroll)},0);else window.scrollTo(0,0);render(id)}
 document.addEventListener("click",function(e){
+  if(e.target.closest("#mcLevelBtn")){setLevelMenu(document.getElementById("mcLevelMenu").hidden);return}
+  var classLevel=e.target.closest("[data-mc-level]");
+  if(classLevel){pickClassLevel(classLevel);return}
+  if(!e.target.closest("#mcLevelMenu"))setLevelMenu(false);
   var phase=e.target.closest("[data-match-phase]");
   if(phase){setPhase(phase.dataset.matchPhase);return}
   var level=e.target.closest("[data-level]");
@@ -484,6 +1252,8 @@ document.addEventListener("click",function(e){
     else if(name==="join"){match.joined=true;render()}
     return
   }
+  var pod=e.target.closest("[data-pod]");
+  if(pod){document.getElementById("podTitle").textContent="Lesson "+pod.dataset.pod;show("classpod",true);return}
   var go=e.target.closest("[data-go]");
   if(go){e.preventDefault();if(go.classList.contains("cafe-card")&&(match.phase==="idle"||match.phase==="stopped"))beginSearch();show(go.dataset.go,true);return}
   var target=e.target.closest("[data-class-target]");
@@ -493,6 +1263,7 @@ document.addEventListener("click",function(e){
   if(sheet){document.getElementById(sheet.dataset.sheet).classList.add("open");return}
   if(e.target.closest("[data-close]")||e.target.classList.contains("sheet-layer"))document.querySelectorAll(".sheet-layer").forEach(function(x){x.classList.remove("open")});
 });
+document.addEventListener("keydown",function(e){var menu=document.getElementById("mcLevelMenu");if(e.key==="Escape"&&menu&&!menu.hidden){setLevelMenu(false);document.getElementById("mcLevelBtn").focus()}});
 document.querySelector(".cafe-card").addEventListener("keydown",function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();if(match.phase==="idle"||match.phase==="stopped")beginSearch();show("cafe",true)}});
 var params=new URLSearchParams(location.search);
 if(params.get("review")==="1")document.body.classList.add("review-mode");
@@ -500,9 +1271,620 @@ document.getElementById("modeSwitch").addEventListener("click",function(){setPha
 var trigger=document.getElementById("review-trigger");
 var panel=document.getElementById("review-panel");
 trigger.addEventListener("click",function(){var open=panel.classList.toggle("open");trigger.setAttribute("aria-expanded",String(open))});
+document.body.dataset.view=currentView();
 var initial=params.get("match");
 if(["searching","matched","stopped","idle"].indexOf(initial)>=0)setPhase(initial);else render();
 window.addEventListener("resize",syncDock);
 })();
 </script>
+<script>
+    (() => {
+      "use strict";
+
+      const MONTH_SELECTION_CLOSES_VIEW = false;
+      const STORAGE_KEY = "citizenCafe.calendarPrototype.v1";
+      const DAY_MS = 86400000;
+      const weekdayShort = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+      const timezoneOptions = [
+        Intl.DateTimeFormat().resolvedOptions().timeZone,
+        "Asia/Jerusalem",
+        "Europe/London",
+        "America/New_York",
+        "America/Los_Angeles",
+        "Asia/Tokyo",
+        "Australia/Sydney"
+      ].filter((zone, index, list) => zone && list.indexOf(zone) === index);
+
+      const pad = value => String(value).padStart(2, "0");
+      const dateFromKey = key => {
+        const [year, month, day] = key.split("-").map(Number);
+        return new Date(Date.UTC(year, month - 1, day, 12));
+      };
+      const keyFromDate = date => `${date.getUTCFullYear()}-${pad(date.getUTCMonth() + 1)}-${pad(date.getUTCDate())}`;
+      const addDays = (key, amount) => keyFromDate(new Date(dateFromKey(key).getTime() + amount * DAY_MS));
+      const startOfWeek = key => addDays(key, -dateFromKey(key).getUTCDay());
+      const daysInMonth = (year, monthIndex) => new Date(Date.UTC(year, monthIndex + 1, 0)).getUTCDate();
+      const addMonths = (key, amount) => {
+        const date = dateFromKey(key);
+        const originalDay = date.getUTCDate();
+        const target = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth() + amount, 1, 12));
+        target.setUTCDate(Math.min(originalDay, daysInMonth(target.getUTCFullYear(), target.getUTCMonth())));
+        return keyFromDate(target);
+      };
+
+      function zonedParts(input, timeZone) {
+        const parts = new Intl.DateTimeFormat("en-CA", {
+          timeZone,
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+          weekday: "short"
+        }).formatToParts(input);
+        const values = Object.fromEntries(parts.map(part => [part.type, part.value]));
+        return { year: +values.year, month: +values.month, day: +values.day, weekday: values.weekday };
+      }
+
+      const dayKeyForInstant = (input, timeZone) => {
+        const parts = zonedParts(input, timeZone);
+        return `${parts.year}-${pad(parts.month)}-${pad(parts.day)}`;
+      };
+
+      const formatTime = (iso, timeZone) => new Intl.DateTimeFormat("en-GB", {
+        timeZone,
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false
+      }).format(new Date(iso));
+
+      const formatMonth = key => new Intl.DateTimeFormat("en-US", { month: "long", year: "numeric", timeZone: "UTC" }).format(dateFromKey(key));
+      const zoneNames = {
+        "Asia/Jerusalem": "Israel Time",
+        "Europe/London": "London Time",
+        "America/New_York": "New York Time",
+        "America/Los_Angeles": "Los Angeles Time",
+        "Asia/Tokyo": "Tokyo Time",
+        "Australia/Sydney": "Sydney Time"
+      };
+      const formatZone = zone => {
+        const rawOffset = new Intl.DateTimeFormat("en-US", {
+          timeZone: zone,
+          timeZoneName: "longOffset"
+        }).formatToParts(new Date()).find(part => part.type === "timeZoneName")?.value || "GMT";
+        const offset = rawOffset === "GMT" ? "GMT +00:00" : rawOffset.replace("GMT", "GMT ");
+        const name = zoneNames[zone] || zone.split("/").at(-1).replaceAll("_", " ") + " Time";
+        return `(${offset}) ${name}`;
+      };
+
+      function localIso(dayOffset, hour, minute = 0) {
+        const date = new Date();
+        date.setHours(hour, minute, 0, 0);
+        date.setDate(date.getDate() + dayOffset);
+        return date.toISOString();
+      }
+
+      function gym(id, offset, hour, savedDefault = []) {
+        const starts = [0, 20, 40].map(minutes => localIso(offset, hour, minutes));
+        return {
+          id,
+          type: "gym",
+          title: "Gym",
+          startUtc: starts[0],
+          sessions: starts.map((startUtc, index) => ({
+            id: `${id}-s${index + 1}`,
+            title: `${["1st", "2nd", "3rd"][index]} Session`,
+            startUtc,
+            duration: 17
+          })),
+          savedDefault
+        };
+      }
+
+      const events = [
+        gym("gym-today-a", 0, 12, ["gym-today-a-s2"]),
+        gym("gym-today-b", 0, 14, ["gym-today-b-s1", "gym-today-b-s2", "gym-today-b-s3"]),
+        { id: "class-today", type: "class", title: "Lesson 12", startUtc: localIso(0, 18, 45), duration: 90, description: "Your scheduled class lesson. It is included in My plan automatically." },
+        { id: "circle-today", type: "circle", title: "Culture Circle", startUtc: localIso(0, 20, 30), duration: 60, capacity: "available", description: "A guided English conversation about everyday culture.", goingDefault: false },
+        gym("gym-tomorrow", 1, 9),
+        { id: "circle-going", type: "circle", title: "Coffee & Conversation", startUtc: localIso(1, 17, 30), duration: 60, capacity: "available", description: "Meet learners from around the world for an open conversation.", goingDefault: true },
+        { id: "class-next", type: "class", title: "Lesson 13", startUtc: localIso(2, 18, 45), duration: 90, description: "Your scheduled class lesson. It is included in My plan automatically." },
+        { id: "circle-full", type: "circle", title: "Storytelling Circle", startUtc: localIso(3, 19), duration: 75, capacity: "full", description: "Practice telling memorable stories in a small group.", goingDefault: false },
+        gym("gym-next-week", 7, 12),
+        { id: "class-week", type: "class", title: "Lesson 14", startUtc: localIso(8, 18, 45), duration: 90, description: "Your scheduled class lesson. It is included in My plan automatically." },
+        { id: "circle-next", type: "circle", title: "Current Events Circle", startUtc: localIso(9, 21), duration: 60, capacity: "available", description: "Discuss one current story in a friendly facilitated group.", goingDefault: false },
+        gym("gym-midnight", 10, 23, ["gym-midnight-s1"]),
+        { id: "circle-adjacent", type: "circle", title: "Weekend Circle", startUtc: localIso(35, 10), duration: 60, capacity: "available", description: "A relaxed weekend conversation for all levels.", goingDefault: false },
+        gym("gym-previous", -28, 16)
+      ];
+
+      const defaults = {
+        savedSessions: events.flatMap(event => event.savedDefault || []),
+        goingCircles: events.filter(event => event.goingDefault).map(event => event.id)
+      };
+
+      function loadStored() {
+        try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; }
+        catch { return {}; }
+      }
+
+      const stored = loadStored();
+      const deviceZone = timezoneOptions[0];
+      const initialZone = timezoneOptions.includes(stored.timeZone) ? stored.timeZone : deviceZone;
+      const initialToday = dayKeyForInstant(new Date(), initialZone);
+      const state = {
+        view: "week",
+        selectedDay: initialToday,
+        anchorDay: initialToday,
+        timeZone: initialZone,
+        planFilter: stored.planFilter === "plan" ? "plan" : "all",
+        typeFilters: new Set(Array.isArray(stored.typeFilters) ? stored.typeFilters.filter(type => ["class", "gym", "circle"].includes(type)) : []),
+        savedSessions: new Set(Array.isArray(stored.savedSessions) ? stored.savedSessions : defaults.savedSessions),
+        goingCircles: new Set(Array.isArray(stored.goingCircles) ? stored.goingCircles : defaults.goingCircles),
+        expanded: new Set(),
+        openMenu: null,
+        pendingRsvp: null,
+        undo: null,
+        toastTimer: null
+      };
+
+      function persist() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({
+          view: state.view,
+          timeZone: state.timeZone,
+          planFilter: state.planFilter,
+          typeFilters: [...state.typeFilters],
+          savedSessions: [...state.savedSessions],
+          goingCircles: [...state.goingCircles]
+        }));
+      }
+
+      const dateArea = document.querySelector("#dateArea");
+      const activities = document.querySelector("#activities");
+      const viewToggle = document.querySelector("#viewToggle");
+      const toast = document.querySelector("#toast");
+      const toastMessage = document.querySelector("#toastMessage");
+
+      function renderDateArea() {
+        const anchor = dateFromKey(state.anchorDay);
+        const monthTitle = formatMonth(state.anchorDay);
+        const todayKey = dayKeyForInstant(new Date(), state.timeZone);
+        let picker;
+
+        if (state.view === "week") {
+          const weekStart = startOfWeek(state.anchorDay);
+          const swipeStart = addDays(weekStart, -7);
+          picker = `
+            <div class="week-strip">
+              ${Array.from({ length: 21 }, (_, index) => {
+                const key = addDays(swipeStart, index);
+                const date = dateFromKey(key);
+                const weekday = weekdayShort[index % 7];
+                return `<button type="button" class="day-button ${index % 7 === 0 ? "week-start" : ""} ${key === todayKey ? "today" : ""} ${key === state.selectedDay ? "selected" : ""}" data-day="${key}" aria-pressed="${key === state.selectedDay}" aria-label="${weekday}, ${formatMonthDay(key)}">
+                  <span class="date-number">${date.getUTCDate()}</span><span class="weekday">${weekday}</span>
+                </button>`;
+              }).join("")}
+            </div>`;
+          dateArea.innerHTML = `${dateNavigation(monthTitle)}${picker}`;
+        } else {
+          picker = `
+            <div class="month-card">
+              <div class="month-weekdays">${weekdayShort.map(day => `<span>${day.toUpperCase()}</span>`).join("")}</div>
+              <div class="month-strip">
+                ${[-1, 0, 1].map(offset => monthGrid(addMonths(state.anchorDay, offset))).join("")}
+              </div>
+            </div>`;
+          dateArea.innerHTML = `${dateNavigation(monthTitle)}${picker}`;
+        }
+
+        viewToggle.setAttribute("aria-pressed", String(state.view === "month"));
+        viewToggle.setAttribute("aria-label", state.view === "month" ? "Show week view" : "Show month view");
+        setupPagedSwipe(state.view === "week" ? ".week-strip" : ".month-strip", page => {
+          state.anchorDay = state.view === "week"
+            ? addDays(state.anchorDay, page < 1 ? -7 : 7)
+            : addMonths(state.anchorDay, page < 1 ? -1 : 1);
+        });
+      }
+
+      function dateNavigation(title) {
+        return `<div class="date-nav">
+          <h2 class="month-title">${title}</h2>
+          <button class="today-button" type="button" data-date-action="today" aria-label="Go to today"><span class="today-calendar" aria-hidden="true">Today</span></button>
+          ${timezoneSelect()}
+        </div>`;
+      }
+
+      function monthGrid(anchorKey) {
+        const date = dateFromKey(anchorKey);
+        const month = date.getUTCMonth();
+        const firstOffset = new Date(Date.UTC(date.getUTCFullYear(), month, 1)).getUTCDay();
+        const gridStart = addDays(`${date.getUTCFullYear()}-${pad(month + 1)}-01`, -firstOffset);
+        const today = dayKeyForInstant(new Date(), state.timeZone);
+        return `<div class="month-grid">
+          ${Array.from({ length: 42 }, (_, index) => {
+            const key = addDays(gridStart, index);
+            const cell = dateFromKey(key);
+            return `<button type="button" class="month-day ${cell.getUTCMonth() !== month ? "outside" : ""} ${key === today ? "today" : ""} ${key === state.selectedDay ? "selected" : ""}" data-day="${key}" aria-pressed="${key === state.selectedDay}" aria-label="${formatMonthDay(key)}">${cell.getUTCDate()}</button>`;
+          }).join("")}
+        </div>`;
+      }
+
+      function setupPagedSwipe(selector, onPage) {
+        const strip = dateArea.querySelector(selector);
+        if (!strip) return;
+        requestAnimationFrame(() => {
+          strip.scrollLeft = strip.clientWidth;
+          let scrollTimer;
+          strip.addEventListener("scroll", () => {
+            clearTimeout(scrollTimer);
+            scrollTimer = setTimeout(() => {
+              const page = Math.round(strip.scrollLeft / strip.clientWidth);
+              if (page === 1) return;
+              onPage(page);
+              renderDateArea();
+              persist();
+            }, 120);
+          }, { passive: true });
+        });
+      }
+
+      function timezoneSelect() {
+        const compactName = (zoneNames[state.timeZone] || state.timeZone.split("/").at(-1).replaceAll("_", " ") + " Time").replace(/ Time$/, " time");
+        return `<span class="timezone-control">
+          <span class="timezone-current" aria-hidden="true">${compactName}</span>
+          <select class="timezone-select" id="timezoneSelect" aria-label="Time zone">
+            ${timezoneOptions.map(zone => `<option value="${zone}" ${zone === state.timeZone ? "selected" : ""}>${formatZone(zone)}</option>`).join("")}
+          </select>
+        </span>`;
+      }
+
+      function formatMonthDay(key) {
+        return new Intl.DateTimeFormat("en-US", { month: "long", day: "numeric", year: "numeric", timeZone: "UTC" }).format(dateFromKey(key));
+      }
+
+      function eventIsInPlan(event) {
+        if (event.type === "class") return true;
+        if (event.type === "circle") return state.goingCircles.has(event.id);
+        return event.sessions.some(session => state.savedSessions.has(session.id));
+      }
+
+      function visibleEvents() {
+        return events
+          .filter(event => dayKeyForInstant(new Date(event.startUtc), state.timeZone) === state.selectedDay)
+          .filter(event => state.typeFilters.size === 0 || state.typeFilters.has(event.type))
+          .filter(event => state.planFilter === "all" || eventIsInPlan(event))
+          .sort((a, b) => new Date(a.startUtc) - new Date(b.startUtc));
+      }
+
+      function allEventsForSelectedDay() {
+        return events.filter(event => dayKeyForInstant(new Date(event.startUtc), state.timeZone) === state.selectedDay);
+      }
+
+      function durationLabel(minutes) {
+        if (minutes === 60) return "1hr";
+        if (minutes === 90) return "1.5hr";
+        return `${minutes} min`;
+      }
+
+      function gymSelection(event) {
+        return event.sessions.filter(session => state.savedSessions.has(session.id));
+      }
+
+      function eventPresentation(event) {
+        if (event.type === "gym" && state.planFilter === "plan") {
+          const selected = gymSelection(event);
+          return {
+            startUtc: selected[0]?.startUtc || event.startUtc,
+            duration: selected.reduce((total, session) => total + session.duration, 0)
+          };
+        }
+        return { startUtc: event.startUtc, duration: event.type === "gym" ? 60 : event.duration };
+      }
+
+      function renderActivities() {
+        syncFilters();
+        const visible = visibleEvents();
+        if (!visible.length) {
+          renderEmptyState();
+          return;
+        }
+        activities.innerHTML = visible.map(renderActivity).join("");
+      }
+
+      function renderActivity(event) {
+        const presentation = eventPresentation(event);
+        const expanded = state.expanded.has(event.id);
+        return `<article class="activity ${event.type}${expanded ? " expanded" : ""}" data-event-id="${event.id}">
+          <div class="activity-row">
+            <time class="time" datetime="${presentation.startUtc}">${formatTime(presentation.startUtc, state.timeZone)}</time>
+            <button type="button" class="activity-title" data-expand="${event.id}" aria-expanded="${expanded}">
+              <strong>${event.title}</strong><span class="duration">${durationLabel(presentation.duration)}</span>
+            </button>
+            <div class="action-wrap">${activityAction(event)}${state.openMenu === event.id ? actionMenu(event) : ""}</div>
+            <button type="button" class="expand-button" data-expand="${event.id}" aria-expanded="${expanded}" aria-label="${expanded ? "Hide" : "Show"} details for ${event.title}"><span class="small-chevron" aria-hidden="true"></span></button>
+          </div>
+          ${expanded ? activityDetails(event) : ""}
+        </article>`;
+      }
+
+      function activityAction(event) {
+        if (event.type === "class") return "";
+        if (event.type === "circle") {
+          if (event.capacity === "full" && !state.goingCircles.has(event.id)) return `<button class="save-button state" type="button" disabled aria-label="${event.title} is full">Full</button>`;
+          if (state.goingCircles.has(event.id)) return `<button class="save-button state" type="button" data-circle-action="${event.id}" aria-haspopup="menu">Going ✓</button>`;
+          return `<button class="save-button state" type="button" data-circle-action="${event.id}">RSVP</button>`;
+        }
+        const count = gymSelection(event).length;
+        if (count === 0) return `<button class="save-button plus" type="button" data-gym-action="${event.id}" aria-label="Add ${event.title} to My plan" aria-haspopup="menu">+</button>`;
+        if (count === event.sessions.length) return `<button class="save-button state" type="button" data-gym-action="${event.id}">✓ Added</button>`;
+        return `<button class="save-button state" type="button" data-gym-action="${event.id}" aria-haspopup="menu">${count}/3 Added</button>`;
+      }
+
+      function actionMenu(event) {
+        if (event.type === "circle") {
+          return `<div class="action-menu" role="menu"><button type="button" class="danger" data-cancel-rsvp="${event.id}" role="menuitem">Cancel RSVP</button></div>`;
+        }
+        const count = gymSelection(event).length;
+        if (count === 0) {
+          return `<div class="action-menu" role="menu">
+            <button type="button" data-add-all="${event.id}" role="menuitem">Add full hour</button>
+            <button type="button" data-choose-sessions="${event.id}" role="menuitem">Choose sessions</button>
+          </div>`;
+        }
+        return `<div class="action-menu" role="menu">
+          <button type="button" data-add-remaining="${event.id}" role="menuitem">Add remaining sessions</button>
+          <button type="button" class="danger" data-remove-all="${event.id}" role="menuitem">Remove saved sessions</button>
+        </div>`;
+      }
+
+      function activityDetails(event) {
+        if (event.type === "gym") {
+          const sessions = state.planFilter === "plan" ? gymSelection(event) : event.sessions;
+          return `<div class="details">
+            ${sessions.map(session => `<div class="session-row">
+              <time class="time" datetime="${session.startUtc}">${formatTime(session.startUtc, state.timeZone)}</time>
+              <span class="session-name">${session.title}<span class="duration">${session.duration} min</span></span>
+              <button type="button" class="save-button ${state.savedSessions.has(session.id) ? "state" : "plus"}" data-session="${session.id}" aria-label="${state.savedSessions.has(session.id) ? "Remove" : "Add"} ${session.title}">${state.savedSessions.has(session.id) ? "✓ Added" : "+"}</button>
+            </div>`).join("")}
+          </div>`;
+        }
+        if (event.type === "circle") {
+          const going = state.goingCircles.has(event.id);
+          return `<div class="circle-details">
+            <p>${event.description}</p>
+            ${event.capacity === "full" && !going
+              ? `<span aria-label="Registration unavailable">This circle is full.</span>`
+              : !going && state.pendingRsvp === event.id
+                ? `<button type="button" class="primary-button" data-confirm-rsvp="${event.id}">Confirm RSVP</button>`
+                : !going
+                  ? `<button type="button" class="primary-button" data-start-rsvp="${event.id}">RSVP</button>`
+                  : `<span>You’re going to this circle.</span>`}
+          </div>`;
+        }
+        return `<div class="class-details"><p>${event.description}</p><span>Automatically included in My plan.</span></div>`;
+      }
+
+      function renderEmptyState() {
+        const dayEvents = allEventsForSelectedDay();
+        if (state.planFilter === "plan" && !dayEvents.some(eventIsInPlan)) {
+          activities.innerHTML = `<div class="empty-state"><h2>Your plan is empty</h2><p>Explore the activities available on this day and add what works for you.</p><button type="button" class="primary-button" data-empty-action="explore">Explore activities</button></div>`;
+        } else if (dayEvents.length && (state.typeFilters.size || state.planFilter === "plan")) {
+          activities.innerHTML = `<div class="empty-state"><h2>No filter matches</h2><p>There are activities on this day, but none match the filters you selected.</p><button type="button" class="secondary-button" data-empty-action="clear-types">Clear type filters</button></div>`;
+        } else {
+          activities.innerHTML = `<div class="empty-state"><h2>No activities today</h2><p>There’s nothing scheduled for this day. Try another date.</p></div>`;
+        }
+      }
+
+      function syncFilters() {
+        document.querySelectorAll("[data-plan]").forEach(button => button.setAttribute("aria-pressed", String(button.dataset.plan === state.planFilter)));
+        document.querySelectorAll("[data-type]").forEach(button => button.setAttribute("aria-pressed", String(state.typeFilters.has(button.dataset.type))));
+      }
+
+      function render() {
+        renderDateArea();
+        renderActivities();
+        persist();
+      }
+
+      function eventById(id) { return events.find(event => event.id === id); }
+
+      function toggleExpanded(id, forceOpen = false) {
+        if (forceOpen || !state.expanded.has(id)) state.expanded.add(id);
+        else state.expanded.delete(id);
+        state.openMenu = null;
+        renderActivities();
+      }
+
+      function saveSnapshot(message) {
+        state.undo = {
+          savedSessions: [...state.savedSessions],
+          goingCircles: [...state.goingCircles]
+        };
+        toastMessage.textContent = message;
+        toast.hidden = false;
+        clearTimeout(state.toastTimer);
+        state.toastTimer = setTimeout(() => { toast.hidden = true; state.undo = null; }, 5000);
+      }
+
+      function removeGymSessions(event) {
+        const selected = gymSelection(event);
+        if (!selected.length) return;
+        saveSnapshot(`${selected.length === 1 ? "Session" : "Sessions"} removed from My plan`);
+        selected.forEach(session => state.savedSessions.delete(session.id));
+        state.openMenu = null;
+        renderActivities();
+        persist();
+      }
+
+      dateArea.addEventListener("click", event => {
+        const dayButton = event.target.closest("[data-day]");
+        if (dayButton) {
+          state.selectedDay = dayButton.dataset.day;
+          if (state.view === "week") state.anchorDay = state.selectedDay;
+          if (state.view === "month" && dateFromKey(state.anchorDay).getUTCMonth() !== dateFromKey(state.selectedDay).getUTCMonth()) state.anchorDay = state.selectedDay;
+          if (MONTH_SELECTION_CLOSES_VIEW) state.view = "week";
+          render();
+          return;
+        }
+        const action = event.target.closest("[data-date-action]")?.dataset.dateAction;
+        if (!action) return;
+        if (action === "today") {
+          state.selectedDay = dayKeyForInstant(new Date(), state.timeZone);
+          state.anchorDay = state.selectedDay;
+        } else {
+          const direction = action === "next" ? 1 : -1;
+          state.anchorDay = state.view === "week" ? addDays(state.anchorDay, direction * 7) : addMonths(state.anchorDay, direction);
+        }
+        render();
+      });
+
+      dateArea.addEventListener("change", event => {
+        if (!event.target.matches(".timezone-select")) return;
+        const wasToday = state.selectedDay === dayKeyForInstant(new Date(), state.timeZone);
+        state.timeZone = event.target.value;
+        if (wasToday) {
+          state.selectedDay = dayKeyForInstant(new Date(), state.timeZone);
+          state.anchorDay = state.selectedDay;
+        }
+        render();
+      });
+
+      document.querySelector(".filters").addEventListener("click", event => {
+        const planButton = event.target.closest("[data-plan]");
+        const typeButton = event.target.closest("[data-type]");
+        if (planButton) state.planFilter = planButton.dataset.plan;
+        if (typeButton) {
+          const type = typeButton.dataset.type;
+          state.typeFilters.has(type) ? state.typeFilters.delete(type) : state.typeFilters.add(type);
+        }
+        state.openMenu = null;
+        renderActivities();
+        persist();
+      });
+
+      activities.addEventListener("click", event => {
+        const expand = event.target.closest("[data-expand]");
+        if (expand) { toggleExpanded(expand.dataset.expand); return; }
+
+        const gymAction = event.target.closest("[data-gym-action]");
+        if (gymAction) {
+          const gymEvent = eventById(gymAction.dataset.gymAction);
+          const count = gymSelection(gymEvent).length;
+          if (count === gymEvent.sessions.length) removeGymSessions(gymEvent);
+          else {
+            state.openMenu = state.openMenu === gymEvent.id ? null : gymEvent.id;
+            renderActivities();
+          }
+          return;
+        }
+
+        const circleAction = event.target.closest("[data-circle-action]");
+        if (circleAction) {
+          const circleEvent = eventById(circleAction.dataset.circleAction);
+          if (state.goingCircles.has(circleEvent.id)) {
+            state.openMenu = state.openMenu === circleEvent.id ? null : circleEvent.id;
+            renderActivities();
+          } else {
+            state.pendingRsvp = circleEvent.id;
+            toggleExpanded(circleEvent.id, true);
+          }
+          return;
+        }
+
+        const sessionButton = event.target.closest("[data-session]");
+        if (sessionButton) {
+          const id = sessionButton.dataset.session;
+          if (state.savedSessions.has(id)) {
+            saveSnapshot("Session removed from My plan");
+            state.savedSessions.delete(id);
+          } else state.savedSessions.add(id);
+          renderActivities();
+          persist();
+          return;
+        }
+
+        const addAll = event.target.closest("[data-add-all], [data-add-remaining]");
+        if (addAll) {
+          const id = addAll.dataset.addAll || addAll.dataset.addRemaining;
+          eventById(id).sessions.forEach(session => state.savedSessions.add(session.id));
+          state.openMenu = null;
+          renderActivities();
+          persist();
+          return;
+        }
+
+        const choose = event.target.closest("[data-choose-sessions]");
+        if (choose) {
+          state.expanded.add(choose.dataset.chooseSessions);
+          state.openMenu = null;
+          renderActivities();
+          return;
+        }
+
+        const removeAll = event.target.closest("[data-remove-all]");
+        if (removeAll) { removeGymSessions(eventById(removeAll.dataset.removeAll)); return; }
+
+        const startRsvp = event.target.closest("[data-start-rsvp]");
+        if (startRsvp) {
+          state.pendingRsvp = startRsvp.dataset.startRsvp;
+          renderActivities();
+          return;
+        }
+
+        const confirmRsvp = event.target.closest("[data-confirm-rsvp]");
+        if (confirmRsvp) {
+          state.goingCircles.add(confirmRsvp.dataset.confirmRsvp);
+          state.pendingRsvp = null;
+          renderActivities();
+          persist();
+          return;
+        }
+
+        const cancelRsvp = event.target.closest("[data-cancel-rsvp]");
+        if (cancelRsvp) {
+          saveSnapshot("RSVP cancelled");
+          state.goingCircles.delete(cancelRsvp.dataset.cancelRsvp);
+          state.openMenu = null;
+          renderActivities();
+          persist();
+          return;
+        }
+
+        const emptyAction = event.target.closest("[data-empty-action]")?.dataset.emptyAction;
+        if (emptyAction === "explore") {
+          state.planFilter = "all";
+          state.typeFilters.clear();
+          renderActivities();
+          persist();
+        } else if (emptyAction === "clear-types") {
+          state.typeFilters.clear();
+          renderActivities();
+          persist();
+        }
+      });
+
+      viewToggle.addEventListener("click", () => {
+        state.view = state.view === "week" ? "month" : "week";
+        state.anchorDay = state.selectedDay;
+        render();
+      });
+
+      document.querySelector("#undoButton").addEventListener("click", () => {
+        if (!state.undo) return;
+        state.savedSessions = new Set(state.undo.savedSessions);
+        state.goingCircles = new Set(state.undo.goingCircles);
+        state.undo = null;
+        toast.hidden = true;
+        clearTimeout(state.toastTimer);
+        renderActivities();
+        persist();
+      });
+
+      document.addEventListener("click", event => {
+        if (!state.openMenu || event.target.closest(".action-wrap")) return;
+        state.openMenu = null;
+        renderActivities();
+      });
+
+      render();
+    })();
+  </script>
 </body></html>
