@@ -1,0 +1,599 @@
+<!doctype html>
+<html lang="en" data-live="figma" data-cafe="hours">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Citizen Café — Desktop Home · Current Class</title>
+<!--
+  Desktop Home, base screen: Current Class state only.
+  Reference: "Hub HP WEB UI1.png" (1024 × 638 export). No Figma frame was available,
+  so the build targets a 1440 × 900 frame and scales the reference proportions to it.
+
+  Fonts are local and gitignored (licensed): Fedra from ../shared-assets/fonts,
+  Assistant static weights from ./assets/fonts.
+
+  Review controls are on by default. Hide collapses the card; the Review tab opens it again.
+  Optional demo clock: ?now=2026-10-14T18:11:45+03:00
+-->
+<link rel="stylesheet" href="css/home.css?v=20261111c">
+</head>
+<body>
+<div class="app">
+
+  <aside class="sidebar" aria-label="Main navigation">
+    <a class="sidebar__logo" href="#" aria-label="Citizen Café — Home">
+      <img src="assets/icons/citizen-cafe-logo.png?v=20261104o" alt="" width="355" height="321">
+    </a>
+    <nav class="nav">
+      <a class="nav__item is-current" href="#" aria-current="page">
+        <svg class="nav__icon" width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true"><path d="M3 9.6L11 3l8 6.6V19h-5.2v-5.2H8.2V19H3z" fill="#FFE300" stroke="#373230" stroke-width="1.2" stroke-linejoin="round"/></svg>
+        <span class="nav__label">Home</span>
+      </a>
+      <a class="nav__item" href="#">
+        <svg class="nav__icon" width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true"><rect x="3" y="4.5" width="16" height="14.5" rx="1.5" stroke="currentColor" stroke-width="1.1"/><path d="M3 8.5h16M7.5 2.5v4M14.5 2.5v4" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg>
+        <span class="nav__label">Calendar</span>
+      </a>
+      <a class="nav__item" href="#">
+        <svg class="nav__icon" width="24" height="22" viewBox="0 0 24 22" fill="none" aria-hidden="true"><circle cx="9" cy="11" r="7" stroke="currentColor" stroke-width="1.1"/><circle cx="15" cy="11" r="7" stroke="currentColor" stroke-width="1.1"/></svg>
+        <span class="nav__label">Circles</span>
+      </a>
+      <a class="nav__item" href="#">
+        <svg class="nav__icon" width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true"><path d="M11 6.2C9 4.6 6 4.2 3 4.6v12.6c3-.4 6 0 8 1.6 2-1.6 5-2 8-1.6V4.6c-3-.4-6 0-8 1.6zM11 6.2v12.6" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/></svg>
+        <span class="nav__label">Magazine</span>
+      </a>
+    </nav>
+    <a class="nav__item nav__item--settings" href="#">
+      <svg class="nav__icon" width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.1"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/></svg>
+      <span class="nav__label">Settings</span>
+    </a>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <h1 class="greeting">Good morning, <b>Yael</b></h1>
+      <div class="topbar__actions">
+        <button class="icon-btn" type="button" aria-label="Notifications">
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6.5 16.5V11a5.5 5.5 0 0111 0v5.5l1.5 2h-14l1.5-2z" stroke="#9c9895" stroke-width="1" stroke-linejoin="round"/><path d="M10 20.5a2 2 0 004 0" stroke="#9c9895" stroke-width="1.1" stroke-linecap="round"/></svg>
+        </button>
+        <button class="icon-btn" type="button" aria-label="Messages">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M21 3.5L3.5 10.6l6.8 2.6 2.6 6.8L21 3.5z" fill="#FFE300" stroke="#373230" stroke-width="1" stroke-linejoin="round"/><path d="M10.3 13.2L21 3.5" stroke="#373230" stroke-width="1"/></svg>
+        </button>
+        <button class="profile" type="button" aria-label="Your profile">
+          <img src="assets/img/cafe-avatar-demo-portrait.png" alt="">
+        </button>
+      </div>
+    </header>
+
+    <main class="content hub-pass">
+
+        <section class="section section--class" aria-labelledby="my-class-title">
+          <div class="section__head">
+            <h2 class="section__title" id="my-class-title">My Class <span class="section__tag" data-past-tag hidden>Past course</span></h2>
+            <div class="section__tools">
+              <button class="section__return" type="button" data-back hidden><svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M13 8H3.5M6.5 4.5L3 8l3.5 3.5" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/></svg> Back to current class</button>
+              <div class="past" data-past>
+              <button class="past__btn" type="button" aria-haspopup="menu" aria-expanded="false" aria-controls="past-menu">Past courses
+                <svg width="20" height="20" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M4 6.5l4 4 4-4" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+              <div class="past__menu" id="past-menu" role="menu" hidden></div>
+              </div>
+            </div>
+          </div>
+
+          <article class="card class-card" data-class-card style="--level:#90C7FC" aria-label="My Class: Light Blue">
+            <div class="class-card__top">
+              <div class="class-id">
+                <span class="lvl" data-level-icon></span>
+                <span class="class-mark-wrap">
+                  <img class="class-mark" src="assets/icons/hub/level.svg" alt="" width="153.407" height="153.407">
+                  <span class="class-mark__label" data-level-label>Light-Blue</span>
+                </span>
+                <div class="class-id__copy">
+                  <h3 class="class-id__name"><span class="class-id__current">My class</span><span data-course-name>Light Blue</span></h3>
+                  <p class="class-meta" data-course-schedule>Sun &amp; Wed 20:30 // with Noam</p>
+                  <p class="class-meta class-meta--term" data-course-term>November semester 2026</p>
+                </div>
+              </div>
+              <div class="class-card__tools" aria-label="Class tools">
+                <a class="tool-tile" href="#">
+                  <img class="tool-tile__icon-img tool-tile__icon-img--pods" src="assets/icons/hub/class-pods.svg" alt="" width="48.987" height="48.987">
+                  <span class="tool-tile__title">Class-pods</span>
+                  <span class="tool-tile__desc">Recap n’Drill</span>
+                </a>
+                <a class="tool-tile" href="#">
+                  <img class="tool-tile__icon-img" src="assets/icons/hub/practice.svg" alt="" width="39.642" height="23.733">
+                  <span class="tool-tile__title">Practice tools</span>
+                  <span class="tool-tile__desc">Grow your vocab</span>
+                </a>
+                <a class="tool-tile" href="#">
+                  <img class="tool-tile__icon-img" src="assets/icons/figma-class/flashcards.svg" alt="" width="29.8" height="32.781">
+                  <span class="tool-tile__title">Class notebook</span>
+                  <span class="tool-tile__desc">Old and new, all in one</span>
+                </a>
+                <a class="tool-tile" href="#">
+                  <img class="tool-tile__icon-img" src="assets/icons/hub/materials.svg" alt="" width="36.74" height="36.74">
+                  <span class="tool-tile__title">Materials</span>
+                  <span class="tool-tile__desc">Old and new, all in one</span>
+                </a>
+              </div>
+            </div>
+            <div class="class-card__info">
+
+              <div class="stage" data-stage="current">
+                <div class="next-class" data-next-block>
+                  <div class="next-class__copy">
+                    <svg class="next-class__cal" width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.2" rx="2" stroke="currentColor" stroke-width="1.4"/><path d="M3.5 9.5h17M8 3.4v3.2M16 3.4v3.2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+                    <p class="next-class__label">Next Class</p>
+                    <p class="next-class__when" data-next-class>Wed, Oct 14 · 20:30</p>
+                    <p class="next-class__live">Class has started!</p>
+                  </div>
+                  <span class="next-class__rule" aria-hidden="true"></span>
+                  <div class="time" role="timer" data-timer aria-live="off"></div>
+                  <div class="time-bar" data-time-bar>
+                    <div class="time-bar__main">
+                      <div class="time-bar__row">
+                        <p class="time-bar__clock" data-time-bar-clock>02:18:15</p>
+                        <p class="time-bar__lesson">Lesson 12</p>
+                      </div>
+                      <div class="time-bar__track" aria-hidden="true"><span class="time-bar__fill"></span></div>
+                    </div>
+                    <p class="time-bar__note">Join opens 15 min before class</p>
+                  </div>
+                  <a class="btn btn--primary next-class__join" href="#">Join Now!</a>
+                </div>
+                <div class="next-line" data-next-line hidden>
+                  <p class="next-line__when"><span class="next-class__label">Next Class</span> <span data-next-inline>Wed, Oct 14 · 20:30</span><span class="next-line__live">Class has started!</span></p>
+                  <p class="next-line__count"><span class="next-line__starts">starts in</span> <span class="time time--compact" role="timer" data-timer aria-live="off"></span><a class="btn btn--primary next-line__join" href="#">Join now</a></p>
+                </div>
+                <div class="reenroll" data-reenroll hidden>
+                  <img class="reenroll__wash" data-wash="continue" src="assets/icons/reenroll/wash-continue.svg" alt="" width="182" height="182">
+                  <img class="reenroll__wash" data-wash="date" src="assets/icons/reenroll/wash-date.svg" alt="" width="231" height="231">
+                  <img class="reenroll__wash" data-wash="last" src="assets/icons/reenroll/wash-last.svg" alt="" width="182" height="182">
+                  <div class="reenroll__copy">
+                    <p class="reenroll__title"><span class="reenroll__title-existing">December registration is open!</span><span class="reenroll__title-figma">Registration is open!</span><span class="reenroll__line" data-line="open">Next semester registration is open!</span><span class="reenroll__line" data-line="continue">Continue with your class next semester</span><span class="reenroll__line" data-line="date">Next semester starts on December 6</span><span class="reenroll__line" data-line="last">Last spots for December semester!</span></p>
+                    <p class="reenroll__saved"><span class="reenroll__badge"><img src="assets/icons/reenroll/check.svg" alt="" width="19" height="19"><span class="reenroll__tick">✓</span></span> Your spot is saved!</p>
+                    <div class="reenroll__chapter">
+                      <p class="reenroll__label">Your next chapter:</p>
+                      <p class="reenroll__level"><span class="lvl" data-next-icon></span><img class="reenroll__mark" src="assets/icons/figma-class/next-level.svg" alt="" width="30" height="30"><img class="reenroll__glyph" data-mark="24" src="assets/icons/reenroll/mark-24.svg" alt="" width="24" height="24"><img class="reenroll__glyph" data-mark="28" src="assets/icons/reenroll/mark-28.svg" alt="" width="28" height="28"><img class="reenroll__glyph" data-mark="36" src="assets/icons/reenroll/mark-36.svg" alt="" width="36" height="36"><span class="reenroll__name">Blue Level<span class="reenroll__term">December 2026</span></span></p>
+                    </div>
+                  </div>
+                  <button class="btn btn--primary" type="button" data-choose><span class="reenroll__cta">Choose my class</span><span class="reenroll__cta-saved">Manage my enrollment</span></button>
+                </div>
+              </div>
+
+              <div class="stage stage--past" data-stage="past" hidden>
+                <button class="cert" type="button" data-view-cert>
+                  <span class="cert__mark" aria-hidden="true"><img src="assets/icons/certificate-ribbon.svg" alt="" width="39.2695" height="58.9417"></span>
+                  <span class="cert__copy">
+                    <span class="cert__kicker">Certificate of completion</span>
+                    <span class="cert__level" data-cert-level>Light Blue Level</span>
+                    <span class="cert__issued" data-cert-issued>Issued 28 Feb 2027·No. CC-LB-2611-0104</span>
+                  </span>
+                </button>
+              </div>
+            </div>
+            <span class="pod-card__title" data-pod-title hidden>Light Blue Level</span>
+          </article>
+        </section>
+
+        <div class="lower">
+        <section class="section section--live" aria-labelledby="live-title">
+          <h2 class="section__title" id="live-title">Live practice</h2>
+          <div class="live-row">
+            <article class="card live-card live-card--cafe" aria-label="Cafe">
+              <img class="live-card__photo" src="assets/img/hub/cafe-live.jpg" alt="">
+              <img class="live-card__cups" src="assets/icons/cafe-cups.svg" alt="" width="111" height="41">
+              <span class="cafe-badge" data-cafe-badge>
+                <img class="cafe-badge__dot" src="assets/icons/hub/live-dot.svg" alt="" width="15" height="15">
+                <span data-cafe-badge-label>Live now</span>
+              </span>
+              <div class="live-card__body">
+                <h3 class="live-card__title">Cafe</h3>
+                <p class="live-dur"><img src="assets/icons/hub/clock-live.svg" alt="" width="24" height="24"><span>6 min</span></p>
+                <p class="live-card__kicker">1-ON-1 · 6 MIN</p>
+                <p class="live-card__text">Spontanous 1-on-1<br>Hebrew conversations</p>
+              </div>
+              <p class="cafe-hours" data-cafe-hours>Open until 20:00 <span class="cafe-tz" data-cafe-tz></span></p>
+              <div class="live-card__foot">
+                <a class="btn btn--primary cafe-find" href="#">Start a conversation <span aria-hidden="true">→</span></a>
+                <span class="avatars live-faces" aria-hidden="true">
+                  <span class="av" style="--ring:#F7AAF3"><img src="assets/img/hub/cafe-face-1.png" alt=""></span>
+                  <span class="av" style="--ring:#FFE300"><img src="assets/img/hub/cafe-face-2.png" alt=""></span>
+                  <span class="av" style="--ring:#90C7FC"><img src="assets/img/hub/cafe-face-3.png" alt=""></span>
+                  <span class="av" style="--ring:#F69700"><img src="assets/img/hub/cafe-face-4.png" alt=""></span>
+                  <span class="av av--more" style="--ring:#EAE9DE">+56</span>
+                </span>
+                <span class="avatars cafe-people" data-cafe-people hidden></span>
+                <button class="btn cafe-hours-btn" type="button" data-cafe-hours-open>See opening hours</button>
+              </div>
+            </article>
+
+            <article class="card live-card live-card--gym" aria-label="Gym">
+              <img class="live-card__orb" src="assets/icons/gym-orb.svg" alt="" width="305" height="305">
+              <img class="live-card__wash" src="assets/icons/hub/gym-mark.svg" alt="" width="204" height="188">
+              <img class="live-card__ellipse" src="assets/icons/hub/gym-mark-live.svg?v=20261109g" alt="" width="264" height="243">
+              <span class="gym-badge">Closed</span>
+              <span class="gym-badge gym-badge--live"><img src="assets/icons/hub/live-dot.svg" alt="" width="15" height="15">Live now</span>
+              <img class="gym-mark-active" src="assets/icons/hub/gym-active/gym-mark-black.svg" alt="" width="223.053" height="210.945">
+              <div class="gym-side">
+                <div class="gym-ring">
+                  <img class="gym-ring__track" src="assets/icons/hub/gym-active/ring-track.svg" alt="" width="104" height="104">
+                  <img class="gym-ring__arc" src="assets/icons/hub/gym-active/ring-arc.svg" alt="" width="103.933" height="103.933">
+                  <img class="gym-ring__face" src="assets/icons/hub/gym-active/ring-face.svg" alt="" width="112.905" height="112.905">
+                  <p class="gym-ring__time"><b>15</b><span>min left</span></p>
+                </div>
+                <span class="avatars gym-faces" aria-hidden="true">
+                  <span class="av" style="--ring:#F7AAF3"><img src="assets/img/hub/gym-active/face-1.png" alt="" width="30" height="30"></span>
+                  <span class="av" style="--ring:#90C7FC"><img src="assets/img/hub/gym-active/face-2.png" alt="" width="30" height="30"></span>
+                  <span class="av" style="--ring:#F69700"><img src="assets/img/hub/gym-active/face-3.png" alt="" width="30" height="30"></span>
+                  <span class="av av--more">+56</span>
+                </span>
+              </div>
+              <div class="live-card__body">
+                <div class="live-card__heading">
+                  <h3 class="live-card__title">Gym</h3>
+                  <span class="live-card__live"><img src="assets/icons/gym-live-dot.svg?v=20261104j" alt="" width="8" height="8">Open now</span>
+                </div>
+                <p class="live-dur"><img src="assets/icons/hub/clock-live.svg" alt="" width="24" height="24"><span>17 min</span></p>
+                <p class="live-card__text">Short, guided Hebrew practice</p>
+                <p class="live-card__next">Next session · Today, 18:00</p>
+                <p class="live-card__jump">Jump in anytime</p>
+                <div class="live-card__progress">
+                  <p class="live-card__times"><span>Started at 18:00</span><span class="live-card__left" data-left="early">18 min left</span><span class="live-card__left" data-left="late">4 min left</span></p>
+                  <span class="live-card__bar" role="presentation"></span>
+                </div>
+              </div>
+              <img class="live-card__art" src="assets/icons/gym-paddles.svg" alt="">
+              <img class="live-card__art live-card__art--figma" src="assets/icons/gym-paddles-figma-black.svg" alt="" width="73" height="67">
+              <img class="live-card__art live-card__art--active" src="assets/icons/gym-paddles-figma-active.svg" alt="" width="73" height="67">
+              <div class="live-card__foot live-card__foot--end">
+                <span class="avatars live-card__people" aria-hidden="true">
+                  <span class="av" style="--ring:#449CFC"><img src="assets/img/avatar-1.jpg" alt=""></span>
+                  <span class="av" style="--ring:#F7AAF3"><img src="assets/img/avatar-2.jpg" alt=""></span>
+                  <span class="av" style="--ring:#F69700"><img src="assets/img/avatar-3.jpg" alt=""></span>
+                  <span class="av" style="--ring:#DAEF81"><img src="assets/img/avatar-4.jpg" alt=""></span>
+                  <span class="av av--more" style="--ring:#FFE300">+56</span>
+                </span>
+                <a class="btn btn--outline" href="#">See schedule <span class="btn__arrow" aria-hidden="true">→</span><img class="btn__arrow-icon" src="assets/icons/hub/gym-active/schedule-arrow.svg" alt="" width="9.8996" height="10.0788"></a>
+                <a class="btn btn--primary live-card__join" href="#">Join now <span aria-hidden="true">→</span></a>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section class="section section--community" aria-labelledby="community-title">
+          <div class="community-heads">
+            <h2 class="section__title" id="community-title">Live events</h2>
+            <h2 class="section__title">Magazine</h2>
+          </div>
+          <div class="community-row">
+            <article class="card circle-card" data-circle aria-label="As short History of the word Yalla">
+              <div class="circle-card__photo">
+                <img class="circle-card__img" src="assets/img/hub/circle.jpg" alt="">
+                <img class="circle-card__hostpic" src="assets/img/hub/circle-host.png" alt="">
+                <p class="circle-card__pill"><b>Host:</b> <span data-circle-host>Nitzan Wittler</span></p>
+              </div>
+              <div class="circle-card__stage">
+                <div class="circle-card__disc">
+                  <img class="circle-card__scene" src="assets/img/circles-event-clean.jpg" alt="">
+                  <img class="circle-card__mark" src="assets/img/circles-mark.png" alt="">
+                  <img class="circle-card__portrait" src="assets/img/circle-host.png" alt="">
+                </div>
+                <p class="circle-card__pill"><b>Host:</b> Nitzan Wittler</p>
+              </div>
+              <div class="circle-card__body">
+                <h3 class="circle-card__title" data-circle-title>As short History of the word Yalla</h3>
+                <p class="circle-card__blurb" data-circle-blurb>Place-holder text, explains about the circle, gives a little background...</p>
+                <p class="circle-card__meta">
+                  <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="1.6" fill="currentColor"/><path d="M5.2 5.2a4 4 0 000 5.6M10.8 5.2a4 4 0 010 5.6M3.1 3.1a7 7 0 000 9.8M12.9 3.1a7 7 0 010 9.8" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+                  <span data-circle-when>Live event · Jan 15 · 20:30 IL</span>
+                </p>
+                <p class="circle-card__people">
+                  <span class="av av--sm av--plain"><img data-circle-avatar src="assets/img/avatar-3.jpg" alt=""></span>
+                  <span class="circle-card__host" data-circle-host>With Yael</span>
+                  <span aria-hidden="true">·</span>
+                  <span class="avatars avatars--sm" data-circle-enrolled aria-label="57 enrolled">
+                    <span class="av av--sm" style="--ring:#449CFC"><img src="assets/img/avatar-1.jpg" alt=""></span>
+                    <span class="av av--sm" style="--ring:#F7AAF3"><img src="assets/img/avatar-2.jpg" alt=""></span>
+                    <span class="av av--sm av--more" data-circle-count>+55</span>
+                  </span>
+                </p>
+              </div>
+              <span class="circle-card__date" data-circle-date aria-hidden="true">JAN<br>15</span>
+              <button class="card-hit" type="button" data-circle-open aria-label="Open details: The Imposter Syndrome of the Judean Desert"></button>
+              <button class="circle-card__go" type="button" data-circle-next aria-label="RSVP">RSVP</button>
+            </article>
+
+            <article class="card mag-card" aria-label="Magazine">
+              <img class="mag-card__img" src="assets/img/hub/magazine.jpg" alt="">
+              <div class="mag-card__body">
+                <h3 class="mag-card__title">Breathing Space: Where City Meets Nature</h3>
+                <p class="mag-card__text">Placeholder...</p>
+              </div>
+              <button class="card-hit" type="button" data-open="magazine" aria-label="Open Magazine"></button>
+              <button class="mag-card__go" type="button" data-open="magazine" aria-label="Open Magazine">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M4.5 11.5l7-7M6 4.5h5.5V10" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+            </article>
+          </div>
+          <div class="dots" aria-hidden="true"><i class="is-active"></i><i></i><i></i></div>
+        </section>
+        </div>
+
+      <aside class="secondary" aria-labelledby="week-title">
+        <div class="agenda-head">
+          <h2 class="section__title" id="week-title">Coming up</h2>
+          <div class="agenda-head__tools">
+          <div class="agenda-filter">
+            <button class="agenda-filter__btn" type="button" aria-haspopup="listbox" aria-expanded="false" aria-controls="agenda-filter-menu">
+              <span data-agenda-filter-label>All</span>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 6l4.5 4.5L12.5 6" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <div class="agenda-filter__menu" id="agenda-filter-menu" role="listbox" aria-label="Agenda view" hidden>
+              <button class="agenda-filter__option" type="button" role="option" data-agenda-filter="all" aria-selected="true">All</button>
+              <button class="agenda-filter__option" type="button" role="option" data-agenda-filter="plan">My plan</button>
+              <button class="agenda-filter__option" type="button" role="option" data-agenda-filter="lesson">My lessons</button>
+              <button class="agenda-filter__option" type="button" role="option" data-agenda-filter="gym">Gym</button>
+              <button class="agenda-filter__option" type="button" role="option" data-agenda-filter="circle">Circles</button>
+              <button class="agenda-filter__option" type="button" role="option" data-agenda-filter="cafe">Café</button>
+            </div>
+          </div>
+          <div class="week-nav">
+            <button type="button" aria-label="Previous"><svg width="22" height="22" viewBox="0 0 16 16" fill="none"><path d="M10 3.5L5.5 8l4.5 4.5" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+            <button type="button" aria-label="Next"><svg width="22" height="22" viewBox="0 0 16 16" fill="none"><path d="M6 3.5L10.5 8 6 12.5" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+          </div>
+          </div>
+        </div>
+
+        <div class="agenda-wrap">
+        <div class="agenda" tabindex="0">
+          <p class="agenda-empty" data-agenda-empty hidden>Nothing scheduled</p>
+          <section class="agenda-day is-today" aria-label="Sunday 13, today">
+            <p class="agenda-day__date"><span>Sun</span><b>13</b></p>
+            <ul class="agenda-day__list">
+              <li class="agenda-gym" data-gym data-kind="gym">
+                <div class="agenda-row is-live">
+                  <span class="live-badge">Live</span>
+                  <span class="agenda-row__name">Gym</span>
+                  <span class="agenda-row__time">6 PM</span>
+                  <button class="agenda-row__expand" type="button" aria-expanded="false" aria-controls="gym-sun-6" aria-label="Show blocks"><svg width="20" height="20" viewBox="0 0 16 16" fill="none"><path d="M3.5 6l4.5 4.5L12.5 6" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+                  <button class="plan-btn" type="button" data-gym-add aria-pressed="false" aria-label="Add to my plan"><svg width="18" height="18" viewBox="0 0 16 16" fill="none"><path d="M8 2.5v11M2.5 8h11" stroke="currentColor" stroke-width="1" stroke-linecap="round"/></svg></button>
+                  <span class="plan-added" data-gym-count hidden>1/3 added</span>
+                  <a class="btn btn--primary btn--sm agenda-row__join" href="#">Join now</a>
+                </div>
+                <ul class="gym-blocks" id="gym-sun-6" hidden>
+                  <li class="agenda-row gym-block"><span class="agenda-row__name">6:00</span><span class="agenda-row__time">17 min</span><button class="plan-btn" type="button" data-block aria-pressed="false" aria-label="Add to my plan"><svg width="18" height="18" viewBox="0 0 16 16" fill="none"><path d="M8 2.5v11M2.5 8h11" stroke="currentColor" stroke-width="1" stroke-linecap="round"/></svg></button></li>
+                  <li class="agenda-row gym-block"><span class="agenda-row__name">6:17</span><span class="agenda-row__time">17 min</span><button class="plan-btn" type="button" data-block aria-pressed="false" aria-label="Add to my plan"><svg width="18" height="18" viewBox="0 0 16 16" fill="none"><path d="M8 2.5v11M2.5 8h11" stroke="currentColor" stroke-width="1" stroke-linecap="round"/></svg></button></li>
+                  <li class="agenda-row gym-block"><span class="agenda-row__name">6:34</span><span class="agenda-row__time">17 min</span><button class="plan-btn" type="button" data-block aria-pressed="false" aria-label="Add to my plan"><svg width="18" height="18" viewBox="0 0 16 16" fill="none"><path d="M8 2.5v11M2.5 8h11" stroke="currentColor" stroke-width="1" stroke-linecap="round"/></svg></button></li>
+                </ul>
+              </li>
+              <li class="agenda-gym" data-gym data-kind="gym">
+                <div class="agenda-row">
+                  <span class="agenda-row__name">Gym</span>
+                  <span class="agenda-row__time">8 PM</span>
+                  <button class="agenda-row__expand" type="button" aria-expanded="false" aria-controls="gym-sun-8" aria-label="Show blocks"><svg width="20" height="20" viewBox="0 0 16 16" fill="none"><path d="M3.5 6l4.5 4.5L12.5 6" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+                  <button class="plan-btn" type="button" data-gym-add aria-label="Add to my plan"><svg width="18" height="18" viewBox="0 0 16 16" fill="none"><path d="M8 2.5v11M2.5 8h11" stroke="currentColor" stroke-width="1" stroke-linecap="round"/></svg></button>
+                  <span class="plan-added" data-gym-count hidden>1/3 added</span>
+                </div>
+                <ul class="gym-blocks" id="gym-sun-8" hidden>
+                  <li class="agenda-row gym-block"><span class="agenda-row__name">8:00</span><span class="agenda-row__time">17 min</span><button class="plan-btn" type="button" data-block aria-pressed="false" aria-label="Add to my plan"><svg width="18" height="18" viewBox="0 0 16 16" fill="none"><path d="M8 2.5v11M2.5 8h11" stroke="currentColor" stroke-width="1" stroke-linecap="round"/></svg></button></li>
+                  <li class="agenda-row gym-block"><span class="agenda-row__name">8:17</span><span class="agenda-row__time">17 min</span><button class="plan-btn" type="button" data-block aria-pressed="false" aria-label="Add to my plan"><svg width="18" height="18" viewBox="0 0 16 16" fill="none"><path d="M8 2.5v11M2.5 8h11" stroke="currentColor" stroke-width="1" stroke-linecap="round"/></svg></button></li>
+                  <li class="agenda-row gym-block"><span class="agenda-row__name">8:34</span><span class="agenda-row__time">17 min</span><button class="plan-btn" type="button" data-block aria-pressed="false" aria-label="Add to my plan"><svg width="18" height="18" viewBox="0 0 16 16" fill="none"><path d="M8 2.5v11M2.5 8h11" stroke="currentColor" stroke-width="1" stroke-linecap="round"/></svg></button></li>
+                </ul>
+              </li>
+              <li class="agenda-row" data-kind="cafe">
+                <span class="agenda-row__name">Café</span>
+                <span class="agenda-row__time">7 PM</span>
+                <button class="plan-btn" type="button" aria-pressed="false" aria-label="Add to my plan"><svg width="18" height="18" viewBox="0 0 16 16" fill="none"><path d="M8 2.5v11M2.5 8h11" stroke="currentColor" stroke-width="1" stroke-linecap="round"/></svg></button>
+              </li>
+              <li class="agenda-row" data-kind="lesson">
+                <span class="agenda-row__name">Lesson 12</span>
+                <span class="agenda-row__time">10 PM</span>
+                <button class="plan-btn" type="button" aria-label="Add to my plan"><svg width="18" height="18" viewBox="0 0 16 16" fill="none"><path d="M8 2.5v11M2.5 8h11" stroke="currentColor" stroke-width="1" stroke-linecap="round"/></svg></button>
+              </li>
+            </ul>
+          </section>
+
+          <section class="agenda-day" aria-label="Monday 14">
+            <p class="agenda-day__date"><span>Mon</span><b>14</b></p>
+            <ul class="agenda-day__list">
+              <li class="agenda-gym" data-gym data-kind="gym">
+                <div class="agenda-row">
+                  <span class="agenda-row__name">Gym</span>
+                  <span class="agenda-row__time">6 PM</span>
+                  <button class="agenda-row__expand" type="button" aria-expanded="false" aria-controls="gym-mon-6" aria-label="Show blocks"><svg width="20" height="20" viewBox="0 0 16 16" fill="none"><path d="M3.5 6l4.5 4.5L12.5 6" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+                  <button class="plan-btn" type="button" data-gym-add aria-label="Add to my plan"><svg width="18" height="18" viewBox="0 0 16 16" fill="none"><path d="M8 2.5v11M2.5 8h11" stroke="currentColor" stroke-width="1" stroke-linecap="round"/></svg></button>
+                  <span class="plan-added" data-gym-count hidden>1/3 added</span>
+                </div>
+                <ul class="gym-blocks" id="gym-mon-6" hidden>
+                  <li class="agenda-row gym-block"><span class="agenda-row__name">6:00</span><span class="agenda-row__time">17 min</span><button class="plan-btn" type="button" data-block aria-pressed="false" aria-label="Add to my plan"><svg width="18" height="18" viewBox="0 0 16 16" fill="none"><path d="M8 2.5v11M2.5 8h11" stroke="currentColor" stroke-width="1" stroke-linecap="round"/></svg></button></li>
+                  <li class="agenda-row gym-block"><span class="agenda-row__name">6:17</span><span class="agenda-row__time">17 min</span><button class="plan-btn" type="button" data-block aria-pressed="false" aria-label="Add to my plan"><svg width="18" height="18" viewBox="0 0 16 16" fill="none"><path d="M8 2.5v11M2.5 8h11" stroke="currentColor" stroke-width="1" stroke-linecap="round"/></svg></button></li>
+                  <li class="agenda-row gym-block"><span class="agenda-row__name">6:34</span><span class="agenda-row__time">17 min</span><button class="plan-btn" type="button" data-block aria-pressed="false" aria-label="Add to my plan"><svg width="18" height="18" viewBox="0 0 16 16" fill="none"><path d="M8 2.5v11M2.5 8h11" stroke="currentColor" stroke-width="1" stroke-linecap="round"/></svg></button></li>
+                </ul>
+              </li>
+              <li class="agenda-gym" data-gym data-kind="gym">
+                <div class="agenda-row">
+                  <span class="agenda-row__name">Gym</span>
+                  <span class="agenda-row__time">8 PM</span>
+                  <button class="agenda-row__expand" type="button" aria-expanded="false" aria-controls="gym-mon-8" aria-label="Show blocks"><svg width="20" height="20" viewBox="0 0 16 16" fill="none"><path d="M3.5 6l4.5 4.5L12.5 6" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+                  <button class="plan-btn" type="button" data-gym-add aria-label="Add to my plan" hidden><svg width="18" height="18" viewBox="0 0 16 16" fill="none"><path d="M8 2.5v11M2.5 8h11" stroke="currentColor" stroke-width="1" stroke-linecap="round"/></svg></button>
+                  <span class="plan-added" data-gym-count>Added</span>
+                </div>
+                <ul class="gym-blocks" id="gym-mon-8" hidden>
+                  <li class="agenda-row gym-block"><span class="agenda-row__name">8:00</span><span class="agenda-row__time">17 min</span><button class="plan-btn is-added" type="button" data-block aria-pressed="true" aria-label="Remove from my plan"><svg width="18" height="18" viewBox="0 0 16 16" fill="none"><path d="M8 2.5v11M2.5 8h11" stroke="currentColor" stroke-width="1" stroke-linecap="round"/></svg></button></li>
+                  <li class="agenda-row gym-block"><span class="agenda-row__name">8:17</span><span class="agenda-row__time">17 min</span><button class="plan-btn is-added" type="button" data-block aria-pressed="true" aria-label="Remove from my plan"><svg width="18" height="18" viewBox="0 0 16 16" fill="none"><path d="M8 2.5v11M2.5 8h11" stroke="currentColor" stroke-width="1" stroke-linecap="round"/></svg></button></li>
+                  <li class="agenda-row gym-block"><span class="agenda-row__name">8:34</span><span class="agenda-row__time">17 min</span><button class="plan-btn is-added" type="button" data-block aria-pressed="true" aria-label="Remove from my plan"><svg width="18" height="18" viewBox="0 0 16 16" fill="none"><path d="M8 2.5v11M2.5 8h11" stroke="currentColor" stroke-width="1" stroke-linecap="round"/></svg></button></li>
+                </ul>
+              </li>
+              <li class="agenda-row" data-kind="circle">
+                <span class="agenda-row__name">Circle</span>
+                <span class="agenda-row__time">9 PM</span>
+                <button class="plan-btn is-added" type="button" aria-pressed="true" aria-label="Remove from my plan"><svg width="18" height="18" viewBox="0 0 16 16" fill="none"><path d="M8 2.5v11M2.5 8h11" stroke="currentColor" stroke-width="1" stroke-linecap="round"/></svg></button>
+              </li>
+            </ul>
+          </section>
+
+          <section class="agenda-day" aria-label="Tuesday 15">
+            <p class="agenda-day__date"><span>Tue</span><b>15</b></p>
+            <ul class="agenda-day__list">
+              <li class="agenda-row" data-kind="lesson">
+                <span class="agenda-row__name">Lesson 12</span>
+                <span class="agenda-row__time">8:30 PM</span>
+                <button class="plan-btn" type="button" aria-label="Add to my plan"><svg width="18" height="18" viewBox="0 0 16 16" fill="none"><path d="M8 2.5v11M2.5 8h11" stroke="currentColor" stroke-width="1" stroke-linecap="round"/></svg></button>
+              </li>
+              <li class="agenda-gym" data-gym data-kind="gym">
+                <div class="agenda-row">
+                  <span class="agenda-row__name">Gym</span>
+                  <span class="agenda-row__time">6 PM</span>
+                  <button class="agenda-row__expand" type="button" aria-expanded="false" aria-controls="gym-tue-6" aria-label="Show blocks"><svg width="20" height="20" viewBox="0 0 16 16" fill="none"><path d="M3.5 6l4.5 4.5L12.5 6" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+                  <button class="plan-btn" type="button" data-gym-add aria-label="Add to my plan" hidden><svg width="18" height="18" viewBox="0 0 16 16" fill="none"><path d="M8 2.5v11M2.5 8h11" stroke="currentColor" stroke-width="1" stroke-linecap="round"/></svg></button>
+                  <span class="plan-added" data-gym-count>Added</span>
+                </div>
+                <ul class="gym-blocks" id="gym-tue-6" hidden>
+                  <li class="agenda-row gym-block"><span class="agenda-row__name">6:00</span><span class="agenda-row__time">17 min</span><button class="plan-btn is-added" type="button" data-block aria-pressed="true" aria-label="Remove from my plan"><svg width="18" height="18" viewBox="0 0 16 16" fill="none"><path d="M8 2.5v11M2.5 8h11" stroke="currentColor" stroke-width="1" stroke-linecap="round"/></svg></button></li>
+                  <li class="agenda-row gym-block"><span class="agenda-row__name">6:17</span><span class="agenda-row__time">17 min</span><button class="plan-btn is-added" type="button" data-block aria-pressed="true" aria-label="Remove from my plan"><svg width="18" height="18" viewBox="0 0 16 16" fill="none"><path d="M8 2.5v11M2.5 8h11" stroke="currentColor" stroke-width="1" stroke-linecap="round"/></svg></button></li>
+                  <li class="agenda-row gym-block"><span class="agenda-row__name">6:34</span><span class="agenda-row__time">17 min</span><button class="plan-btn is-added" type="button" data-block aria-pressed="true" aria-label="Remove from my plan"><svg width="18" height="18" viewBox="0 0 16 16" fill="none"><path d="M8 2.5v11M2.5 8h11" stroke="currentColor" stroke-width="1" stroke-linecap="round"/></svg></button></li>
+                </ul>
+              </li>
+            </ul>
+          </section>
+        </div>
+        <div class="agenda-foot">
+          <a class="calendar-link" href="#">view full calendar<svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8h9M9 4.5L12.5 8 9 11.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+        </div>
+        </div>
+
+        <article class="card method-card" aria-label="Inside the method with Noeat">
+          <h3 class="method-card__title">Inside the method<span> with Noeat</span></h3>
+          <div class="method-card__panel">
+            <div class="method-card__top">
+              <a class="method-card__video" href="#" aria-label="Play: When your brain steps aside, 3 minutes">
+                <img src="assets/img/hub/method.jpg" alt="">
+                <span class="play" aria-hidden="true"><img src="assets/icons/hub/play-method.svg" alt="" width="52" height="52"></span>
+              </a>
+              <p class="method-card__line"><span class="method-card__quote">“When your brain steps aside”</span><span class="method-card__rule"><img src="assets/icons/hub/method-line.svg" alt="" width="23" height="1"></span><span class="method-card__meta">3 MIN</span></p>
+            </div>
+            <div class="method-card__foot">
+              <a class="btn btn--outline" href="#">Watch all</a>
+            </div>
+          </div>
+        </article>
+      </aside>
+      <div class="content__rule" aria-hidden="true"></div>
+    </main>
+  </div>
+</div>
+
+<aside class="review" id="review">
+  <button class="review__tab" type="button" aria-expanded="true" aria-controls="review-card">Review</button>
+  <div class="review__card" id="review-card">
+    <div class="review__top">
+      <p class="review__viewport" data-viewport>Viewport — × —</p>
+      <div class="review__head">
+        <p class="review__kicker">Review</p>
+        <button class="review__hide" type="button" data-review-hide>Hide</button>
+      </div>
+    </div>
+    <div class="review__fields">
+    <fieldset>
+      <legend>Re-enrollment</legend>
+      <label><input type="radio" name="reenroll" value="closed" checked> Closed</label>
+      <label><input type="radio" name="reenroll" value="open" data-stage="open"> Registration open</label>
+      <label><input type="radio" name="reenroll" value="open" data-stage="continue"> Continue</label>
+      <label><input type="radio" name="reenroll" value="open" data-stage="date"> Starts Dec 6</label>
+      <label><input type="radio" name="reenroll" value="open" data-stage="last"> Last spots</label>
+      <label><input type="radio" name="reenroll" value="open" data-stage="saved"> Enrolled</label>
+    </fieldset>
+    <fieldset>
+      <legend>Gym</legend>
+      <label><input type="radio" name="gym" value="default" checked> Default</label>
+      <label><input type="radio" name="gym" value="active"> Active</label>
+      <label><input type="radio" name="gym" value="session"> In session</label>
+    </fieldset>
+    <fieldset>
+      <legend>Café</legend>
+      <label><input type="radio" name="cafe" value="hours" checked> Open now</label>
+      <label><input type="radio" name="cafe" value="closed"> Closed now</label>
+      <label><input type="radio" name="cafe" value="always"> Open 24/7</label>
+    </fieldset>
+    <fieldset>
+      <legend>Countdown demo</legend>
+      <label><input type="radio" name="countdown" value="long" checked> More than 24h</label>
+      <label><input type="radio" name="countdown" value="short"> Less than 24h</label>
+    </fieldset>
+    <div class="review__checks">
+      <label class="review__pause"><input type="checkbox" data-date> Hide date watermark</label>
+      <label class="review__pause"><input type="checkbox" data-date-all> Date watermark on all</label>
+      <label class="review__pause"><input type="checkbox" data-corners> Unify swept corners</label>
+    </div>
+    <fieldset>
+      <legend>Calendar</legend>
+      <label><input type="radio" name="agenda" value="open" checked> Open</label>
+      <label><input type="radio" name="agenda" value="card"> White card</label>
+    </fieldset>
+    <fieldset>
+      <legend>Timer</legend>
+      <label><input type="radio" name="timer" value="reel" checked> Reel</label>
+      <label><input type="radio" name="timer" value="bar"> Progress bar</label>
+    </fieldset>
+    <fieldset>
+      <legend>Joining</legend>
+      <label><input type="radio" name="join" value="waiting" checked> Counting down</label>
+      <label><input type="radio" name="join" value="open"> Last 15 min</label>
+      <label><input type="radio" name="join" value="started"> Class started</label>
+    </fieldset>
+    <fieldset>
+      <legend>Circles</legend>
+      <label><input type="radio" name="circles" value="current" checked> Current</label>
+      <label><input type="radio" name="circles" value="photo"> Host on photo</label>
+      <label><input type="radio" name="circles" value="frame"> Host on frame</label>
+      <label><input type="radio" name="circles" value="mark"> Host on mark</label>
+    </fieldset>
+    </div>
+  </div>
+</aside>
+
+<div class="modal" data-modal="cafe-hours" hidden>
+  <div class="modal__card" role="dialog" aria-modal="true" aria-labelledby="cafe-hours-title">
+    <h2 class="modal__title" id="cafe-hours-title">Opening hours</h2>
+    <p>Café is open for finding a partner during these hours. Times follow your timezone.</p>
+    <p data-cafe-hours-list></p>
+    <button class="btn btn--outline" type="button" data-modal-close>Close</button>
+  </div>
+</div>
+
+<div class="modal" data-modal="choose" hidden>
+  <div class="modal__card" role="dialog" aria-modal="true" aria-labelledby="choose-title">
+    <h2 class="modal__title" id="choose-title">Choose my class</h2>
+    <p>This is where choosing a class would begin. Nothing is submitted in this demo.</p>
+    <button class="btn btn--outline" type="button" data-modal-close>Close</button>
+  </div>
+</div>
+
+<div class="modal" data-modal="cert" hidden>
+  <div class="modal__card" role="dialog" aria-modal="true" aria-labelledby="cert-title">
+    <h2 class="modal__title" id="cert-title">View certificate</h2>
+    <p data-cert-dialog>A certificate would open here. This demo does not include an official certificate.</p>
+    <button class="btn btn--outline" type="button" data-modal-close>Close</button>
+  </div>
+</div>
+
+<div class="modal" data-modal="circle" hidden>
+  <div class="modal__card" role="dialog" aria-modal="true" aria-labelledby="circle-dialog-title">
+    <h2 class="modal__title" id="circle-dialog-title" data-circle-dialog-title>Circle</h2>
+    <p data-circle-dialog-copy></p>
+    <button class="btn btn--outline" type="button" data-modal-close>Close</button>
+  </div>
+</div>
+
+<div class="modal" data-modal="magazine" hidden>
+  <div class="modal__card" role="dialog" aria-modal="true" aria-labelledby="magazine-dialog-title">
+    <h2 class="modal__title" id="magazine-dialog-title">Magazine</h2>
+    <p>A longer look at this story would open here: Citizen notes, language, and the culture around class. Nothing leaves this demo.</p>
+    <button class="btn btn--outline" type="button" data-modal-close>Close</button>
+  </div>
+</div>
+
+<script src="js/home.js?v=20261109e"></script>
+</body>
+</html>

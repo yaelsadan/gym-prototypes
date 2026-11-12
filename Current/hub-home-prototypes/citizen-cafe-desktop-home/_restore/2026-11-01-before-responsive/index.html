@@ -1,0 +1,373 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Citizen Café — Desktop Home · Current Class</title>
+<!--
+  Desktop Home, base screen: Current Class state only.
+  Reference: "Hub HP WEB UI1.png" (1024 × 638 export). No Figma frame was available,
+  so the build targets a 1440 × 900 frame and scales the reference proportions to it.
+
+  Fonts are local and gitignored (licensed): Fedra from ../shared-assets/fonts,
+  Assistant static weights from ./assets/fonts.
+
+  Review controls: ?review=1
+  Optional demo clock: ?now=2026-10-14T18:11:45+03:00
+-->
+<link rel="stylesheet" href="css/home.css">
+</head>
+<body>
+<div class="app">
+
+  <aside class="sidebar" aria-label="Main navigation">
+    <a class="sidebar__logo" href="#" aria-label="Citizen Café — Home">
+      <img src="assets/icons/citizen-cafe-logo-on-dark.png" alt="">
+    </a>
+    <nav class="nav">
+      <a class="nav__item is-current" href="#" aria-current="page">
+        <svg class="nav__icon" width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true"><path d="M3 9.6L11 3l8 6.6V19h-5.2v-5.2H8.2V19H3z" fill="#FFE300" stroke="#373230" stroke-width="1.2" stroke-linejoin="round"/></svg>
+        <span class="nav__label">Home</span>
+      </a>
+      <a class="nav__item" href="#">
+        <svg class="nav__icon" width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true"><rect x="3" y="4.5" width="16" height="14.5" rx="1.5" stroke="currentColor" stroke-width="1.1"/><path d="M3 8.5h16M7.5 2.5v4M14.5 2.5v4" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg>
+        <span class="nav__label">Calendar</span>
+      </a>
+      <a class="nav__item" href="#">
+        <svg class="nav__icon" width="24" height="22" viewBox="0 0 24 22" fill="none" aria-hidden="true"><circle cx="9" cy="11" r="7" stroke="currentColor" stroke-width="1.1"/><circle cx="15" cy="11" r="7" stroke="currentColor" stroke-width="1.1"/></svg>
+        <span class="nav__label">Circles</span>
+      </a>
+      <a class="nav__item" href="#">
+        <svg class="nav__icon" width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true"><path d="M11 6.2C9 4.6 6 4.2 3 4.6v12.6c3-.4 6 0 8 1.6 2-1.6 5-2 8-1.6V4.6c-3-.4-6 0-8 1.6zM11 6.2v12.6" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/></svg>
+        <span class="nav__label">Magazine</span>
+      </a>
+    </nav>
+    <a class="nav__item nav__item--settings" href="#">
+      <svg class="nav__icon" width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.1"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/></svg>
+      <span class="nav__label">Settings</span>
+    </a>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <h1 class="greeting">Good morning, <b>Yael</b></h1>
+      <div class="topbar__actions">
+        <button class="icon-btn" type="button" aria-label="Notifications">
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6.5 16.5V11a5.5 5.5 0 0111 0v5.5l1.5 2h-14l1.5-2z" stroke="#9c9895" stroke-width="1" stroke-linejoin="round"/><path d="M10 20.5a2 2 0 004 0" stroke="#9c9895" stroke-width="1.1" stroke-linecap="round"/></svg>
+        </button>
+        <button class="icon-btn" type="button" aria-label="Messages">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M21 3.5L3.5 10.6l6.8 2.6 2.6 6.8L21 3.5z" fill="#FFE300" stroke="#373230" stroke-width="1" stroke-linejoin="round"/><path d="M10.3 13.2L21 3.5" stroke="#373230" stroke-width="1"/></svg>
+        </button>
+        <button class="profile" type="button" aria-label="Your profile">
+          <img src="assets/img/cafe-avatar-demo-portrait.png" alt="">
+        </button>
+      </div>
+    </header>
+
+    <div class="content">
+      <main class="primary">
+
+        <section class="section" aria-labelledby="my-class-title">
+          <div class="section__head">
+            <h2 class="section__title" id="my-class-title">My Class</h2>
+            <div class="past" data-past>
+              <button class="past__btn" type="button" aria-haspopup="menu" aria-expanded="false" aria-controls="past-menu">Past courses
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M4 6.5l4 4 4-4" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+              <div class="past__menu" id="past-menu" role="menu" hidden></div>
+            </div>
+          </div>
+
+          <article class="card class-card" data-class-card style="--level:#90C7FC" aria-label="My Class: Light Blue">
+            <div class="class-card__info">
+              <div class="class-id">
+                <span class="lvl" data-level-icon></span>
+                <h3 class="class-id__name" data-course-name>Light Blue</h3>
+              </div>
+              <p class="class-meta class-meta--term" data-course-term>November semester 2026</p>
+              <p class="class-meta" data-course-schedule>Sun &amp; Wed 20:30 // with Noam</p>
+
+              <ul class="class-links">
+                <li>
+                  <a class="ring-link" href="#">Class notebook
+                    <span class="ring" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M4.5 11.5l7-7M6 4.5h5.5V10" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                  </a>
+                </li>
+                <li>
+                  <button class="ring-link" type="button" aria-haspopup="menu" aria-expanded="false">More
+                    <span class="ring" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6.5l4 4 4-4" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                  </button>
+                </li>
+              </ul>
+
+              <div class="stage" data-stage="current">
+                <div class="next-class" data-next-block>
+                  <p class="next-class__label">Next Class</p>
+                  <p class="next-class__when" data-next-class>Wed, Oct 14 · 20:30</p>
+                  <div class="time" role="timer" data-timer aria-live="off"></div>
+                </div>
+                <div class="next-line" data-next-line hidden>
+                  <p class="next-line__when"><span class="next-class__label">Next Class</span> <span data-next-inline>Wed, Oct 14 · 20:30</span></p>
+                  <p class="next-line__count"><span class="next-line__starts">Starts in</span> <span class="time time--compact" role="timer" data-timer aria-live="off"></span></p>
+                </div>
+                <div class="reenroll" data-reenroll hidden>
+                  <div class="reenroll__copy">
+                    <p class="reenroll__title">December registration is open!</p>
+                    <p class="reenroll__label">Your next chapter:</p>
+                    <p class="reenroll__level"><span class="lvl" data-next-icon></span> Blue Level</p>
+                  </div>
+                  <button class="btn btn--primary" type="button" data-choose>Choose my class</button>
+                </div>
+              </div>
+
+              <div class="stage stage--past" data-stage="past" hidden>
+                <p class="completed">Completed course</p>
+                <div class="cert">
+                  <p class="cert__title">Course certificate</p>
+                  <p class="cert__note" data-cert-note>Demo certificate. This is not an official document.</p>
+                  <button class="btn btn--outline" type="button" data-view-cert>View certificate</button>
+                </div>
+                <button class="back-current" type="button" data-back>Back to current class</button>
+              </div>
+            </div>
+
+            <div class="class-card__tools" aria-label="Practice tools">
+              <a class="tool-tile" href="#">
+                <span class="tool-tile__icon"><img class="tool-tile__img tool-tile__img--challenge" src="assets/icons/challenge-light-blue.png" alt=""></span>
+                <span class="tool-tile__title">Challenge Me</span>
+                <span class="tool-tile__desc">Old and new, all in one</span>
+              </a>
+              <a class="tool-tile" href="#">
+                <span class="tool-tile__icon"><img class="tool-tile__img tool-tile__img--dumbbell" src="assets/icons/dumbbell-light-blue.png" alt=""></span>
+                <span class="tool-tile__title">Keep Up</span>
+                <span class="tool-tile__desc">Fresh from last class</span>
+              </a>
+              <a class="tool-tile" href="#">
+                <span class="tool-tile__icon"><img class="tool-tile__img tool-tile__img--flashcards" src="assets/icons/flashcards-light-blue.svg" alt=""></span>
+                <span class="tool-tile__title">Just flashcards</span>
+                <span class="tool-tile__desc">Grow your vocab</span>
+              </a>
+              <a class="pod-card" href="#">
+                <img class="pod-card__icon" src="assets/icons/headphones-light-blue.png" alt="">
+                <span class="pod-card__text">
+                  <span class="pod-card__kicker">Recap n’ Drill</span>
+                  <span class="pod-card__title" data-pod-title>Light Blue Level</span>
+                </span>
+                <span class="ring ring--lg" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6.5 4l4 4-4 4" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+              </a>
+            </div>
+          </article>
+        </section>
+
+        <section class="section" aria-labelledby="live-title">
+          <h2 class="section__title" id="live-title">Live Practice</h2>
+          <div class="live-row">
+            <article class="card live-card live-card--cafe" aria-label="Café">
+              <img class="live-card__photo" src="assets/img/cafe-background.jpg" alt="">
+              <div class="live-card__body">
+                <h3 class="live-card__title">Café</h3>
+                <p class="live-card__text">1-on-1 Hebrew practice · 6 min</p>
+              </div>
+              <div class="live-card__foot">
+                <span class="avatars" aria-label="60 people practising now">
+                  <span class="av" style="--ring:#449CFC"><img src="assets/img/avatar-1.jpg" alt=""></span>
+                  <span class="av" style="--ring:#F7AAF3"><img src="assets/img/avatar-2.jpg" alt=""></span>
+                  <span class="av" style="--ring:#F69700"><img src="assets/img/avatar-3.jpg" alt=""></span>
+                  <span class="av" style="--ring:#DAEF81"><img src="assets/img/avatar-4.jpg" alt=""></span>
+                  <span class="av av--more" style="--ring:#FFE300">+56</span>
+                </span>
+                <a class="btn btn--primary" href="#">Find a partner</a>
+              </div>
+            </article>
+
+            <article class="card live-card live-card--gym" aria-label="Gym">
+              <div class="live-card__body">
+                <h3 class="live-card__title">Gym</h3>
+                <p class="live-card__text">Short, guided Hebrew practice</p>
+                <p class="live-card__next">Next session · Today, 18:00</p>
+              </div>
+              <img class="live-card__art" src="assets/icons/gym-paddles.svg" alt="">
+              <div class="live-card__foot live-card__foot--end">
+                <a class="btn btn--outline" href="#">See schedule</a>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section class="section" aria-labelledby="community-title">
+          <h2 class="section__title" id="community-title">Community &amp; Culture</h2>
+          <div class="community-row">
+            <article class="card circle-card" aria-label="Circles live event">
+              <img class="circle-card__img" src="assets/img/circles-event-clean.jpg" alt="Green hills in the Judean Desert">
+              <div class="circle-card__body">
+                <h3 class="circle-card__title">The Imposter Syndrome of the Judean Desert</h3>
+                <p class="circle-card__meta">
+                  <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="1.6" fill="currentColor"/><path d="M5.2 5.2a4 4 0 000 5.6M10.8 5.2a4 4 0 010 5.6M3.1 3.1a7 7 0 000 9.8M12.9 3.1a7 7 0 010 9.8" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+                  Live event · Jan 15 · 20:30 IL
+                </p>
+                <p class="circle-card__people">
+                  <span class="av av--sm av--plain"><img src="assets/img/avatar-3.jpg" alt=""></span>
+                  <span class="circle-card__host">With Yael</span>
+                  <span aria-hidden="true">·</span>
+                  <span class="avatars avatars--sm" aria-label="57 enrolled">
+                    <span class="av av--sm" style="--ring:#449CFC"><img src="assets/img/avatar-1.jpg" alt=""></span>
+                    <span class="av av--sm" style="--ring:#F7AAF3"><img src="assets/img/avatar-2.jpg" alt=""></span>
+                    <span class="av av--sm av--more">+55</span>
+                  </span>
+                </p>
+              </div>
+              <span class="circle-card__date" aria-hidden="true">JAN<br>15</span>
+              <a class="circle-card__go" href="#" aria-label="Open the Circle">
+                <svg width="22" height="22" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2.5 8h11M9.5 4l4 4-4 4" stroke="currentColor" stroke-width=".9" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </a>
+            </article>
+
+            <article class="card mag-card" aria-label="Magazine">
+              <img class="mag-card__img" src="assets/img/magazine-placeholder-from-reference.jpg" alt="">
+              <div class="mag-card__body">
+                <h3 class="mag-card__title">Magazine</h3>
+                <p class="mag-card__text">Placeholder, describes the feature shortly</p>
+              </div>
+              <a class="mag-card__go" href="#" aria-label="Open Magazine">
+                <svg width="20" height="20" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M4.5 11.5l7-7M6 4.5h5.5V10" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </a>
+            </article>
+          </div>
+          <div class="dots" aria-hidden="true"><i class="is-active"></i><i></i><i></i></div>
+        </section>
+      </main>
+
+      <aside class="secondary" aria-labelledby="week-title">
+        <div class="agenda-head">
+          <h2 class="section__title" id="week-title">This week/day</h2>
+          <div class="week-nav">
+            <button type="button" aria-label="Previous"><svg width="18" height="18" viewBox="0 0 16 16" fill="none"><path d="M10 3.5L5.5 8l4.5 4.5" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+            <button type="button" aria-label="Next"><svg width="18" height="18" viewBox="0 0 16 16" fill="none"><path d="M6 3.5L10.5 8 6 12.5" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+          </div>
+        </div>
+
+        <div class="agenda-wrap">
+        <div class="agenda" tabindex="0">
+          <section class="agenda-day is-today" aria-label="Sunday 13, today">
+            <p class="agenda-day__date"><span>Sun</span><b>13</b></p>
+            <ul class="agenda-day__list">
+              <li class="agenda-row is-live">
+                <span class="live-badge">Live</span>
+                <span class="agenda-row__name">Gym</span>
+                <span class="agenda-row__time">6 PM</span>
+                <a class="btn btn--primary btn--sm agenda-row__join" href="#">Join now</a>
+              </li>
+              <li class="agenda-row">
+                <span class="agenda-row__name">Gym</span>
+                <span class="agenda-row__time">8 PM</span>
+                <button class="agenda-row__expand" type="button" aria-label="Show blocks" aria-expanded="false"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3.5 6l4.5 4.5L12.5 6" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+                <button class="plan-btn" type="button" aria-label="Add to my plan"><svg width="18" height="18" viewBox="0 0 16 16" fill="none"><path d="M8 2.5v11M2.5 8h11" stroke="currentColor" stroke-width="1" stroke-linecap="round"/></svg></button>
+              </li>
+              <li class="agenda-row">
+                <span class="agenda-row__name">Lesson 12</span>
+                <span class="agenda-row__time">10 PM</span>
+                <button class="plan-btn" type="button" aria-label="Add to my plan"><svg width="18" height="18" viewBox="0 0 16 16" fill="none"><path d="M8 2.5v11M2.5 8h11" stroke="currentColor" stroke-width="1" stroke-linecap="round"/></svg></button>
+              </li>
+            </ul>
+          </section>
+
+          <section class="agenda-day" aria-label="Monday 14">
+            <p class="agenda-day__date"><span>Mon</span><b>14</b></p>
+            <ul class="agenda-day__list">
+              <li class="agenda-row">
+                <span class="agenda-row__name">Gym</span>
+                <span class="agenda-row__time">8 PM</span>
+                <button class="plan-btn" type="button" aria-label="Add to my plan"><svg width="18" height="18" viewBox="0 0 16 16" fill="none"><path d="M8 2.5v11M2.5 8h11" stroke="currentColor" stroke-width="1" stroke-linecap="round"/></svg></button>
+              </li>
+              <li class="agenda-row">
+                <span class="agenda-row__name">Gym</span>
+                <span class="agenda-row__time">6 PM · 8 PM</span>
+                <span class="plan-added">Added</span>
+              </li>
+              <li class="agenda-row">
+                <span class="agenda-row__name">Circle</span>
+                <span class="agenda-row__time">9 PM</span>
+                <span class="plan-added">Added</span>
+              </li>
+            </ul>
+          </section>
+
+          <section class="agenda-day" aria-label="Tuesday 15">
+            <p class="agenda-day__date"><span>Tue</span><b>15</b></p>
+            <ul class="agenda-day__list">
+              <li class="agenda-row">
+                <span class="agenda-row__name">Lesson 12</span>
+                <span class="agenda-row__time">8:30 PM</span>
+                <button class="plan-btn" type="button" aria-label="Add to my plan"><svg width="18" height="18" viewBox="0 0 16 16" fill="none"><path d="M8 2.5v11M2.5 8h11" stroke="currentColor" stroke-width="1" stroke-linecap="round"/></svg></button>
+              </li>
+              <li class="agenda-row">
+                <span class="agenda-row__name">Gym</span>
+                <span class="agenda-row__time">6 PM</span>
+                <span class="plan-added">Added</span>
+              </li>
+            </ul>
+          </section>
+        </div>
+        <div class="agenda-foot">
+          <a class="calendar-link" href="#">View full calendar<svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h10M9.5 4.5L13 8l-3.5 3.5" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+        </div>
+        </div>
+
+        <article class="card method-card" aria-label="Inside the method with Noeat">
+          <a class="method-card__video" href="#" aria-label="Play: When your brain steps aside, 3 minutes">
+            <img src="assets/img/noa-method-portrait.jpg" alt="">
+            <span class="play" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 16 16"><path d="M4.6 2.2v11.6L14 8z" fill="#FFE300"/></svg></span>
+          </a>
+          <h3 class="method-card__title">Inside the method <em>with Noeat</em></h3>
+          <p class="method-card__quote">“When your brain steps aside”</p>
+          <div class="method-card__foot">
+            <p class="method-card__meta">3 MIN</p>
+            <a class="btn btn--primary btn--edged" href="#">Watch all</a>
+          </div>
+        </article>
+      </aside>
+    </div>
+  </div>
+</div>
+
+<aside class="review" id="review" hidden>
+  <button class="review__tab" type="button" aria-expanded="true" aria-controls="review-card">Review</button>
+  <div class="review__card" id="review-card">
+    <div class="review__head">
+      <p class="review__kicker">Review</p>
+      <button class="review__hide" type="button" data-review-hide>Hide</button>
+    </div>
+    <fieldset>
+      <legend>Re-enrollment</legend>
+      <label><input type="radio" name="reenroll" value="closed" checked> Closed</label>
+      <label><input type="radio" name="reenroll" value="open"> Open</label>
+    </fieldset>
+    <fieldset>
+      <legend>Countdown demo</legend>
+      <label><input type="radio" name="countdown" value="long" checked> More than 24h</label>
+      <label><input type="radio" name="countdown" value="short"> Less than 24h</label>
+    </fieldset>
+    <label class="review__pause"><input type="checkbox" data-pause> Pause countdown</label>
+    <label class="review__pause"><input type="checkbox" data-labels> Show time labels</label>
+  </div>
+</aside>
+
+<div class="modal" data-modal="choose" hidden>
+  <div class="modal__card" role="dialog" aria-modal="true" aria-labelledby="choose-title">
+    <h2 class="modal__title" id="choose-title">Choose my class</h2>
+    <p>This is where choosing a class would begin. Nothing is submitted in this demo.</p>
+    <button class="btn btn--outline" type="button" data-modal-close>Close</button>
+  </div>
+</div>
+
+<div class="modal" data-modal="cert" hidden>
+  <div class="modal__card" role="dialog" aria-modal="true" aria-labelledby="cert-title">
+    <h2 class="modal__title" id="cert-title">View certificate</h2>
+    <p data-cert-dialog>A certificate would open here. This demo does not include an official certificate.</p>
+    <button class="btn btn--outline" type="button" data-modal-close>Close</button>
+  </div>
+</div>
+
+<script src="js/home.js?v=20261101g"></script>
+</body>
+</html>
