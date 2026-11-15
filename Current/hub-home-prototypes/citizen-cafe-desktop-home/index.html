@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-live="figma" data-cafe="hours">
+<html lang="en" data-live="figma" data-cafe="hours" data-method="library">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -9,13 +9,17 @@
   Reference: "Hub HP WEB UI1.png" (1024 × 638 export). No Figma frame was available,
   so the build targets a 1440 × 900 frame and scales the reference proportions to it.
 
-  Fonts are local and gitignored (licensed): Fedra from ../shared-assets/fonts,
-  Assistant static weights from ./assets/fonts.
+  Assistant loads from Google Fonts so GitHub Pages does not need the gitignored files.
+  Fedra stays local and is not published; titles fall back to Georgia.
 
   Review controls are on by default. Hide collapses the card; the Review tab opens it again.
   Optional demo clock: ?now=2026-10-14T18:11:45+03:00
 -->
-<link rel="stylesheet" href="css/home.css?v=20261111c">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/home.css?v=20261115h">
+<link rel="stylesheet" href="css/calendar.css?v=20261115g">
 </head>
 <body>
 <div class="app">
@@ -106,7 +110,7 @@
                   <span class="tool-tile__desc">Grow your vocab</span>
                 </a>
                 <a class="tool-tile" href="#">
-                  <img class="tool-tile__icon-img" src="assets/icons/figma-class/flashcards.svg" alt="" width="29.8" height="32.781">
+                  <img class="tool-tile__icon-img tool-tile__icon-img--flashcards" src="assets/icons/figma-class/flashcards.svg" alt="" width="29.8" height="32.781">
                   <span class="tool-tile__title">Class notebook</span>
                   <span class="tool-tile__desc">Old and new, all in one</span>
                 </a>
@@ -142,7 +146,7 @@
                   <a class="btn btn--primary next-class__join" href="#">Join Now!</a>
                 </div>
                 <div class="next-line" data-next-line hidden>
-                  <p class="next-line__when"><span class="next-class__label">Next Class</span> <span data-next-inline>Wed, Oct 14 · 20:30</span><span class="next-line__live">Class has started!</span></p>
+                  <p class="next-line__when"><svg class="next-line__cal" width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.2" rx="2" stroke="currentColor" stroke-width="1.4"/><path d="M3.5 9.5h17M8 3.4v3.2M16 3.4v3.2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg><span class="next-class__label">Next Class</span> <span data-next-inline>Wed, Oct 14 · 20:30</span><span class="next-line__live">Class has started!</span></p>
                   <p class="next-line__count"><span class="next-line__starts">starts in</span> <span class="time time--compact" role="timer" data-timer aria-live="off"></span><a class="btn btn--primary next-line__join" href="#">Join now</a></p>
                 </div>
                 <div class="reenroll" data-reenroll hidden>
@@ -353,13 +357,12 @@
             <ul class="agenda-day__list">
               <li class="agenda-gym" data-gym data-kind="gym">
                 <div class="agenda-row is-live">
-                  <span class="live-badge">Live</span>
+                  <span class="live-badge"><img src="assets/icons/hub/live-dot.svg" alt="" width="15" height="15">Live now</span>
                   <span class="agenda-row__name">Gym</span>
                   <span class="agenda-row__time">6 PM</span>
                   <button class="agenda-row__expand" type="button" aria-expanded="false" aria-controls="gym-sun-6" aria-label="Show blocks"><svg width="20" height="20" viewBox="0 0 16 16" fill="none"><path d="M3.5 6l4.5 4.5L12.5 6" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
                   <button class="plan-btn" type="button" data-gym-add aria-pressed="false" aria-label="Add to my plan"><svg width="18" height="18" viewBox="0 0 16 16" fill="none"><path d="M8 2.5v11M2.5 8h11" stroke="currentColor" stroke-width="1" stroke-linecap="round"/></svg></button>
                   <span class="plan-added" data-gym-count hidden>1/3 added</span>
-                  <a class="btn btn--primary btn--sm agenda-row__join" href="#">Join now</a>
                 </div>
                 <ul class="gym-blocks" id="gym-sun-6" hidden>
                   <li class="agenda-row gym-block"><span class="agenda-row__name">6:00</span><span class="agenda-row__time">17 min</span><button class="plan-btn" type="button" data-block aria-pressed="false" aria-label="Add to my plan"><svg width="18" height="18" viewBox="0 0 16 16" fill="none"><path d="M8 2.5v11M2.5 8h11" stroke="currentColor" stroke-width="1" stroke-linecap="round"/></svg></button></li>
@@ -380,11 +383,6 @@
                   <li class="agenda-row gym-block"><span class="agenda-row__name">8:17</span><span class="agenda-row__time">17 min</span><button class="plan-btn" type="button" data-block aria-pressed="false" aria-label="Add to my plan"><svg width="18" height="18" viewBox="0 0 16 16" fill="none"><path d="M8 2.5v11M2.5 8h11" stroke="currentColor" stroke-width="1" stroke-linecap="round"/></svg></button></li>
                   <li class="agenda-row gym-block"><span class="agenda-row__name">8:34</span><span class="agenda-row__time">17 min</span><button class="plan-btn" type="button" data-block aria-pressed="false" aria-label="Add to my plan"><svg width="18" height="18" viewBox="0 0 16 16" fill="none"><path d="M8 2.5v11M2.5 8h11" stroke="currentColor" stroke-width="1" stroke-linecap="round"/></svg></button></li>
                 </ul>
-              </li>
-              <li class="agenda-row" data-kind="cafe">
-                <span class="agenda-row__name">Café</span>
-                <span class="agenda-row__time">7 PM</span>
-                <button class="plan-btn" type="button" aria-pressed="false" aria-label="Add to my plan"><svg width="18" height="18" viewBox="0 0 16 16" fill="none"><path d="M8 2.5v11M2.5 8h11" stroke="currentColor" stroke-width="1" stroke-linecap="round"/></svg></button>
               </li>
               <li class="agenda-row" data-kind="lesson">
                 <span class="agenda-row__name">Lesson 12</span>
@@ -459,7 +457,7 @@
           </section>
         </div>
         <div class="agenda-foot">
-          <a class="calendar-link" href="#">view full calendar<svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8h9M9 4.5L12.5 8 9 11.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+          <a class="calendar-link" href="#" aria-haspopup="dialog" aria-controls="calendar-modal">view full calendar<svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8h9M9 4.5L12.5 8 9 11.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
         </div>
         </div>
 
@@ -469,12 +467,27 @@
             <div class="method-card__top">
               <a class="method-card__video" href="#" aria-label="Play: When your brain steps aside, 3 minutes">
                 <img src="assets/img/hub/method.jpg" alt="">
+                <span class="method-card__badge">New!</span>
                 <span class="play" aria-hidden="true"><img src="assets/icons/hub/play-method.svg" alt="" width="52" height="52"></span>
               </a>
+              <div class="method-card__strip">
+                <div class="method-card__reel">
+                  <a class="method-card__thumb method-card__thumb--dim" href="#" aria-label="Play video"><img src="assets/img/hub/method/tip-1.png" alt=""><span class="play" aria-hidden="true"><img src="assets/icons/hub/play-method.svg" alt="" width="20" height="20"></span></a>
+                  <a class="method-card__thumb method-card__thumb--dim" href="#" aria-label="Play video"><img src="assets/img/hub/method/tip-2.png" alt=""><span class="play" aria-hidden="true"><img src="assets/icons/hub/play-method.svg" alt="" width="20" height="20"></span></a>
+                  <a class="method-card__thumb" href="#" aria-label="Play video"><img src="assets/img/hub/method/tip-3.png" alt=""><span class="play" aria-hidden="true"><img src="assets/icons/hub/play-method.svg" alt="" width="20" height="20"></span></a>
+                  <a class="method-card__thumb" href="#" aria-label="Play video"><img src="assets/img/hub/method/tip-4.png" alt=""><span class="play" aria-hidden="true"><img src="assets/icons/hub/play-method.svg" alt="" width="20" height="20"></span></a>
+                  <a class="method-card__thumb method-card__thumb--dim" href="#" aria-label="Play video"><img src="assets/img/hub/method/tip-1.png" alt=""><span class="play" aria-hidden="true"><img src="assets/icons/hub/play-method.svg" alt="" width="20" height="20"></span></a>
+                  <a class="method-card__thumb" href="#" aria-label="Play video"><img src="assets/img/hub/method/tip-5.png" alt=""><span class="play" aria-hidden="true"><img src="assets/icons/hub/play-method.svg" alt="" width="20" height="20"></span></a>
+                </div>
+                <span class="method-card__fade method-card__fade--left" aria-hidden="true"></span>
+                <span class="method-card__fade method-card__fade--right" aria-hidden="true"></span>
+              </div>
               <p class="method-card__line"><span class="method-card__quote">“When your brain steps aside”</span><span class="method-card__rule"><img src="assets/icons/hub/method-line.svg" alt="" width="23" height="1"></span><span class="method-card__meta">3 MIN</span></p>
+              <p class="method-card__tips">Short tips for success.</p>
             </div>
             <div class="method-card__foot">
-              <a class="btn btn--outline" href="#">Watch all</a>
+              <a class="btn btn--outline method-card__watch" href="#">Watch now!</a>
+              <a class="btn btn--outline method-card__all" href="#">View all videos</a>
             </div>
           </div>
         </article>
@@ -508,7 +521,11 @@
       <legend>Gym</legend>
       <label><input type="radio" name="gym" value="default" checked> Default</label>
       <label><input type="radio" name="gym" value="active"> Active</label>
-      <label><input type="radio" name="gym" value="session"> In session</label>
+    </fieldset>
+    <fieldset>
+      <legend>Library</legend>
+      <label><input type="radio" name="method" value="library" checked> Default</label>
+      <label><input type="radio" name="method" value="new"> New video</label>
     </fieldset>
     <fieldset>
       <legend>Café</legend>
@@ -594,6 +611,74 @@
   </div>
 </div>
 
-<script src="js/home.js?v=20261109e"></script>
+<div class="cal-modal" id="calendar-modal" hidden>
+  <div class="cal-modal__card" role="dialog" aria-modal="true" aria-labelledby="calendar-title">
+    <header class="cal-headbar">
+      <h2 class="cal-title" id="calendar-title">Calendar</h2>
+      <button class="cal-textbtn" type="button" data-cal-later="semester">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true"><path d="M4 15.5V3.2M4 3.6h8.2L10 6.2l2.2 2.6H4" stroke="#373230" stroke-width="1.2" stroke-linejoin="round"/></svg>
+        <span>Semester &amp; break dates</span>
+      </button>
+      <button class="cal-zone" type="button" data-cal-later="zone">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="6.25" stroke="#373230" stroke-width="1.2"/><path d="M3 9h12M9 2.8c1.6 1.7 2.4 3.8 2.4 6.2S10.6 13.5 9 15.2C7.4 13.5 6.6 11.4 6.6 9S7.4 4.5 9 2.8z" stroke="#373230" stroke-width="1.2"/></svg>
+        <span class="cal-zone__label">Times in <b>Israel Time</b></span>
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M4 6.2L8 10l4-3.8" stroke="#373230" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <button class="cal-close" type="button" data-cal-close aria-label="Close calendar">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true"><path d="M4.5 4.5l9 9M13.5 4.5l-9 9" stroke="#373230" stroke-width="1.2" stroke-linecap="round"/></svg>
+      </button>
+    </header>
+    <div class="cal-toolbar">
+      <div class="cal-toolbar__nav">
+        <button class="cal-arrow" type="button" data-cal-prev aria-label="Previous week">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true"><path d="M11 4L6.2 9 11 14" stroke="#373230" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <p class="cal-range" data-cal-range></p>
+        <button class="cal-arrow" type="button" data-cal-next aria-label="Next week">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true"><path d="M7 4l4.8 5L7 14" stroke="#373230" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="cal-seg" role="group" aria-label="Range">
+          <button type="button" data-cal-view="week" aria-pressed="true">Week</button>
+          <button type="button" data-cal-view="month" aria-pressed="false">Month</button>
+        </div>
+        <button class="cal-today" type="button" data-cal-today>Today</button>
+      </div>
+      <div class="cal-toolbar__filters">
+        <div class="cal-seg" role="group" aria-label="What to show">
+          <button type="button" data-cal-scope="all" aria-pressed="true">All</button>
+          <button type="button" data-cal-scope="plan" aria-pressed="false">My plan</button>
+        </div>
+        <span class="cal-rule" aria-hidden="true"></span>
+        <button class="cal-chip" type="button" data-cal-filter="class" aria-pressed="true">
+          <img src="assets/icons/hub/agenda-lesson-cloud.svg?v=20261112f" alt="" width="27" height="27">
+          <span>My class</span>
+        </button>
+        <button class="cal-chip" type="button" data-cal-filter="gym" aria-pressed="true">
+          <img src="assets/icons/hub/agenda-gym-figma.svg?v=20261112f" alt="" width="19" height="18">
+          <span>Gym</span>
+        </button>
+        <button class="cal-chip" type="button" data-cal-filter="circle" aria-pressed="true">
+          <img src="assets/icons/hub/agenda-circle-figma.svg?v=20261112f" alt="" width="24" height="24">
+          <span>Circles</span>
+        </button>
+      </div>
+    </div>
+    <div class="cal-modal__body" data-cal-body>
+      <div class="cal-stage" data-cal-stage></div>
+    </div>
+    <footer class="cal-foot">
+      <p>All times shown in Israel Time</p>
+      <button class="cal-google" type="button" data-cal-later="google">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true"><rect x="3" y="4" width="12" height="11" rx="1.5" stroke="#373230" stroke-width="1.2"/><path d="M3 7.5h12M6.5 2.8v3M11.5 2.8v3" stroke="#373230" stroke-width="1.2" stroke-linecap="round"/></svg>
+        <span>Add My plan to Google Calendar</span>
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M4 10L10 4M5.5 4H10v4.5" stroke="#373230" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </footer>
+  </div>
+</div>
+
+<script src="js/home.js?v=20261115d"></script>
+<script src="js/calendar-data.js?v=20261115b"></script>
+<script src="js/calendar.js?v=20261115c"></script>
 </body>
 </html>

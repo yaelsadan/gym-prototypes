@@ -462,6 +462,12 @@
       document.documentElement.dataset.gym = input.value;
     });
   });
+  review.querySelectorAll('input[name="method"]').forEach(function (input) {
+    input.addEventListener("change", function () {
+      if (!input.checked) return;
+      document.documentElement.dataset.method = input.value;
+    });
+  });
   review.querySelectorAll('input[name="cafe"]').forEach(function (input) {
     input.addEventListener("change", function () {
       if (!input.checked) return;
