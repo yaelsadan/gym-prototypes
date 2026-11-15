@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/home.css?v=20261115i">
+<link rel="stylesheet" href="css/home.css?v=20261115as">
 <link rel="stylesheet" href="css/calendar.css?v=20261115g">
 </head>
 <body>
@@ -94,28 +94,41 @@
                 </span>
                 <div class="class-id__copy">
                   <h3 class="class-id__name"><span class="class-id__current">My class</span><span data-course-name>Light Blue</span></h3>
-                  <p class="class-meta" data-course-schedule>Sun &amp; Wed 20:30 // with Noam</p>
-                  <p class="class-meta class-meta--term" data-course-term>November semester 2026</p>
+                  <div class="class-id__details">
+                    <p class="class-meta" data-course-schedule>Sun &amp; Wed 20:30</p>
+                    <p class="class-teacher">
+                      <span class="class-teacher__face" aria-hidden="true">
+                        <img class="class-teacher__ring" src="assets/icons/hub/teacher-ring.svg" alt="" width="18" height="18">
+                        <img class="class-teacher__photo" src="assets/img/hub/teacher-noam.png" alt="" width="18" height="18">
+                      </span>
+                      <span data-teacher-name>With Noam</span>
+                    </p>
+                    <p class="class-meta class-meta--term" data-course-term>November semester 2026</p>
+                  </div>
+                </div>
+                <div class="class-id__links">
+                  <button class="class-link" type="button">View breakdown<span class="class-link__mark" aria-hidden="true"><img src="assets/icons/hub/class-link-arrow.svg" alt="" width="5.61538" height="5.61538"></span></button>
+                  <button class="class-link" type="button">Student list<span class="class-link__mark" aria-hidden="true"><img src="assets/icons/hub/class-link-arrow.svg" alt="" width="5.61538" height="5.61538"></span></button>
                 </div>
               </div>
               <div class="class-card__tools" aria-label="Class tools">
                 <a class="tool-tile" href="#">
-                  <img class="tool-tile__icon-img tool-tile__icon-img--pods" src="assets/icons/hub/class-pods.svg" alt="" width="48.987" height="48.987">
+                  <svg class="tool-tile__icon-img tool-tile__icon-img--pods" viewBox="0 0 48.9871 48.9871" width="38" height="38" aria-hidden="true" fill="none"><path d="M28.5758 42.5661L28.5758 36.5448C28.5758 35.4801 28.9988 34.4591 29.7516 33.7063C30.5044 32.9535 31.5254 32.5305 32.5901 32.5305L38.6114 32.5305C39.676 32.5305 40.6971 32.9535 41.4499 33.7063C42.2027 34.4591 42.6256 35.4801 42.6256 36.5448L42.6256 38.5519C42.6256 39.6165 42.2027 40.6375 41.4499 41.3904C40.6971 42.1432 39.676 42.5661 38.6114 42.5661L28.5758 42.5661L24.5616 42.5661C19.7707 42.5661 15.1761 40.6629 11.7884 37.2753C8.40077 33.8876 6.49761 29.293 6.49761 24.5021C6.49761 19.7112 8.40077 15.1166 11.7884 11.7289C15.1761 8.34125 19.7707 6.43808 24.5616 6.43808L28.5758 6.43808L38.6114 6.43808C39.676 6.43808 40.6971 6.86101 41.4499 7.61382C42.2027 8.36664 42.6256 9.38767 42.6256 10.4523L42.6256 12.4594C42.6256 13.5241 42.2027 14.5451 41.4499 15.2979C40.6971 16.0507 39.676 16.4736 38.6114 16.4736L32.5901 16.4736C31.5254 16.4736 30.5044 16.0507 29.7516 15.2979C28.9988 14.5451 28.5758 13.5241 28.5758 12.4594L28.5758 6.43808L24.5616 6.43808C19.7707 6.43808 15.1761 8.34125 11.7884 11.7289C8.40077 15.1166 6.49761 19.7112 6.49761 24.5021C6.49761 29.293 8.40077 33.8876 11.7884 37.2753C15.1761 40.6629 19.7707 42.5661 24.5616 42.5661L28.5758 42.5661Z" fill="currentColor" stroke-width="0.612339" stroke-linecap="round" stroke-linejoin="round" stroke="#373230"/></svg>
                   <span class="tool-tile__title">Class-pods</span>
                   <span class="tool-tile__desc">Recap n’Drill</span>
                 </a>
                 <a class="tool-tile" href="#">
-                  <img class="tool-tile__icon-img" src="assets/icons/hub/practice.svg" alt="" width="39.642" height="23.733">
+                  <svg class="tool-tile__icon-img" viewBox="0 0 39.6415 23.7327" width="38" height="38" aria-hidden="true" fill="none"><path d="M39.3112 14.2743V9.46916H0.330341V14.2743H39.3112Z" fill="currentColor" stroke-width="0.660682" stroke-linecap="round" stroke-linejoin="round" stroke="#373230"/><path d="M36.693 3.03623H33.3944V20.703H36.693V3.03623Z" fill="white" stroke-width="0.660682" stroke-linecap="round" stroke-linejoin="round" stroke="#373230"/><path d="M33.3933 0.335883H28.8957V23.4024H33.3933V0.335883Z" fill="white" stroke-width="0.660682" stroke-linecap="round" stroke-linejoin="round" stroke="#373230"/><path d="M10.7475 0.330341H6.24994V23.3969H10.7475V0.330341Z" fill="white" stroke-width="0.660682" stroke-linecap="round" stroke-linejoin="round" stroke="#373230"/><path d="M6.25053 3.03069H2.95195V20.6975H6.25053V3.03069Z" fill="white" stroke-width="0.660682" stroke-linecap="round" stroke-linejoin="round" stroke="#373230"/></svg>
                   <span class="tool-tile__title">Practice tools</span>
                   <span class="tool-tile__desc">Grow your vocab</span>
                 </a>
                 <a class="tool-tile" href="#">
-                  <img class="tool-tile__icon-img tool-tile__icon-img--flashcards" src="assets/icons/figma-class/flashcards.svg" alt="" width="29.8" height="32.781">
+                  <svg class="tool-tile__icon-img tool-tile__icon-img--flashcards" viewBox="0 0 29.7995 32.7806" width="38" height="38" aria-hidden="true" fill="none"><path d="M20.0808 25.8917C19.8047 27.5253 18.2559 28.6291 16.6216 28.3569L2.95925 26.0816C1.3249 25.8094 0.223854 24.2644 0.499993 22.6307L3.82523 2.95804C4.10137 1.32436 5.65013 0.220644 7.28447 0.492822L20.9468 2.76809C22.5811 3.04027 23.6822 4.58528 23.406 6.21896L20.0808 25.8917Z" fill="white" stroke="#373230" stroke-width="0.5"/><path d="M29.1707 25.7455C29.518 27.3656 28.4854 28.9564 26.8643 29.2988L13.3151 32.1607C11.694 32.5031 10.0983 31.4673 9.75102 29.8473L5.5682 10.3357C5.2209 8.7157 6.25351 7.12482 7.8746 6.78242L21.4238 3.9206C23.0449 3.5782 24.6406 4.61394 24.9879 6.23398L29.1707 25.7455Z" fill="white" stroke="#373230" stroke-width="0.5"/><path d="M19.9292 25.7277C19.657 27.3618 18.1125 28.4627 16.479 28.1867L9.38428 26.9875L5.89013 10.4416C5.54781 8.82052 6.58359 7.22451 8.20361 6.87716L21.4976 4.02755C21.848 3.95245 22.1964 3.9454 22.5317 3.99141C23.0472 4.63561 23.2997 5.48572 23.1538 6.36251L19.9292 25.7277Z" fill="currentColor" stroke="#373230" stroke-width="0.5"/></svg>
                   <span class="tool-tile__title">Class notebook</span>
                   <span class="tool-tile__desc">Old and new, all in one</span>
                 </a>
                 <a class="tool-tile" href="#">
-                  <img class="tool-tile__icon-img" src="assets/icons/hub/materials.svg" alt="" width="36.74" height="36.74">
+                  <svg class="tool-tile__icon-img" viewBox="0 0 36.7403 36.7404" width="38" height="38" aria-hidden="true" fill="none"><path d="M18.3702 36.4342C28.3466 36.4342 36.4342 28.3467 36.4342 18.3702C36.4342 8.3937 28.3466 0.30617 18.3702 0.30617C8.3937 0.30617 0.30617 8.3937 0.30617 18.3702C0.30617 28.3467 8.3937 36.4342 18.3702 36.4342Z" fill="white" stroke-width="0.612339" stroke-linecap="round" stroke-linejoin="round" stroke="#373230"/><path d="M18.3684 31.0133C25.352 31.0133 31.0132 25.352 31.0132 18.3685C31.0132 11.385 25.352 5.72368 18.3684 5.72368C11.3849 5.72368 5.72363 11.385 5.72363 18.3685C5.72363 25.352 11.3849 31.0133 18.3684 31.0133Z" fill="white" stroke-width="0.612339" stroke-linecap="round" stroke-linejoin="round" stroke="#373230"/><path d="M18.3667 25.5925C22.3573 25.5925 25.5923 22.3574 25.5923 18.3669C25.5923 14.3763 22.3573 11.1412 18.3667 11.1412C14.3761 11.1412 11.1411 14.3763 11.1411 18.3669C11.1411 22.3574 14.3761 25.5925 18.3667 25.5925Z" fill="currentColor" stroke-width="0.612339" stroke-linecap="round" stroke-linejoin="round" stroke="#373230"/></svg>
                   <span class="tool-tile__title">Materials</span>
                   <span class="tool-tile__desc">Old and new, all in one</span>
                 </a>
@@ -129,6 +142,7 @@
                     <svg class="next-class__cal" width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.2" rx="2" stroke="currentColor" stroke-width="1.4"/><path d="M3.5 9.5h17M8 3.4v3.2M16 3.4v3.2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
                     <p class="next-class__label">Next Class</p>
                     <p class="next-class__when" data-next-class>Wed, Oct 14 · 20:30</p>
+                    <p class="next-class__starts">starts in</p>
                     <p class="next-class__live">Class has started!</p>
                   </div>
                   <span class="next-class__rule" aria-hidden="true"></span>
@@ -193,11 +207,10 @@
               </span>
               <div class="live-card__body">
                 <h3 class="live-card__title">Cafe</h3>
-                <p class="live-dur"><img src="assets/icons/hub/clock-live.svg" alt="" width="24" height="24"><span>6 min</span></p>
+                <p class="live-dur"><img src="assets/icons/hub/clock-live.svg" alt="" width="24" height="24"><span>6 min</span><span class="cafe-hours" data-cafe-hours>Open until 20:00 <span class="cafe-tz" data-cafe-tz></span></span></p>
                 <p class="live-card__kicker">1-ON-1 · 6 MIN</p>
-                <p class="live-card__text">Spontanous 1-on-1<br>Hebrew conversations</p>
+                <p class="live-card__text">Spontanous 1-on-1 Hebrew conversations</p>
               </div>
-              <p class="cafe-hours" data-cafe-hours>Open until 20:00 <span class="cafe-tz" data-cafe-tz></span></p>
               <div class="live-card__foot">
                 <a class="btn btn--primary cafe-find" href="#">Start a conversation <span aria-hidden="true">→</span></a>
                 <span class="avatars live-faces" aria-hidden="true">
@@ -289,7 +302,7 @@
                 <h3 class="circle-card__title" data-circle-title>As short History of the word Yalla</h3>
                 <p class="circle-card__blurb" data-circle-blurb>Place-holder text, explains about the circle, gives a little background...</p>
                 <p class="circle-card__meta">
-                  <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="1.6" fill="currentColor"/><path d="M5.2 5.2a4 4 0 000 5.6M10.8 5.2a4 4 0 010 5.6M3.1 3.1a7 7 0 000 9.8M12.9 3.1a7 7 0 010 9.8" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.2" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M3.5 9.5h17M8 3.4v3.2M16 3.4v3.2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
                   <span data-circle-when>Live event · Jan 15 · 20:30 IL</span>
                 </p>
                 <p class="circle-card__people">
@@ -320,7 +333,13 @@
               </button>
             </article>
           </div>
-          <div class="dots" aria-hidden="true"><i class="is-active"></i><i></i><i></i></div>
+          <div class="community-pager">
+            <div class="dots" role="group" aria-label="Live events">
+              <button class="dots__arrow" type="button" data-circle-prev aria-label="Previous event"><svg width="8" height="12" viewBox="0 0 8 12" fill="none" aria-hidden="true"><path d="M6.5 1.5 2 6l4.5 4.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+              <span class="dots__marks"><button class="dots__dot is-active" type="button" aria-label="Event 1"></button><button class="dots__dot" type="button" aria-label="Event 2"></button><button class="dots__dot" type="button" aria-label="Event 3"></button></span>
+              <button class="dots__arrow" type="button" data-circle-after aria-label="Next event"><svg width="8" height="12" viewBox="0 0 8 12" fill="none" aria-hidden="true"><path d="M1.5 1.5 6 6 1.5 10.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+            </div>
+          </div>
         </section>
         </div>
 
@@ -498,8 +517,8 @@
 </div>
 
 <aside class="review" id="review">
-  <button class="review__tab" type="button" aria-expanded="true" aria-controls="review-card">Review</button>
-  <div class="review__card" id="review-card">
+  <button class="review__tab" type="button" aria-expanded="false" aria-controls="review-card">Review</button>
+  <div class="review__card" id="review-card" hidden>
     <div class="review__top">
       <p class="review__viewport" data-viewport>Viewport — × —</p>
       <div class="review__head">
@@ -551,7 +570,6 @@
     <fieldset>
       <legend>Timer</legend>
       <label><input type="radio" name="timer" value="reel" checked> Reel</label>
-      <label><input type="radio" name="timer" value="bar"> Progress bar</label>
     </fieldset>
     <fieldset>
       <legend>Joining</legend>
@@ -677,7 +695,7 @@
   </div>
 </div>
 
-<script src="js/home.js?v=20261115d"></script>
+<script src="js/home.js?v=20261115j"></script>
 <script src="js/calendar-data.js?v=20261115b"></script>
 <script src="js/calendar.js?v=20261115c"></script>
 </body>

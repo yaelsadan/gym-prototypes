@@ -10,6 +10,12 @@
     short: (2 * 3600 + 18 * 60 + 15) * 1000
   };
   var NEXT_LEVEL = { name: "Blue Level", color: "#449CFC" };
+  var LEVEL_MARKS = {
+    Yellow: "assets/icons/hub/level-yellow.png?v=20261115p",
+    Pink: "assets/icons/hub/level-pink.png?v=20261115p",
+    Orange: "assets/icons/hub/level-orange.png?v=20261115p"
+  };
+  var LIGHT_BLUE_MARK = "assets/icons/hub/level.svg";
 
   var COURSES = [
     { id: "lb-nov-2026", current: true, name: "Light Blue", color: "#90C7FC", term: "November semester 2026", schedule: "Sun & Wed 20:30 // with Noam", pod: "Light Blue Level", issued: "28 Feb 2027", certNo: "CC-LB-2611-0104" },
@@ -370,12 +376,20 @@
     document.querySelector("[data-course-name]").textContent = course.name;
     var levelLabel = document.querySelector("[data-level-label]");
     if (levelLabel) levelLabel.textContent = course.name.replace(/\s+/g, "-");
+    var mark = document.querySelector(".class-mark");
+    if (mark) {
+      var markSrc = LEVEL_MARKS[course.name];
+      mark.src = markSrc || LIGHT_BLUE_MARK;
+      mark.classList.toggle("is-level", !!markSrc);
+    }
     document.querySelector("[data-past-tag]").hidden = !past;
     document.querySelector("[data-back]").hidden = !past;
     document.querySelector("[data-course-term]").textContent = past ? course.term.replace(" semester", "") : course.term;
     var schedule = document.querySelector("[data-course-schedule]");
+    var teacherName = document.querySelector("[data-teacher-name]");
+    var teacher = (course.schedule.split("with ")[1] || "Noam").trim();
+    if (teacherName) teacherName.textContent = "With " + teacher;
     if (past) {
-      var teacher = course.schedule.split("with ")[1] || "Noam";
       schedule.replaceChildren();
       var done = document.createElement("span");
       done.className = "class-meta__done";
@@ -388,8 +402,7 @@
       withTeacher.textContent = "with " + teacher;
       schedule.append(done, dot, withTeacher);
     } else {
-      var parts = course.schedule.split(" // ");
-      schedule.textContent = parts.join(" // ");
+      schedule.textContent = course.schedule.split(" // ")[0].trim();
     }
     document.querySelector("[data-level-icon]").innerHTML = levelIcon(course.color);
     document.querySelector("[data-pod-title]").textContent = course.pod;
@@ -439,7 +452,10 @@
     var figmaCard = review.querySelector('input[name="classcard"][value="figma"]');
     if (figmaCard) figmaCard.checked = true;
   }
-  if (params.get("review") === "1" || params.get("cardlab") === "1") review.hidden = false;
+  if (params.get("review") === "1" || params.get("cardlab") === "1") {
+    review.hidden = false;
+    setReviewOpen(true);
+  }
 
   function setReviewOpen(open) {
     review.classList.remove("is-concealed");
@@ -695,10 +711,13 @@
       month: "JAN",
       day: "15",
       avatar: "assets/img/avatar-3.jpg",
+      photo: "assets/img/hub/circle.jpg",
+      hostpic: "assets/img/hub/circle-host.png",
       detail: "A live Circle on Jan 15 at 20:30 Israel time, with Yael. 57 people are enrolled. The hour is about sounding sure in Hebrew while the words are still catching up. Nothing is booked from this demo."
     },
     {
       title: "Friday Songs from the Kitchen",
+      blurb: "Place-holder text, explains about the circle, gives a little background...",
       when: "Live event · Jan 22 · 19:00 IL",
       whenLong: "Live event · January 22 · 19:00 IL",
       host: "With Noam",
@@ -707,10 +726,13 @@
       month: "JAN",
       day: "22",
       avatar: "assets/img/avatar-1.jpg",
+      photo: "assets/img/circles-event-clean.jpg",
+      hostpic: "assets/img/hub/circle-host.png",
       detail: "A live Circle on Jan 22 at 19:00 Israel time, with Noam. 40 people are enrolled. Songs, the words around them, and the Friday kitchen. Nothing is booked from this demo."
     },
     {
       title: "A Short History of the Word Yalla",
+      blurb: "Place-holder text, explains about the circle, gives a little background...",
       when: "Live event · Feb 2 · 20:30 IL",
       whenLong: "Live event · February 2 · 20:30 IL",
       host: "With Yael",
@@ -719,12 +741,14 @@
       month: "FEB",
       day: "2",
       avatar: "assets/img/avatar-3.jpg",
+      photo: "assets/img/hub/magazine.jpg",
+      hostpic: "assets/img/hub/circle-host.png",
       detail: "A live Circle on Feb 2 at 20:30 Israel time, with Yael. 43 people are enrolled. Where yalla came from, and how it moves through a sentence. Nothing is booked from this demo."
     }
   ];
   var circleIndex = 0;
   var circleCard = document.querySelector("[data-circle]");
-  var circleDots = document.querySelectorAll(".dots i");
+  var circleDots = document.querySelectorAll(".dots__dot");
 
   function paintCircle() {
     var item = CIRCLES[circleIndex];
@@ -737,15 +761,29 @@
     var blurb = circleCard.querySelector("[data-circle-blurb]");
     if (blurb && item.blurb) blurb.textContent = item.blurb;
     circleCard.querySelector("[data-circle-when]").textContent = longWhen ? item.whenLong : item.when;
-    circleCard.querySelector("[data-circle-host]").textContent = item.host;
+    circleCard.querySelectorAll("[data-circle-host]").forEach(function (host) {
+      host.textContent = item.host;
+    });
     circleCard.querySelector("[data-circle-count]").textContent = item.count;
     circleCard.querySelector("[data-circle-enrolled]").setAttribute("aria-label", item.enrolled);
     circleCard.querySelector("[data-circle-avatar]").setAttribute("src", item.avatar);
+    if (item.photo) circleCard.querySelector(".circle-card__img").setAttribute("src", item.photo);
+    if (item.hostpic) circleCard.querySelector(".circle-card__hostpic").setAttribute("src", item.hostpic);
+    var scene = circleCard.querySelector(".circle-card__scene");
+    if (scene && item.photo) scene.setAttribute("src", item.photo);
     circleCard.querySelector("[data-circle-open]").setAttribute("aria-label", "Open details: " + item.title);
     date.replaceChildren(document.createTextNode(item.month), line, document.createTextNode(item.day));
     circleDots.forEach(function (dot, index) {
-      dot.classList.toggle("is-active", index === circleIndex);
+      var on = index === circleIndex;
+      dot.classList.toggle("is-active", on);
+      if (on) dot.setAttribute("aria-current", "true");
+      else dot.removeAttribute("aria-current");
     });
+  }
+
+  function stepCircle(delta) {
+    circleIndex = (circleIndex + delta + CIRCLES.length) % CIRCLES.length;
+    paintCircle();
   }
 
   circleCard.querySelector("[data-circle-next]").addEventListener("click", function (event) {
@@ -763,6 +801,18 @@
   document.querySelectorAll('[data-open="magazine"]').forEach(function (button) {
     button.addEventListener("click", function (event) {
       openModal("magazine", event.currentTarget);
+    });
+  });
+  document.querySelector("[data-circle-prev]").addEventListener("click", function () {
+    stepCircle(-1);
+  });
+  document.querySelector("[data-circle-after]").addEventListener("click", function () {
+    stepCircle(1);
+  });
+  circleDots.forEach(function (dot, index) {
+    dot.addEventListener("click", function () {
+      circleIndex = index;
+      paintCircle();
     });
   });
   paintCircle();
