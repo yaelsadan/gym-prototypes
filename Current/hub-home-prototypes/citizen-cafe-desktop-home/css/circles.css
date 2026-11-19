@@ -1,0 +1,106 @@
+/* Citizen Circles modal.
+   Type uses the Hub families already declared in home.css:
+   FedraSerifPro (--serif) and Assistant from Google Fonts (--sans).
+   The licensed Fedra files in circles-hifi are not referenced. */
+
+.circles-modal{
+  position:fixed;
+  z-index:85;
+  inset:0;
+  display:grid;
+  place-items:center;
+  box-sizing:border-box;
+  padding:32px;
+  overflow:hidden;
+  background:rgba(55,50,48,.56);
+  overscroll-behavior:none;
+}
+.circles-modal[hidden]{display:none !important}
+
+html.circles-open,
+html.circles-open body{
+  overflow:hidden;
+  height:100%;
+}
+html.circles-open .app,
+html.circles-open .main,
+html.circles-open .content{
+  overflow:hidden;
+}
+
+#circles-root{
+  width:min(1200px,100%);
+  height:min(820px,calc(100dvh - 64px));
+  max-height:calc(100dvh - 64px);
+  min-width:0;
+  min-height:0;
+}
+@supports not (height:100dvh){
+  #circles-root{
+    height:min(820px,calc(100vh - 64px));
+    max-height:calc(100vh - 64px);
+  }
+}
+
+.circles-card{
+  width:100%;
+  height:100%;
+  min-width:0;
+  min-height:0;
+}
+
+.nav__item.is-open{background:rgba(255,227,0,.22)}
+
+.circles-capsules{
+  display:flex;
+  flex-direction:row;
+  flex-shrink:0;
+  align-items:center;
+  gap:8px;
+}
+.circles-capsule{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  height:32px;
+  padding:0 12px 0 10px;
+  border-radius:999px;
+  background:#f4f2e8;
+  color:#373230;
+  font-size:14px;
+  font-weight:600;
+  line-height:1;
+  white-space:nowrap;
+}
+.circles-capsule svg{flex:none}
+.circles-host{
+  display:flex;
+  flex-shrink:0;
+  align-items:center;
+  gap:10px;
+  min-height:44px;
+  overflow:visible;
+}
+.circles-host .av{
+  --av:36px;
+  margin-left:0;
+  overflow:visible;
+}
+.circles-host .av img{object-position:center 18%}
+.circles-host__empty{
+  display:flex;
+  flex:none;
+  align-items:center;
+  justify-content:center;
+  width:36px;
+  height:36px;
+  border-radius:50%;
+  background:#eae9de;
+}
+.circles-host__copy{
+  display:flex;
+  flex-direction:column;
+  min-width:0;
+}
+.circles-host__copy span{font-size:13px;line-height:17px}
+.circles-host__copy strong{font-size:16px;line-height:21px;font-weight:700}

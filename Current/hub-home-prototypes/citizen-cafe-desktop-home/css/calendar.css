@@ -1,4 +1,4 @@
-/* Weekly calendar modal. Numbers use Assistant; brand names use Fedra. */
+/* Weekly calendar modal. Activity titles and numbers use Assistant; editorial headings use Fedra. */
 
 .cal-modal{
   position:fixed;
@@ -300,6 +300,7 @@ html.cal-open .content{overflow:hidden}
   font:600 14px/17px var(--sans);
   font-variant-numeric:tabular-nums;
   white-space:nowrap;
+  color:color-mix(in srgb, var(--charcoal) 62%, #fff);
 }
 .cal-item__dur{
   padding:2px 5px;
@@ -317,13 +318,14 @@ html.cal-open .content{overflow:hidden}
 }
 .cal-item__name{
   min-width:0;
-  font:700 16px/20px var(--serif);
+  font:600 16px/20px var(--sans);
   white-space:nowrap;
 }
-.cal-item__num{font:700 16px/20px var(--sans)}
+.cal-item__num{font:600 16px/20px var(--sans)}
 .cal-item__level{
   font:600 14px/20px var(--sans);
   white-space:nowrap;
+  color:color-mix(in srgb, var(--charcoal) 62%, #fff);
 }
 .cal-item__mark{
   position:absolute;

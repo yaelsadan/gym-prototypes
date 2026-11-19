@@ -87,27 +87,28 @@
 
   function pad(n) { return String(n).padStart(2, "0"); }
 
-  /* Day mode hides seconds. Under 24 hours the third field is seconds.
-     Both shapes are three digits, so the clock does not change width. */
+  /* A day or more shows four units, matching the class card.
+     Under 24 hours the days field drops off. */
   function fieldsFor(ms) {
     var t = split(ms);
     if (state.joinWindow === "open") {
       return [
-        { key: "m", text: pad(t.h * 60 + t.m), label: "Minutes" },
-        { key: "s", text: pad(t.s), label: "Seconds" }
+        { key: "m", text: pad(t.h * 60 + t.m), label: "Min" },
+        { key: "s", text: pad(t.s), label: "Sec" }
       ];
     }
     if (ms >= 86400000) {
       return [
         { key: "d", text: pad(t.d), label: "Days" },
-        { key: "h", text: pad(t.h), label: "Hours" },
-        { key: "m", text: pad(t.m), label: "Minutes" }
+        { key: "h", text: pad(t.h), label: "Hrs" },
+        { key: "m", text: pad(t.m), label: "Min" },
+        { key: "s", text: pad(t.s), label: "Sec" }
       ];
     }
     return [
-      { key: "h", text: pad(t.h), label: "Hours" },
-      { key: "m", text: pad(t.m), label: "Minutes" },
-      { key: "s", text: pad(t.s), label: "Seconds" }
+      { key: "h", text: pad(t.h), label: "Hrs" },
+      { key: "m", text: pad(t.m), label: "Min" },
+      { key: "s", text: pad(t.s), label: "Sec" }
     ];
   }
 
@@ -323,8 +324,8 @@
     if (state.paused) return;
     var left = remaining();
     if (left <= 0) return;
-    var wait = left >= 86400000 ? (left % 60000 || 60000) : (1000 - (Date.now() % 1000));
-    if (wait < 40) wait += left >= 86400000 ? 60000 : 1000;
+    var wait = 1000 - (Date.now() % 1000);
+    if (wait < 40) wait += 1000;
     timerId = window.setTimeout(function () {
       paintTime();
       arm();
@@ -711,6 +712,7 @@
       month: "JAN",
       day: "15",
       avatar: "assets/img/avatar-3.jpg",
+      face: "assets/circles/host-portrait.jpg",
       photo: "assets/img/hub/circle.jpg",
       hostpic: "assets/img/hub/circle-host.png",
       detail: "A live Circle on Jan 15 at 20:30 Israel time, with Yael. 57 people are enrolled. The hour is about sounding sure in Hebrew while the words are still catching up. Nothing is booked from this demo."
@@ -746,6 +748,13 @@
       detail: "A live Circle on Feb 2 at 20:30 Israel time, with Yael. 43 people are enrolled. Where yalla came from, and how it moves through a sentence. Nothing is booked from this demo."
     }
   ];
+  function circleEventId(title) {
+    var name = (title || "").toLowerCase();
+    if (name.indexOf("yalla") !== -1) return "yalla";
+    if (name.indexOf("deep") !== -1) return "deep";
+    if (name.indexOf("work") !== -1) return "work";
+    return "";
+  }
   var circleIndex = 0;
   var circleCard = document.querySelector("[data-circle]");
   var circleDots = document.querySelectorAll(".dots__dot");
@@ -760,18 +769,26 @@
     circleCard.querySelector("[data-circle-title]").textContent = item.title;
     var blurb = circleCard.querySelector("[data-circle-blurb]");
     if (blurb && item.blurb) blurb.textContent = item.blurb;
-    circleCard.querySelector("[data-circle-when]").textContent = longWhen ? item.whenLong : item.when;
+    var when = longWhen ? item.whenLong : item.when;
+    var cut = when.indexOf(" · ");
+    var kind = document.createElement("b");
+    kind.textContent = when.slice(0, cut);
+    circleCard.querySelector("[data-circle-when]").replaceChildren(kind, when.slice(cut));
     circleCard.querySelectorAll("[data-circle-host]").forEach(function (host) {
       host.textContent = item.host;
     });
     circleCard.querySelector("[data-circle-count]").textContent = item.count;
     circleCard.querySelector("[data-circle-enrolled]").setAttribute("aria-label", item.enrolled);
     circleCard.querySelector("[data-circle-avatar]").setAttribute("src", item.avatar);
+    circleCard.querySelectorAll("[data-circle-face]").forEach(function (face) {
+      face.setAttribute("src", item.face || item.avatar);
+    });
     if (item.photo) circleCard.querySelector(".circle-card__img").setAttribute("src", item.photo);
     if (item.hostpic) circleCard.querySelector(".circle-card__hostpic").setAttribute("src", item.hostpic);
     var scene = circleCard.querySelector(".circle-card__scene");
     if (scene && item.photo) scene.setAttribute("src", item.photo);
     circleCard.querySelector("[data-circle-open]").setAttribute("aria-label", "Open details: " + item.title);
+    circleCard.setAttribute("data-circle-event", circleEventId(item.title));
     date.replaceChildren(document.createTextNode(item.month), line, document.createTextNode(item.day));
     circleDots.forEach(function (dot, index) {
       var on = index === circleIndex;
@@ -786,26 +803,37 @@
     paintCircle();
   }
 
-  circleCard.querySelector("[data-circle-next]").addEventListener("click", function (event) {
+  function openCircleFromHome(trigger) {
+    var eventId = circleCard.getAttribute("data-circle-event");
+    if (window.CitizenCircles) {
+      window.CitizenCircles.open({
+        view: eventId ? "event" : "overview",
+        eventId: eventId || undefined
+      }, trigger);
+      return;
+    }
     var item = CIRCLES[circleIndex];
     document.querySelector("[data-circle-dialog-title]").textContent = item.title;
     document.querySelector("[data-circle-dialog-copy]").textContent = item.detail;
-    openModal("circle", event.currentTarget);
+    openModal("circle", trigger);
+  }
+  circleCard.querySelector("[data-circle-next]").addEventListener("click", function (event) {
+    openCircleFromHome(event.currentTarget);
   });
   circleCard.querySelector("[data-circle-open]").addEventListener("click", function (event) {
-    var item = CIRCLES[circleIndex];
-    document.querySelector("[data-circle-dialog-title]").textContent = item.title;
-    document.querySelector("[data-circle-dialog-copy]").textContent = item.detail;
-    openModal("circle", event.currentTarget);
+    openCircleFromHome(event.currentTarget);
   });
   document.querySelectorAll('[data-open="magazine"]').forEach(function (button) {
     button.addEventListener("click", function (event) {
       openModal("magazine", event.currentTarget);
     });
   });
-  document.querySelector("[data-circle-prev]").addEventListener("click", function () {
-    stepCircle(-1);
-  });
+  var circlePrev = document.querySelector("[data-circle-prev]");
+  if (circlePrev) {
+    circlePrev.addEventListener("click", function () {
+      stepCircle(-1);
+    });
+  }
   document.querySelector("[data-circle-after]").addEventListener("click", function () {
     stepCircle(1);
   });

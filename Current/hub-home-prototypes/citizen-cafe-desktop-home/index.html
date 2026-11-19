@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-live="figma" data-cafe="hours" data-method="library">
+<html lang="en" data-live="figma" data-cafe="hours" data-method="library" data-circles="inset">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -18,8 +18,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/home.css?v=20261115as">
-<link rel="stylesheet" href="css/calendar.css?v=20261115g">
+<link rel="stylesheet" href="css/home.css?v=20261119ai">
+<link rel="stylesheet" href="css/calendar.css?v=20261116a">
+<link rel="stylesheet" href="css/pods.css?v=20261119e">
+<link rel="stylesheet" href="css/circles.css?v=20261119b">
 </head>
 <body>
 <div class="app">
@@ -37,7 +39,7 @@
         <svg class="nav__icon" width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true"><rect x="3" y="4.5" width="16" height="14.5" rx="1.5" stroke="currentColor" stroke-width="1.1"/><path d="M3 8.5h16M7.5 2.5v4M14.5 2.5v4" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg>
         <span class="nav__label">Calendar</span>
       </a>
-      <a class="nav__item" href="#">
+      <a class="nav__item" href="#" data-circles-open aria-haspopup="dialog" aria-controls="circles-modal" aria-expanded="false">
         <svg class="nav__icon" width="24" height="22" viewBox="0 0 24 22" fill="none" aria-hidden="true"><circle cx="9" cy="11" r="7" stroke="currentColor" stroke-width="1.1"/><circle cx="15" cy="11" r="7" stroke="currentColor" stroke-width="1.1"/></svg>
         <span class="nav__label">Circles</span>
       </a>
@@ -106,13 +108,13 @@
                     <p class="class-meta class-meta--term" data-course-term>November semester 2026</p>
                   </div>
                 </div>
+              </div>
+              <div class="class-card__tools" aria-label="Class tools">
                 <div class="class-id__links">
                   <button class="class-link" type="button">View breakdown<span class="class-link__mark" aria-hidden="true"><img src="assets/icons/hub/class-link-arrow.svg" alt="" width="5.61538" height="5.61538"></span></button>
                   <button class="class-link" type="button">Student list<span class="class-link__mark" aria-hidden="true"><img src="assets/icons/hub/class-link-arrow.svg" alt="" width="5.61538" height="5.61538"></span></button>
                 </div>
-              </div>
-              <div class="class-card__tools" aria-label="Class tools">
-                <a class="tool-tile" href="#">
+                <a class="tool-tile" href="#" data-pods-open aria-haspopup="dialog" aria-controls="class-pods">
                   <svg class="tool-tile__icon-img tool-tile__icon-img--pods" viewBox="0 0 48.9871 48.9871" width="38" height="38" aria-hidden="true" fill="none"><path d="M28.5758 42.5661L28.5758 36.5448C28.5758 35.4801 28.9988 34.4591 29.7516 33.7063C30.5044 32.9535 31.5254 32.5305 32.5901 32.5305L38.6114 32.5305C39.676 32.5305 40.6971 32.9535 41.4499 33.7063C42.2027 34.4591 42.6256 35.4801 42.6256 36.5448L42.6256 38.5519C42.6256 39.6165 42.2027 40.6375 41.4499 41.3904C40.6971 42.1432 39.676 42.5661 38.6114 42.5661L28.5758 42.5661L24.5616 42.5661C19.7707 42.5661 15.1761 40.6629 11.7884 37.2753C8.40077 33.8876 6.49761 29.293 6.49761 24.5021C6.49761 19.7112 8.40077 15.1166 11.7884 11.7289C15.1761 8.34125 19.7707 6.43808 24.5616 6.43808L28.5758 6.43808L38.6114 6.43808C39.676 6.43808 40.6971 6.86101 41.4499 7.61382C42.2027 8.36664 42.6256 9.38767 42.6256 10.4523L42.6256 12.4594C42.6256 13.5241 42.2027 14.5451 41.4499 15.2979C40.6971 16.0507 39.676 16.4736 38.6114 16.4736L32.5901 16.4736C31.5254 16.4736 30.5044 16.0507 29.7516 15.2979C28.9988 14.5451 28.5758 13.5241 28.5758 12.4594L28.5758 6.43808L24.5616 6.43808C19.7707 6.43808 15.1761 8.34125 11.7884 11.7289C8.40077 15.1166 6.49761 19.7112 6.49761 24.5021C6.49761 29.293 8.40077 33.8876 11.7884 37.2753C15.1761 40.6629 19.7707 42.5661 24.5616 42.5661L28.5758 42.5661Z" fill="currentColor" stroke-width="0.612339" stroke-linecap="round" stroke-linejoin="round" stroke="#373230"/></svg>
                   <span class="tool-tile__title">Class-pods</span>
                   <span class="tool-tile__desc">Recap n’Drill</span>
@@ -288,6 +290,7 @@
               <div class="circle-card__photo">
                 <img class="circle-card__img" src="assets/img/hub/circle.jpg" alt="">
                 <img class="circle-card__hostpic" src="assets/img/hub/circle-host.png" alt="">
+                <span class="circle-card__face av"><img data-circle-face src="assets/circles/host-portrait.jpg" alt=""></span>
                 <p class="circle-card__pill"><b>Host:</b> <span data-circle-host>Nitzan Wittler</span></p>
               </div>
               <div class="circle-card__stage">
@@ -303,7 +306,11 @@
                 <p class="circle-card__blurb" data-circle-blurb>Place-holder text, explains about the circle, gives a little background...</p>
                 <p class="circle-card__meta">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.2" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M3.5 9.5h17M8 3.4v3.2M16 3.4v3.2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
-                  <span data-circle-when>Live event · Jan 15 · 20:30 IL</span>
+                  <span data-circle-when><b>Live event</b> · Jan 15 · 20:30 IL</span>
+                </p>
+                <p class="circle-card__hostline">
+                  <span class="av" style="--ring:#F7AAF3"><img data-circle-face src="assets/circles/host_nitzan.png" alt=""></span>
+                  <span>Host · <span data-circle-host>Nitzan Wittler</span></span>
                 </p>
                 <p class="circle-card__people">
                   <span class="av av--sm av--plain"><img data-circle-avatar src="assets/img/avatar-3.jpg" alt=""></span>
@@ -318,6 +325,7 @@
               </div>
               <span class="circle-card__date" data-circle-date aria-hidden="true">JAN<br>15</span>
               <button class="card-hit" type="button" data-circle-open aria-label="Open details: The Imposter Syndrome of the Judean Desert"></button>
+              <button class="circle-card__next" type="button" data-circle-after aria-label="Next event"><svg width="8" height="12" viewBox="0 0 8 12" fill="none" aria-hidden="true"><path d="M1.5 1.5 6 6 1.5 10.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
               <button class="circle-card__go" type="button" data-circle-next aria-label="RSVP">RSVP</button>
             </article>
 
@@ -332,13 +340,6 @@
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M4.5 11.5l7-7M6 4.5h5.5V10" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/></svg>
               </button>
             </article>
-          </div>
-          <div class="community-pager">
-            <div class="dots" role="group" aria-label="Live events">
-              <button class="dots__arrow" type="button" data-circle-prev aria-label="Previous event"><svg width="8" height="12" viewBox="0 0 8 12" fill="none" aria-hidden="true"><path d="M6.5 1.5 2 6l4.5 4.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-              <span class="dots__marks"><button class="dots__dot is-active" type="button" aria-label="Event 1"></button><button class="dots__dot" type="button" aria-label="Event 2"></button><button class="dots__dot" type="button" aria-label="Event 3"></button></span>
-              <button class="dots__arrow" type="button" data-circle-after aria-label="Next event"><svg width="8" height="12" viewBox="0 0 8 12" fill="none" aria-hidden="true"><path d="M1.5 1.5 6 6 1.5 10.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-            </div>
           </div>
         </section>
         </div>
@@ -579,10 +580,12 @@
     </fieldset>
     <fieldset>
       <legend>Circles</legend>
-      <label><input type="radio" name="circles" value="current" checked> Current</label>
+      <label><input type="radio" name="circles" value="current"> Current</label>
       <label><input type="radio" name="circles" value="photo"> Host on photo</label>
       <label><input type="radio" name="circles" value="frame"> Host on frame</label>
       <label><input type="radio" name="circles" value="mark"> Host on mark</label>
+      <label><input type="radio" name="circles" value="avatar"> Host in avatar</label>
+      <label><input type="radio" name="circles" value="inset" checked> Avatar in photo</label>
     </fieldset>
     </div>
   </div>
@@ -695,8 +698,355 @@
   </div>
 </div>
 
-<script src="js/home.js?v=20261115j"></script>
+<div class="pods" id="class-pods" data-pods hidden>
+  <div class="pods__card">
+    <header class="pods__head">
+      <svg class="pods__mark" width="48" height="48" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+        <path d="M6.55739 28.1533H12.4574C13.5006 28.1533 14.5011 28.5679 15.2387 29.3053C15.9764 30.043 16.3908 31.0436 16.3908 32.0867V37.9868C16.3908 39.0299 15.9764 40.0305 15.2387 40.7681C14.5011 41.5056 13.5006 41.9201 12.4574 41.9201H10.4907C9.44756 41.9201 8.44708 41.5056 7.70943 40.7681C6.97178 40.0305 6.55739 39.0299 6.55739 37.9868V28.1533V24.2199C6.55739 19.5256 8.42221 15.0235 11.7416 11.7041C15.061 8.38471 19.5631 6.51988 24.2575 6.51988C28.9519 6.51988 33.454 8.38471 36.7735 11.7041C40.0929 15.0235 41.9577 19.5256 41.9577 24.2199V28.1533V37.9868C41.9577 39.0299 41.5431 40.0305 40.8055 40.7681C40.068 41.5056 39.0674 41.9201 38.0243 41.9201H36.0576C35.0145 41.9201 34.0139 41.5056 33.2762 40.7681C32.5385 40.0305 32.1242 39.0299 32.1242 37.9868V32.0867C32.1242 31.0436 32.5385 30.043 33.2762 29.3053C34.0139 28.5679 35.0145 28.1533 36.0576 28.1533H41.9577V24.2199C41.9577 19.5256 40.0929 15.0235 36.7735 11.7041C33.454 8.38471 28.9519 6.51988 24.2575 6.51988C19.5631 6.51988 15.061 8.38471 11.7416 11.7041C8.42221 15.0235 6.55739 19.5256 6.55739 24.2199V28.1533Z" fill="currentColor"/>
+        <path d="M6.55739 28.1533H12.4574C13.5006 28.1533 14.5011 28.5679 15.2387 29.3053C15.9764 30.043 16.3908 31.0436 16.3908 32.0867V37.9868C16.3908 39.0299 15.9764 40.0305 15.2387 40.7681C14.5011 41.5056 13.5006 41.9201 12.4574 41.9201H10.4907C9.44756 41.9201 8.44708 41.5056 7.70943 40.7681C6.97178 40.0305 6.55739 39.0299 6.55739 37.9868V28.1533ZM6.55739 28.1533V24.2199C6.55739 19.5256 8.42221 15.0235 11.7416 11.7041C15.061 8.38471 19.5631 6.51988 24.2575 6.51988C28.9519 6.51988 33.454 8.38471 36.7735 11.7041C40.0929 15.0235 41.9577 19.5256 41.9577 24.2199V28.1533M41.9577 28.1533V37.9868C41.9577 39.0299 41.5431 40.0305 40.8055 40.7681C40.068 41.5056 39.0674 41.9201 38.0243 41.9201H36.0576C35.0145 41.9201 34.0139 41.5056 33.2762 40.7681C32.5385 40.0305 32.1242 39.0299 32.1242 37.9868V32.0867C32.1242 31.0436 32.5385 30.043 33.2762 29.3053C34.0139 28.5679 35.0145 28.1533 36.0576 28.1533H41.9577Z" stroke="#373230" stroke-width="0.566767" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <h2 class="pods__title" id="pods-title">Class pods</h2>
+      <div class="pods-course-wrap">
+        <button class="pods-course" type="button" data-pods-course aria-haspopup="menu" aria-expanded="false" aria-controls="pods-course-menu" aria-label="Choose level or course, current: Light-Blue, November 2026">
+          <span class="pods-course__mark" data-pods-course-mark><img src="assets/icons/class-pods/level-cloud.svg" alt="" width="22" height="12.0488"></span>
+          <span class="pods-course__text">
+            <span class="pods-course__name" data-pods-course-name>Light-Blue</span>
+            <span class="pods-course__term" data-pods-course-term>November 2026 · Current class</span>
+          </span>
+          <img src="assets/icons/class-pods/chevron-down.svg" alt="" width="18" height="18">
+        </button>
+        <div class="pods-menu pods-menu--course" id="pods-course-menu" role="menu" aria-label="Levels" data-pods-course-menu hidden></div>
+      </div>
+      <button class="pods-close" type="button" data-pods-close aria-label="Close Class pods">
+        <img src="assets/icons/class-pods/close.svg" alt="" width="20" height="20">
+      </button>
+    </header>
+    <div class="pods__body">
+      <ul class="pods-lessons" data-pods-lessons aria-label="Lessons"></ul>
+      <div class="pods__fade" aria-hidden="true"></div>
+      <section class="pods-detail" aria-labelledby="pods-lesson-title">
+        <div class="pods-detail__head">
+          <span class="pods-detail__num" data-pods-num aria-hidden="true"></span>
+          <div class="pods-detail__copy">
+            <p class="pods-detail__kicker">Recap n’ Drill</p>
+            <h3 class="pods-detail__title" id="pods-lesson-title" data-pods-title></h3>
+            <p class="pods-detail__meta" data-pods-meta></p>
+          </div>
+          <button class="pods-cta" type="button" data-pods-cta data-state="play">
+            <svg class="pods-cta__icon pods-cta__icon--play" width="11.1456" height="12.2936" viewBox="0 0 11.1456 12.2936" fill="none" aria-hidden="true"><path d="M2.63758 0.78129C1.73051 0.256146 0.595263 0.910674 0.595263 1.95879V10.3348C0.595263 11.3829 1.73051 12.0374 2.63758 11.5123L9.8714 7.32429C10.7766 6.80024 10.7766 5.49335 9.8714 4.96929L2.63758 0.78129Z" fill="currentColor" stroke="currentColor" stroke-width="1.19053" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <svg class="pods-cta__icon pods-cta__icon--pause" width="7.88889" height="14" viewBox="0 0 7.88889 14" fill="none" aria-hidden="true"><path d="M1.5 12.5V1.5" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M6.38889 12.5V1.5" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <svg class="pods-cta__icon pods-cta__icon--replay" width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M10.0001 4.16662V2.39566L14.1667 4.99996L10.0001 7.60425V5.83329C7.24172 5.83329 5.00005 8.07496 5.00005 10.8333C5.00005 13.5916 7.24172 15.8333 10.0001 15.8333C12.7584 15.8333 15.0001 13.5916 15.0001 10.8333H16.6667C16.6667 14.5166 13.6834 17.5 10.0001 17.5C6.31672 17.5 3.33339 14.5166 3.33339 10.8333C3.33339 7.14996 6.31672 4.16662 10.0001 4.16662Z" fill="currentColor"/></svg>
+            <span data-pods-cta-label>Play</span>
+          </button>
+        </div>
+        <div class="pods-detail__rule" aria-hidden="true"></div>
+        <ol class="pods-tracks" data-pods-tracks aria-label="Tracks"></ol>
+      </section>
+    </div>
+  </div>
+  <div class="pods-player" data-pods-player role="region" aria-label="Class pods player" hidden>
+    <div class="pods-player__bar" data-pods-bar role="progressbar" aria-label="Lesson progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"></div>
+    <div class="pods-player__row">
+      <div class="pods-player__aux">
+        <button class="pods-player__speed" type="button" data-pods-speed aria-haspopup="menu" aria-expanded="false" aria-controls="pods-speed-menu" aria-label="Playback speed 1x">
+          <span class="pods-player__pill" data-pods-speed-label>x1</span>
+        </button>
+        <button class="pods-player__volume" type="button" data-pods-volume aria-haspopup="true" aria-expanded="false" aria-controls="pods-volume" aria-label="Volume">
+          <img class="pods-player__vol pods-player__vol--on" src="assets/icons/class-pods/speaker.svg" alt="" width="20" height="20">
+          <img class="pods-player__vol pods-player__vol--off" src="assets/icons/class-pods/speaker-muted.svg" alt="" width="20" height="20">
+        </button>
+      </div>
+      <div class="pods-player__info">
+        <button class="pods-player__text" type="button" data-pods-open-playing tabindex="-1">
+          <span class="pods-player__now" data-pods-now></span>
+          <span class="pods-player__kind" data-pods-kind>Content</span>
+        </button>
+        <button class="pods-player__level" type="button" data-pods-level data-pods-open-playing tabindex="-1" aria-hidden="true"></button>
+      </div>
+      <div class="pods-player__controls">
+        <button class="pods-player__skip pods-player__rewind" type="button" data-pods-back aria-label="Back 10 seconds">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M13.32 4.52A7.6 7.6 0 1 1 6.01 7.32" stroke="currentColor" stroke-width="1.45" stroke-linecap="round"/>
+            <path d="M6.07 7.24 6.35 4.61 4.06 5.93" stroke="currentColor" stroke-width="1.45" stroke-linecap="round" stroke-linejoin="round"/>
+            <text x="12" y="12" text-anchor="middle" dominant-baseline="central" fill="currentColor" font-size="7.1" font-weight="700" font-family="Assistant, sans-serif">10</text>
+          </svg>
+        </button>
+        <button class="pods-player__skip pods-player__skip--back" type="button" data-pods-prev aria-label="Previous track">
+          <img src="assets/icons/class-pods/track-forward.svg" alt="" width="14.0876" height="11.5274">
+        </button>
+        <button class="pods-player__main" type="button" data-pods-toggle aria-label="Pause">
+          <img class="pods-player__glyph pods-player__glyph--pause" src="assets/icons/class-pods/player-pause.svg" alt="" width="47.5849" height="47.5849">
+          <img class="pods-player__glyph pods-player__glyph--play" src="assets/icons/class-pods/player-play.svg" alt="" width="47.5849" height="47.5849">
+        </button>
+        <button class="pods-player__skip" type="button" data-pods-next aria-label="Next track">
+          <img src="assets/icons/class-pods/track-forward.svg" alt="" width="14.0876" height="11.5274">
+        </button>
+      </div>
+    </div>
+    <button class="pods-player__dismiss" type="button" data-pods-dismiss title="Stop and close" aria-label="Stop and close">
+      <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true"><path d="M1.4 1.4l7.2 7.2M8.6 1.4l-7.2 7.2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+  <div class="pods-menu pods-menu--speed" id="pods-speed-menu" role="menu" aria-label="Playback speed" data-pods-speed-menu hidden></div>
+  <div class="pods-volume" id="pods-volume" role="group" aria-label="Volume" data-pods-volume-pop hidden>
+    <button class="pods-volume__mute" type="button" data-pods-mute aria-pressed="false" aria-label="Mute">
+      <img class="pods-player__vol pods-player__vol--on" src="assets/icons/class-pods/speaker.svg" alt="" width="20" height="20">
+      <img class="pods-player__vol pods-player__vol--off" src="assets/icons/class-pods/speaker-muted.svg" alt="" width="20" height="20">
+    </button>
+    <input class="pods-volume__range" type="range" min="0" max="100" step="1" value="80" aria-label="Volume" data-pods-volume-range>
+  </div>
+</div>
+
+<div class="circles-modal" id="circles-modal" hidden>
+  <div id="circles-root"></div>
+</div>
+<template id="circles-template">
+<!-- TEMPORARY prototype content: event dates, the Hebrew-at-work Circle, summaries, Host TBC, thematic photos, and recording titles after the first. -->
+  <sc-if value="{{modalOpen}}" hint-placeholder-val="{{ true }}">
+  <div class="circles-card" role="dialog" aria-modal="true" aria-labelledby="circles-title" data-temporary="prototype" style="position: relative; width: 100%; height: 100%; max-width: 100%; max-height: 100%; min-width: 0; min-height: 0; background: #f7f6ef; border-radius: 24px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 24px 64px rgba(55,50,48,0.28); border-top: 8px solid #ffe300; box-sizing: border-box; font-family: var(--sans); color: #373230">
+
+    <!-- Header (fixed) -->
+    <div style="flex-shrink: 0; display: flex; align-items: center; gap: 16px; padding: 20px 32px 18px 32px; background: #ffffff; border-bottom: 1px solid #eae9de">
+      <div style="width: 52px; height: 52px; display: flex; align-items: center; justify-content: center; flex-shrink: 0">
+        <img src="assets/circles/circles-dark.svg" alt="" style="width: 52px; height: 52px">
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 2px; min-width: 0">
+        <h2 id="circles-title" style="margin: 0; font-family: var(--serif); font-weight: 700; font-size: 32px; line-height: 1.15">Citizen Circles</h2>
+        <p style="margin: 0; font-size: 15px; line-height: 20px">Conversations, workshops and events with our students and teachers</p>
+      </div>
+      <div style="flex: 1"></div>
+      <button type="button" onClick="{{cycleTz}}" style="display: flex; align-items: center; gap: 8px; height: 44px; padding: 0 18px; border: 1px solid #373230; border-radius: 999px; background: #fff; font: inherit; font-size: 15px; color: #373230; cursor: pointer">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M3 12h18M12 3c2.5 2.5 3.8 5.5 3.8 9s-1.3 6.5-3.8 9c-2.5-2.5-3.8-5.5-3.8-9S9.5 5.5 12 3z"></path></svg>
+        <span>Times in <strong style="font-weight: 700">{{tzName}}</strong></span>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg>
+      </button>
+      <button type="button" aria-label="Close Circles" data-circles-close onClick="{{goHome}}" style="width: 44px; height: 44px; border-radius: 50%; border: 1px solid #373230; background: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #373230; flex-shrink: 0">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg>
+      </button>
+    </div>
+
+    <!-- Body: the one internal scroll -->
+    <div ref="{{bodyRef}}" onScroll="{{onBodyScroll}}" style="flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; position: relative; padding: 24px 32px 40px 32px; box-sizing: border-box">
+
+      <!-- ===== UPCOMING · fixed 360px (40 heading + 14 gap + 306 content) ===== -->
+      <sc-if value="{{hasUpcomingArea}}" hint-placeholder-val="{{ true }}">
+      <section aria-labelledby="up-h" style="height: 360px; display: flex; flex-direction: column; gap: 14px">
+        <div style="height: 40px; flex-shrink: 0; display: flex; align-items: center; gap: 12px">
+          <h3 id="up-h" style="margin: 0; font-family: var(--serif); font-weight: 400; font-size: 24px; line-height: 30px">Upcoming live Circles</h3>
+          <span style="font-size: 14px; line-height: 20px; padding: 2px 10px; border-radius: 999px; background: #eae9de; font-weight: 600">{{eventCountLabel}}</span>
+          <div style="flex: 1"></div>
+          <sc-if value="{{eventOpen}}" hint-placeholder-val="{{ false }}">
+            <nav aria-label="Other upcoming Circles" style="display: flex; align-items: center; gap: 8px; font-size: 14px">
+              <button type="button" aria-label="Previous upcoming Circle" onClick="{{prevEvent}}" style="width: 36px; height: 36px; border-radius: 50%; border: 1px solid #373230; background: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#373230" stroke-width="1.5" aria-hidden="true"><path d="M15 6l-6 6 6 6"></path></svg></button>
+              <span style="min-width: 44px; text-align: center; font-weight: 600">{{eventCounter}}</span>
+              <button type="button" aria-label="Next upcoming Circle" onClick="{{nextEvent}}" style="width: 36px; height: 36px; border-radius: 50%; border: 1px solid #373230; background: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#373230" stroke-width="1.5" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg></button>
+              <button type="button" onClick="{{backToAll}}" style="margin-left: 8px; background: none; border: 0; padding: 0; min-height: 36px; font: inherit; font-size: 14px; font-weight: 600; color: #373230; text-decoration: underline; text-underline-offset: 3px; cursor: pointer">All upcoming</button>
+            </nav>
+          </sc-if>
+        </div>
+
+        <!-- Overview: three event cards (306px) -->
+        <sc-if value="{{overviewMulti}}" hint-placeholder-val="{{ true }}">
+          <div style="height: 306px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px">
+            <sc-for list="{{events}}" as="e" hint-placeholder-count="3">
+              <article style="display: flex; flex-direction: column; background: #fff; border: 1px solid #eae9de; border-radius: 16px; box-shadow: 0 1px 2px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.06); padding: 8px; box-sizing: border-box; overflow: hidden; min-width: 0">
+                <button type="button" onClick="{{e.open}}" aria-label="{{e.ariaOpen}}" style="display: block; flex-shrink: 0; width: 100%; height: 112px; padding: 0; border: 0; border-radius: 10px; overflow: hidden; background: #eae9de; cursor: pointer">
+                  <img src="{{e.image}}" alt="" style="{{e.imgStyle}}">
+                </button>
+                <div style="flex: 1; min-height: 0; display: flex; flex-direction: column; padding: 12px 8px 4px 8px">
+                  <span style="display: flex; align-items: center; gap: 6px; font-size: 15px; line-height: 20px; font-weight: 700">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#373230" stroke-width="1.6" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15" rx="2"></rect><path d="M3.5 10h17M8 3v4M16 3v4"></path></svg>
+                    {{e.whenShort}}
+                  </span>
+                  <button type="button" onClick="{{e.open}}" style="margin-top: 6px; background: none; border: 0; padding: 0; text-align: left; font-family: var(--serif); font-weight: 700; font-size: 19px; line-height: 24px; color: #373230; cursor: pointer; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden">{{e.title}}</button>
+                  <div style="margin-top: 8px; display: flex; align-items: center; gap: 8px">
+                    <sc-if value="{{e.hostKnown}}" hint-placeholder-val="{{ true }}"><img src="{{e.hostImg}}" alt="" style="width: 26px; height: 26px; border-radius: 50%; object-fit: cover; background: #eae9de"></sc-if>
+                    <sc-if value="{{e.hostUnknown}}" hint-placeholder-val="{{ false }}"><span style="width: 26px; height: 26px; border-radius: 50%; background: #eae9de; display: flex; align-items: center; justify-content: center"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#373230" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="9" r="4"></circle><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"></path></svg></span></sc-if>
+                    <span style="font-size: 15px; line-height: 20px">Hosted by <strong style="font-weight: 600">{{e.host}}</strong></span>
+                  </div>
+                  <div style="flex: 1; min-height: 8px"></div>
+                  <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px">
+                    <button type="button" onClick="{{e.open}}" style="height: 40px; padding: 0 4px; border: 0; background: none; font: inherit; font-size: 15px; font-weight: 600; color: #373230; text-decoration: underline; text-underline-offset: 4px; cursor: pointer">Details</button>
+                    <button type="button" onClick="{{e.rsvp}}" style="height: 40px; padding: 0 34px; border-radius: 999px; border: 0; background: #ffe300; font: inherit; font-size: 15px; font-weight: 700; color: #373230; cursor: pointer">RSVP</button>
+                  </div>
+                </div>
+              </article>
+            </sc-for>
+          </div>
+        </sc-if>
+
+        <!-- Expanded event: same 306px box. Image | description | info panel (date, format, host, RSVP). No inner scroll. -->
+        <sc-if value="{{eventOpen}}" hint-placeholder-val="{{ false }}">
+          <article aria-label="{{ev.title}}" style="position: relative; height: 306px; box-sizing: border-box; display: flex; gap: 28px; padding: 16px; background: #fff; border: 1px solid #eae9de; border-radius: 16px; box-shadow: 0 1px 2px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.06)">
+            <div style="width: 340px; height: 272px; flex-shrink: 0; border-radius: 12px; overflow: hidden; background: #eae9de">
+              <img src="{{ev.image}}" alt="" style="{{ev.imgStyle}}">
+            </div>
+            <div ref="{{detailRef}}" style="flex: 1; min-width: 0; height: 100%; overflow: hidden; display: flex; flex-direction: column">
+              <h3 style="margin: 0; font-family: var(--serif); font-weight: 700; font-size: 28px; line-height: 34px">{{ev.title}}</h3>
+              <div style="margin-top: 12px; flex: 1; min-height: 0; display: flex; gap: 24px">
+                <p style="flex: 1; min-width: 0; margin: 0; font-size: 16px; line-height: 24px">{{ev.summary}}</p>
+                <div style="width: 360px; flex-shrink: 0; display: flex; flex-direction: column; gap: 12px; padding-left: 24px; border-left: 1px solid #eae9de">
+                  <div style="display: flex; align-items: center; gap: 12px">
+                    <span aria-hidden="true" style="width: 48px; flex-shrink: 0; display: flex; flex-direction: column; gap: 1px; text-align: center">
+                      <span style="height: 17px; line-height: 17px; background: #ffe300; border-radius: 4px 4px 0 0; font-size: 11px; font-weight: 700; letter-spacing: 0.04em">{{ev.month}}</span>
+                      <span style="height: 30px; line-height: 30px; background: #eae9de; border-radius: 0 0 4px 4px; font-size: 20px; font-weight: 700">{{ev.day}}</span>
+                    </span>
+                    <span style="display: flex; flex-direction: column; gap: 1px; min-width: 0">
+                      <strong style="font-size: 15px; line-height: 20px; font-weight: 700">{{evDateShortLong}}</strong>
+                      <span style="font-size: 15px; line-height: 20px">Starts {{evTime}} · {{tzShort}}</span>
+                    </span>
+                  </div>
+                  <div class="circles-capsules">
+                    <span class="circles-capsule"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#373230" stroke-width="1.5" aria-hidden="true"><rect x="3" y="7" width="12" height="10" rx="2"></rect><path d="M15 11l6-3v8l-6-3z"></path></svg>Live on Zoom</span>
+                    <span class="circles-capsule"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#373230" stroke-width="1.5" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"></path></svg>Held in English</span>
+                  </div>
+                  <div class="circles-host">
+                    <sc-if value="{{ev.hostKnown}}" hint-placeholder-val="{{ true }}"><span class="av" style="--ring:#FFE300"><img src="{{ev.hostImg}}" alt=""></span></sc-if>
+                    <sc-if value="{{ev.hostUnknown}}" hint-placeholder-val="{{ false }}"><span class="circles-host__empty" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#373230" stroke-width="1.4"><circle cx="12" cy="9" r="4"></circle><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"></path></svg></span></sc-if>
+                    <span class="circles-host__copy">
+                      <span>Hosted by</span>
+                      <strong>{{ev.host}}</strong>
+                    </span>
+                  </div>
+                  <div style="flex: 1"></div>
+                  <button type="button" onClick="{{rsvpCurrent}}" style="width: 100%; height: 46px; border-radius: 999px; border: 0; background: #ffe300; font: inherit; font-size: 16px; font-weight: 700; color: #373230; cursor: pointer">RSVP</button>
+                </div>
+              </div>
+            </div>
+            
+          </article>
+        </sc-if>
+      </section>
+      </sc-if>
+
+      <!-- No upcoming events: compact notice -->
+      <sc-if value="{{overviewEmpty}}" hint-placeholder-val="{{ false }}">
+        <section style="display: flex; align-items: center; gap: 16px; padding: 16px 20px; background: #fff; border: 1px solid #eae9de; border-radius: 16px">
+          <img src="assets/circles/circles-dark.svg" alt="" style="width: 44px; height: 44px">
+          <div style="display: flex; flex-direction: column; gap: 2px">
+            <strong style="font-size: 17px; line-height: 22px; font-weight: 700">No upcoming live Circles right now</strong>
+            <span style="font-size: 15px; line-height: 20px">New Circles appear here as soon as they’re scheduled. Until then, catch up on past conversations below.</span>
+          </div>
+        </section>
+      </sc-if>
+
+      <!-- ===== PAST CIRCLES ===== -->
+      <sc-if value="{{showLibrary}}" hint-placeholder-val="{{ true }}">
+      <section ref="{{gridRef}}" aria-labelledby="past-h" style="{{librarySectionStyle}}">
+        <div style="height: 32px; display: flex; align-items: center; gap: 12px">
+          <h3 id="past-h" style="margin: 0; font-family: var(--serif); font-weight: 400; font-size: 24px; line-height: 30px">Past Circles</h3>
+          <span style="font-size: 14px; line-height: 20px; padding: 2px 10px; border-radius: 999px; background: #eae9de; font-weight: 600">43 recordings</span>
+        </div>
+        <sc-if value="{{galleryA}}" hint-placeholder-val="{{ true }}">
+        <div style="margin-top: 18px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px 24px">
+          <sc-for list="{{recs}}" as="r" hint-placeholder-count="9">
+            <button type="button" onClick="{{r.pick}}" style="display: flex; gap: 16px; align-items: center; padding: 6px; margin: -6px; border: 0; border-radius: 12px; background: transparent; text-align: left; font: inherit; color: #373230; cursor: pointer; min-width: 0">
+              <span style="position: relative; width: 152px; height: 86px; flex-shrink: 0; border-radius: 10px; overflow: hidden; background: #eae9de; display: flex; align-items: center; justify-content: center">
+                <sc-if value="{{r.hasThumb}}" hint-placeholder-val="{{ true }}"><img src="{{r.thumb}}" alt="" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover"></sc-if>
+                <span style="position: relative; width: 32px; height: 32px; border-radius: 50%; background: rgba(255,255,255,0.92); display: flex; align-items: center; justify-content: center"><svg width="13" height="13" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5l11 7-11 7z" fill="#373230"></path></svg></span>
+              </span>
+              <span style="font-size: 16px; line-height: 22px; font-weight: 600; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden">{{r.title}}</span>
+            </button>
+          </sc-for>
+        </div>
+        </sc-if>
+        <sc-if value="{{galleryB}}" hint-placeholder-val="{{ false }}">
+        <div style="margin-top: 20px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px 24px">
+          <sc-for list="{{recs}}" as="r" hint-placeholder-count="6">
+            <button type="button" onClick="{{r.pick}}" style="display: flex; flex-direction: column; gap: 12px; padding: 0; border: 0; background: transparent; text-align: left; font: inherit; color: #373230; cursor: pointer; min-width: 0">
+              <span style="position: relative; display: block; width: 100%; aspect-ratio: 16 / 9; border-radius: 12px; overflow: hidden; background: #e2e0d3">
+                <sc-if value="{{r.hasThumb}}" hint-placeholder-val="{{ true }}"><img src="{{r.thumb}}" alt="" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: saturate(0.8)"></sc-if>
+                <span aria-hidden="true" style="position: absolute; inset: 0; background: linear-gradient(180deg, rgba(55,50,48,0.06) 0%, rgba(55,50,48,0.42) 100%)"></span>
+                <span style="position: absolute; left: 14px; bottom: 14px; width: 44px; height: 44px; border-radius: 50%; background: rgba(255,255,255,0.95); display: flex; align-items: center; justify-content: center"><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5l11 7-11 7z" fill="#373230"></path></svg></span>
+              </span>
+              <span style="font-size: 17px; line-height: 24px; font-weight: 600; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden">{{r.title}}</span>
+            </button>
+          </sc-for>
+        </div>
+        </sc-if>
+      </section>
+      </sc-if>
+
+      <!-- ===== SELECTED RECORDING ===== -->
+      <sc-if value="{{recOpen}}" hint-placeholder-val="{{ false }}">
+        <div style="display: flex; flex-direction: column; gap: 18px">
+          <div style="display: flex; align-items: center; gap: 14px">
+            <button type="button" onClick="{{backToLibrary}}" style="display: flex; align-items: center; gap: 6px; height: 44px; padding: 0 20px 0 12px; border-radius: 999px; border: 1px solid #373230; background: #fff; font: inherit; font-size: 15px; font-weight: 700; color: #373230; cursor: pointer">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M15 6l-6 6 6 6"></path></svg>
+              Back to Past Circles
+            </button>
+            <span style="font-size: 14px">{{recCounter}}</span>
+          </div>
+          <div style="display: flex; gap: 32px; align-items: flex-start">
+            <div style="position: relative; width: 720px; height: 405px; flex-shrink: 0; border-radius: 16px; overflow: hidden; background: #373230">
+              <sc-if value="{{rec.hasStill}}" hint-placeholder-val="{{ true }}"><img src="assets/circles/rec1_still_v2.png" alt="" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover"></sc-if>
+              <sc-if value="{{rec.blurThumb}}" hint-placeholder-val="{{ false }}"><img src="{{rec.thumb}}" alt="" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: blur(6px); opacity: 0.55"></sc-if>
+              <span aria-hidden="true" style="position: absolute; inset: 0; background: linear-gradient(180deg, rgba(55,50,48,0) 60%, rgba(55,50,48,0.7) 100%)"></span>
+              <button type="button" aria-label="Play recording" style="position: absolute; left: 314px; top: 192px; width: 88px; height: 88px; border-radius: 50%; border: 0; background: #ffe300; display: flex; align-items: center; justify-content: center; cursor: pointer"><svg width="30" height="30" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5l11 7-11 7z" fill="#373230"></path></svg></button>
+              <div style="position: absolute; left: 16px; right: 16px; bottom: 14px; height: 28px; display: flex; align-items: center; gap: 14px">
+                <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5l11 7-11 7z" fill="#ffffff"></path></svg>
+                <span style="flex: 1; height: 4px; border-radius: 100px; background: rgba(255,255,255,0.4)"></span>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="1.5" aria-hidden="true"><rect x="3" y="6" width="18" height="12" rx="2"></rect><path d="M8 11h3M8 14h2M13 11h3M13 14h2"></path></svg>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="1.5" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"></path></svg>
+              </div>
+            </div>
+            <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 10px">
+              <span style="font-size: 12px; font-weight: 700; letter-spacing: 0.08em">PAST CIRCLE</span>
+              <h3 style="margin: 0; font-family: var(--serif); font-weight: 700; font-size: 26px; line-height: 32px">{{rec.title}}</h3>
+              <span style="font-size: 15px; line-height: 20px; font-weight: 600">{{rec.hosts}}</span>
+              <p style="margin: 6px 0 0 0; font-size: 16px; line-height: 25px">{{rec.desc}}</p>
+            </div>
+          </div>
+          <section aria-label="More Past Circles" style="margin-top: 8px; padding-top: 20px; border-top: 1px solid #dcdacd">
+            <h4 style="margin: 0; font-family: var(--serif); font-weight: 400; font-size: 20px; line-height: 26px">More Past Circles</h4>
+            <sc-if value="{{galleryA}}" hint-placeholder-val="{{ true }}">
+            <div style="margin-top: 16px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px">
+              <sc-for list="{{moreRecs}}" as="r" hint-placeholder-count="3">
+                <button type="button" onClick="{{r.pick}}" style="display: flex; gap: 16px; align-items: center; padding: 6px; margin: -6px; border: 0; border-radius: 12px; background: transparent; text-align: left; font: inherit; color: #373230; cursor: pointer; min-width: 0">
+                  <span style="position: relative; width: 152px; height: 86px; flex-shrink: 0; border-radius: 10px; overflow: hidden; background: #eae9de; display: flex; align-items: center; justify-content: center">
+                    <sc-if value="{{r.hasThumb}}" hint-placeholder-val="{{ true }}"><img src="{{r.thumb}}" alt="" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover"></sc-if>
+                    <span style="position: relative; width: 32px; height: 32px; border-radius: 50%; background: rgba(255,255,255,0.92); display: flex; align-items: center; justify-content: center"><svg width="13" height="13" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5l11 7-11 7z" fill="#373230"></path></svg></span>
+                  </span>
+                  <span style="font-size: 16px; line-height: 22px; font-weight: 600; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden">{{r.title}}</span>
+                </button>
+              </sc-for>
+            </div>
+            </sc-if>
+            <sc-if value="{{galleryB}}" hint-placeholder-val="{{ false }}">
+            <div style="margin-top: 16px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px">
+              <sc-for list="{{moreRecs}}" as="r" hint-placeholder-count="3">
+            <button type="button" onClick="{{r.pick}}" style="display: flex; flex-direction: column; gap: 12px; padding: 0; border: 0; background: transparent; text-align: left; font: inherit; color: #373230; cursor: pointer; min-width: 0">
+              <span style="position: relative; display: block; width: 100%; aspect-ratio: 16 / 9; border-radius: 12px; overflow: hidden; background: #e2e0d3">
+                <sc-if value="{{r.hasThumb}}" hint-placeholder-val="{{ true }}"><img src="{{r.thumb}}" alt="" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: saturate(0.8)"></sc-if>
+                <span aria-hidden="true" style="position: absolute; inset: 0; background: linear-gradient(180deg, rgba(55,50,48,0.06) 0%, rgba(55,50,48,0.42) 100%)"></span>
+                <span style="position: absolute; left: 14px; bottom: 14px; width: 44px; height: 44px; border-radius: 50%; background: rgba(255,255,255,0.95); display: flex; align-items: center; justify-content: center"><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5l11 7-11 7z" fill="#373230"></path></svg></span>
+              </span>
+              <span style="font-size: 17px; line-height: 24px; font-weight: 600; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden">{{r.title}}</span>
+            </button>
+              </sc-for>
+            </div>
+            </sc-if>
+          </section>
+        </div>
+      </sc-if>
+    </div>
+
+    <!-- RSVP toast (prototype feedback) -->
+    <sc-if value="{{showToast}}" hint-placeholder-val="{{ false }}">
+      <div role="status" style="position: absolute; left: 50%; bottom: 24px; transform: translateX(-50%); display: flex; align-items: center; gap: 10px; padding: 12px 18px; border-radius: 999px; background: #373230; color: #f7f6ef; font-size: 15px; box-shadow: 0 8px 24px rgba(55,50,48,0.25); white-space: nowrap">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ffe300" stroke-width="2" aria-hidden="true"><path d="M5 12l5 5 9-10"></path></svg>
+        <span>RSVP sent for <strong>{{toastTitle}}</strong></span>
+      </div>
+    </sc-if>
+  </div>
+  </sc-if>
+</template>
+
+<script src="js/home.js?v=20261119n"></script>
 <script src="js/calendar-data.js?v=20261115b"></script>
 <script src="js/calendar.js?v=20261115c"></script>
+<script src="js/pods.js?v=20261118d"></script>
+<script src="js/circles-runtime.js?v=20261119a"></script>
+<script src="js/circles.js?v=20261119a"></script>
 </body>
 </html>

@@ -1,0 +1,308 @@
+/* Class pods modal and its floating player.
+   Figma: Citizen-Cafe-IOS, Dialog 5653:26615.
+   The dialog is 1184 × 820 and shrinks with the window; both columns scroll on their own. */
+
+.pods{
+  --pods-ink:#373230;
+  --pods-surface:#F7F6EF;
+  --pods-line:#EAE9DE;
+  --pods-hit:rgba(255,255,255,.8);
+  --pods-muted:#928F7D;
+  --pods-new:#6D8C58;
+  --pods-yellow:#FFE300;
+  --pods-level:#90C7FC;
+  --pods-gap:24px;
+  --pods-h:min(820px,calc(100vh - 2 * var(--pods-gap)));
+  position:fixed;
+  z-index:60;
+  inset:0;
+  display:grid;
+  place-items:center;
+  padding:var(--pods-gap);
+  background:rgba(55,50,48,.28);
+  color:var(--pods-ink);
+}
+/* Closed with audio loaded: only the player stays, floating over the Hub. */
+.pods.is-docked{z-index:45;background:transparent;pointer-events:none}
+.pods.is-docked .pods__card{display:none}
+html.pods-open,
+html.pods-open body{overflow:hidden}
+html.pods-open .content{overflow:hidden}
+/* The docked player covers the bottom of the hub. Extra scroll room lets the last buttons clear it. */
+html.pods-docked .content{padding-bottom:118px;scroll-padding-bottom:118px}
+
+.pods__card{
+  position:relative;
+  isolation:isolate;
+  display:flex;
+  flex-direction:column;
+  width:min(1184px,100%);
+  height:var(--pods-h);
+  border-radius:16px;
+  background:var(--pods-surface);
+  box-shadow:0 8px 24px rgba(55,50,48,.12),0 24px 64px rgba(55,50,48,.18);
+  overflow:hidden;
+}
+.pods__card::before{content:"";position:absolute;top:0;left:0;right:0;height:10px;background:var(--pods-level)}
+/* The right column is one white field, from just under the level bar down through the header. */
+.pods__card::after{
+  content:"";
+  position:absolute;
+  z-index:-1;
+  top:10px;
+  right:0;
+  bottom:0;
+  left:calc(32px + 400px);
+  background:#fff;
+  pointer-events:none;
+}
+
+/* ---------------------------------------------------------------- Header */
+.pods__head{display:flex;align-items:center;gap:14px;flex:none;padding:25px 24px 18px 32px}
+.pods__mark{flex:none;width:48px;height:48px;color:var(--pods-level)}
+.pods__title{flex:1;min-width:0;font:700 30px/36px var(--serif);white-space:nowrap}
+
+.pods-course-wrap{position:relative;flex:none}
+.pods-course{display:flex;align-items:center;gap:10px;flex:none;height:48px;padding:0 14px 0 6px;border:.5px solid var(--pods-ink);border-radius:999px;background:#fff;text-align:left}
+.pods-course__mark{display:flex;align-items:center;justify-content:center;flex:none;width:36px;height:36px;overflow:hidden;border-radius:999px;background:var(--pods-level)}
+.pods-course__png{display:block;width:100%;height:100%;object-fit:cover}
+.pods-course__text{display:flex;flex-direction:column;width:150.234px}
+.pods-course__name{font:700 15px/18px var(--sans);white-space:nowrap}
+.pods-course__term{font:400 12px/15px var(--sans);white-space:nowrap}
+
+.pods-close{display:flex;align-items:center;justify-content:center;flex:none;width:44px;height:44px;border:1px solid var(--pods-line);border-radius:999px;background:#fff}
+
+/* ------------------------------------------------------------------ Body */
+/* The right field is the white ground itself. The selected lesson's white
+   band meets it, so the two read as one surface. */
+.pods__body{position:relative;display:flex;align-items:stretch;gap:0;flex:1;min-height:0;padding:0 0 0 32px}
+.pods__fade{position:absolute;left:32px;right:auto;bottom:0;width:400px;height:113px;background:linear-gradient(to bottom,rgba(247,246,239,0),var(--pods-surface));pointer-events:none}
+
+/* ------------------------------------------------------------ Lesson list */
+/* Bottom padding lets the last lesson scroll clear of the fade and the player. */
+.pods-lessons{display:flex;flex-direction:column;gap:5px;flex:none;width:400px;min-height:0;padding-bottom:100px;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:none}
+.pods-lessons::-webkit-scrollbar{width:0;height:0}
+
+.pods-lesson{position:relative;display:flex;align-items:center;gap:12px;flex:none;min-height:72px;padding:0 12px 0 14px;border-radius:12px}
+.pods-lesson::after{content:"";position:absolute;left:0;right:0;bottom:0;height:1px;background:var(--pods-line)}
+.pods-lesson.is-selected{z-index:1;border-radius:12px 0 0 12px;background:#fff}
+.pods-lesson.is-selected .pods-lesson__show::before{border-radius:12px 0 0 12px}
+.pods-lesson.is-selected::after,
+.pods-lesson:has(+ .is-selected)::after{display:none}
+/* Concave corners where the selected band meets the white field. */
+.pods-lesson__join{display:none}
+.pods-lesson.is-selected .pods-lesson__join{display:block;position:absolute;z-index:2;right:0;width:20px;height:20px;pointer-events:none}
+.pods-lesson__join--top{top:-19px}
+.pods-lesson__join--bot{bottom:-19px}
+
+.pods-lesson__show{display:flex;align-items:center;flex:1;min-width:0;text-align:left}
+.pods-lesson__show::before{content:"";position:absolute;inset:0;border-radius:12px}
+.pods-lesson__show:focus-visible{outline:0}
+.pods-lesson__show:focus-visible::before{outline:2px solid var(--pods-ink);outline-offset:-2px}
+.pods-lesson__text{display:flex;align-items:center;flex:1;min-width:0}
+.pods-lesson__name{display:flex;align-items:center;gap:5px;min-width:0;font:600 20px/22px var(--sans);white-space:nowrap}
+.pods-lesson.is-new .pods-lesson__name{font-weight:700}
+.pods-lesson.is-done .pods-lesson__name{font-weight:400}
+.pods-lesson__new{display:flex;align-items:center;flex:none;height:20px;padding:0 8px 0 7px;border-radius:99px;background:var(--pods-new);color:#fff;font:700 12px/18px var(--sans)}
+.pods-lesson__check{flex:none}
+
+.pods-lesson__actions{position:relative;z-index:1;display:flex;align-items:center;flex:none}
+
+/* Lesson capsule: play, resume (with progress), replay, or the now-playing mark. */
+.pods-cap{display:flex;align-items:center;justify-content:center;gap:3px;height:28px;padding:4px 10px;border-radius:1000px;background:var(--pods-line);font:400 15px/20px var(--sans);letter-spacing:-.23px;white-space:nowrap;transition:background-color .14s ease}
+.pods-cap:hover,
+.pods-cap:focus-visible{background:#D6D4C6}
+.pods-lesson.is-new .pods-cap{background:var(--pods-yellow)}
+.pods-lesson.is-new .pods-cap:hover,
+.pods-lesson.is-new .pods-cap:focus-visible{background:#E6CC00}
+.pods-cap__time{margin-right:3.5px}
+.pods-cap[data-state="play"] .pods-cap__time{margin-right:6.5px}
+.pods-cap__track{position:relative;width:16px;height:4px;overflow:hidden;border-radius:100px;background:rgba(120,120,120,.2)}
+.pods-cap__fill{position:absolute;top:0;bottom:0;left:0;width:calc(var(--done,0) * 100%);border-radius:100px;background:var(--pods-ink)}
+.pods-cap__replay,
+.pods-cap__wave,
+.pods-cap__track{display:none}
+.pods-cap[data-state="resume"] .pods-cap__track{display:block}
+.pods-cap[data-state="replay"] .pods-cap__play{display:none}
+.pods-cap[data-state="replay"] .pods-cap__replay{display:block}
+.pods-cap[data-state="playing"]{width:40px;height:40px;padding:0;border-radius:99px}
+.pods-cap[data-state="playing"] > *{display:none}
+.pods-cap[data-state="playing"] .pods-cap__wave{display:block}
+
+/* Now-playing bars, same geometry as the Figma indicator; they rise and fall while audio plays. */
+.pods-wave{position:relative;width:25px;height:25px}
+.pods-wave i{position:absolute;bottom:5px;width:1.667px;height:15.833px;border-radius:.833px .833px 0 0;background:var(--pods-ink);transform:scaleY(var(--rest));transform-origin:50% 100%;animation:pods-wave var(--dur) ease-in-out var(--delay) infinite}
+.pods-wave i:nth-child(1){left:5.833px;--rest:.368;--lo:.26;--hi:.82;--dur:1.1s;--delay:-.45s}
+.pods-wave i:nth-child(2){left:11.667px;--rest:1;--lo:.42;--hi:1;--dur:.9s;--delay:-.2s}
+.pods-wave i:nth-child(3){left:17.5px;--rest:.684;--lo:.3;--hi:.86;--dur:1.3s;--delay:-.75s}
+@keyframes pods-wave{
+  0%,100%{transform:scaleY(var(--lo))}
+  50%{transform:scaleY(var(--hi))}
+}
+@media (prefers-reduced-motion:reduce){
+  .pods-wave i{animation:none}
+}
+
+/* --------------------------------------------------------- Lesson details */
+.pods-detail{position:relative;display:flex;flex-direction:column;flex:1;min-width:0;min-height:0;overflow:hidden;background:#fff}
+.pods-detail__head{display:flex;align-items:center;gap:16px;flex:none;padding:20px 32px 18px 32px}
+.pods-detail__num{display:flex;align-items:center;justify-content:center;flex:none;width:72px;height:72px;border-radius:14px;background:var(--pods-level);color:var(--pods-ink);font:italic 600 40px/1 var(--serif)}
+.pods-detail__copy{display:flex;flex-direction:column;align-items:flex-start;flex:1;min-width:0}
+.pods-detail__kicker{font:400 18px/22px var(--serif);white-space:nowrap}
+.pods-detail__title{padding-top:2px;font:700 28px/34px var(--sans);white-space:nowrap}
+.pods-detail__meta{padding-top:2px;color:rgba(55,50,48,.62);font:400 14px/20px var(--sans);white-space:nowrap}
+
+.pods-cta{display:flex;align-items:center;justify-content:center;gap:8px;flex:none;height:44px;padding:0 14px;border-radius:999px;background:var(--pods-ink);color:var(--pods-yellow);font:600 16px/normal var(--sans);white-space:nowrap}
+.pods-cta__icon{display:none}
+.pods-cta:is([data-state="play"],[data-state="resume"]) .pods-cta__icon--play,
+.pods-cta[data-state="pause"] .pods-cta__icon--pause,
+.pods-cta[data-state="replay"] .pods-cta__icon--replay{display:block}
+
+.pods-detail__rule{flex:none;height:1px;margin:0 24px;background:var(--pods-line)}
+
+.pods-tracks{flex:1;min-height:0;margin:0 24px;padding:0;list-style:none;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:none}
+.pods-tracks::-webkit-scrollbar{width:0;height:0}
+.pods.has-player .pods-tracks{padding-bottom:84px}
+
+.pods-track{display:flex;align-items:center;gap:10px;height:59px;padding:0 8px;border-bottom:1px solid var(--pods-line)}
+.pods-track__num{flex:none;width:24px;font:600 17px/normal var(--sans)}
+.pods-track__title{flex:1;min-width:0;overflow:hidden;font:400 19px/24px var(--sans);text-align:left;text-overflow:ellipsis;white-space:nowrap}
+.pods-track__check{display:none;align-items:center;justify-content:center;flex:none;width:16px}
+.pods-track__time{flex:none;width:44px;font:400 16px/normal var(--sans);text-align:right}
+.pods-track__btn{display:flex;align-items:center;justify-content:center;flex:none;width:40px;height:40px;border-radius:99px;transition:background-color .14s ease}
+.pods-track__btn:hover,
+.pods-track__btn:focus-visible{background:var(--pods-line)}
+.pods-track__replay,
+.pods-track__wave{display:none}
+.pods-track.is-done:not(.is-active) .pods-track__check{display:flex}
+.pods-track.is-done:not(.is-playing) .pods-track__play{display:none}
+.pods-track.is-done:not(.is-playing) .pods-track__replay{display:block}
+.pods-track.is-active{border-radius:8px;background:var(--pods-line)}
+.pods-track.is-active .pods-track__title{font-weight:700}
+.pods-track.is-active .pods-track__btn{background:var(--pods-surface)}
+.pods-track.is-active .pods-track__btn:hover,
+.pods-track.is-active .pods-track__btn:focus-visible{background:#fff}
+.pods-track.is-playing .pods-track__play,
+.pods-track.is-playing .pods-track__replay{display:none}
+.pods-track.is-playing .pods-track__wave{display:block}
+
+/* ---------------------------------------------------------------- Player */
+/* Sits 19px above the dialog's bottom edge, centred on the dialog, above everything in it. */
+.pods-player{
+  position:absolute;
+  z-index:5;
+  left:50%;
+  bottom:calc((100vh - var(--pods-h)) / 2 + 19px);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  width:min(667px,calc(100vw - 2 * var(--pods-gap)));
+  height:78px;
+  padding-top:8px;
+  overflow:hidden;
+  border:2px solid #fff;
+  border-radius:57px;
+  background:rgba(229,231,235,.75);
+  -webkit-backdrop-filter:blur(24px) saturate(1.4);
+  backdrop-filter:blur(24px) saturate(1.4);
+  box-shadow:0 2px 25.6px rgba(0,0,0,.25);
+  transform:translateX(-50%);
+  pointer-events:auto;
+}
+/* Centre of the main column, left of Coming up, 24px above the hub bottom. */
+.pods.is-docked .pods-player{
+  --dock-pad-l:34px;
+  --dock-pad-r:20px;
+  --dock-gap:71px;
+  bottom:24px;
+  left:calc(var(--sidebar-w) + var(--dock-pad-l) + (100vw - var(--sidebar-w) - var(--dock-pad-l) - var(--dock-pad-r) - var(--dock-gap) - var(--rail-w)) / 2);
+  width:min(667px,calc(100vw - var(--sidebar-w) - var(--dock-pad-l) - var(--dock-pad-r) - var(--dock-gap) - var(--rail-w) - 48px));
+}
+.pods-player__dismiss{display:none;position:absolute;top:50%;right:12px;width:22px;height:22px;margin-top:-11px;align-items:center;justify-content:center;border-radius:50%;color:var(--pods-ink)}
+.pods-player__dismiss:hover,
+.pods-player__dismiss:focus-visible{background:rgba(55,50,48,.08)}
+.pods.is-docked .pods-player__dismiss{display:flex}
+.pods.is-docked .pods-player__row{padding-right:34px}
+
+.pods-player__bar{display:flex;gap:1px;flex:none;width:calc(100% - 76px);height:4px;overflow:hidden;border-radius:86px 50px 50px 86px;background:var(--pods-line)}
+.pods-player__seg{position:relative;flex:var(--w) 1 0;min-width:2px;height:4px;overflow:hidden;border-radius:91px 92px 92px 91px;background:var(--pods-surface)}
+.pods-player__seg::before{content:"";position:absolute;top:0;bottom:0;left:0;width:calc(var(--done,0) * 100%);background:var(--pods-level)}
+
+.pods-player__row{display:flex;align-items:center;justify-content:center;gap:20px;flex:none;width:calc(100% - 22px);height:54px;padding:0 15.328px 8px}
+.pods-player__aux{display:flex;align-items:center;flex:none;height:50.857px}
+.pods-player__speed,
+.pods-player__volume{display:flex;align-items:center;justify-content:center;width:41px;height:41px;border-radius:99px;transition:background-color .14s ease}
+.pods-player__speed:hover,
+.pods-player__speed:focus-visible,
+.pods-player__speed:active,
+.pods-player__volume:hover,
+.pods-player__volume:focus-visible,
+.pods-player__volume:active{background:var(--pods-hit)}
+.pods-player__pill{display:flex;align-items:center;justify-content:center;min-width:38.553px;height:24.608px;padding:0 5.7px;border:.82px solid var(--pods-line);border-radius:31.991px;color:var(--pods-muted);font:600 14.765px/17.226px var(--sans);letter-spacing:.2625px;white-space:nowrap}
+.pods-player__vol--off{display:none}
+.is-muted .pods-player__vol--on{display:none}
+.is-muted .pods-player__vol--off{display:block}
+
+.pods-player__info{display:flex;align-items:center;justify-content:flex-end;gap:10px;flex:1;min-width:0;overflow:hidden}
+.pods-player__text{display:flex;flex-direction:column;align-items:flex-end;flex:1;min-width:0;overflow:hidden;white-space:nowrap;text-align:right;cursor:default;pointer-events:none}
+.pods-player__level{pointer-events:none}
+.pods.is-docked .pods-player__text,
+.pods.is-docked .pods-player__level{cursor:pointer;pointer-events:auto}
+.pods-player__now{max-width:100%;overflow:hidden;font:600 16px/20px var(--sans);letter-spacing:-.1504px;text-overflow:ellipsis}
+.pods-player__kind{font:400 12px/normal var(--sans);color:var(--pods-muted)}
+.pods-player__level{display:flex;align-items:center;justify-content:center;flex:none;width:34.489px;height:34.489px;overflow:hidden;border-radius:8.622px;background:var(--pods-level)}
+.pods-player__level img:not(.pods-course__png){width:21.076px;height:11.546px}
+
+.pods-player__controls{display:flex;align-items:center;justify-content:center;gap:6.562px;flex:none}
+.pods-player__skip{display:flex;align-items:center;justify-content:center;width:26.47px;height:26.47px;border-radius:99px;transition:background-color .14s ease}
+.pods-player__skip--back img{transform:scaleX(-1)}
+.pods-player__rewind{color:var(--pods-ink);width:28px;height:28px}
+.pods-player__rewind svg{display:block;width:26px;height:26px}
+.pods-player__skip:hover:not(:disabled),
+.pods-player__skip:focus-visible:not(:disabled),
+.pods-player__skip:active:not(:disabled){background:var(--pods-hit)}
+.pods-player__skip:disabled{opacity:.35;cursor:default}
+.pods-player__main{display:flex;width:47.585px;height:47.585px;border-radius:50%}
+.pods-player__glyph--play{display:none}
+.pods-player.is-paused .pods-player__glyph--pause{display:none}
+.pods-player.is-paused .pods-player__glyph--play{display:block}
+
+/* ------------------------------------------------------------- Popovers */
+/* Stand-ins for the native menus: level picker, playback speed, volume. */
+.pods-menu{position:absolute;z-index:6;padding:6px 0;border-radius:14px;background:rgba(247,246,239,.82);-webkit-backdrop-filter:blur(24px) saturate(1.4);backdrop-filter:blur(24px) saturate(1.4);box-shadow:0 12px 32px rgba(55,50,48,.22),0 0 0 .5px rgba(55,50,48,.12);pointer-events:auto}
+.pods-menu--speed{width:190px}
+.pods-menu--course{top:calc(100% + 8px);right:0;width:290px}
+.pods-menu__item{display:flex;align-items:center;gap:10px;width:100%;min-height:40px;padding:6px 16px 6px 12px;font:400 16px/20px var(--sans);text-align:left}
+.pods-menu__item + .pods-menu__item{border-top:.5px solid rgba(55,50,48,.12)}
+.pods-menu__item:hover,
+.pods-menu__item:focus-visible{background:rgba(55,50,48,.07);outline:0}
+.pods-menu__item:disabled{opacity:.35;cursor:default}
+.pods-menu__item:disabled:hover{background:none}
+.pods-menu__check{flex:none;visibility:hidden}
+.pods-menu__item[aria-checked="true"] .pods-menu__check{visibility:visible}
+.pods-menu__label{display:flex;flex-direction:column;flex:1;min-width:0}
+.pods-menu__icon{flex:none}
+.pods-menu__gap{height:8px;background:rgba(55,50,48,.06)}
+.pods-menu__name{font:700 15px/18px var(--sans)}
+.pods-menu__term{font:400 12px/15px var(--sans)}
+.pods-menu__mark{display:flex;align-items:center;justify-content:center;flex:none;width:28px;height:28px;overflow:hidden;border-radius:999px}
+.pods-menu__mark img:not(.pods-course__png){width:18px;height:auto}
+
+.pods-volume{position:absolute;z-index:6;display:flex;align-items:center;gap:6px;width:190px;height:44px;padding:0 16px 0 6px;border:2px solid #fff;border-radius:22px;background:rgba(229,231,235,.75);-webkit-backdrop-filter:blur(24px) saturate(1.4);backdrop-filter:blur(24px) saturate(1.4);box-shadow:0 2px 25.6px rgba(0,0,0,.25);pointer-events:auto}
+.pods-volume__mute{display:flex;align-items:center;justify-content:center;flex:none;width:32px;height:32px;border-radius:50%}
+.pods-volume__range{--v:.8;flex:1;min-width:0;height:28px;margin:0;background:transparent;cursor:pointer;-webkit-appearance:none;appearance:none}
+.pods-volume__range:focus-visible{outline:2px solid var(--pods-ink);outline-offset:2px;border-radius:6px}
+.pods-volume__range::-webkit-slider-runnable-track{height:8px;border-radius:4px;background:linear-gradient(to right,var(--pods-ink) 0 calc(var(--v) * 100%),rgba(55,50,48,.16) calc(var(--v) * 100%) 100%)}
+.pods-volume__range::-webkit-slider-thumb{width:8px;height:8px;border:0;background:transparent;-webkit-appearance:none;appearance:none}
+.pods-volume__range::-moz-range-track{height:8px;border-radius:4px;background:rgba(55,50,48,.16)}
+.pods-volume__range::-moz-range-progress{height:8px;border-radius:4px;background:var(--pods-ink)}
+.pods-volume__range::-moz-range-thumb{width:8px;height:8px;border:0;background:transparent}
+
+/* Shorter or narrower windows: the list column gives up width before the tracks do. */
+@media (max-width:1100px){
+  .pods-lessons,
+  .pods__fade{width:clamp(320px,40%,400px)}
+  .pods__card::after{left:calc(32px + clamp(320px,40%,400px))}
+}
