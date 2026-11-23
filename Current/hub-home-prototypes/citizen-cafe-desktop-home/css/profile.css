@@ -46,8 +46,9 @@ html.profile-open .content{
   background:transparent !important;
 }
 
-/* Same card width in Personal information, Settings, and Edit. */
-#profile-root [role="dialog"]{
+/* Same card width in view, edit, and Settings.
+   Field popovers and the photo dialog keep their own size. */
+#profile-root [role="dialog"][aria-labelledby="pm-title"]{
   width:min(1184px, calc(100vw - 48px)) !important;
   height:min(820px, calc(100vh - 48px)) !important;
   max-height:calc(100vh - 48px) !important;

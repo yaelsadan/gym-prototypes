@@ -1,5 +1,5 @@
-/* Profile modal. Approach A (DProfileModal) from hub-profile-prototype,
-   opened over the real Home on Personal information.
+/* Profile modal. Approach B (DProfileInline) from hub-profile-prototype:
+   view mode, edit in place, field popovers, save and error states, photo editing.
    The exported mock Home, its avatar, and its licensed font files are not used.
    Typography comes from the Home page (FedraSerifPro and Assistant). */
 (function () {
@@ -70,13 +70,13 @@
     loading = loadScript(PREFIX + "js/runtime.js?v=20261123a")
       .then(function () { return loadScript(PREFIX + "js/components.js?v=20261123a"); })
       .then(function () {
-        var def = window.HUB_COMPONENTS && window.HUB_COMPONENTS.DProfileModal;
+        var def = window.HUB_COMPONENTS && window.HUB_COMPONENTS.DProfileInline;
         if (!def || !window.mountComponent) throw new Error("Profile prototype did not load");
         if (!def.__hubPrepared) {
           prepare(def);
           def.__hubPrepared = true;
         }
-        comp = window.mountComponent(def, { start: "personal" }, root);
+        comp = window.mountComponent(def, { start: "view" }, root);
         var orig = comp.setState.bind(comp);
         comp.setState = function (patch) {
           var next = typeof patch === "function" ? patch(comp.state) : patch;
@@ -106,7 +106,9 @@
       comp.setState({
         mode: "profile",
         tab: "personal",
+        inline: false,
         confirm: null,
+        guard: null,
         field: null,
         draft: null,
         q: "",
@@ -137,10 +139,12 @@
   document.addEventListener("keydown", function (event) {
     if (!open || event.key !== "Escape") return;
     var state = comp && comp.state;
-    if (state && (state.confirm || state.field)) return;
+    var inside = event.target && event.target.closest && event.target.closest("#profile-root [role='dialog'], #profile-root [role='alertdialog']");
+    if (inside) return;
+    if (state && (state.guard || state.confirm || state.field || state.inline)) return;
     event.preventDefault();
     event.stopPropagation();
-    if (comp) comp.setState({ mode: "closed", tab: "personal", confirm: null, field: null, pastHint: false });
+    if (comp) comp.setState({ mode: "closed", inline: false, tab: "personal", confirm: null, guard: null, field: null, pastHint: false });
     else hide();
   }, true);
 })();
