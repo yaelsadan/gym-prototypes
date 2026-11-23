@@ -1,0 +1,64 @@
+/* Profile modal over the real Hub Home.
+   The exported prototype's mock Home image is not shown. */
+
+.profile-modal{
+  position:fixed;
+  z-index:90;
+  inset:0;
+  overflow:hidden;
+  background:rgba(55,50,48,.28);
+}
+.profile-modal[hidden]{display:none !important}
+
+html.profile-open,
+html.profile-open body{
+  overflow:hidden;
+  height:100%;
+}
+html.profile-open .app,
+html.profile-open .main,
+html.profile-open .content{
+  overflow:hidden;
+}
+
+#profile-root{
+  width:100%;
+  height:100%;
+  min-width:0;
+  min-height:0;
+}
+
+/* The export is a full-viewport page. Keep only its dialog layer. */
+#profile-root > div{
+  position:absolute !important;
+  inset:0 !important;
+  width:100% !important;
+  height:100% !important;
+  min-width:0 !important;
+  overflow:hidden !important;
+  background:transparent !important;
+}
+#profile-root img[alt="Hub Home page"],
+#profile-root button[aria-label="Open your profile"]{
+  display:none !important;
+}
+#profile-root > div > div[style*="background: rgba(55, 50, 48, 0.28)"]{
+  background:transparent !important;
+}
+
+/* Same card width in Personal information, Settings, and Edit. */
+#profile-root [role="dialog"]{
+  width:min(1184px, calc(100vw - 48px)) !important;
+  height:min(820px, calc(100vh - 48px)) !important;
+  max-height:calc(100vh - 48px) !important;
+  left:50% !important;
+  right:auto !important;
+  top:max(24px, calc(50vh - 410px)) !important;
+  transform:translateX(-50%);
+  box-sizing:border-box;
+}
+
+#profile-root [role="alertdialog"]{
+  max-width:calc(100vw - 48px);
+  box-sizing:border-box;
+}

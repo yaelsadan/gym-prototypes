@@ -252,18 +252,22 @@ window.CirclesComponent = Component;
   var side = document.querySelector("[data-circles-open]");
   var lastFocus = null;
   var open = false;
+  var pageScroll = 0;
+  var contentScroll = 0;
   if (!modal || !window.CirclesApp) return;
 
   function contentEl() {
     return document.querySelector(".content");
   }
+  function rememberScroll() {
+    pageScroll = window.scrollY || 0;
+    var content = contentEl();
+    contentScroll = content ? content.scrollTop : 0;
+  }
 
   function closeModal() {
     if (!open) return;
     open = false;
-    var pageScroll = window.scrollY || 0;
-    var content = contentEl();
-    var contentScroll = content ? content.scrollTop : 0;
     document.documentElement.classList.remove("circles-open");
     if (side) {
       side.classList.remove("is-open");
@@ -271,9 +275,10 @@ window.CirclesComponent = Component;
     }
     modal.hidden = true;
     CirclesApp.setState({ screen: "closed", view: "overview", toast: null });
+    if (lastFocus && lastFocus.focus) lastFocus.focus({ preventScroll: true });
+    var content = contentEl();
     if (content) content.scrollTop = contentScroll;
     if (pageScroll) window.scrollTo(0, pageScroll);
-    if (lastFocus && lastFocus.focus) lastFocus.focus();
   }
 
   CirclesApp.mount(window.CirclesComponent, {
@@ -286,6 +291,7 @@ window.CirclesComponent = Component;
   function show(opts, trigger) {
     opts = opts || {};
     lastFocus = trigger || document.activeElement;
+    rememberScroll();
     open = true;
     document.documentElement.classList.add("circles-open");
     if (side) {
@@ -298,7 +304,7 @@ window.CirclesComponent = Component;
     CirclesApp.setState(patch, function (inst) {
       if (inst._body) inst._body.scrollTop = 0;
       var closeBtn = modal.querySelector("[data-circles-close]");
-      if (closeBtn) closeBtn.focus();
+      if (closeBtn) closeBtn.focus({ preventScroll: true });
     });
   }
 

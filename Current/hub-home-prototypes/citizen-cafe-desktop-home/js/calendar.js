@@ -32,6 +32,28 @@
   var open = false;
   var lastFocus = null;
   var focusKey = null;
+  var pageScroll = 0;
+  var contentScroll = 0;
+
+  function contentEl() {
+    return document.querySelector(".content");
+  }
+  function rememberScroll() {
+    pageScroll = window.scrollY || 0;
+    var content = contentEl();
+    contentScroll = content ? content.scrollTop : 0;
+  }
+  function restoreScroll() {
+    var content = contentEl();
+    if (content) content.scrollTop = contentScroll;
+    if (pageScroll) window.scrollTo(0, pageScroll);
+  }
+  function markTriggers(on) {
+    document.querySelectorAll("[data-calendar-open]").forEach(function (el) {
+      el.setAttribute("aria-expanded", on ? "true" : "false");
+      if (el.classList.contains("nav__item")) el.classList.toggle("is-open", on);
+    });
+  }
 
   function parseISO(iso) {
     var parts = iso.split("-");
@@ -948,8 +970,10 @@
 
   function openModal(trigger) {
     lastFocus = trigger || document.activeElement;
+    rememberScroll();
     open = true;
     document.documentElement.classList.add("cal-open");
+    markTriggers(true);
     modal.hidden = false;
     render();
     modal.querySelector("[data-cal-close]").focus();
@@ -958,10 +982,12 @@
     open = false;
     modal.hidden = true;
     document.documentElement.classList.remove("cal-open");
-    if (lastFocus && lastFocus.focus) lastFocus.focus();
+    markTriggers(false);
+    if (lastFocus && lastFocus.focus) lastFocus.focus({ preventScroll: true });
+    restoreScroll();
   }
 
-  document.querySelectorAll(".calendar-link").forEach(function (link) {
+  document.querySelectorAll("[data-calendar-open]").forEach(function (link) {
     link.addEventListener("click", function (event) {
       event.preventDefault();
       openModal(link);

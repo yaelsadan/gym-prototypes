@@ -22,6 +22,7 @@
 <link rel="stylesheet" href="css/calendar.css?v=20261116a">
 <link rel="stylesheet" href="css/pods.css?v=20261119e">
 <link rel="stylesheet" href="css/circles.css?v=20261119b">
+<link rel="stylesheet" href="css/profile.css?v=20261123a">
 </head>
 <body>
 <div class="app">
@@ -35,7 +36,7 @@
         <svg class="nav__icon" width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true"><path d="M3 9.6L11 3l8 6.6V19h-5.2v-5.2H8.2V19H3z" fill="#FFE300" stroke="#373230" stroke-width="1.2" stroke-linejoin="round"/></svg>
         <span class="nav__label">Home</span>
       </a>
-      <a class="nav__item" href="#">
+      <a class="nav__item" href="#" data-calendar-open aria-haspopup="dialog" aria-controls="calendar-modal" aria-expanded="false">
         <svg class="nav__icon" width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true"><rect x="3" y="4.5" width="16" height="14.5" rx="1.5" stroke="currentColor" stroke-width="1.1"/><path d="M3 8.5h16M7.5 2.5v4M14.5 2.5v4" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg>
         <span class="nav__label">Calendar</span>
       </a>
@@ -64,7 +65,7 @@
         <button class="icon-btn" type="button" aria-label="Messages">
           <svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M21 3.5L3.5 10.6l6.8 2.6 2.6 6.8L21 3.5z" fill="#FFE300" stroke="#373230" stroke-width="1" stroke-linejoin="round"/><path d="M10.3 13.2L21 3.5" stroke="#373230" stroke-width="1"/></svg>
         </button>
-        <button class="profile" type="button" aria-label="Your profile">
+        <button class="profile" type="button" aria-label="Your profile" aria-haspopup="dialog" aria-controls="profile-modal" aria-expanded="false">
           <img src="assets/img/cafe-avatar-demo-portrait.png" alt="">
         </button>
       </div>
@@ -477,7 +478,7 @@
           </section>
         </div>
         <div class="agenda-foot">
-          <a class="calendar-link" href="#" aria-haspopup="dialog" aria-controls="calendar-modal">view full calendar<svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8h9M9 4.5L12.5 8 9 11.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+          <a class="calendar-link" href="#" data-calendar-open aria-haspopup="dialog" aria-controls="calendar-modal" aria-expanded="false">view full calendar<svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8h9M9 4.5L12.5 8 9 11.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
         </div>
         </div>
 
@@ -800,6 +801,9 @@
 <div class="circles-modal" id="circles-modal" hidden>
   <div id="circles-root"></div>
 </div>
+<div class="profile-modal" id="profile-modal" hidden>
+  <div id="profile-root"></div>
+</div>
 <template id="circles-template">
 <!-- TEMPORARY prototype content: event dates, the Hebrew-at-work Circle, summaries, Host TBC, thematic photos, and recording titles after the first. -->
   <sc-if value="{{modalOpen}}" hint-placeholder-val="{{ true }}">
@@ -1044,9 +1048,10 @@
 
 <script src="js/home.js?v=20261119n"></script>
 <script src="js/calendar-data.js?v=20261115b"></script>
-<script src="js/calendar.js?v=20261115c"></script>
+<script src="js/calendar.js?v=20261123a"></script>
 <script src="js/pods.js?v=20261118d"></script>
 <script src="js/circles-runtime.js?v=20261119a"></script>
-<script src="js/circles.js?v=20261119a"></script>
+<script src="js/circles.js?v=20261123b"></script>
+<script src="js/profile.js?v=20261123a"></script>
 </body>
 </html>
