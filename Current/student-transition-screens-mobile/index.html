@@ -2226,11 +2226,169 @@ h1{font-size:20px;line-height:1.25}
   .is-playing .welcome-shape img{transform:scaleX(-1)!important}
 }
 @keyframes soft-ball-breathe{0%,100%{opacity:.7}50%{opacity:1}}
+
+/* ============================================================
+   Set transitions (1st / 2nd / 3rd Set) — over the Main Room.
+   Approved in Current/student-transition-screens-set-animation-playground
+   (checkpoint: Checkpoints/student-transition-screens-set-animation-playground-v1-approved).
+   Every element is placed in screen px on the 378 × 832 screen, as in the frame.
+   ============================================================ */
+.set-scene{position:absolute;inset:0;overflow:hidden;background:#2a2622}
+
+/* Static Main Room (open chat) under the overlay. Not animated; it only has
+   to read through the dim. */
+.set-scene .session{position:absolute;inset:0}
+.set-scene .session .stage{
+  position:absolute;inset:0;
+  background:url("../student-main-classroom-desktop/assets/teacher-gai.png") 46% 30%/cover no-repeat,#cdb497;
+}
+.set-scene .session .scrim-top{position:absolute;top:0;left:0;right:0;height:170px;background:linear-gradient(to bottom,rgba(55,50,48,.32),rgba(55,50,48,0))}
+.set-scene .session .scrim-bottom{position:absolute;bottom:0;left:0;right:0;height:330px;background:linear-gradient(to top,rgba(55,50,48,.6),rgba(55,50,48,0))}
+/* The status bar belongs to the session, so it dims with it, as in the frame. */
+.set-scene .statusbar{z-index:5}
+.set-scene .session .header{
+  position:absolute;top:48px;left:0;right:0;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:8px 16px 0;color:#fff;text-shadow:0 1px 3px rgba(55,50,48,.5);
+}
+.set-scene .session .icon-btn{width:36px;height:36px;display:grid;place-items:center}
+.set-scene .session .icon-btn svg{width:22px;height:22px}
+.set-scene .session .sess-timer{font-size:21px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:.12px}
+.set-scene .session .pip{
+  position:absolute;top:152px;right:10px;width:106px;height:139px;
+  border-radius:18px;overflow:hidden;
+  border:1.5px solid rgba(255,246,236,.78);
+  background:url("../student-main-classroom-desktop/assets/pip-you.png") 50% 18%/cover no-repeat,#2a2622;
+  box-shadow:0 6px 18px rgba(55,50,48,.28);
+}
+.set-scene .session .pip .shade{position:absolute;inset:0;background:linear-gradient(to top,rgba(55,50,48,.42),transparent 42%),rgba(55,50,48,.08)}
+.set-scene .session .pip .you{position:absolute;left:8px;top:8px;font-size:12px;font-weight:700;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.5)}
+.set-scene .session .pip .svc{
+  position:absolute;bottom:8px;width:37px;height:37px;border-radius:50%;
+  display:grid;place-items:center;color:#fff;
+  background:rgba(55,50,48,.6);border:1px solid rgba(255,246,236,.16);
+}
+.set-scene .session .pip .svc svg{width:18px;height:18px}
+.set-scene .session .pip .svc.mic{left:8px}
+.set-scene .session .pip .svc.cam{right:8px}
+.set-scene .session .chat-chev{
+  position:absolute;left:16px;bottom:316px;width:32px;height:32px;border-radius:50%;
+  display:grid;place-items:center;color:rgba(255,246,236,.85);background:rgba(55,50,48,.36);
+}
+.set-scene .session .chat-chev svg{width:16px;height:16px}
+.set-scene .session .chat-stack{
+  position:absolute;left:58px;right:82px;bottom:100px;
+  display:flex;flex-direction:column;align-items:flex-start;gap:8px;
+  -webkit-mask-image:linear-gradient(to bottom,transparent 0%,rgba(0,0,0,.35) 14%,#000 40%);
+  mask-image:linear-gradient(to bottom,transparent 0%,rgba(0,0,0,.35) 14%,#000 40%);
+}
+.set-scene .session .mo{
+  max-width:100%;padding:8px 12px;border-radius:14px;color:#fff;
+  background:rgba(43,39,36,.6);border:1px solid rgba(255,246,236,.10);
+}
+.set-scene .session .mo.is-helper{border-left:3px solid var(--brand-yellow);background:rgba(56,51,48,.7);padding-left:11px}
+.set-scene .session .mo .nm{font-size:12px;font-weight:500;color:rgba(255,246,236,.78);margin-bottom:2px}
+.set-scene .session .mo.is-helper .nm{color:var(--brand-yellow)}
+.set-scene .session .mo .tx{font-size:15px;font-weight:500;line-height:1.35}
+.set-scene .session .mo .quote{margin:2px 0 4px;padding-left:8px;border-left:2px solid rgba(255,255,255,.28);font-size:12px;color:rgba(255,255,255,.78)}
+.set-scene .session .mo .quote b{color:#fff;margin-right:4px}
+.set-scene .session .rail{
+  position:absolute;right:16px;bottom:118px;
+  display:flex;flex-direction:column;gap:20px;align-items:center;color:#fff;
+}
+.set-scene .session .rail-item{display:flex;flex-direction:column;align-items:center;gap:4px;min-width:44px}
+.set-scene .session .rail-item svg{width:26px;height:26px;opacity:.72}
+.set-scene .session .rail-item .val{font-size:12px;font-weight:700}
+.set-scene .session .footer{
+  position:absolute;left:12px;right:12px;bottom:24px;
+  display:flex;align-items:center;gap:8px;padding:6px 6px 6px 4px;
+}
+.set-scene .session .chat-toggle{width:46px;height:46px;display:grid;place-items:center;color:var(--brand-yellow)}
+.set-scene .session .chat-toggle svg{width:22px;height:22px}
+.set-scene .session .ask{
+  flex:1;height:46px;display:flex;align-items:center;gap:8px;padding:4px 5px 4px 6px;
+  border-radius:23px;background:rgba(234,233,222,.5);border:1px solid rgba(255,255,255,.18);
+}
+.set-scene .session .ask .ic{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:rgba(55,50,48,.08);color:var(--brand-charcoal)}
+.set-scene .session .ask .ic svg{width:19px;height:19px}
+.set-scene .session .ask .ph{flex:1;font-size:14px;color:rgba(55,50,48,.7);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.set-scene .session .ask .send{color:rgba(55,50,48,.42)}
+
+/* Charcoal → Neutral 800, radial, lit off-centre. Fitted to the frame:
+   peak at (73%, 23%), a linear falloff over a 665 × 306px ellipse whose long
+   axis runs from the upper right down towards the lower left. CSS radials
+   can't tilt, so the ellipse is painted on a rotated layer centred on the peak. */
+.set-overlay{
+  position:absolute;z-index:6;inset:0;opacity:0;overflow:hidden;
+  background:var(--brand-charcoal);
+}
+.set-overlay::before{
+  content:"";position:absolute;
+  left:calc(73% - 700px);top:calc(23.4% - 700px);width:1400px;height:1400px;
+  background:radial-gradient(ellipse 665px 306px at 50% 50%,#878473 0%,rgba(135,132,115,0) 100%);
+  transform:rotate(-67.6deg);
+}
+.set-layer{position:absolute;z-index:7;inset:0;pointer-events:none}
+/* Hidden until the first frame is drawn, so nothing flashes while fonts load */
+.set-layer .set-mark,.set-layer .set-numeral,.set-layer .set-title{opacity:0}
+
+/* Mark: the shared welcome-paddles artwork. Width from the frame: 112px. */
+.set-mark{
+  position:absolute;z-index:3;left:50%;top:208px;
+  width:112px;height:auto;margin-left:-56px;overflow:visible;
+  will-change:transform,opacity;
+}
+/* Set numeral as a watermark: Fedra Bold, baseline on the screen's bottom
+   edge, stem 44px in from the right so the base serif runs off the side.
+   With line-height:normal the baseline sits 760/1000 em down a 980/1000 em
+   box, hence bottom = -220/1000 em. */
+.set-numeral{
+  position:absolute;z-index:1;right:-21px;bottom:-.22em;
+  font-family:var(--font-brand);font-weight:700;font-style:normal;
+  font-size:529px;line-height:normal;font-synthesis:none;
+  color:rgba(247,246,239,.11);
+  will-change:transform,opacity;
+}
+/* Baselines sit 209px and 279px below the mark's top, as in the frame.
+   The ordinal line is set larger than "Set" there (77 / 71px). */
+.set-title{
+  position:absolute;z-index:2;left:0;right:0;top:361px;
+  margin:0;text-align:center;
+  color:var(--neutral-100);
+  font-family:var(--font-brand);font-weight:700;font-style:normal;
+  letter-spacing:-.4px;
+  font-synthesis:none;
+  will-change:transform,opacity;
+}
+.set-title .line{display:block}
+.set-title .l1{font-size:77px;line-height:72px}
+.set-title .l2{font-size:71px;line-height:70px}
+.set-title .g{display:inline-block;transform-origin:50% 100%;will-change:transform}
+.set-title .it{font-style:italic;font-weight:600}
+.set-title .g-0{margin-right:.01em}
+.set-title .bl{display:inline-block;width:0;height:0;vertical-align:baseline}
+
+/* Set review controls */
+.controls .set-row{display:flex;gap:6px}
+.controls .set-row button{flex:1;text-align:center;padding:8px 6px}
+.controls input[type=range]{width:100%;accent-color:var(--brand-charcoal)}
+.controls .set-readout{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--text-muted);font-variant-numeric:tabular-nums}
+.controls .set-readout b{color:var(--text-primary);font-weight:700}
+.controls .set-readout button{min-height:0;padding:2px 8px;font-size:12px}
+.controls .set-scrub{position:relative;padding-top:2px}
+.controls .set-scrub-marks{position:relative;height:16px;margin:0 7px}
+.controls .set-scrub-marks span{
+  position:absolute;top:0;transform:translateX(-50%);
+  font-size:10px;font-weight:700;color:var(--text-muted);white-space:nowrap;
+}
+.controls .set-scrub-marks span::before{
+  content:"";position:absolute;left:50%;top:-6px;width:1px;height:6px;background:var(--text-muted);
+}
 </style>
 </head>
 <body>
 <h1>Student Transition Screens — Mobile</h1>
-<p class="lead">Canonical Mobile Welcome, A/V Check, Waiting Room, Ending, and Practice Room transition system. Full transitions and same-space loading remain visually distinct.</p>
+<p class="lead">Canonical Mobile Welcome, A/V Check, Waiting Room, Ending, Practice Room and Set transition system. Full transitions and same-space loading remain visually distinct.</p>
 
 <div class="demo">
   <div class="phone" aria-label="Mobile transition screen prototype">
@@ -2281,6 +2439,30 @@ h1{font-size:20px;line-height:1.25}
     <button type="button" data-scene="practice-wait-left">Waiting — left room early</button>
     <button type="button" data-scene="practice-return">Returning to Main Room</button>
     <button type="button" data-soft-loading>Soft loading overlay</button>
+    <div class="grp">Set transitions · over Main Room</div>
+    <button type="button" data-scene="set-1">1st Set</button>
+    <button type="button" data-scene="set-2">2nd Set</button>
+    <button type="button" data-scene="set-3">3rd Set</button>
+    <div class="set-row">
+      <button class="play" type="button" data-set-replay>Replay</button>
+      <button type="button" id="set-pause">Pause</button>
+    </div>
+    <div class="grp">Set · speed</div>
+    <div class="set-row" id="set-speed">
+      <button class="on" type="button" data-set-speed="1">1×</button>
+      <button type="button" data-set-speed="0.5">0.5×</button>
+      <button type="button" data-set-speed="0.25">0.25×</button>
+      <button type="button" data-set-speed="0.1">0.1×</button>
+    </div>
+    <div class="grp">Set · timeline</div>
+    <div class="set-scrub">
+      <input type="range" id="set-scrub" min="0" max="1000" step="1" value="0" aria-label="Scrub the Set transition">
+      <div class="set-scrub-marks" id="set-scrub-marks"></div>
+    </div>
+    <div class="set-readout"><span><b id="set-t-now">0</b> ms</span><span id="set-t-phase">—</span></div>
+    <div class="grp">Set · background opacity</div>
+    <input type="range" id="set-opacity" min="0" max="100" step="1" value="100" aria-label="Set transition background opacity">
+    <div class="set-readout"><span><b id="set-op-now">100</b>%</span><button type="button" id="set-op-reset">Frame value (100%)</button></div>
     <div class="state" id="state-note"></div>
   </aside>
 </div>
@@ -2306,7 +2488,10 @@ var SCREENS = {
   "practice-going":{label:"Going to Practice Rooms",implemented:true},
   "practice-wait-declined":{label:"Waiting return · did not enter",implemented:true},
   "practice-wait-left":{label:"Waiting return · left early",implemented:true},
-  "practice-return":{label:"Returning to Main Room",implemented:true}
+  "practice-return":{label:"Returning to Main Room",implemented:true},
+  "set-1":{label:"1st Set",implemented:true},
+  "set-2":{label:"2nd Set",implemented:true},
+  "set-3":{label:"3rd Set",implemented:true}
 };
 
 var STATE = {
@@ -2436,8 +2621,8 @@ function practiceGoingScreen(){
   return Components.shell(
     '<main class="practice-transition-mobile is-going" aria-labelledby="practice-going-title">'
       +roomPaddles()
-      +'<h2 id="practice-going-title">Yalla - let’s practice together</h2>'
-      +'<p class="practice-support">Practice Hebrew out loud with classmates.\nMistakes are welcome.</p>'
+      +'<h2 id="practice-going-title">Time to team up!</h2>'
+      +'<p class="practice-support">Stay tuned for instructions</p>'
     +'</main>'
   );
 }
@@ -3368,6 +3553,575 @@ function playWelcomeMotion(opts){
   }, (WELCOME_MOTION[variant]||{total:0}).total+80);
 }
 
+/* ============================================================
+   Set transitions — 1st, 2nd and 3rd Set, shown over the Main Room.
+   Ported from the approved playground (Checkpoints/student-transition-
+   screens-set-animation-playground-v1-approved). Not wired into the live
+   session flow: they are reached from the review controls only.
+   The rig is the shared MARK artwork, head pivots, lens geometry and Welcome
+   rally stance; ballPath() supplies the circle that morphs into the lens.
+   ============================================================ */
+var SET_SCENES={
+  /* `hit` is the index of the ordinal glyph the ball lands on, if any */
+  "set-1":{title:"1st Set", numeral:"1", glyphs:[["1",""],["s","it"],["t","it"]], kind:"drop", hit:1},
+  "set-2":{title:"2nd Set", numeral:"2", glyphs:[["2",""],["n","it"],["d","it"]], kind:"walls"},
+  "set-3":{title:"3rd Set", numeral:"3", glyphs:[["3",""],["r","it"],["d","it"]], kind:"rally"}
+};
+function isSetScene(scene){ return !!SET_SCENES[scene||STATE.scene]; }
+
+/* Static Main Room (open chat), dimmed by the Set overlay */
+function setMainRoomContext(){
+  return '<div class="session" aria-hidden="true">'
+    +'<div class="stage"></div>'
+    +'<div class="scrim-top"></div>'
+    +'<div class="scrim-bottom"></div>'
+    +'<div class="header">'
+      +'<span class="icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></span>'
+      +'<span class="sess-timer">15:21</span>'
+    +'</div>'
+    +'<div class="pip">'
+      +'<div class="shade"></div>'
+      +'<span class="you">You</span>'
+      +'<span class="svc mic">'+ICONS.mic+'</span>'
+      +'<span class="svc cam"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="13" height="12" rx="2"/><path d="M16 10l5-3v10l-5-3z"/></svg></span>'
+    +'</div>'
+    +'<span class="chat-chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 15l6-6 6 6"/></svg></span>'
+    +'<div class="chat-stack">'
+      +'<div class="mo is-helper"><div class="nm">Helper</div><div class="tx">It changes with gender — nice catch!</div></div>'
+      +'<div class="mo"><div class="nm">Hanna</div><div class="tx">How would an Israeli say this naturally?</div></div>'
+      +'<div class="mo is-helper">'
+        +'<div class="nm">Helper</div>'
+        +'<div class="quote"><b>Hanna</b>How would an Israeli say this naturally?</div>'
+        +'<div class="tx">Yalla balagan 😄</div>'
+      +'</div>'
+    +'</div>'
+    +'<div class="rail">'
+      +'<span class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6l1.5 1.5L7 5M3 12l1.5 1.5L7 11M3 18l1.5 1.5L7 17M10 6h11M10 12h11M10 18h11"/></svg></span>'
+      +'<span class="rail-item"><svg viewBox="0 0 222 222" fill="none" stroke="currentColor" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"><path d="M194.25 184.999C194.25 168.889 178.806 155.184 157.25 150.105M138.75 185C138.75 164.565 113.902 148 83.25 148C52.5982 148 27.75 164.565 27.75 185M138.75 120.25C159.185 120.25 175.75 103.685 175.75 83.25C175.75 62.8155 159.185 46.25 138.75 46.25M83.25 120.25C62.8155 120.25 46.25 103.685 46.25 83.25C46.25 62.8155 62.8155 46.25 83.25 46.25C103.685 46.25 120.25 62.8155 120.25 83.25C120.25 103.685 103.685 120.25 83.25 120.25Z"/></svg><span class="val">89</span></span>'
+    +'</div>'
+    +'<div class="footer">'
+      +'<span class="chat-toggle"><svg viewBox="0 0 222 222" fill="none" stroke="currentColor" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"><path d="M69.4653 183.166C81.6891 190.216 95.8719 194.25 110.997 194.25C156.974 194.25 194.25 156.978 194.25 111C194.25 65.0223 156.978 27.75 111 27.75C65.0223 27.75 27.75 65.0223 27.75 111C27.75 126.125 31.7834 140.308 38.8333 152.531C39.5389 153.755 39.881 154.348 40.0359 154.908C40.1821 155.437 40.2229 155.912 40.1855 156.46C40.1452 157.048 39.9471 157.657 39.5408 158.876L32.4292 180.211C30.9198 184.74 30.1695 186.991 30.7043 188.491C31.1706 189.798 32.2056 190.83 33.5132 191.297C35.0095 191.83 37.2502 191.083 41.7318 189.589L63.1224 182.457C64.3372 182.052 64.9548 181.847 65.5417 181.807C66.0889 181.769 66.5609 181.819 67.0896 181.965C67.6516 182.12 68.245 182.462 69.4271 183.144Z"/></svg></span>'
+      +'<div class="ask">'
+        +'<span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="13" r="8"/><path d="M8 15c1.6 1.6 4.4 1.6 6 0"/><path d="M8.5 10.5h.01M13.5 10.5h.01"/><path d="M19 2v5M16.5 4.5h5"/></svg></span>'
+        +'<span class="ph">Ask the teacher or the class…</span>'
+        +'<span class="ic send"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 3L10 14M21 3l-7 18-4-7-7-4z"/></svg></span>'
+      +'</div>'
+    +'</div>'
+  +'</div>';
+}
+
+/* The shared mark, regrouped per paddle so each moves as one body. The lens
+   path becomes the ball, drawn last so it stays above both heads. */
+function setMarkSvg(){
+  var g={l:"",r:""},lens="",i,p;
+  for(i=0;i<MARK.paths.length;i++){
+    p=MARK.paths[i];
+    if(p[0]==="lens") lens=p[1];
+    else g[p[0]==="pad pad-l"?"l":"r"]+='<path d="'+p[1]+'"/>';
+  }
+  return '<svg class="set-mark" viewBox="'+MARK.vb+'" aria-hidden="true"'
+    +' fill="none" stroke="'+MARK.stroke+'" stroke-width="'+MARK.sw+'"'
+    +' stroke-linecap="round" stroke-linejoin="round">'
+    +'<g class="pad pad-r">'+g.r+'</g><g class="pad pad-l">'+g.l+'</g>'
+    +'<path class="set-ball" fill="'+SetMotion.fill+'" d="'+lens+'"/></svg>';
+}
+
+/* Each ordinal glyph is its own box so it can deform alone */
+function setTransitionScreen(id){
+  var S=SET_SCENES[id];
+  return '<div class="set-scene" data-set="'+id+'">'
+    +setMainRoomContext()
+    +'<div class="set-overlay"></div>'
+    +'<main class="set-layer" aria-labelledby="set-title">'
+      +'<span class="set-numeral" aria-hidden="true">'+S.numeral+'</span>'
+      +setMarkSvg()
+      +'<h2 class="set-title" id="set-title" aria-label="'+S.title+'">'
+        +'<span class="line l1" aria-hidden="true">'
+          +S.glyphs.map(function(g,i){ return '<span class="g g-'+i+(g[1]?' '+g[1]:'')+'">'+g[0]+'</span>'; }).join("")
+        +'<i class="bl"></i></span>'
+        +'<span class="line l2" aria-hidden="true">Set<i class="bl"></i></span>'
+      +'</h2>'
+    +'</main>'
+    +Components.statusbar()
+  +'</div>';
+}
+
+var SetMotion=(function(){
+  var FILL="#F9E24C";
+  var HEAD_L=[MARK.head.lx,MARK.head.y], HEAD_R=[MARK.head.rx,MARK.head.y];
+  /* butt of each handle: a hit swings the paddle from here */
+  var TIP_L=[19.5,209], TIP_R=[210.7,210];
+  var LENS=MARK.lens, STANCE=MARK.rally;
+
+  /* ---------- Timing (ms at 1×) ---------- */
+  var CFG={
+    overlayIn:[0,340],
+    contentIn:[90,470],
+    drop:540,          /* ball released */
+    morph:210,         /* circle → lens, ends as paddles land */
+    catchSettle:50,    /* paddles land this long after the ball arrives */
+    hold:1100,
+
+    /* 1st Set — fall onto the "s" */
+    fall:640,          /* release → contact; sets gravity */
+    contact:110,       /* ball on the letter */
+    attack:.35,        /* share of the contact spent compressing */
+    ballSquash:.28, ballSpread:.2,
+    letterSquash:.16, letterSpread:.06,
+    ballRing:{amp:.07, period:170, decay:60},
+    letterRing:{amp:.035, period:200, decay:85},
+
+    /* 2nd Set — wall to wall, one ballistic flight */
+    entryY:.89,        /* share of screen height: level with the big numeral */
+    launch:1600,       /* px/s, horizontal speed on entry */
+    gravity:1200,      /* px/s² */
+    rightBounce:.95,   /* share of horizontal speed each wall gives back */
+    leftBounce:.15,
+    wallContact:48,
+    wallSquash:.22, wallSpread:.14,
+    lobClose:300,      /* the paddles stay open while the ball clears the left one */
+    lobCloseLeft:180,
+    lobMorph:120,
+
+    /* 3rd Set — thrown in, two passes, caught (same gravity as 2nd Set) */
+    throwRise:40,      /* px above the mark the throw starts, off the right edge */
+    throwTime:560, pass1:480, pass2:460,
+    stepIn:.15,        /* share of the close the paddles make during the first pass */
+    rallyClose:300,    /* the rest, at the end of the second pass, once the ball is clear */
+    hitSwing:7,        /* deg, swing from the handle butt */
+    hitWind:90, hitDur:300,
+    faceIn:.55,        /* contact point: share of the head radius in from its centre */
+    faceUp:6,          /* px */
+    hitSquash:.16, hitSpread:.08,
+    rallyMorph:120
+  };
+
+  /* ---------- ball ↔ lens morph ----------
+     ballPath() breaks the circle at the lens's own corner angles, so both
+     ends have identical segment structure and lerp number-for-number. */
+  function nums(d){ return d.match(/-?\d*\.?\d+(?:e-?\d+)?/g).map(Number); }
+  var LENS_D=MARK.paths.filter(function(p){ return p[0]==="lens"; })[0][1];
+  var CIRCLE=nums(ballPath(LENS.r)), LENS_N=nums(LENS_D);
+  function morphPath(m){
+    var n=[],i;
+    for(i=0;i<CIRCLE.length;i++) n.push(px(CIRCLE[i]+(LENS_N[i]-CIRCLE[i])*m));
+    var d="M"+n[0]+" "+n[1];
+    for(i=2;i<n.length;i+=6) d+="C"+n.slice(i,i+6).join(" ");
+    return d+"Z";
+  }
+
+  /* ---------- easing ---------- */
+  function bezier(x1,y1,x2,y2){
+    function a(p1,p2){return 1-3*p2+3*p1;} function b(p1,p2){return 3*p2-6*p1;} function c(p1){return 3*p1;}
+    function at(t,p1,p2){return ((a(p1,p2)*t+b(p1,p2))*t+c(p1))*t;}
+    function slope(t,p1,p2){return 3*a(p1,p2)*t*t+2*b(p1,p2)*t+c(p1);}
+    return function(x){
+      if(x<=0) return 0; if(x>=1) return 1;
+      var t=x,i,s;
+      for(i=0;i<8;i++){ s=slope(t,x1,x2); if(Math.abs(s)<1e-6) break; t-=(at(t,x1,x2)-x)/s; }
+      return at(Math.min(1,Math.max(0,t)),y1,y2);
+    };
+  }
+  var easeClose=bezier(.4,0,.22,1);      /* Welcome pg-a-pad-* */
+  var easeMorph=bezier(.45,0,.3,1);
+  var easeOut=bezier(.22,.72,.16,1);      /* Welcome pg-slide-in */
+  function clamp01(v){return v<0?0:v>1?1:v;}
+  function seg(t,a,b){return clamp01((t-a)/(b-a));}
+  /* 0 → 1 → 0 across a contact: quick compression, softer release */
+  function press(t,t0,dur){
+    var tau=(t-t0)/dur, a=CFG.attack;
+    if(tau<=0||tau>=1) return 0;
+    return tau<a?Math.sin(Math.PI/2*tau/a):.5+.5*Math.cos(Math.PI*(tau-a)/(1-a));
+  }
+  /* damped sine after a release, starting at 0 and swinging positive first */
+  function ring(t,t0,R){
+    var d=t-t0;
+    return d<=0?0:R.amp*Math.sin(2*Math.PI*d/R.period)*Math.exp(-d/R.decay);
+  }
+
+  /* ---------- live state ---------- */
+  var S={id:null, set:null, G:null, now:0, speed:1, alpha:1, playing:false, last:0, raf:0, token:0, scrubbing:false};
+  var N=null, G=null;
+  var UI={
+    now:document.getElementById("set-t-now"), phase:document.getElementById("set-t-phase"),
+    scrub:document.getElementById("set-scrub"), marks:document.getElementById("set-scrub-marks"),
+    pause:document.getElementById("set-pause"), opNow:document.getElementById("set-op-now"),
+    opacity:document.getElementById("set-opacity")
+  };
+
+  /* Top edge of a glyph's ink, per half-pixel column, in screen px. Rasterised
+     in the font the DOM uses, so contact is solved against the letter's outline
+     rather than its box. */
+  function glyphProfile(g,base,baseline){
+    var r=g.getBoundingClientRect(), cs=getComputedStyle(g);
+    var fs=parseFloat(cs.fontSize), pad=Math.ceil(fs*.4), K=2;
+    var w=Math.ceil(r.width+pad*2), h=Math.ceil(fs*1.25), by=Math.ceil(fs);
+    var cv=document.createElement("canvas"); cv.width=w*K; cv.height=h*K;
+    var c=cv.getContext("2d"); c.scale(K,K);
+    c.font=cs.fontStyle+" "+cs.fontWeight+" "+cs.fontSize+" "+cs.fontFamily;
+    c.fillText(g.textContent,pad,by);
+    var pxs=c.getImageData(0,0,cv.width,cv.height).data, top=[], i,j,y;
+    for(i=0;i<cv.width;i++){
+      y=NaN;
+      for(j=0;j<cv.height;j++){ if(pxs[(j*cv.width+i)*4+3]>110){ y=j/K; break; } }
+      top.push(y===y?baseline-(by-y):NaN);
+    }
+    return {x0:r.left-base.left-pad, step:1/K, top:top, ox:r.left-base.left+r.width/2};
+  }
+
+  /* Centre height at which an ellipse (half-axes a, b) centred on x = cx rests
+     on the ordinal glyphs; scales[i] = [sx, sy] about that glyph's baseline
+     centre, matching its CSS transform-origin. Returns [cy, glyph index]. */
+  function restOn(cx,a,b,scales){
+    var best=Infinity, who=-1;
+    G.prof.forEach(function(P,gi){
+      var sc=scales&&scales[gi], kx=sc?sc[0]:1, ky=sc?sc[1]:1, i,x,u,top,cy;
+      for(i=0;i<P.top.length;i++){
+        top=P.top[i]; if(top!==top) continue;
+        x=P.ox+(P.x0+i*P.step-P.ox)*kx;
+        u=(x-cx)/a; if(u<=-1||u>=1) continue;
+        cy=G.baseline-(G.baseline-top)*ky-b*Math.sqrt(1-u*u);
+        if(cy<best){ best=cy; who=gi; }
+      }
+    });
+    return [best,who];
+  }
+
+  /* p: 0 open → 1 closed. s: swing in degrees about the handle butt. */
+  function setPaddles(pL,pR,sL,sR){
+    var oL=STANCE.out*(1-pL), rL=STANCE.rot*(1-pL);
+    var oR=STANCE.out*(1-pR), rR=STANCE.rot*(1-pR);
+    N.gL.setAttribute("transform","translate("+px(-oL)+" 0) rotate("+px(-rL)+" "+HEAD_L[0]+" "+HEAD_L[1]+")"
+      +(sL?" rotate("+px(sL)+" "+TIP_L[0]+" "+TIP_L[1]+")":""));
+    N.gR.setAttribute("transform","translate("+px(oR)+" 0) rotate("+px(rR)+" "+HEAD_R[0]+" "+HEAD_R[1]+")"
+      +(sR?" rotate("+px(sR)+" "+TIP_R[0]+" "+TIP_R[1]+")":""));
+  }
+  /* Screen position of a head centre under setPaddles(p, s); side −1 = left */
+  function headAt(side,p,s){
+    var L=side<0, h=L?HEAD_L:HEAD_R, b=L?TIP_L:TIP_R, D=Math.PI/180;
+    var a=s*D, dx=h[0]-b[0], dy=h[1]-b[1];
+    var x=b[0]+dx*Math.cos(a)-dy*Math.sin(a), y=b[1]+dx*Math.sin(a)+dy*Math.cos(a);
+    a=side*STANCE.rot*(1-p)*D; dx=x-h[0]; dy=y-h[1];
+    x=h[0]+dx*Math.cos(a)-dy*Math.sin(a)+side*STANCE.out*(1-p);
+    y=h[1]+dx*Math.sin(a)+dy*Math.cos(a);
+    return {x:G.markL+x*G.k, y:G.markT+y*G.k};
+  }
+
+  function measure(){
+    N.title.style.transform=""; N.mark.style.transform=""; N.numeral.style.transform="";
+    N.glyphs.forEach(function(g){g.style.transform="";});
+    var base=N.root.getBoundingClientRect();
+    var mr=N.mark.getBoundingClientRect();
+    var k=mr.width/MARK.w;
+    var baseline=N.bl1.getBoundingClientRect().top-base.top;
+    N.glyphs.forEach(function(g){
+      var r=g.getBoundingClientRect();
+      g.style.transformOrigin="50% "+px(baseline-(r.top-base.top))+"px";
+    });
+    var r=LENS.r*k;
+    G={k:k, W:base.width, H:base.height, baseline:baseline,
+       markL:mr.left-base.left, markT:mr.top-base.top,
+       LC:{x:mr.left-base.left+LENS.cx*k, y:mr.top-base.top+LENS.cy*k},
+       /* half the lens stroke sits outside the path, so contact uses it too */
+       r:r, rE:r+(MARK.sw/2)*k,
+       prof:N.glyphs.map(function(g){ return glyphProfile(g,base,baseline); })};
+    var kind=S.set.kind, key;
+    var P=kind==="drop"?planDrop():kind==="walls"?planWalls():planRally();
+    for(key in P) G[key]=P[key];
+    G.morphStart=G.tLand-(P.morph||CFG.morph);
+    G.total=G.tLand+CFG.hold;
+    S.G=G;
+    UI.marks.innerHTML=G.marks.map(function(it){
+      return '<span style="left:'+px(it[1]/G.total*100)+'%">'+it[0]+'</span>';
+    }).join("");
+  }
+
+  /* ----- 1st Set: drop onto the "s", rebound into the paddles -----
+     Fall and rebound share one gravity. The ball lands on the highest point
+     of the letter; contact is checked against every ordinal glyph at rest and
+     at peak squash, and the landing x steps left if a neighbour would be
+     touched first, so the ball only ever meets the "s". */
+  function planDrop(){
+    var hit=S.set.hit, Ph=G.prof[hit], LC=G.LC, rE=G.rE, i, minTop=Infinity, xs=[];
+    for(i=0;i<Ph.top.length;i++) if(Ph.top[i]<minTop) minTop=Ph.top[i];
+    for(i=0;i<Ph.top.length;i++) if(Ph.top[i]<=minTop+.3) xs.push(Ph.x0+i*Ph.step);
+    var sx=xs.reduce(function(a,b){return a+b;},0)/xs.length;
+    var peak=[]; peak[hit]=[1+CFG.letterSpread,1-CFG.letterSquash];
+    for(i=0;i<24;i++){
+      if(restOn(sx,rE,rE)[1]===hit
+        &&restOn(sx,rE*(1+CFG.ballSpread),rE*(1-CFG.ballSquash),peak)[1]===hit) break;
+      sx-=.5;
+    }
+    var yC=restOn(sx,rE,rE)[0];
+    var y0=LC.y-300, D=yC-y0, F=CFG.fall/1000, g=2*D/(F*F);
+    var H=yC-LC.y, TR=Math.sqrt(2*H/g)*1000, vR=Math.sqrt(2*g*H);
+    var tC=CFG.drop+CFG.fall, tL=tC+CFG.contact, tA=tL+TR, tLand=tA+CFG.catchSettle;
+    var letter=S.set.glyphs[hit][0];
+    function letterScale(t){
+      var f,e;
+      if(t<=tL){ f=press(t,tC,CFG.contact); return [1+CFG.letterSpread*f,1-CFG.letterSquash*f]; }
+      e=ring(t,tL,CFG.letterRing); return [1-e*.5,1+e];
+    }
+    return {
+      tLand:tLand, closeStart:tC,
+      marks:[["drop",CFG.drop],["contact",tC],["catch",tLand]],
+      phase:function(t){
+        if(t<CFG.drop) return t<CFG.overlayIn[1]?"Overlay in":"Open stance";
+        if(t<tC) return "Fall";
+        if(t<=tL) return "Contact on “"+letter+"”";
+        if(t<tA) return "Rebound · paddles closing";
+        return t<tLand?"Catch":"Hold";
+      },
+      glyphs:function(t){ var out=[]; if(t>=tC) out[hit]=letterScale(t); return out; },
+      ball:function(t){
+        var u,s,f,e,bx,by,sc;
+        if(t<tC){
+          u=seg(t,CFG.drop,tC);
+          return {x:LC.x+(sx-LC.x)*u*u, y:y0+D*u*u, sx:1, sy:1};
+        }
+        if(t<=tL){
+          /* the ball's underside stays on the letter's live, compressed edge */
+          f=press(t,tC,CFG.contact);
+          bx=1+CFG.ballSpread*f; by=1-CFG.ballSquash*f;
+          sc=[]; sc[hit]=letterScale(t);
+          return {x:sx, y:restOn(sx,rE*bx,rE*by,sc)[0], sx:bx, sy:by};
+        }
+        e=ring(t,tL,CFG.ballRing);
+        if(t<tA){
+          s=(t-tL)/1000;
+          return {x:sx+(LC.x-sx)*((t-tL)/TR), y:yC-(vR*s-g*s*s/2), sx:1-e*.7, sy:1+e};
+        }
+        return {x:LC.x, y:LC.y, sx:1, sy:1};
+      }
+    };
+  }
+
+  /* ----- 2nd Set: off the right edge, off the left, lobbed into the paddles --
+     One ballistic flight under a single gravity. The walls are the screen
+     edges, set in by the ball's radius so its edge touches them. A bounce
+     reverses and damps only the horizontal speed; the vertical speed carries
+     through, and gravity keeps acting while the ball is flattened on the wall.
+     The right edge is lively and the left one soft, so the ball leaves the
+     left edge slowly, still rising, floats over the left paddle and drops into
+     the lens. The launch angle is solved so the flight ends at the lens centre
+     just as the paddles meet. */
+  function planWalls(){
+    var LC=G.LC, rE=G.rE, W=G.W, wc=CFG.wallContact, g=CFG.gravity/1e6;
+    var xA=-rE-6, xR=W-rE, xL=rE, y0=G.H*CFG.entryY;
+    var v1=CFG.launch/1000, v2=v1*CFG.rightBounce, v3=v2*CFG.leftBounce;
+    var t0=CFG.drop, tR=t0+(xR-xA)/v1, tRe=tR+wc, tLw=tRe+(xR-xL)/v2, tLe=tLw+wc;
+    var tA=tLe+(LC.x-xL)/v3, tLand=tA;
+    var F=tA-t0, vy0=(LC.y-y0-g*F*F/2)/F;
+    function y(t){ var d=Math.max(0,t-t0); return y0+vy0*d+g*d*d/2; }
+    function onWall(t,tw,side){
+      var f=press(t,tw,wc), bx=1-CFG.wallSquash*f;
+      return {x:side>0?W-rE*bx:rE*bx, y:y(t), sx:bx, sy:1+CFG.wallSpread*f};
+    }
+    function flying(x,t,tw){
+      var e=ring(t,tw,CFG.ballRing);
+      return {x:x, y:y(t), sx:1+e, sy:1-e*.7};
+    }
+    return {
+      /* the ball passes over the left paddle, so it closes last, behind it */
+      tLand:tLand, closeStart:Math.max(tLe,tLand-CFG.lobClose),
+      closeStartL:Math.max(tLe,tLand-CFG.lobCloseLeft), morph:CFG.lobMorph,
+      marks:[["enter",t0],["right",tR],["left",tLw],["catch",tLand]],
+      phase:function(t){
+        if(t<t0) return t<CFG.overlayIn[1]?"Overlay in":"Open stance";
+        if(t<tR) return "Enter · heading right";
+        if(t<=tRe) return "Right edge";
+        if(t<tLw) return "Across · rising left";
+        if(t<=tLe) return "Left edge";
+        if(t<tA) return "Lob · paddles closing";
+        return "Hold";
+      },
+      glyphs:function(){ return []; },
+      ball:function(t){
+        if(t<tR) return {x:xA+v1*Math.max(0,t-t0), y:y(t), sx:1, sy:1};
+        if(t<=tRe) return onWall(t,tR,1);
+        if(t<tLw) return flying(xR-v2*(t-tRe),t,tRe);
+        if(t<=tLe) return onWall(t,tLw,-1);
+        if(t<tA) return flying(xL+v3*(t-tLe),t,tLe);
+        return {x:LC.x, y:LC.y, sx:1, sy:1};
+      }
+    };
+  }
+
+  /* ----- 3rd Set: thrown in, passed twice, caught -----
+     The ball is thrown in from beyond the right edge, over the right paddle,
+     onto the left paddle's face. Left passes to right, right passes back to
+     the middle, and the paddles close around it there into the lens. As in
+     the Welcome room rally the ball meets the face in front of the head, and
+     a hit is a short swing from the handle butt. The paddles step in during
+     the first pass and close at the end of the second, once the ball has left
+     the right face. Every flight is a parabola under the 2nd Set gravity, and
+     each one starts where the last ended, at the paddle face as it is at the
+     moment of the hit. */
+  function planRally(){
+    var LC=G.LC, rE=G.rE, g=CFG.gravity/1e6;
+    var Rh=(LENS.r+(HEAD_R[0]-HEAD_L[0])/2)*G.k;
+    var t0=CFG.drop, tH1=t0+CFG.throwTime, tH2=tH1+CFG.pass1, tA=tH2+CFG.pass2;
+    var tC=Math.max(tH2,tA-CFG.rallyClose);
+    function swing(t,tH){ return CFG.hitSwing*press(t,tH-CFG.hitWind,CFG.hitDur); }
+    function stance(t){
+      if(t<=tH1) return 0;
+      if(t<=tH2) return CFG.stepIn*easeMorph(seg(t,tH1,tH2));
+      return CFG.stepIn+(1-CFG.stepIn)*easeClose(seg(t,tC,tA));
+    }
+    function face(side,t,s){
+      var h=headAt(side,stance(t),s);
+      return {x:h.x-side*CFG.faceIn*Rh, y:h.y-CFG.faceUp};
+    }
+    function flight(P,Q,T){
+      var vx=(Q.x-P.x)/T, vy=(Q.y-P.y-g*T*T/2)/T;
+      return function(d){ return {x:P.x+vx*d, y:P.y+vy*d+g*d*d/2}; };
+    }
+    var O={x:G.W+rE+6, y:G.markT-CFG.throwRise};
+    var C1=face(-1,tH1,swing(tH1,tH1)), C2=face(1,tH2,-swing(tH2,tH2));
+    var f0=flight(O,C1,CFG.throwTime), f1=flight(C1,C2,CFG.pass1), f2=flight(C2,LC,CFG.pass2);
+    return {
+      tLand:tA, closeStart:tC, morph:CFG.rallyMorph,
+      marks:[["throw",t0],["hit",tH1],["hit",tH2],["catch",tA]],
+      paddles:function(t){ var p=stance(t); return [p,p,swing(t,tH1),-swing(t,tH2)]; },
+      phase:function(t){
+        if(t<t0) return t<CFG.overlayIn[1]?"Overlay in":"Open stance";
+        if(t<tH1-CFG.hitWind) return "Throw-in";
+        if(t<tH1+60) return "Hit · left paddle";
+        if(t<tH2-CFG.hitWind) return "Pass 1 · stepping in";
+        if(t<tH2+60) return "Hit · right paddle";
+        if(t<tC) return "Pass 2";
+        if(t<tA) return "Pass 2 · paddles closing";
+        return "Hold";
+      },
+      glyphs:function(){ return []; },
+      ball:function(t){
+        var p=t<tH1?f0(Math.max(0,t-t0)):t<tH2?f1(t-tH1):t<tA?f2(t-tH2):LC;
+        var f=Math.max(press(t,tH1-25,85),press(t,tH2-25,85));
+        return {x:p.x, y:p.y, sx:1-CFG.hitSquash*f, sy:1+CFG.hitSpread*f};
+      }
+    };
+  }
+
+  function setGlyph(g,sc){
+    if(!sc||(Math.abs(sc[0]-1)<1e-4&&Math.abs(sc[1]-1)<1e-4)){ g.style.transform=""; return; }
+    g.style.transform="scale("+px(sc[0]*1000)/1000+","+px(sc[1]*1000)/1000+")";
+  }
+  function draw(t){
+    if(!G||!N) return;
+    /* overlay + entrance */
+    var ov=easeOut(seg(t,CFG.overlayIn[0],CFG.overlayIn[1]));
+    N.overlay.style.opacity=px(ov*S.alpha*1000)/1000;
+    var ci=easeOut(seg(t,CFG.contentIn[0],CFG.contentIn[1]));
+    var lift=px((1-ci)*12);
+    [N.title,N.mark,N.numeral].forEach(function(n){
+      n.style.opacity=ci;
+      n.style.transform=lift?"translateY("+lift+"px)":"";
+    });
+
+    var pd=G.paddles&&G.paddles(t);
+    if(pd) setPaddles(pd[0],pd[1],pd[2],pd[3]);
+    else setPaddles(easeClose(seg(t,G.closeStartL||G.closeStart,G.tLand)),
+                    easeClose(seg(t,G.closeStart,G.tLand)));
+
+    /* ball: plan gives screen px, drawn in the mark's own units */
+    var b=G.ball(t);
+    var ux=(b.x-G.LC.x)/G.k, uy=(b.y-G.LC.y)/G.k;
+    N.ball.setAttribute("transform",
+      "translate("+px(ux+LENS.cx)+" "+px(uy+LENS.cy)+") scale("+px(b.sx*1000)/1000+" "+px(b.sy*1000)/1000+") translate("+(-LENS.cx)+" "+(-LENS.cy)+")");
+    var m=easeMorph(seg(t,G.morphStart,G.tLand));
+    N.ball.setAttribute("d",m>=1?LENS_D:morphPath(m));
+    /* lettering: only the glyph that is hit moves */
+    var gs=G.glyphs(t);
+    N.glyphs.forEach(function(g,i){ setGlyph(g,gs[i]); });
+
+    UI.now.textContent=Math.round(t);
+    UI.phase.textContent=G.phase(t);
+    if(!S.scrubbing) UI.scrub.value=Math.round(t/G.total*1000);
+  }
+
+  /* ---------- playback ---------- */
+  function syncPause(){ UI.pause.textContent=S.playing?"Pause":"Play"; }
+  function frame(ts){
+    S.raf=0;
+    if(!S.playing||!G) return;
+    var dt=S.last?ts-S.last:0; S.last=ts;
+    S.now=Math.min(G.total,S.now+dt*S.speed);
+    draw(S.now);
+    if(S.now>=G.total){ S.playing=false; syncPause(); return; }
+    S.raf=requestAnimationFrame(frame);
+  }
+  function play(from){
+    if(!G) return;
+    if(typeof from==="number") S.now=from;
+    if(S.now>=G.total) S.now=0;
+    S.playing=true; S.last=0; syncPause();
+    if(!S.raf) S.raf=requestAnimationFrame(frame);
+  }
+  function pause(){
+    S.playing=false;
+    if(S.raf){ cancelAnimationFrame(S.raf); S.raf=0; }
+    syncPause();
+  }
+  function fontsReady(){
+    if(!document.fonts||!document.fonts.load) return Promise.resolve();
+    return Promise.all([
+      document.fonts.load('700 77px "FedraSerifPro"'),
+      document.fonts.load('italic 600 77px "FedraSerifPro"')
+    ]).then(function(){ return document.fonts.ready; },function(){});
+  }
+
+  /* Binds to the scene the mobile renderer has just written, measures once
+     the title fonts are in, then plays from zero. */
+  function mount(id){
+    var root=document.querySelector(".set-scene");
+    pause();
+    var tok=++S.token;
+    S.id=id; S.set=SET_SCENES[id]; S.G=G=null; S.now=0; S.scrubbing=false;
+    N=null;
+    UI.now.textContent="0"; UI.phase.textContent="—"; UI.marks.innerHTML=""; UI.scrub.value=0;
+    if(!root||!S.set) return;
+    N={root:root,
+       overlay:root.querySelector(".set-overlay"),
+       mark:root.querySelector(".set-mark"),
+       title:root.querySelector(".set-title"),
+       numeral:root.querySelector(".set-numeral"),
+       gL:root.querySelector(".set-mark .pad-l"),
+       gR:root.querySelector(".set-mark .pad-r"),
+       ball:root.querySelector(".set-ball"),
+       glyphs:[].slice.call(root.querySelectorAll(".set-title .l1 .g")),
+       bl1:root.querySelector(".set-title .l1 .bl")};
+    fontsReady().then(function(){
+      if(tok!==S.token) return;
+      measure();
+      if(reducedMotion()){ S.now=G.total; draw(S.now); return; }
+      draw(0);
+      play(0);
+    });
+  }
+  function unmount(){
+    pause();
+    S.token++;
+    S.id=null; S.set=null; S.G=G=null; N=null;
+  }
+
+  return {
+    fill:FILL,
+    mount:mount,
+    unmount:unmount,
+    replay:function(){ play(0); },
+    toggle:function(){ if(S.playing) pause(); else play(); },
+    seek:function(t){ if(!G) return; pause(); S.now=Math.max(0,Math.min(G.total,t)); draw(S.now); },
+    scrub:function(v,active){
+      S.scrubbing=active;
+      if(!G||!active) return;
+      pause(); S.now=v/1000*G.total; draw(S.now);
+    },
+    setSpeed:function(v){ S.speed=v; },
+    setOpacity:function(v){ S.alpha=v/100; UI.opacity.value=v; UI.opNow.textContent=v; draw(S.now); },
+    state:function(){ return {id:S.id, now:S.now, total:G?G.total:0, playing:S.playing, speed:S.speed, alpha:S.alpha}; }
+  };
+})();
+
 
 var Renderers = {
   welcome:function(){
@@ -3468,6 +4222,9 @@ var Renderers = {
   "practice-return":function(){
     return practiceReturnScreen();
   },
+  "set-1":function(){ return setTransitionScreen("set-1"); },
+  "set-2":function(){ return setTransitionScreen("set-2"); },
+  "set-3":function(){ return setTransitionScreen("set-3"); },
   ending:function(){
     return renderEnding();
   },
@@ -3603,7 +4360,11 @@ function render(){
             ? "Shared Waiting-return layout · internal reason: "+STATE.practiceWaitReason+"."
             : STATE.scene==="practice-return"
               ? "Full transition · Practice Rooms to Main Room."
+              : isSetScene()
+                ? SET_SCENES[STATE.scene].title+" transition over the Main Room. Review only: not wired into the live session flow. Use the background opacity slider to check how the Main Room reads through the overlay."
         : "Canonical Mobile Welcome. Continue opens the mobile A/V Check.";
+  if(isSetScene()) SetMotion.mount(STATE.scene);
+  else SetMotion.unmount();
   syncAvMicMeter();
   mountMobileMatkot();
   if(isEndingScene()) playMobileEnding();
@@ -3626,6 +4387,29 @@ document.querySelectorAll("[data-welcome-replay]").forEach(function(button){
     else render();
   });
 });
+document.querySelectorAll("[data-set-replay]").forEach(function(button){
+  button.addEventListener("click",function(){
+    if(!isSetScene()) setScene("set-1");
+    else SetMotion.replay();
+  });
+});
+document.getElementById("set-pause").addEventListener("click",function(){
+  if(isSetScene()) SetMotion.toggle();
+});
+document.querySelectorAll("[data-set-speed]").forEach(function(button){
+  button.addEventListener("click",function(){
+    SetMotion.setSpeed(parseFloat(button.dataset.setSpeed));
+    document.querySelectorAll("[data-set-speed]").forEach(function(x){ x.classList.toggle("on",x===button); });
+  });
+});
+(function(){
+  var scrub=document.getElementById("set-scrub");
+  scrub.addEventListener("input",function(){ SetMotion.scrub(+scrub.value,true); });
+  scrub.addEventListener("change",function(){ SetMotion.scrub(+scrub.value,false); });
+  var opacity=document.getElementById("set-opacity");
+  opacity.addEventListener("input",function(){ SetMotion.setOpacity(+opacity.value); });
+  document.getElementById("set-op-reset").addEventListener("click",function(){ SetMotion.setOpacity(100); });
+})();
 
 document.querySelectorAll("[data-av-perm]").forEach(function(button){
   button.addEventListener("click",function(){ setAvPermPreview(button.dataset.avPerm); });
