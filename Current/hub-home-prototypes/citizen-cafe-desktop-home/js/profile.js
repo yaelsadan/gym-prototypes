@@ -1,5 +1,5 @@
-/* Profile modal. Approach B (DProfileInline) from hub-profile-prototype:
-   view mode, edit in place, field popovers, save and error states, photo editing.
+/* Profile modal. Approach C (DProfileFlat) from hub-profile-prototype.
+   There is no edit mode: each row has a quiet pencil and opens its own editor.
    The exported mock Home, its avatar, and its licensed font files are not used.
    Typography comes from the Home page (FedraSerifPro and Assistant). */
 (function () {
@@ -70,7 +70,7 @@
     loading = loadScript(PREFIX + "js/runtime.js?v=20261123a")
       .then(function () { return loadScript(PREFIX + "js/components.js?v=20261123a"); })
       .then(function () {
-        var def = window.HUB_COMPONENTS && window.HUB_COMPONENTS.DProfileInline;
+        var def = window.HUB_COMPONENTS && window.HUB_COMPONENTS.DProfileFlat;
         if (!def || !window.mountComponent) throw new Error("Profile prototype did not load");
         if (!def.__hubPrepared) {
           prepare(def);
@@ -106,7 +106,7 @@
       comp.setState({
         mode: "profile",
         tab: "personal",
-        inline: false,
+        inline: true,
         confirm: null,
         guard: null,
         field: null,
@@ -141,10 +141,10 @@
     var state = comp && comp.state;
     var inside = event.target && event.target.closest && event.target.closest("#profile-root [role='dialog'], #profile-root [role='alertdialog']");
     if (inside) return;
-    if (state && (state.guard || state.confirm || state.field || state.inline)) return;
+    if (state && (state.guard || state.confirm || state.field)) return;
     event.preventDefault();
     event.stopPropagation();
-    if (comp) comp.setState({ mode: "closed", inline: false, tab: "personal", confirm: null, guard: null, field: null, pastHint: false });
+    if (comp) comp.setState({ mode: "closed", inline: true, tab: "personal", confirm: null, guard: null, field: null, pastHint: false });
     else hide();
   }, true);
 })();
