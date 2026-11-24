@@ -268,6 +268,7 @@ h2{font-size:15px;margin:var(--s32) 0 var(--s8)}
 .btn.danger-soft{background:rgba(249,116,107,.16);border-color:rgba(249,116,107,.5);color:#fff}
 .respline{width:100%;height:3px;border-radius:2px;background:rgba(255,255,255,.14);overflow:hidden;margin-top:14px}
 .respline i{display:block;height:100%;background:var(--brand-yellow);width:100%;border-radius:2px;animation:resp 10s linear forwards}
+.respline.s13 i{animation-duration:13s}
 @keyframes resp{0%{width:100%}100%{width:0}}
 /* ===== Room Consent — milky / Citizen bottom sheet (consent only; enforce/partner/report sheets stay dark) ===== */
 .sheet.milky{background:rgba(250,249,244,.7);-webkit-backdrop-filter:blur(38px) saturate(1.4);backdrop-filter:blur(38px) saturate(1.4);color:var(--brand-charcoal);border-top:1px solid rgba(255,255,255,.55);box-shadow:0 -12px 40px rgba(55,50,48,.28);padding:14px 22px 32px}
@@ -1122,13 +1123,7 @@ h2{font-size:15px;margin:var(--s32) 0 var(--s8)}
 </head>
 <body>
   <h1>Student Practice Rooms — Mobile <span style="font-weight:400;color:var(--text-muted);font-size:14px">v6 · header: status vs chrome</span></h1>
-  <p class="lead">The first <b>mobile</b> Practice Rooms surface. Behaviour is taken wholesale from the
-  <b>Desktop v21 checkpoint</b> — teacher-triggered activities, the 5s prep countdown, the Dialogue / Intensive /
-  Operation Grandma / Carousel recipes, the fill-forward timer with its coral final seconds, the routing matrix, the
-  one-source-of-truth room clock and the matkot transition fix. The <b>layout is not ported</b>: the Duo Room is a
-  vertical stack, the activity zone lives on the <b>seam between the two tiles</b> (which is exactly where neither face
-  is), popups are bottom sheets, and the controls sit in the thumb zone. Tokens, the phone shell, the statusbar, the
-  header and the sheet language come from the mobile system reference.</p>
+  <p class="lead"><b>Gym v2 update in progress:</b> room consent now uses the updated copy, microphone mute stays in the room, and camera-off confirmation lasts 13 seconds. Recorded instructions and automatic activity starts are still being aligned.</p>
 
   <h2>Interactive demo</h2>
   <div class="demo">
@@ -1552,14 +1547,17 @@ function backToMain(){ if(!ST.roomsEnded){ ST.roomTimerActive=true; } setScene(S
 
 var enfTimer=null;
 function clearEnf(){ if(enfTimer){clearTimeout(enfTimer);enfTimer=null;} }
-function armEnf(){ clearEnf(); enfTimer=setTimeout(function(){ if(ST.scene==='enforce') leaveToWait(); },10000); }
-/* Camera/mic-off confirmed leave (button) + 10s timeout -> the rooms-ACTIVE waiting-return
-   (matkot + room countdown), same route as Room Consent "Not now". Force rooms-active so a
-   0/too-short debug clock can't trip roomTick -> roomEnd -> the room-ended "Time's up" screen.
-   Never Solo, never Main. */
-function leaveToWait(){ clearEnf(); if(ST.roomLeft<=10){ resetRoomClock(); } ST.roomsEnded=false; ST.roomTimerActive=true; setScene('wait'); }
-function deviceOff(target){ if(target==='camera')ST.camOff=true; else ST.micOff=true; ST.enforceTarget=target; setScene('enforce'); armEnf(); }
-function deviceBackOn(target){ clearEnf(); if(target==='camera')ST.camOff=false; else ST.micOff=false; setScene('duo'); }
+function armEnf(){ clearEnf(); enfTimer=setTimeout(function(){ if(ST.scene==='enforce') leaveToWait(); },13000); }
+/* Keep the shared room clock intact even if the camera decision ends near 00:00. */
+function leaveToWait(){ clearEnf(); backToMain(); }
+function deviceOff(target){
+  if(target==='mic'){ ST.micOff=true; render(); return; }
+  ST.camOff=true; ST.enforceTarget='camera'; setScene('enforce'); armEnf();
+}
+function deviceBackOn(target){
+  if(target==='mic'){ ST.micOff=false; render(); return; }
+  clearEnf(); ST.camOff=false; setScene('duo');
+}
 
 var consentTimer=null;
 function clearConsent(){ if(consentTimer){clearTimeout(consentTimer);consentTimer=null;} }
@@ -1568,12 +1566,8 @@ function armConsent(){ clearConsent(); consentTimer=setTimeout(function(){ if(ST
 var transferTimer=null;
 function consentYes(){ clearConsent(); ST.camOff=false; ST.micOff=false; setScene('transfer');
   clearTimeout(transferTimer); transferTimer=setTimeout(function(){ if(ST.scene==='transfer'){ ST.camOff=false; ST.micOff=false; setScene('duo'); } },1600); }
-/* No / 10s timeout -> the rooms-ACTIVE waiting-return (matkot + room countdown).
-   Force rooms-active so this never shows the room-ended "Time's up" screen, and never Solo / Main. */
-/* No / 10s timeout -> the rooms-ACTIVE waiting-return (matkot + room countdown).
-   Guarantee a realistic visible countdown (e.g. 01:48) so a 0/too-short debug clock can't
-   trip roomTick -> roomEnd -> the room-ended "Time's up" screen. Never Solo, never Main. */
-function consentNo(){ clearConsent(); if(ST.roomLeft<=10){ resetRoomClock(); } ST.roomsEnded=false; ST.roomTimerActive=true; setScene('wait'); }
+/* No / 10s timeout -> wait for the actual room end, without resetting its clock. */
+function consentNo(){ clearConsent(); backToMain(); }
 
 var partnerTimer=null, soloTimer=null;
 function showPartnerLeft(){ clearTimeout(partnerTimer); setScene('partnerleft'); }   /* no auto-route: waits for "Continue solo" */
@@ -1919,25 +1913,25 @@ function rfooter(){
 function sheet(title,body,acts,resp){
   return '<div class="sheet-scrim"></div><div class="sheet milky" role="dialog" aria-modal="true"><div class="grab"></div>'
     +'<h4>'+title+'</h4><p>'+body+'</p><div class="acts">'+acts+'</div>'
-    +(resp?'<div class="respline"><i></i></div>':'')
+    +(resp?'<div class="respline'+(resp==='s13'?' s13':'')+'"><i></i></div>':'')
     +'</div>';
 }
 function enforceSheet(target){
   return sheet('Leave the practice room?',
-    'Turning off your camera or mic means you can\u2019t stay in this practice room. Do you want to leave the room?',
-    '<button class="btn primary" onclick="deviceBackOn(\''+target+'\')">Stay in room</button>'
-    +'<button class="btn" onclick="leaveToWait()">Leave room</button>', true);
+    'Turning off camera in the room is not possible. Do you wish to leave the room?',
+    '<button class="btn primary" onclick="leaveToWait()">Yes</button>'
+    +'<button class="btn" onclick="deviceBackOn(\''+target+'\')">No</button>', 's13');
 }
 /* Room Consent (A) \u2014 milky bottom sheet, the ONE decision UI.
    In the integrated product, students should be asked for camera/mic consent only once.
    Yes -> Practice Room Transfer (B) -> room. No / 10s timeout -> waiting-return (never Solo, never Main). */
 function consentSheet(){
   return '<div class="sheet-scrim"></div><div class="sheet milky" role="dialog" aria-modal="true"><div class="grab"></div>'
-    +'<h4>You\u2019re being sent to a practice room</h4>'
-    +'<p>Your camera and mic need to be on so you can speak with a classmate.</p>'
+    +'<h4>Yalla, practice time!</h4>'
+    +'<p>Your camera and mic need to be on to participate. Sababa?</p>'
     +'<div class="acts">'
     +'<button class="btn primary" onclick="consentYes()">Yes, turn on &amp; join</button>'
-    +'<button class="btn" onclick="consentNo()">Not now</button>'
+    +'<button class="btn" onclick="consentNo()">Not this time</button>'
     +'</div>'
     +'<div class="respline"><i></i></div>'   /* the depleting bar communicates the 10s auto-close on its own */
     +'</div>';
