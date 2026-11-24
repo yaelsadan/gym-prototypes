@@ -487,6 +487,7 @@ body.present .mode-btn:hover{opacity:1}
 
 /* enforcement modal 10s timer (reuses .respline visual + resp keyframe, 10s duration) */
 .respline.s10 i{animation:resp 10s linear forwards}
+.respline.s13 i{animation:resp 13s linear forwards}
 
 /* =======================================================================
    v03 POLISH — additive/override only. Scoped; no core layout edits.
@@ -2302,7 +2303,7 @@ body.present .solo-wrap{padding:9vh 5vw calc(var(--footer-h) + 30px)}
 <body>
   <button class="mode-btn" id="modeBtn" onclick="togglePresent()">Presentation mode</button>
   <h1>Student Practice Rooms <span style="font-weight:400;color:var(--text-muted);font-size:14px">visual alignment · Desktop Main Room + Mobile Practice Rooms</span></h1>
-  <p class="lead">Surgical fix on the waiting / return transition only - <b>the v20 activity timer, the Duo Room, the turn frame and chip, camera/mic, the report flow, Solo routing and the header timer are all untouched</b>. The matkot ball asset is regenerated with a thin charcoal stroke so it no longer vanishes when it crosses the white paddles. And the &ldquo;scratched disc&rdquo; glitch is fixed at its root: <code>roomTick()</code> was calling <code>render()</code> once a second, and <code>render()</code> rebuilds <code>frame.innerHTML</code>, which destroys the Lottie node and reloads the 6-second matkot loop from frame&nbsp;0 - so the animation was being restarted six times per cycle. The room clock now writes the countdown DOM in place and never re-renders, and <code>mountLottie()</code> is idempotent and playhead-preserving.</p>
+  <p class="lead"><b>Gym v2 update in progress:</b> room consent now uses the updated copy, microphone mute stays in the room, and camera-off confirmation lasts 13 seconds. Recorded instructions and automatic activity starts are still being aligned.</p>
 
   <div class="controls">
     <div class="row">
@@ -2310,7 +2311,8 @@ body.present .solo-wrap{padding:9vh 5vw calc(var(--footer-h) + 30px)}
       <button class="sc on" data-sc="duo">Duo / Couples Room</button>
       <button class="sc" data-sc="partnerleft">Partner left &rarr; solo</button>
       <button class="sc" data-sc="solo">Solo Room</button>
-      <button class="sc" data-sc="enforce">Mic/Cam enforcement</button>
+      <button class="sc" data-sc="enforce">Camera-off confirmation</button>
+      <button type="button" onclick="deviceOff('mic')">Mute mic (stay in room)</button>
     </div>
     <div class="row">
       <span class="grp-lbl">Activity (prepared — does not start on its own)</span>
@@ -2347,9 +2349,7 @@ body.present .solo-wrap{padding:9vh 5vw calc(var(--footer-h) + 30px)}
       <button class="bc on" data-bc="off">Off</button>
       <button class="bc" data-bc="on">On</button>
       <span class="sep"></span>
-      <span class="grp-lbl">Enforcement target</span>
-      <button class="et on" data-et="mic">Mic</button>
-      <button class="et" data-et="camera">Camera</button>
+      <span class="grp-lbl">Camera-off confirmation only</span>
     </div>
   </div>
   <div class="state-note" id="note"></div>
@@ -3525,23 +3525,29 @@ function toggleTipPlay(){
   renderTipCard();
 }
 
-/* Enforcement (unchanged from v03) */
+/* Camera-only exit confirmation; muting a microphone is allowed in the room. */
 function enforcePopup(target){
-  /* (1) own camera/mic off inside a Duo Room. Stay -> turn back on & remain. Leave/timeout -> waiting (not Solo). */
+  /* Own camera off: Yes/timeout -> waiting; No -> restore camera and stay. */
   return '<div class="invite-overlay"><div class="invite milky enforce" role="dialog" aria-modal="true">'
     +'<h4>Leave the practice room?</h4>'
-    +'<p>Turning off your camera or mic means you can\u2019t stay in this practice room. Do you want to leave the room?</p>'
-    +'<div class="acts"><button class="btn primary" onclick="deviceBackOn(\''+target+'\')">Stay in room</button>'
-    +'<button class="btn ghost-d" onclick="leaveToWait()">Leave room</button></div>'
-    +'<div class="respline s10"><i></i></div>'   /* the depleting bar communicates the 10s auto-close on its own */
+    +'<p>Turning off camera in the room is not possible. Do you wish to leave the room?</p>'
+    +'<div class="acts"><button class="btn primary" onclick="leaveToWait()">Yes</button>'
+    +'<button class="btn ghost-d" onclick="deviceBackOn(\''+target+'\')">No</button></div>'
+    +'<div class="respline s13"><i></i></div>'
     +'</div></div>';
 }
 var enfTimer=null;
 function clearEnf(){ if(enfTimer){clearTimeout(enfTimer);enfTimer=null;} }
-function armEnf(){ clearEnf(); enfTimer=setTimeout(function(){ if(ST.scene==='enforce'){ leaveToWait(); } },10000); }
+function armEnf(){ clearEnf(); enfTimer=setTimeout(function(){ if(ST.scene==='enforce'){ leaveToWait(); } },13000); }
 function leaveToWait(){ clearEnf(); backToMain(); }  /* (4) camera/mic off -> waiting/return-to-main (countdown while active), not Solo */
-function deviceOff(target){ if(target==='camera')ST.camOff=true; else ST.micOff=true; ST.enforceTarget=target; syncEt(); setScene('enforce'); armEnf(); }
-function deviceBackOn(target){ clearEnf(); if(target==='camera')ST.camOff=false; else ST.micOff=false; setScene('duo'); }
+function deviceOff(target){
+  if(target==='mic'){ ST.micOff=true; render(); return; }
+  ST.camOff=true; ST.enforceTarget='camera'; syncEt(); setScene('enforce'); armEnf();
+}
+function deviceBackOn(target){
+  if(target==='mic'){ ST.micOff=false; render(); return; }
+  clearEnf(); ST.camOff=false; setScene('duo');
+}
 
 /* Partner left (unchanged from v03) */
 function partnerLeftModal(){
@@ -3565,11 +3571,10 @@ function unevenSolo(){ clearTimeout(partnerTimer); routeToSolo('uneven'); }
    Yes -> Practice Room Transfer (B) -> room. No / 10s timeout -> waiting-return (never Solo, never Main). */
 function consentPopup(){
   return '<div class="invite-overlay"><div class="invite milky room-consent" role="dialog" aria-modal="true">'
-    +'<h4>You\u2019re being sent to a practice room</h4>'
-    +'<p>Your camera and mic need to be on so you can speak with a classmate.</p>'
-    +'<p class="priv">They\u2019re shared only inside the practice room.</p>'
+    +'<h4>Yalla, practice time!</h4>'
+    +'<p>Your camera and mic need to be on to participate. Sababa?</p>'
     +'<div class="acts"><button class="btn primary" onclick="consentYes()">Yes, turn on &amp; join</button>'
-    +'<button class="btn ghost-d" onclick="consentNo()">Not now</button></div>'
+    +'<button class="btn ghost-d" onclick="consentNo()">Not this time</button></div>'
     +'<div class="respline s10"><i></i></div>'   /* the depleting bar communicates the 10s auto-close on its own */
     +'</div></div>';
 }
@@ -3861,7 +3866,7 @@ setInterval(roomTick,1000);
 
 /* ---------- state ---------- */
 var TEACHER='Niv Rubin';  /* teacher name variable */
-var ST={scene:'duo',roomPhase:'normal',activity:'dialogue',bcast:false,enforceTarget:'mic',soloReason:'partner',transVariant:'solo',
+var ST={scene:'duo',roomPhase:'normal',activity:'dialogue',bcast:false,enforceTarget:'camera',soloReason:'partner',transVariant:'solo',
         soloIdx:0,soloRevealed:false,soloPlaying:false,soloMarked:false,
         speaker:'none',panel:'',width:'wide',vb:'real',askOpen:false,
         roomTimerActive:false,roomsEnded:false,leaveReport:false,roomLeft:108,
@@ -3976,7 +3981,7 @@ document.querySelectorAll('.sc').forEach(function(b){
   b.onclick=function(){
     document.querySelectorAll('.sc').forEach(function(x){x.classList.toggle('on',x===b);});
     var v=b.dataset.sc;
-    if(v==='enforce'){ deviceOff(ST.enforceTarget); }
+    if(v==='enforce'){ deviceOff('camera'); }
     else if(v==='partnerleft'){ showPartnerLeft(); }
     else { if(v==='duo'){ST.camOff=false;ST.micOff=false;} setScene(v); }
   };

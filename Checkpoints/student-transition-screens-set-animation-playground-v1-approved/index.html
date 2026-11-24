@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Set Transition · Mobile motion playground</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+@font-face{
+  font-family:"FedraSerifPro";
+  src:url("../../Current/FedraSerifPRO_HL-Bold.otf") format("opentype");
+  font-weight:700;
+  font-style:normal;
+  font-display:block;
+}
+@font-face{
+  font-family:"FedraSerifPro";
+  src:url("../../Current/FedraSerifPRO_HL-DemiItalic.otf") format("opentype");
+  font-weight:600;
+  font-style:italic;
+  font-display:block;
+}
+
+:root{
+  --brand-yellow:#F9E24C;
+  --brand-charcoal:#373230;
+  --surface-base:#F2F1EC;
+  --neutral-100:#F7F6EF;
+  --text-primary:#373230;
+  --text-muted:#716C66;
+  --line-subtle:#D2CEC6;
+  --font-ui:"Assistant",system-ui,-apple-system,sans-serif;
+  --font-brand:"FedraSerifPro",Georgia,"Times New Roman",serif;
+  --neutral-800:#878473;
+  --elev-f:0 6px 20px rgba(55,50,48,.18);
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:var(--font-ui);
+  background:var(--surface-base);
+  color:var(--text-primary);
+  -webkit-font-smoothing:antialiased;
+  padding:32px 24px 60px;
+}
+button,input{font:inherit}
+h1{font-size:20px;line-height:1.25}
+.lead{max-width:760px;margin:5px 0 24px;color:var(--text-muted);font-size:13px;line-height:1.5}
+.demo{display:flex;align-items:flex-start;gap:32px;flex-wrap:wrap}
+
+/* Canonical Gym mobile device shell: 390 × 844, 6px bezel. */
+.phone{
+  position:relative;flex:none;
+  width:390px;height:844px;
+  overflow:hidden;border-radius:44px;
+  background:#000;box-shadow:var(--elev-f);
+}
+.screen{
+  position:absolute;inset:6px;overflow:hidden;
+  border-radius:38px;background:#2a2622;color:var(--neutral-100);
+}
+
+/* ============================================================
+   Session layer — static Main Room (open chat) under the overlay.
+   Not animated; it only has to read through the dim.
+   ============================================================ */
+.session{position:absolute;inset:0}
+.session .stage{
+  position:absolute;inset:0;
+  background:url("../../Current/student-main-classroom-desktop/assets/teacher-gai.png") 46% 30%/cover no-repeat,#cdb497;
+}
+.session .scrim-top{position:absolute;top:0;left:0;right:0;height:170px;background:linear-gradient(to bottom,rgba(55,50,48,.32),rgba(55,50,48,0))}
+.session .scrim-bottom{position:absolute;bottom:0;left:0;right:0;height:330px;background:linear-gradient(to top,rgba(55,50,48,.6),rgba(55,50,48,0))}
+
+.statusbar{
+  position:absolute;z-index:5;top:0;left:0;right:0;height:48px;
+  padding:0 24px;display:flex;align-items:center;justify-content:space-between;
+  color:#fff;font-size:14px;font-weight:600;text-shadow:0 1px 2px rgba(0,0,0,.35);
+}
+.statusbar .glyphs{display:flex;gap:6px}
+.statusbar svg{width:16px;height:16px;display:block}
+
+.session .header{
+  position:absolute;top:48px;left:0;right:0;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:8px 16px 0;color:#fff;text-shadow:0 1px 3px rgba(55,50,48,.5);
+}
+.session .icon-btn{width:36px;height:36px;display:grid;place-items:center}
+.session .icon-btn svg{width:22px;height:22px}
+.session .sess-timer{font-size:21px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:.12px}
+
+.session .pip{
+  position:absolute;top:152px;right:10px;width:106px;height:139px;
+  border-radius:18px;overflow:hidden;
+  border:1.5px solid rgba(255,246,236,.78);
+  background:url("../../Current/student-main-classroom-desktop/assets/pip-you.png") 50% 18%/cover no-repeat,#2a2622;
+  box-shadow:0 6px 18px rgba(55,50,48,.28);
+}
+.session .pip .shade{position:absolute;inset:0;background:linear-gradient(to top,rgba(55,50,48,.42),transparent 42%),rgba(55,50,48,.08)}
+.session .pip .you{position:absolute;left:8px;top:8px;font-size:12px;font-weight:700;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.5)}
+.session .pip .svc{
+  position:absolute;bottom:8px;width:37px;height:37px;border-radius:50%;
+  display:grid;place-items:center;color:#fff;
+  background:rgba(55,50,48,.6);border:1px solid rgba(255,246,236,.16);
+}
+.session .pip .svc svg{width:18px;height:18px}
+.session .pip .svc.mic{left:8px}
+.session .pip .svc.cam{right:8px}
+
+.session .chat-chev{
+  position:absolute;left:16px;bottom:316px;width:32px;height:32px;border-radius:50%;
+  display:grid;place-items:center;color:rgba(255,246,236,.85);background:rgba(55,50,48,.36);
+}
+.session .chat-chev svg{width:16px;height:16px}
+.session .chat-stack{
+  position:absolute;left:58px;right:82px;bottom:100px;
+  display:flex;flex-direction:column;align-items:flex-start;gap:8px;
+  -webkit-mask-image:linear-gradient(to bottom,transparent 0%,rgba(0,0,0,.35) 14%,#000 40%);
+  mask-image:linear-gradient(to bottom,transparent 0%,rgba(0,0,0,.35) 14%,#000 40%);
+}
+.session .mo{
+  max-width:100%;padding:8px 12px;border-radius:14px;color:#fff;
+  background:rgba(43,39,36,.6);border:1px solid rgba(255,246,236,.10);
+}
+.session .mo.is-helper{border-left:3px solid var(--brand-yellow);background:rgba(56,51,48,.7);padding-left:11px}
+.session .mo .nm{font-size:12px;font-weight:500;color:rgba(255,246,236,.78);margin-bottom:2px}
+.session .mo.is-helper .nm{color:var(--brand-yellow)}
+.session .mo .tx{font-size:15px;font-weight:500;line-height:1.35}
+.session .mo .quote{margin:2px 0 4px;padding-left:8px;border-left:2px solid rgba(255,255,255,.28);font-size:12px;color:rgba(255,255,255,.78)}
+.session .mo .quote b{color:#fff;margin-right:4px}
+
+.session .rail{
+  position:absolute;right:16px;bottom:118px;
+  display:flex;flex-direction:column;gap:20px;align-items:center;color:#fff;
+}
+.session .rail-item{display:flex;flex-direction:column;align-items:center;gap:4px;min-width:44px}
+.session .rail-item svg{width:26px;height:26px;opacity:.72}
+.session .rail-item .val{font-size:12px;font-weight:700}
+
+.session .footer{
+  position:absolute;left:12px;right:12px;bottom:24px;
+  display:flex;align-items:center;gap:8px;padding:6px 6px 6px 4px;
+}
+.session .chat-toggle{width:46px;height:46px;display:grid;place-items:center;color:var(--brand-yellow)}
+.session .chat-toggle svg{width:22px;height:22px}
+.session .ask{
+  flex:1;height:46px;display:flex;align-items:center;gap:8px;padding:4px 5px 4px 6px;
+  border-radius:23px;background:rgba(234,233,222,.5);border:1px solid rgba(255,255,255,.18);
+}
+.session .ask .ic{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:rgba(55,50,48,.08);color:var(--brand-charcoal)}
+.session .ask .ic svg{width:19px;height:19px}
+.session .ask .ph{flex:1;font-size:14px;color:rgba(55,50,48,.7);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.session .ask .send{color:rgba(55,50,48,.42)}
+
+/* ============================================================
+   Set transition layer
+   ============================================================ */
+/* The status bar belongs to the session, so it dims with it, as in the frame. */
+/* Charcoal → Neutral 800, radial, lit off-centre. Fitted to the frame:
+   peak at (73%, 23%), a linear falloff over a 665 × 306px ellipse whose long
+   axis runs from the upper right down towards the lower left. CSS radials
+   can't tilt, so the ellipse is painted on a rotated layer centred on the peak. */
+.set-overlay{
+  position:absolute;z-index:6;inset:0;opacity:0;overflow:hidden;
+  background:var(--brand-charcoal);
+}
+.set-overlay::before{
+  content:"";position:absolute;
+  left:calc(73% - 700px);top:calc(23.4% - 700px);width:1400px;height:1400px;
+  background:radial-gradient(ellipse 665px 306px at 50% 50%,var(--neutral-800) 0%,rgba(135,132,115,0) 100%);
+  transform:rotate(-67.6deg);
+}
+
+.set-layer{position:absolute;z-index:7;inset:0;pointer-events:none}
+
+/* Mark: inline copy of welcome-paddles.svg. Width from the frame: 112px. */
+.set-mark{
+  position:absolute;z-index:3;left:50%;top:208px;
+  width:112px;height:auto;margin-left:-56px;overflow:visible;
+  will-change:transform,opacity;
+}
+
+/* Baselines sit 209px and 279px below the mark's top, as in the frame.
+   The ordinal line is set larger than "Set" there (77 / 71px). */
+/* Set numeral as a watermark: Fedra Bold, baseline on the screen's bottom
+   edge, stem 44px in from the right so the base serif runs off the side.
+   With line-height:normal the baseline sits 760/1000 em down a 980/1000 em
+   box, hence bottom = -220/1000 em. */
+.set-numeral{
+  position:absolute;z-index:1;right:-21px;bottom:-.22em;
+  font-family:var(--font-brand);font-weight:700;font-style:normal;
+  font-size:529px;line-height:normal;font-synthesis:none;
+  color:rgba(247,246,239,.11);
+  will-change:transform,opacity;
+}
+
+.set-title{
+  position:absolute;z-index:2;left:0;right:0;top:361px;
+  margin:0;text-align:center;
+  color:var(--neutral-100);
+  font-family:var(--font-brand);font-weight:700;font-style:normal;
+  letter-spacing:-.4px;
+  font-synthesis:none;
+  will-change:transform,opacity;
+}
+.set-title .line{display:block}
+.set-title .l1{font-size:77px;line-height:72px}
+.set-title .l2{font-size:71px;line-height:70px}
+.set-title .g{display:inline-block;transform-origin:50% 100%;will-change:transform}
+.set-title .it{font-style:italic;font-weight:600}
+.set-title .g-0{margin-right:.01em}
+.set-title .bl{display:inline-block;width:0;height:0;vertical-align:baseline}
+
+/* ============================================================
+   Review controls (outside the device)
+   ============================================================ */
+.controls{display:flex;flex-direction:column;gap:8px;width:280px}
+.controls .grp{
+  margin-top:8px;color:var(--text-muted);
+  font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;
+}
+.controls .row{display:flex;gap:6px;flex-wrap:wrap}
+.controls button{
+  min-height:38px;padding:8px 12px;cursor:pointer;
+  border:1px solid var(--line-subtle);border-radius:10px;background:#fff;color:var(--text-primary);
+  font-size:13px;font-weight:600;text-align:left;
+}
+.controls button:hover{border-color:var(--brand-charcoal)}
+.controls button.on{border-color:var(--brand-charcoal);background:var(--brand-charcoal);color:#fff}
+.controls button.play{background:var(--brand-yellow);border-color:var(--brand-yellow);color:var(--brand-charcoal)}
+.controls .row button{flex:1;text-align:center;padding:8px 6px}
+.controls input[type=range]{width:100%;accent-color:var(--brand-charcoal)}
+.controls .readout{display:flex;justify-content:space-between;font-size:12px;color:var(--text-muted);font-variant-numeric:tabular-nums}
+.controls .readout b{color:var(--text-primary);font-weight:700}
+.scrub-wrap{position:relative;padding-top:2px}
+.scrub-marks{position:relative;height:16px;margin:0 7px}
+.scrub-marks span{
+  position:absolute;top:0;transform:translateX(-50%);
+  font-size:10px;font-weight:700;color:var(--text-muted);white-space:nowrap;
+}
+.scrub-marks span::before{
+  content:"";position:absolute;left:50%;top:-6px;width:1px;height:6px;background:var(--text-muted);
+}
+.controls .state{
+  padding:9px 10px;border:1px dashed var(--line-subtle);border-radius:8px;background:#fff;
+  color:var(--text-muted);font-size:12px;line-height:1.45;
+}
+</style>
+</head>
+<body>
+  <h1>Set transition · Mobile motion playground <span style="font-weight:400;color:var(--text-muted);font-size:14px">(exploration · 1st, 2nd &amp; 3rd Set)</span></h1>
+  <p class="lead">Isolated study for the set transition screens. In 1st Set the ball drops between the open paddles, lands on the “s” of “1st”, rebounds, and is caught as the paddles close into the Gym mark. In 2nd Set it enters low on the left, bounces off the right edge and then higher off the left edge, and is lobbed into the closing paddles. In 3rd Set the ball is thrown in onto the left paddle, the paddles pass it twice while stepping in, and close around it. All three use the same rig as the Welcome animation. The ball, the paddles, and each title glyph are live elements on one timeline.</p>
+
+  <div class="demo">
+    <div class="phone">
+      <div class="screen" id="screen">
+
+        <div class="session" aria-hidden="true">
+          <div class="stage"></div>
+          <div class="scrim-top"></div>
+          <div class="scrim-bottom"></div>
+          <div class="header">
+            <span class="icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></span>
+            <span class="sess-timer">15:21</span>
+          </div>
+          <div class="pip">
+            <div class="shade"></div>
+            <span class="you">You</span>
+            <span class="svc mic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></span>
+            <span class="svc cam"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="13" height="12" rx="2"/><path d="M16 10l5-3v10l-5-3z"/></svg></span>
+          </div>
+          <span class="chat-chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 15l6-6 6 6"/></svg></span>
+          <div class="chat-stack">
+            <div class="mo is-helper"><div class="nm">Helper</div><div class="tx">It changes with gender — nice catch!</div></div>
+            <div class="mo"><div class="nm">Hanna</div><div class="tx">How would an Israeli say this naturally?</div></div>
+            <div class="mo is-helper">
+              <div class="nm">Helper</div>
+              <div class="quote"><b>Hanna</b>How would an Israeli say this naturally?</div>
+              <div class="tx">Yalla balagan 😄</div>
+            </div>
+          </div>
+          <div class="rail">
+            <span class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6l1.5 1.5L7 5M3 12l1.5 1.5L7 11M3 18l1.5 1.5L7 17M10 6h11M10 12h11M10 18h11"/></svg></span>
+            <span class="rail-item"><svg viewBox="0 0 222 222" fill="none" stroke="currentColor" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"><path d="M194.25 184.999C194.25 168.889 178.806 155.184 157.25 150.105M138.75 185C138.75 164.565 113.902 148 83.25 148C52.5982 148 27.75 164.565 27.75 185M138.75 120.25C159.185 120.25 175.75 103.685 175.75 83.25C175.75 62.8155 159.185 46.25 138.75 46.25M83.25 120.25C62.8155 120.25 46.25 103.685 46.25 83.25C46.25 62.8155 62.8155 46.25 83.25 46.25C103.685 46.25 120.25 62.8155 120.25 83.25C120.25 103.685 103.685 120.25 83.25 120.25Z"/></svg><span class="val">89</span></span>
+          </div>
+          <div class="footer">
+            <span class="chat-toggle"><svg viewBox="0 0 222 222" fill="none" stroke="currentColor" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"><path d="M69.4653 183.166C81.6891 190.216 95.8719 194.25 110.997 194.25C156.974 194.25 194.25 156.978 194.25 111C194.25 65.0223 156.978 27.75 111 27.75C65.0223 27.75 27.75 65.0223 27.75 111C27.75 126.125 31.7834 140.308 38.8333 152.531C39.5389 153.755 39.881 154.348 40.0359 154.908C40.1821 155.437 40.2229 155.912 40.1855 156.46C40.1452 157.048 39.9471 157.657 39.5408 158.876L32.4292 180.211C30.9198 184.74 30.1695 186.991 30.7043 188.491C31.1706 189.798 32.2056 190.83 33.5132 191.297C35.0095 191.83 37.2502 191.083 41.7318 189.589L63.1224 182.457C64.3372 182.052 64.9548 181.847 65.5417 181.807C66.0889 181.769 66.5609 181.819 67.0896 181.965C67.6516 182.12 68.245 182.462 69.4271 183.144Z"/></svg></span>
+            <div class="ask">
+              <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="13" r="8"/><path d="M8 15c1.6 1.6 4.4 1.6 6 0"/><path d="M8.5 10.5h.01M13.5 10.5h.01"/><path d="M19 2v5M16.5 4.5h5"/></svg></span>
+              <span class="ph">Ask the teacher or the class…</span>
+              <span class="ic send"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 3L10 14M21 3l-7 18-4-7-7-4z"/></svg></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="set-overlay" id="setOverlay"></div>
+
+        <main class="set-layer" aria-labelledby="setTitle">
+          <span class="set-numeral" id="setNumeral" aria-hidden="true">1</span>
+          <svg class="set-mark" id="setMark" viewBox="0 0 231 213" aria-hidden="true"
+               fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></svg>
+          <h2 class="set-title" id="setTitle" aria-label="1st Set">
+            <span class="line l1" aria-hidden="true"><span class="g g-0">1</span><span class="g g-1 it">s</span><span class="g g-2 it">t</span><i class="bl"></i></span>
+            <span class="line l2" aria-hidden="true">Set<i class="bl"></i></span>
+          </h2>
+        </main>
+
+        <div class="statusbar" aria-hidden="true">
+          <span>9:41</span>
+          <span class="glyphs">
+            <svg viewBox="0 0 24 24" fill="currentColor"><rect x="2" y="15" width="3.5" height="6" rx="1"/><rect x="7.5" y="11" width="3.5" height="10" rx="1"/><rect x="13" y="7" width="3.5" height="14" rx="1"/><rect x="18.5" y="3" width="3.5" height="18" rx="1"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M2.5 9a14 14 0 0 1 19 0M5.5 12.5a9.5 9.5 0 0 1 13 0M8.8 16a5 5 0 0 1 6.4 0"/><circle cx="12" cy="19.5" r="1" fill="currentColor"/></svg>
+            <svg viewBox="0 0 28 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="1.5" y="6" width="22" height="12" rx="3.5"/><rect x="4" y="8.5" width="15" height="7" rx="1.6" fill="currentColor" stroke="none"/><path d="M26 10.5v3" stroke-linecap="round"/></svg>
+          </span>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="controls">
+      <div class="grp">Variation</div>
+      <div class="row" id="setRow">
+        <button type="button" data-set="1" class="on">1st Set</button>
+        <button type="button" data-set="2">2nd Set</button>
+        <button type="button" data-set="3">3rd Set</button>
+      </div>
+
+      <div class="grp">Playback</div>
+      <div class="row">
+        <button class="play" type="button" id="btnReplay">Replay</button>
+        <button type="button" id="btnPause">Pause</button>
+      </div>
+
+      <div class="grp">Speed</div>
+      <div class="row" id="speedRow">
+        <button type="button" data-speed="1" class="on">1×</button>
+        <button type="button" data-speed="0.5">0.5×</button>
+        <button type="button" data-speed="0.25">0.25×</button>
+        <button type="button" data-speed="0.1">0.1×</button>
+      </div>
+
+      <div class="grp">Timeline</div>
+      <div class="scrub-wrap">
+        <input type="range" id="scrub" min="0" max="1000" step="1" value="0" aria-label="Scrub timeline">
+        <div class="scrub-marks" id="scrubMarks"></div>
+      </div>
+      <div class="readout"><span><b id="tNow">0</b> ms</span><span id="tPhase">Session</span></div>
+
+      <div class="grp">Background opacity</div>
+      <input type="range" id="opacity" min="0" max="100" step="1" value="100" aria-label="Background opacity">
+      <div class="readout"><span><b id="opNow">100</b>%</span><button type="button" id="opReset" style="min-height:0;padding:2px 8px;font-size:12px">Frame value (100%)</button></div>
+
+      <div class="state">
+        Mark is <code>welcome-paddles.svg</code> verbatim. Paddles open by 95 units and roll ±60.3°, the same stance as the Welcome rally. The yellow lens is the ball and morphs back into the lens on the catch. 1st Set: fall and rebound share one gravity, and contact is solved against the letter outlines, so the ball rides the live top edge of the squashing “s”. 2nd Set: one ballistic flight under a single gravity. The invisible edges are inset by the ball’s radius; each bounce damps only the horizontal speed, so after the soft left edge the ball floats over the left paddle and drops into the closing paddles. 3rd Set: thrown in from beyond the right edge, then two passes under the same gravity. The ball meets each paddle face as in the Welcome rally, and each hit is a short swing from the handle butt. Keys: 1 / 2 / 3 switch, R replays, Space pauses.
+      </div>
+    </div>
+  </div>
+
+<script>
+(function(){
+"use strict";
+
+/* ---------- The mark ----------
+   welcome-paddles.svg path data, verbatim, tagged by paddle. Grouped per
+   paddle so each moves as one body; the lens is drawn last so it stays
+   above both heads, as in the file. Pivots are the head circles. */
+var MARK={
+  w:231, h:213,
+  padL:[
+    "M140.094 106.623C157.866 68.7834 142.874 24.5034 106.595 7.71343C70.3151 -9.07657 26.4995 7.98343 8.72746 45.8234C-3.97693 72.8534 0.0630855 103.173 16.6362 124.413C26.2577 136.743 27.1242 153.723 19.3061 167.253L4.08295 192.943C1.57431 197.183 2.57173 202.703 6.55129 205.613C10.007 208.143 13.9966 209.823 18.4295 210.763C23.205 211.773 27.9704 209.013 29.6026 204.453L39.5565 176.613C44.9768 161.973 58.6383 151.713 74.345 151.103C101.386 150.063 127.379 133.643 140.083 106.603L140.094 106.623Z",
+    "M55.1323 134.563L41.7731 128.383L4.0226 192.973C1.54419 197.203 2.56175 202.683 6.52117 205.593C9.99699 208.153 14.0068 209.843 18.48 210.783C23.2354 211.783 27.9907 209.063 29.6329 204.523L55.1223 134.563H55.1323Z",
+    "M10.25 113.252L87.25 149.252"
+  ],
+  padR:[
+    "M221.77 45.8234C203.988 7.98343 160.173 -9.07657 123.903 7.71343C87.6337 24.5034 72.6322 68.7834 90.4042 106.623C103.109 133.663 129.102 150.073 156.143 151.123C171.839 151.733 185.511 161.993 190.931 176.633L200.976 204.723C202.628 209.353 207.535 212.143 212.35 210.993C216.531 209.993 220.39 208.043 223.957 205.273C227.805 202.293 228.742 196.893 226.274 192.723L211.192 167.263C203.374 153.733 204.24 136.743 213.862 124.423C230.435 103.193 234.475 72.8734 221.78 45.8334L221.77 45.8234Z",
+    "M188.725 128.383L175.366 134.563L200.956 204.783C202.628 209.383 207.515 212.143 212.31 210.993C216.521 209.993 220.4 208.033 223.997 205.233C227.825 202.263 228.772 196.893 226.344 192.733L188.735 128.383H188.725Z",
+    "M143.31 149.394L220.75 113.553"
+  ],
+  lens:"M140.094 106.623C156.375 71.9634 145.141 31.9034 115.249 12.5134C85.357 31.9034 74.1235 71.9634 90.4045 106.623C96.2579 119.083 104.942 129.283 115.249 136.763C125.556 129.283 134.24 119.083 140.094 106.623Z",
+  fill:"#F9E24C",
+  headL:[74.797,75.725], headR:[155.703,75.729],
+  /* butt of each handle: a hit swings the paddle from here */
+  tipL:[19.5,209], tipR:[210.7,210],
+  lensC:{cx:115.249, cy:74.638, r:32.318, corners:[52.16,-90,127.84,90], spans:[-142.16,-142.16,-37.84,-37.84]},
+  /* Welcome rally stance: 95 units out, 60.3deg of roll per paddle */
+  stance:{out:95, rot:60.3}
+};
+
+/* ---------- Variations ----------
+   `hit` is the index of the ordinal glyph the ball lands on, if any. */
+var SETS={
+  "1":{title:"1st Set", numeral:"1", glyphs:[["1",""],["s","it"],["t","it"]], kind:"drop", hit:1},
+  "2":{title:"2nd Set", numeral:"2", glyphs:[["2",""],["n","it"],["d","it"]], kind:"walls"},
+  "3":{title:"3rd Set", numeral:"3", glyphs:[["3",""],["r","it"],["d","it"]], kind:"rally"}
+};
+var setId="1";
+
+/* ---------- Timing (ms at 1×) ---------- */
+var CFG={
+  overlayIn:[0,340],
+  contentIn:[90,470],
+  drop:540,          /* ball released */
+  morph:210,         /* circle → lens, ends as paddles land */
+  catchSettle:50,    /* paddles land this long after the ball arrives */
+  close:480,         /* paddle closing time when not cued by an impact */
+  hold:1100,
+
+  /* 1st Set — fall onto the "s" */
+  fall:640,          /* release → contact; sets gravity */
+  contact:110,       /* ball on the letter */
+  attack:.35,        /* share of the contact spent compressing */
+  ballSquash:.28, ballSpread:.2,
+  letterSquash:.16, letterSpread:.06,
+  ballRing:{amp:.07, period:170, decay:60},
+  letterRing:{amp:.035, period:200, decay:85},
+
+  /* 2nd Set — wall to wall, one ballistic flight */
+  entryY:.89,        /* share of screen height: level with the big numeral */
+  launch:1600,       /* px/s, horizontal speed on entry */
+  gravity:1200,      /* px/s² */
+  rightBounce:.95,   /* share of horizontal speed each wall gives back */
+  leftBounce:.15,
+  wallContact:48,
+  wallSquash:.22, wallSpread:.14,
+  lobClose:300,      /* the paddles stay open while the ball clears the left one */
+  lobCloseLeft:180,
+  lobMorph:120,
+
+  /* 3rd Set — thrown in, two passes, caught (same gravity as 2nd Set) */
+  throwRise:40,      /* px above the mark the throw starts, off the right edge */
+  throwTime:560, pass1:480, pass2:460,
+  stepIn:.15,        /* share of the close the paddles make during the first pass */
+  rallyClose:300,    /* the rest, at the end of the second pass, once the ball is clear */
+  hitSwing:7,        /* deg, swing from the handle butt */
+  hitWind:90, hitDur:300,
+  faceIn:.55,        /* contact point: share of the head radius in from its centre */
+  faceUp:6,          /* px */
+  hitSquash:.16, hitSpread:.08,
+  rallyMorph:120
+};
+
+var NS="http://www.w3.org/2000/svg";
+var screen=document.getElementById("screen");
+var overlay=document.getElementById("setOverlay");
+var mark=document.getElementById("setMark");
+var title=document.getElementById("setTitle");
+var numeral=document.getElementById("setNumeral");
+var glyphs=[], bl1=null;
+
+function el(tag,attrs){
+  var n=document.createElementNS(NS,tag),k;
+  for(k in attrs) n.setAttribute(k,attrs[k]);
+  return n;
+}
+var gL=el("g",{"class":"pad pad-l"}), gR=el("g",{"class":"pad pad-r"});
+MARK.padL.forEach(function(d){gL.appendChild(el("path",{d:d}));});
+MARK.padR.forEach(function(d){gR.appendChild(el("path",{d:d}));});
+var ball=el("path",{"class":"lens",fill:MARK.fill,d:MARK.lens});
+mark.appendChild(gR); mark.appendChild(gL); mark.appendChild(ball);
+
+/* ---------- ball ↔ lens morph ----------
+   A circle built from four cubics broken at the lens's own corner angles,
+   so both ends have identical segment structure and lerp number-for-number. */
+function circleNums(r){
+  var L=MARK.lensC,D=Math.PI/180,out=[],i,a0,a1,s,h,p0,p3;
+  for(i=0;i<4;i++){
+    a0=L.corners[i]*D; s=L.spans[i]*D; a1=a0+s;
+    h=r*(4/3)*Math.tan(s/4);
+    p0=[L.cx+r*Math.cos(a0), L.cy+r*Math.sin(a0)];
+    p3=[L.cx+r*Math.cos(a1), L.cy+r*Math.sin(a1)];
+    if(!i) out.push(p0[0],p0[1]);
+    out.push(p0[0]-h*Math.sin(a0), p0[1]+h*Math.cos(a0),
+             p3[0]+h*Math.sin(a1), p3[1]-h*Math.cos(a1),
+             p3[0], p3[1]);
+  }
+  return out;
+}
+function lensNums(){
+  return MARK.lens.match(/-?\d*\.?\d+(?:e-?\d+)?/g).map(Number);
+}
+var CIRCLE=circleNums(MARK.lensC.r), LENS=lensNums();
+function morphPath(m){
+  var n=[],i;
+  for(i=0;i<CIRCLE.length;i++) n.push(r2(CIRCLE[i]+(LENS[i]-CIRCLE[i])*m));
+  var d="M"+n[0]+" "+n[1];
+  for(i=2;i<n.length;i+=6) d+="C"+n.slice(i,i+6).join(" ");
+  return d+"Z";
+}
+function r2(v){return Math.round(v*100)/100;}
+
+/* ---------- easing ---------- */
+function bezier(x1,y1,x2,y2){
+  function a(p1,p2){return 1-3*p2+3*p1;} function b(p1,p2){return 3*p2-6*p1;} function c(p1){return 3*p1;}
+  function at(t,p1,p2){return ((a(p1,p2)*t+b(p1,p2))*t+c(p1))*t;}
+  function slope(t,p1,p2){return 3*a(p1,p2)*t*t+2*b(p1,p2)*t+c(p1);}
+  return function(x){
+    if(x<=0) return 0; if(x>=1) return 1;
+    var t=x,i,s;
+    for(i=0;i<8;i++){ s=slope(t,x1,x2); if(Math.abs(s)<1e-6) break; t-=(at(t,x1,x2)-x)/s; }
+    return at(Math.min(1,Math.max(0,t)),y1,y2);
+  };
+}
+var easeClose=bezier(.4,0,.22,1);      /* Welcome pg-a-pad-* */
+var easeMorph=bezier(.45,0,.3,1);
+var easeOut=bezier(.22,.72,.16,1);      /* Welcome pg-slide-in */
+function clamp01(v){return v<0?0:v>1?1:v;}
+function seg(t,a,b){return clamp01((t-a)/(b-a));}
+
+/* ---------- geometry, measured off the live layout ---------- */
+var G=null;
+
+/* Title for the current variation. Each ordinal glyph is its own box so it
+   can deform alone. */
+function buildTitle(){
+  var S=SETS[setId];
+  title.setAttribute("aria-label",S.title);
+  title.innerHTML='<span class="line l1" aria-hidden="true">'
+    +S.glyphs.map(function(g,i){ return '<span class="g g-'+i+(g[1]?' '+g[1]:'')+'">'+g[0]+'</span>'; }).join("")
+    +'<i class="bl"></i></span><span class="line l2" aria-hidden="true">Set<i class="bl"></i></span>';
+  numeral.textContent=S.numeral;
+  glyphs=[].slice.call(title.querySelectorAll(".l1 .g"));
+  bl1=title.querySelector(".l1 .bl");
+}
+
+/* Top edge of a glyph's ink, per half-pixel column, in screen px. Rasterised
+   in the font the DOM uses, so contact is solved against the letter's outline
+   rather than its box. */
+function glyphProfile(g,base,baseline){
+  var r=g.getBoundingClientRect(), cs=getComputedStyle(g);
+  var fs=parseFloat(cs.fontSize), pad=Math.ceil(fs*.4), S=2;
+  var w=Math.ceil(r.width+pad*2), h=Math.ceil(fs*1.25), by=Math.ceil(fs);
+  var cv=document.createElement("canvas"); cv.width=w*S; cv.height=h*S;
+  var c=cv.getContext("2d"); c.scale(S,S);
+  c.font=cs.fontStyle+" "+cs.fontWeight+" "+cs.fontSize+" "+cs.fontFamily;
+  c.fillText(g.textContent,pad,by);
+  var px=c.getImageData(0,0,cv.width,cv.height).data, top=[], i,j,y;
+  for(i=0;i<cv.width;i++){
+    y=NaN;
+    for(j=0;j<cv.height;j++){ if(px[(j*cv.width+i)*4+3]>110){ y=j/S; break; } }
+    top.push(y===y?baseline-(by-y):NaN);
+  }
+  return {x0:r.left-base.left-pad, step:1/S, top:top, ox:r.left-base.left+r.width/2};
+}
+
+/* Centre height at which an ellipse (half-axes a, b) centred on x = cx rests
+   on the ordinal glyphs; scales[i] = [sx, sy] about that glyph's baseline
+   centre, matching its CSS transform-origin. Returns [cy, glyph index]. */
+function restOn(cx,a,b,scales){
+  var best=Infinity, who=-1;
+  G.prof.forEach(function(P,gi){
+    var sc=scales&&scales[gi], kx=sc?sc[0]:1, ky=sc?sc[1]:1, i,x,u,top,cy;
+    for(i=0;i<P.top.length;i++){
+      top=P.top[i]; if(top!==top) continue;
+      x=P.ox+(P.x0+i*P.step-P.ox)*kx;
+      u=(x-cx)/a; if(u<=-1||u>=1) continue;
+      cy=G.baseline-(G.baseline-top)*ky-b*Math.sqrt(1-u*u);
+      if(cy<best){ best=cy; who=gi; }
+    }
+  });
+  return [best,who];
+}
+
+/* p: 0 open → 1 closed. s: swing in degrees about the handle butt. */
+function setPaddles(pL,pR,sL,sR){
+  var oL=MARK.stance.out*(1-pL), rL=MARK.stance.rot*(1-pL);
+  var oR=MARK.stance.out*(1-pR), rR=MARK.stance.rot*(1-pR);
+  gL.setAttribute("transform","translate("+r2(-oL)+" 0) rotate("+r2(-rL)+" "+MARK.headL[0]+" "+MARK.headL[1]+")"
+    +(sL?" rotate("+r2(sL)+" "+MARK.tipL[0]+" "+MARK.tipL[1]+")":""));
+  gR.setAttribute("transform","translate("+r2(oR)+" 0) rotate("+r2(rR)+" "+MARK.headR[0]+" "+MARK.headR[1]+")"
+    +(sR?" rotate("+r2(sR)+" "+MARK.tipR[0]+" "+MARK.tipR[1]+")":""));
+}
+/* Screen position of a head centre under setPaddles(p, s); side −1 = left */
+function headAt(side,p,s){
+  var L=side<0, h=L?MARK.headL:MARK.headR, b=L?MARK.tipL:MARK.tipR, D=Math.PI/180;
+  var a=s*D, dx=h[0]-b[0], dy=h[1]-b[1];
+  var x=b[0]+dx*Math.cos(a)-dy*Math.sin(a), y=b[1]+dx*Math.sin(a)+dy*Math.cos(a);
+  a=side*MARK.stance.rot*(1-p)*D; dx=x-h[0]; dy=y-h[1];
+  x=h[0]+dx*Math.cos(a)-dy*Math.sin(a)+side*MARK.stance.out*(1-p);
+  y=h[1]+dx*Math.sin(a)+dy*Math.cos(a);
+  return {x:G.markL+x*G.k, y:G.markT+y*G.k};
+}
+function measure(){
+  title.style.transform=""; mark.style.transform=""; numeral.style.transform="";
+  glyphs.forEach(function(g){g.style.transform="";});
+  var base=screen.getBoundingClientRect();
+  var mr=mark.getBoundingClientRect();
+  var k=mr.width/MARK.w;
+  var baseline=bl1.getBoundingClientRect().top-base.top;
+  glyphs.forEach(function(g){
+    var r=g.getBoundingClientRect();
+    g.style.transformOrigin="50% "+r2(baseline-(r.top-base.top))+"px";
+  });
+  var r=MARK.lensC.r*k;
+  G={k:k, W:base.width, H:base.height, baseline:baseline,
+     markL:mr.left-base.left, markT:mr.top-base.top,
+     LC:{x:mr.left-base.left+MARK.lensC.cx*k, y:mr.top-base.top+MARK.lensC.cy*k},
+     /* half the lens stroke sits outside the path, so contact uses it too */
+     r:r, rE:r+1.25*k,
+     prof:glyphs.map(function(g){ return glyphProfile(g,base,baseline); })};
+  var kind=SETS[setId].kind, key;
+  var P=kind==="drop"?planDrop():kind==="walls"?planWalls():planRally();
+  for(key in P) G[key]=P[key];
+  G.morphStart=G.tLand-(P.morph||CFG.morph);
+  G.total=G.tLand+CFG.hold;
+  buildMarks();
+}
+
+/* 0 → 1 → 0 across a contact: quick compression, softer release */
+function press(t,t0,dur){
+  var tau=(t-t0)/dur, a=CFG.attack;
+  if(tau<=0||tau>=1) return 0;
+  return tau<a?Math.sin(Math.PI/2*tau/a):.5+.5*Math.cos(Math.PI*(tau-a)/(1-a));
+}
+/* damped sine after a release, starting at 0 and swinging positive first */
+function ring(t,t0,R){
+  var d=t-t0;
+  return d<=0?0:R.amp*Math.sin(2*Math.PI*d/R.period)*Math.exp(-d/R.decay);
+}
+
+/* ----- 1st Set: drop onto the "s", rebound into the paddles -----
+   Fall and rebound share one gravity. The ball lands on the highest point
+   of the letter; contact is checked against every ordinal glyph at rest and
+   at peak squash, and the landing x steps left if a neighbour would be
+   touched first, so the ball only ever meets the "s". */
+function planDrop(){
+  var hit=SETS[setId].hit, Ph=G.prof[hit], LC=G.LC, rE=G.rE, i, minTop=Infinity, xs=[];
+  for(i=0;i<Ph.top.length;i++) if(Ph.top[i]<minTop) minTop=Ph.top[i];
+  for(i=0;i<Ph.top.length;i++) if(Ph.top[i]<=minTop+.3) xs.push(Ph.x0+i*Ph.step);
+  var sx=xs.reduce(function(a,b){return a+b;},0)/xs.length;
+  var peak=[]; peak[hit]=[1+CFG.letterSpread,1-CFG.letterSquash];
+  for(i=0;i<24;i++){
+    if(restOn(sx,rE,rE)[1]===hit
+      &&restOn(sx,rE*(1+CFG.ballSpread),rE*(1-CFG.ballSquash),peak)[1]===hit) break;
+    sx-=.5;
+  }
+  var yC=restOn(sx,rE,rE)[0];
+  var y0=LC.y-300, D=yC-y0, F=CFG.fall/1000, g=2*D/(F*F);
+  var H=yC-LC.y, TR=Math.sqrt(2*H/g)*1000, vR=Math.sqrt(2*g*H);
+  var tC=CFG.drop+CFG.fall, tL=tC+CFG.contact, tA=tL+TR, tLand=tA+CFG.catchSettle;
+  var letter=SETS[setId].glyphs[hit][0];
+  function letterScale(t){
+    var f,e;
+    if(t<=tL){ f=press(t,tC,CFG.contact); return [1+CFG.letterSpread*f,1-CFG.letterSquash*f]; }
+    e=ring(t,tL,CFG.letterRing); return [1-e*.5,1+e];
+  }
+  return {
+    tLand:tLand, closeStart:tC,
+    marks:[["drop",CFG.drop],["contact",tC],["catch",tLand]],
+    phase:function(t){
+      if(t<CFG.drop) return t<CFG.overlayIn[1]?"Overlay in":"Open stance";
+      if(t<tC) return "Fall";
+      if(t<=tL) return "Contact on “"+letter+"”";
+      if(t<tA) return "Rebound · paddles closing";
+      return t<tLand?"Catch":"Hold";
+    },
+    glyphs:function(t){ var out=[]; if(t>=tC) out[hit]=letterScale(t); return out; },
+    ball:function(t){
+      var u,s,f,e,bx,by,sc;
+      if(t<tC){
+        u=seg(t,CFG.drop,tC);
+        return {x:LC.x+(sx-LC.x)*u*u, y:y0+D*u*u, sx:1, sy:1};
+      }
+      if(t<=tL){
+        /* the ball's underside stays on the letter's live, compressed edge */
+        f=press(t,tC,CFG.contact);
+        bx=1+CFG.ballSpread*f; by=1-CFG.ballSquash*f;
+        sc=[]; sc[hit]=letterScale(t);
+        return {x:sx, y:restOn(sx,rE*bx,rE*by,sc)[0], sx:bx, sy:by};
+      }
+      e=ring(t,tL,CFG.ballRing);
+      if(t<tA){
+        s=(t-tL)/1000;
+        return {x:sx+(LC.x-sx)*((t-tL)/TR), y:yC-(vR*s-g*s*s/2), sx:1-e*.7, sy:1+e};
+      }
+      return {x:LC.x, y:LC.y, sx:1, sy:1};
+    }
+  };
+}
+
+/* ----- 2nd Set: off the right edge, off the left, lobbed into the paddles --
+   One ballistic flight under a single gravity. The walls are the screen
+   edges, set in by the ball's radius so its edge touches them. A bounce
+   reverses and damps only the horizontal speed; the vertical speed carries
+   through, and gravity keeps acting while the ball is flattened on the wall.
+   The right edge is lively and the left one soft, so the ball leaves the
+   left edge slowly, still rising, floats over the left paddle and drops into
+   the lens. The launch angle is solved so the flight ends at the lens centre
+   just as the paddles meet. */
+function planWalls(){
+  var LC=G.LC, rE=G.rE, W=G.W, wc=CFG.wallContact, g=CFG.gravity/1e6;
+  var xA=-rE-6, xR=W-rE, xL=rE, y0=G.H*CFG.entryY;
+  var v1=CFG.launch/1000, v2=v1*CFG.rightBounce, v3=v2*CFG.leftBounce;
+  var t0=CFG.drop, tR=t0+(xR-xA)/v1, tRe=tR+wc, tLw=tRe+(xR-xL)/v2, tLe=tLw+wc;
+  var tA=tLe+(LC.x-xL)/v3, tLand=tA;
+  var F=tA-t0, vy0=(LC.y-y0-g*F*F/2)/F;
+  function y(t){ var d=Math.max(0,t-t0); return y0+vy0*d+g*d*d/2; }
+  function onWall(t,tw,side){
+    var f=press(t,tw,wc), bx=1-CFG.wallSquash*f;
+    return {x:side>0?W-rE*bx:rE*bx, y:y(t), sx:bx, sy:1+CFG.wallSpread*f};
+  }
+  function flying(x,t,tw){
+    var e=ring(t,tw,CFG.ballRing);
+    return {x:x, y:y(t), sx:1+e, sy:1-e*.7};
+  }
+  return {
+    /* the ball passes over the left paddle, so it closes last, behind it */
+    tLand:tLand, closeStart:Math.max(tLe,tLand-CFG.lobClose),
+    closeStartL:Math.max(tLe,tLand-CFG.lobCloseLeft), morph:CFG.lobMorph,
+    marks:[["enter",t0],["right",tR],["left",tLw],["catch",tLand]],
+    phase:function(t){
+      if(t<t0) return t<CFG.overlayIn[1]?"Overlay in":"Open stance";
+      if(t<tR) return "Enter · heading right";
+      if(t<=tRe) return "Right edge";
+      if(t<tLw) return "Across · rising left";
+      if(t<=tLe) return "Left edge";
+      if(t<tA) return "Lob · paddles closing";
+      return "Hold";
+    },
+    glyphs:function(){ return []; },
+    ball:function(t){
+      if(t<tR) return {x:xA+v1*Math.max(0,t-t0), y:y(t), sx:1, sy:1};
+      if(t<=tRe) return onWall(t,tR,1);
+      if(t<tLw) return flying(xR-v2*(t-tRe),t,tRe);
+      if(t<=tLe) return onWall(t,tLw,-1);
+      if(t<tA) return flying(xL+v3*(t-tLe),t,tLe);
+      return {x:LC.x, y:LC.y, sx:1, sy:1};
+    }
+  };
+}
+
+/* ----- 3rd Set: thrown in, passed twice, caught -----
+   The ball is thrown in from beyond the right edge, over the right paddle,
+   onto the left paddle's face. Left passes to right, right passes back to
+   the middle, and the paddles close around it there into the lens. As in the Welcome room rally the ball meets the face
+   in front of the head, and a hit is a short swing from the handle butt.
+   The paddles step in during the first pass and close at the end of the
+   second, once the ball has left the right face.
+   Every flight is a parabola under the 2nd Set gravity, and each one starts
+   where the last ended, at the paddle face as it is at the moment of the hit. */
+function planRally(){
+  var LC=G.LC, rE=G.rE, g=CFG.gravity/1e6;
+  var Rh=(MARK.lensC.r+(MARK.headR[0]-MARK.headL[0])/2)*G.k;
+  var t0=CFG.drop, tH1=t0+CFG.throwTime, tH2=tH1+CFG.pass1, tA=tH2+CFG.pass2;
+  var tC=Math.max(tH2,tA-CFG.rallyClose);
+  function swing(t,tH){ return CFG.hitSwing*press(t,tH-CFG.hitWind,CFG.hitDur); }
+  function stance(t){
+    if(t<=tH1) return 0;
+    if(t<=tH2) return CFG.stepIn*easeMorph(seg(t,tH1,tH2));
+    return CFG.stepIn+(1-CFG.stepIn)*easeClose(seg(t,tC,tA));
+  }
+  function face(side,t,s){
+    var h=headAt(side,stance(t),s);
+    return {x:h.x-side*CFG.faceIn*Rh, y:h.y-CFG.faceUp};
+  }
+  function flight(P,Q,T){
+    var vx=(Q.x-P.x)/T, vy=(Q.y-P.y-g*T*T/2)/T;
+    return function(d){ return {x:P.x+vx*d, y:P.y+vy*d+g*d*d/2}; };
+  }
+  var S={x:G.W+rE+6, y:G.markT-CFG.throwRise};
+  var C1=face(-1,tH1,swing(tH1,tH1)), C2=face(1,tH2,-swing(tH2,tH2));
+  var f0=flight(S,C1,CFG.throwTime), f1=flight(C1,C2,CFG.pass1), f2=flight(C2,LC,CFG.pass2);
+  return {
+    tLand:tA, closeStart:tC, morph:CFG.rallyMorph,
+    marks:[["throw",t0],["hit",tH1],["hit",tH2],["catch",tA]],
+    paddles:function(t){ var p=stance(t); return [p,p,swing(t,tH1),-swing(t,tH2)]; },
+    phase:function(t){
+      if(t<t0) return t<CFG.overlayIn[1]?"Overlay in":"Open stance";
+      if(t<tH1-CFG.hitWind) return "Throw-in";
+      if(t<tH1+60) return "Hit · left paddle";
+      if(t<tH2-CFG.hitWind) return "Pass 1 · stepping in";
+      if(t<tH2+60) return "Hit · right paddle";
+      if(t<tC) return "Pass 2";
+      if(t<tA) return "Pass 2 · paddles closing";
+      return "Hold";
+    },
+    glyphs:function(){ return []; },
+    ball:function(t){
+      var p=t<tH1?f0(Math.max(0,t-t0)):t<tH2?f1(t-tH1):t<tA?f2(t-tH2):LC;
+      var f=Math.max(press(t,tH1-25,85),press(t,tH2-25,85));
+      return {x:p.x, y:p.y, sx:1-CFG.hitSquash*f, sy:1+CFG.hitSpread*f};
+    }
+  };
+}
+
+function render(t){
+  if(!G) return;
+  /* overlay + entrance */
+  var ov=easeOut(seg(t,CFG.overlayIn[0],CFG.overlayIn[1]));
+  overlay.style.opacity=r2(ov*overlayAlpha*1000)/1000;
+  var ci=easeOut(seg(t,CFG.contentIn[0],CFG.contentIn[1]));
+  var lift=r2((1-ci)*12);
+  title.style.opacity=ci; mark.style.opacity=ci; numeral.style.opacity=ci;
+  title.style.transform=lift?"translateY("+lift+"px)":"";
+  mark.style.transform=lift?"translateY("+lift+"px)":"";
+  numeral.style.transform=lift?"translateY("+lift+"px)":"";
+
+  var pd=G.paddles&&G.paddles(t);
+  if(pd) setPaddles(pd[0],pd[1],pd[2],pd[3]);
+  else setPaddles(easeClose(seg(t,G.closeStartL||G.closeStart,G.tLand)),
+                  easeClose(seg(t,G.closeStart,G.tLand)));
+
+  /* ball: plan gives screen px, drawn in the mark's own units */
+  var b=G.ball(t), c=MARK.lensC;
+  var ux=(b.x-G.LC.x)/G.k, uy=(b.y-G.LC.y)/G.k;
+  ball.setAttribute("transform",
+    "translate("+r2(ux+c.cx)+" "+r2(uy+c.cy)+") scale("+r2(b.sx*1000)/1000+" "+r2(b.sy*1000)/1000+") translate("+(-c.cx)+" "+(-c.cy)+")");
+  var m=easeMorph(seg(t,G.morphStart,G.tLand));
+  ball.setAttribute("d",m>=1?MARK.lens:morphPath(m));
+  /* lettering: only the glyph that is hit moves */
+  var gs=G.glyphs(t);
+  glyphs.forEach(function(g,i){ setGlyph(g,gs[i]); });
+
+  /* readout */
+  tNow.textContent=Math.round(t);
+  tPhase.textContent=G.phase(t);
+  if(!scrubbing) scrub.value=Math.round(t/G.total*1000);
+}
+function setGlyph(g,sc){
+  if(!sc||(Math.abs(sc[0]-1)<1e-4&&Math.abs(sc[1]-1)<1e-4)){ g.style.transform=""; return; }
+  g.style.transform="scale("+r2(sc[0]*1000)/1000+","+r2(sc[1]*1000)/1000+")";
+}
+
+/* ---------- playback ---------- */
+var tNow=document.getElementById("tNow"), tPhase=document.getElementById("tPhase");
+var scrub=document.getElementById("scrub"), scrubMarks=document.getElementById("scrubMarks");
+var btnPause=document.getElementById("btnPause");
+var speed=1, now=0, playing=false, last=0, scrubbing=false, overlayAlpha=1;
+
+function buildMarks(){
+  scrubMarks.innerHTML=G.marks.map(function(it){
+    return '<span style="left:'+r2(it[1]/G.total*100)+'%">'+it[0]+'</span>';
+  }).join("");
+}
+function frame(ts){
+  if(!playing) return;
+  var dt=last?ts-last:0; last=ts;
+  now=Math.min(G.total,now+dt*speed);
+  render(now);
+  if(now>=G.total){ playing=false; btnPause.textContent="Play"; return; }
+  requestAnimationFrame(frame);
+}
+function play(from){
+  if(typeof from==="number") now=from;
+  if(now>=G.total) now=0;
+  playing=true; last=0; btnPause.textContent="Pause";
+  requestAnimationFrame(frame);
+}
+function pause(){ playing=false; btnPause.textContent="Play"; }
+
+document.getElementById("btnReplay").addEventListener("click",function(){ play(0); });
+btnPause.addEventListener("click",function(){ playing?pause():play(); });
+document.getElementById("speedRow").addEventListener("click",function(e){
+  var b=e.target.closest("button[data-speed]"); if(!b) return;
+  speed=parseFloat(b.getAttribute("data-speed"));
+  [].forEach.call(this.querySelectorAll("button"),function(x){x.classList.toggle("on",x===b);});
+});
+scrub.addEventListener("input",function(){
+  scrubbing=true; pause();
+  now=scrub.value/1000*G.total; render(now);
+});
+scrub.addEventListener("change",function(){ scrubbing=false; });
+
+var opacity=document.getElementById("opacity"), opNow=document.getElementById("opNow");
+function setOpacity(v){
+  overlayAlpha=v/100; opacity.value=v; opNow.textContent=v; render(now);
+}
+opacity.addEventListener("input",function(){ setOpacity(+opacity.value); });
+document.getElementById("opReset").addEventListener("click",function(){ setOpacity(100); });
+
+var setRow=document.getElementById("setRow");
+function selectSet(id){
+  if(!SETS[id]) return;
+  setId=id; pause();
+  [].forEach.call(setRow.querySelectorAll("button"),function(x){x.classList.toggle("on",x.getAttribute("data-set")===id);});
+  buildTitle(); measure();
+  now=0; render(0);
+}
+setRow.addEventListener("click",function(e){
+  var b=e.target.closest("button[data-set]"); if(!b) return;
+  selectSet(b.getAttribute("data-set")); play(0);
+});
+
+document.addEventListener("keydown",function(e){
+  if(e.target.tagName==="INPUT") return;
+  if(e.key==="r"||e.key==="R"){ play(0); }
+  else if(e.key===" "){ e.preventDefault(); playing?pause():play(); }
+  else if(SETS[e.key]){ selectSet(e.key); play(0); }
+});
+
+Promise.all([
+  document.fonts.load('700 62px "FedraSerifPro"'),
+  document.fonts.load('italic 600 62px "FedraSerifPro"')
+]).then(function(){ return document.fonts.ready; }).then(function(){
+  /* ?set=2 picks the variation; ?t=1240 opens paused on that frame */
+  var q=new URLSearchParams(location.search);
+  selectSet(SETS[q.get("set")]?q.get("set"):"1");
+  if(q.has("op")) setOpacity(Math.max(0,Math.min(100,+q.get("op")||0)));
+  if(q.has("t")){
+    now=Math.max(0,Math.min(G.total,+q.get("t")||0));
+    render(now); btnPause.textContent="Play";
+    return;
+  }
+  render(0);
+  setTimeout(function(){ play(0); },400);
+});
+})();
+</script>
+</body>
+</html>
